@@ -112,7 +112,7 @@ export default function Navbar() {
                 </span>
               </div>
               <p className="text-[10px] sm:text-[11px] text-slate-500 font-medium tracking-wide">
-                Government & Digital Services Portal
+                Digital Services Made Easy
               </p>
             </div>
           </Link>
