@@ -4,7 +4,7 @@ import {
   Fingerprint, CreditCard, Vote, FileText, MapPin, Globe,
   Car, Briefcase, Zap, Grid, ArrowRight, Search, FileSearch, FileCheck,
   ShieldCheck, CheckCircle2, Clock, Users, PhoneCall, HelpCircle, Headset, MousePointer,
-  AlertCircle, Sparkles, Building2, ExternalLink, ShieldAlert, Award, Lock, Landmark
+  Mail, Send, AlertCircle, Sparkles, Building2, ExternalLink, ShieldAlert, Award, Lock, Landmark
 } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
 
@@ -18,6 +18,16 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [trackingIdInput, setTrackingIdInput] = useState('');
   const [trackValidationError, setTrackValidationError] = useState('');
+
+  // Contact form state
+  const [contactForm, setContactForm] = useState({
+    fullName: '',
+    mobile: '',
+    email: '',
+    subject: '',
+    message: ''
+  });
+  const [isSubmittingContact, setIsSubmittingContact] = useState(false);
   
   // Real stats from backend API
   const [stats, setStats] = useState({
@@ -70,6 +80,20 @@ export default function Home() {
     }
     setTrackValidationError('');
     navigate(`/track?appId=${encodeURIComponent(trackingIdInput.trim())}`);
+  };
+
+  const handleContactSubmit = (e) => {
+    e.preventDefault();
+    if (!contactForm.fullName || !contactForm.mobile || !contactForm.message) {
+      addToast('Please fill in your name, mobile number, and message.', 'error');
+      return;
+    }
+    setIsSubmittingContact(true);
+    setTimeout(() => {
+      setIsSubmittingContact(false);
+      addToast('Thank you! Your message has been received. Our support team will get back to you shortly.', 'success');
+      setContactForm({ fullName: '', mobile: '', email: '', subject: '', message: '' });
+    }, 600);
   };
 
   const getCategoryIcon = (slug) => {
@@ -707,6 +731,194 @@ export default function Home() {
                 <span>Learn More</span>
                 <ArrowRight className="w-4 h-4 text-orange-400 group-hover:translate-x-1 transition-transform" />
               </Link>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      {/* 9. CONTACT / SUPPORT SECTION (STEP 9 SPECIFICATION) */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 border-t border-slate-200/80">
+        <div className="space-y-12">
+          
+          {/* CENTERED SECTION HEADER */}
+          <div className="text-center max-w-2xl mx-auto space-y-2">
+            <span className="inline-block text-xs font-extrabold text-orange-600 uppercase tracking-widest bg-orange-50 border border-orange-200/80 px-3.5 py-1 rounded-full">
+              CONTACT US
+            </span>
+            <h2 className="font-heading font-extrabold text-3xl sm:text-4xl text-slate-900 tracking-tight">
+              We're Here to Help
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-500 font-normal leading-relaxed">
+              Have a question or need assistance? Get in touch with our support team.
+            </p>
+          </div>
+
+          {/* MAIN 2-COLUMN LAYOUT */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            
+            {/* LEFT SIDE: 4 COMPACT CONTACT INFO CARDS */}
+            <div className="lg:col-span-5 space-y-4">
+              
+              {/* CARD 1: PHONE SUPPORT */}
+              <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs hover:shadow-md hover:border-orange-500/40 transition-all flex items-start gap-4 group">
+                <div className="w-11 h-11 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center text-orange-600 shrink-0 group-hover:scale-105 transition-transform">
+                  <PhoneCall className="w-5 h-5" />
+                </div>
+                <div className="space-y-1">
+                  <h4 className="font-heading font-extrabold text-sm text-slate-900 group-hover:text-orange-600 transition-colors">
+                    Phone Support
+                  </h4>
+                  <p className="text-xs text-slate-600 font-mono font-medium">1800-425-3738 / +91 44 2859 0000</p>
+                  <p className="text-[11px] text-slate-400 font-normal">Toll-Free Helpline (Mon - Sat)</p>
+                </div>
+              </div>
+
+              {/* CARD 2: EMAIL SUPPORT */}
+              <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs hover:shadow-md hover:border-orange-500/40 transition-all flex items-start gap-4 group">
+                <div className="w-11 h-11 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center text-orange-600 shrink-0 group-hover:scale-105 transition-transform">
+                  <Mail className="w-5 h-5" />
+                </div>
+                <div className="space-y-1">
+                  <h4 className="font-heading font-extrabold text-sm text-slate-900 group-hover:text-orange-600 transition-colors">
+                    Email Support
+                  </h4>
+                  <p className="text-xs text-slate-600 font-medium">support@eseva.gov.in / help@eseva.org</p>
+                  <p className="text-[11px] text-slate-400 font-normal">24-hour response SLA</p>
+                </div>
+              </div>
+
+              {/* CARD 3: OFFICE LOCATION */}
+              <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs hover:shadow-md hover:border-orange-500/40 transition-all flex items-start gap-4 group">
+                <div className="w-11 h-11 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center text-orange-600 shrink-0 group-hover:scale-105 transition-transform">
+                  <MapPin className="w-5 h-5" />
+                </div>
+                <div className="space-y-1">
+                  <h4 className="font-heading font-extrabold text-sm text-slate-900 group-hover:text-orange-600 transition-colors">
+                    Service Location
+                  </h4>
+                  <p className="text-xs text-slate-600 font-normal leading-relaxed">
+                    Digital Seva Bhavan, 123 Service Street, Digital City - 600001
+                  </p>
+                </div>
+              </div>
+
+              {/* CARD 4: SUPPORT HOURS */}
+              <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs hover:shadow-md hover:border-orange-500/40 transition-all flex items-start gap-4 group">
+                <div className="w-11 h-11 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center text-orange-600 shrink-0 group-hover:scale-105 transition-transform">
+                  <Clock className="w-5 h-5" />
+                </div>
+                <div className="space-y-1">
+                  <h4 className="font-heading font-extrabold text-sm text-slate-900 group-hover:text-orange-600 transition-colors">
+                    Support Hours
+                  </h4>
+                  <p className="text-xs text-slate-600 font-normal">Mon - Sat: 08:00 AM - 08:00 PM</p>
+                  <p className="text-[11px] text-emerald-600 font-bold flex items-center gap-1">
+                    <ShieldCheck className="w-3.5 h-3.5" /> 24/7 Portal Service Access
+                  </p>
+                </div>
+              </div>
+
+            </div>
+
+            {/* RIGHT SIDE: MODERN CONTACT FORM CARD */}
+            <div className="lg:col-span-7 bg-white rounded-2xl border border-slate-200/90 p-6 sm:p-8 shadow-sm space-y-5">
+              <div className="border-b border-slate-100 pb-3">
+                <h3 className="font-heading font-extrabold text-xl text-slate-900">Send Us a Message</h3>
+                <p className="text-xs text-slate-500 mt-0.5 font-normal">Fill in the details below and our team will get in touch with you.</p>
+              </div>
+
+              <form onSubmit={handleContactSubmit} className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* FULL NAME */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider block">
+                      Full Name <span className="text-orange-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="Enter your full name"
+                      value={contactForm.fullName}
+                      onChange={(e) => setContactForm({ ...contactForm, fullName: e.target.value })}
+                      className="w-full bg-slate-50 text-slate-900 placeholder-slate-400 text-xs sm:text-sm rounded-xl px-4 py-3 border border-slate-300 focus:border-slate-900 focus:bg-white outline-none transition-all"
+                    />
+                  </div>
+
+                  {/* MOBILE NUMBER */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider block">
+                      Mobile Number <span className="text-orange-500">*</span>
+                    </label>
+                    <input
+                      type="tel"
+                      required
+                      placeholder="Enter 10-digit mobile number"
+                      value={contactForm.mobile}
+                      onChange={(e) => setContactForm({ ...contactForm, mobile: e.target.value })}
+                      className="w-full bg-slate-50 text-slate-900 placeholder-slate-400 text-xs sm:text-sm rounded-xl px-4 py-3 border border-slate-300 focus:border-slate-900 focus:bg-white outline-none transition-all font-mono"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* EMAIL ADDRESS */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider block">
+                      Email Address
+                    </label>
+                    <input
+                      type="email"
+                      placeholder="name@example.com"
+                      value={contactForm.email}
+                      onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
+                      className="w-full bg-slate-50 text-slate-900 placeholder-slate-400 text-xs sm:text-sm rounded-xl px-4 py-3 border border-slate-300 focus:border-slate-900 focus:bg-white outline-none transition-all"
+                    />
+                  </div>
+
+                  {/* SUBJECT */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider block">
+                      Subject
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Aadhaar Update Query"
+                      value={contactForm.subject}
+                      onChange={(e) => setContactForm({ ...contactForm, subject: e.target.value })}
+                      className="w-full bg-slate-50 text-slate-900 placeholder-slate-400 text-xs sm:text-sm rounded-xl px-4 py-3 border border-slate-300 focus:border-slate-900 focus:bg-white outline-none transition-all"
+                    />
+                  </div>
+                </div>
+
+                {/* MESSAGE TEXTAREA */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider block">
+                    Message <span className="text-orange-500">*</span>
+                  </label>
+                  <textarea
+                    rows={4}
+                    required
+                    placeholder="Type your message or inquiry details here..."
+                    value={contactForm.message}
+                    onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
+                    className="w-full bg-slate-50 text-slate-900 placeholder-slate-400 text-xs sm:text-sm rounded-xl px-4 py-3 border border-slate-300 focus:border-slate-900 focus:bg-white outline-none transition-all resize-none"
+                  ></textarea>
+                </div>
+
+                {/* SUBMIT BUTTON */}
+                <div className="pt-2 flex justify-end">
+                  <button
+                    type="submit"
+                    disabled={isSubmittingContact}
+                    className="w-full sm:w-auto bg-[#0b192c] hover:bg-orange-600 text-white font-extrabold text-xs sm:text-sm px-8 py-3.5 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 group disabled:opacity-50"
+                  >
+                    <span>{isSubmittingContact ? 'Sending Message...' : 'Send Message'}</span>
+                    <Send className="w-4 h-4 text-orange-400 group-hover:translate-x-1 transition-transform" />
+                  </button>
+                </div>
+              </form>
             </div>
 
           </div>
