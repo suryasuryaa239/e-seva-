@@ -162,293 +162,222 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 2. QUICK SERVICE SEARCH */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-20">
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-md space-y-3">
-          <h3 className="font-heading font-bold text-base text-slate-900 flex items-center gap-2">
-            <Search className="w-4 h-4 text-blue-900" />
-            Quick Service Search
-          </h3>
-
-          <form onSubmit={handleHeroSearch} className="flex flex-col sm:flex-row gap-3">
-            <div className="relative flex-1">
-              <input
-                type="text"
-                placeholder="Search by service name... (e.g. Aadhaar Address, PAN Card, Income Certificate, Patta)"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-slate-50 text-slate-900 placeholder-slate-400 text-xs rounded-xl pl-10 pr-4 py-3.5 border border-slate-300 outline-none focus:bg-white focus:border-blue-900 focus:ring-1 focus:ring-blue-900 transition-all"
-              />
-              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-4" />
-            </div>
-
-            <button
-              type="submit"
-              className="bg-blue-900 hover:bg-blue-950 text-white font-extrabold text-xs px-7 py-3.5 rounded-xl shadow transition-colors shrink-0 flex items-center justify-center gap-2"
-            >
-              Search Services
-            </button>
-          </form>
-        </div>
-      </section>
-
-      {/* 3. POPULAR SERVICES GRID (DYNAMIC DB DRIVEN) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 pt-4">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-b border-slate-200 pb-3">
+      {/* 2. E-SERVICES CATEGORIES GRID (EXACT REFERENCE 8 CARDS) */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 pt-6">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-b border-slate-200/80 pb-4">
           <div>
-            <span className="text-[11px] font-extrabold text-blue-900 uppercase tracking-wider">
-              Most Requested Online Services
-            </span>
-            <h2 className="font-heading font-extrabold text-2xl text-slate-900 mt-0.5">
-              Popular E-Services Catalog
+            <h2 className="font-heading font-extrabold text-2xl sm:text-3xl text-slate-900">
+              E-Services
             </h2>
+            <p className="text-xs sm:text-sm text-slate-500 mt-1 font-normal">
+              Explore our wide range of online services designed to make your life easier
+            </p>
           </div>
 
           <Link
             to="/services"
-            className="text-xs font-bold text-blue-900 hover:text-blue-700 flex items-center gap-1"
+            className="text-xs font-bold text-slate-800 hover:text-orange-600 flex items-center gap-1 shrink-0 transition-colors"
           >
-            View All Services Directory →
+            View All Services <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-          {popularServices.map((srv) => (
-            <div
-              key={srv.id}
-              className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between group"
-            >
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center group-hover:bg-blue-900 group-hover:text-white transition-colors">
-                    {getCategoryIcon(srv.category_slug)}
-                  </div>
-                  <span className="text-[10px] font-extrabold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded">
-                    {srv.fee > 0 ? `₹${srv.fee}` : 'FREE'}
-                  </span>
-                </div>
-
-                <div>
-                  <span className="text-[9px] font-extrabold uppercase tracking-wider text-blue-900 bg-blue-50 px-2 py-0.5 rounded inline-block">
-                    {srv.category_name}
-                  </span>
-                  <h3 className="font-heading font-bold text-base text-slate-900 group-hover:text-blue-900 transition-colors mt-1">
-                    {srv.name}
-                  </h3>
-                </div>
-
-                <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed font-normal">
-                  {srv.description}
-                </p>
-
-                <div className="pt-1 text-[11px] font-semibold text-slate-600 flex items-center gap-1.5">
-                  <Clock className="w-3 h-3 text-amber-600" />
-                  <span>SLA: {srv.processing_time || '3-5 Days'}</span>
-                </div>
-              </div>
-
-              <div className="pt-4 mt-3 border-t border-slate-100 flex items-center justify-between gap-2">
-                <Link
-                  to={`/service/${srv.slug}`}
-                  className="text-xs font-bold text-slate-700 hover:text-blue-900"
-                >
-                  View Details
-                </Link>
-                <Link
-                  to={`/service/${srv.slug}`}
-                  className="bg-blue-900 hover:bg-blue-950 text-white font-bold text-xs px-3.5 py-1.5 rounded-lg shadow-sm transition-colors"
-                >
-                  Apply Now
-                </Link>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* 4. SERVICE CATEGORIES GRID (11 CATEGORIES) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 pt-4">
-        <div className="text-center max-w-2xl mx-auto space-y-1">
-          <span className="text-[11px] font-extrabold text-emerald-800 uppercase tracking-wider">
-            Comprehensive Service Catalog
-          </span>
-          <h2 className="font-heading font-extrabold text-2xl text-slate-900">
-            Explore Services by Department Category
-          </h2>
-          <p className="text-xs text-slate-500">
-            Organized service categories for fast access and application processing.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-5">
           {[
-            { name: 'Aadhaar Services', slug: 'aadhaar', count: '15 Services', desc: 'Enrollment, Name, Address, Mobile, Photo Updates' },
-            { name: 'PAN Services', slug: 'pan', count: '4 Services', desc: 'New PAN, Correction, Reprint, Aadhaar Link' },
-            { name: 'Voter ID Services', slug: 'voter', count: '3 Services', desc: 'New Registration, Address Change, EPIC Download' },
-            { name: 'Certificates', slug: 'certificates', count: '6 Services', desc: 'Income, Community, Native, Birth, Death Certificates' },
-            { name: 'Land & Patta Services', slug: 'land', count: '5 Services', desc: 'Patta Transfer, Chitta, FMB Sketch, Encumbrance' },
-            { name: 'Passport Services', slug: 'passport', count: '3 Services', desc: 'Fresh Passport, Re-issue, Tatkaal Application' },
-            { name: 'Driving Licence', slug: 'driving-licence', count: '4 Services', desc: 'Learner License, DL Renewal, Address Change' },
-            { name: 'Vehicle Services', slug: 'vehicle', count: '4 Services', desc: 'RC Transfer, NOC, Fitness Certificate' },
-            { name: 'Business Services', slug: 'business', count: '4 Services', desc: 'MSME/Udyam, GST Registration, FSSAI License' },
-            { name: 'Utility Services', slug: 'utility', count: '3 Services', desc: 'Electricity Connection, Water Tax, Property Tax' },
-            { name: 'Other Digital Services', slug: 'other', count: '5 Services', desc: 'Ration Card, Pension, E-Shram, Employment' }
+            { name: 'Aadhaar', slug: 'aadhaar', desc: 'Aadhaar related services and updates', color: 'text-amber-600 bg-amber-50 border-amber-200', icon: <Fingerprint className="w-7 h-7 text-orange-500" /> },
+            { name: 'PAN', slug: 'pan', desc: 'PAN card related services', color: 'text-blue-600 bg-blue-50 border-blue-200', icon: <CreditCard className="w-7 h-7 text-blue-600" /> },
+            { name: 'Voter ID', slug: 'voter', desc: 'Voter ID related services', color: 'text-amber-700 bg-amber-50 border-amber-200', icon: <Vote className="w-7 h-7 text-amber-700" /> },
+            { name: 'Certificates', slug: 'certificates', desc: 'Various certificates and documents', color: 'text-rose-600 bg-rose-50 border-rose-200', icon: <FileText className="w-7 h-7 text-amber-600" /> },
+            { name: 'Land & Patta', slug: 'land', desc: 'Land & Patta related services', color: 'text-emerald-600 bg-emerald-50 border-emerald-200', icon: <MapPin className="w-7 h-7 text-emerald-600" /> },
+            { name: 'Passport', slug: 'passport', desc: 'Passport related services', color: 'text-blue-900 bg-blue-50 border-blue-200', icon: <Globe className="w-7 h-7 text-blue-900" /> },
+            { name: 'Driving Licence', slug: 'driving-licence', desc: 'Driving licence related services', color: 'text-slate-800 bg-slate-100 border-slate-200', icon: <Car className="w-7 h-7 text-slate-800" /> },
+            { name: 'Vehicle', slug: 'vehicle', desc: 'Vehicle related services', color: 'text-red-600 bg-red-50 border-red-200', icon: <Car className="w-7 h-7 text-red-600" /> }
           ].map((cat, idx) => (
             <Link
               key={idx}
               to={cat.slug === 'aadhaar' ? '/services/aadhaar' : `/services/${cat.slug}`}
-              className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm hover:shadow-md hover:border-blue-300 transition-all duration-200 space-y-2 group flex flex-col justify-between"
+              className="bg-white rounded-xl border border-slate-200/90 p-5 shadow-xs hover:shadow-md hover:border-slate-300 transition-all duration-200 flex flex-col items-center text-center space-y-3 group"
             >
-              <div className="flex items-center justify-between">
-                <div className="w-10 h-10 rounded-lg bg-blue-50 text-blue-900 flex items-center justify-center group-hover:bg-blue-900 group-hover:text-white transition-colors">
-                  {getCategoryIcon(cat.slug)}
-                </div>
-                <span className="text-[10px] font-bold text-blue-900 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded">
-                  {cat.count}
-                </span>
+              <div className="w-14 h-14 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center group-hover:scale-105 transition-transform">
+                {cat.icon}
               </div>
 
               <div>
-                <h3 className="font-heading font-bold text-sm text-slate-900 group-hover:text-blue-900 transition-colors">
+                <h3 className="font-heading font-extrabold text-sm text-slate-900 group-hover:text-orange-600 transition-colors">
                   {cat.name}
                 </h3>
-                <p className="text-[11px] text-slate-500 mt-1 line-clamp-2 font-normal leading-relaxed">
+                <p className="text-[11px] text-slate-500 mt-1 font-normal leading-normal">
                   {cat.desc}
                 </p>
               </div>
-
-              <span className="text-xs font-bold text-blue-900 flex items-center gap-1 group-hover:translate-x-1 transition-transform pt-1">
-                Explore Category →
-              </span>
             </Link>
           ))}
         </div>
       </section>
 
-      {/* 5. HOW IT WORKS (6 STEPS) */}
-      <section id="how-it-works" className="bg-slate-900 text-white py-14">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
-          <div className="text-center max-w-2xl mx-auto space-y-1">
-            <span className="text-xs font-extrabold text-emerald-400 uppercase tracking-wider">
-              Application Process
-            </span>
-            <h2 className="font-heading font-extrabold text-2xl text-white">
-              How to Apply Online
+      {/* 3. POPULAR SERVICES GRID (EXACT REFERENCE MATCHER) */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 pt-4">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-b border-slate-200/80 pb-4">
+          <div>
+            <h2 className="font-heading font-extrabold text-2xl sm:text-3xl text-slate-900">
+              Popular Services
             </h2>
-            <p className="text-xs text-slate-300">
-              Simple 6-step workflow designed for convenient online filing and tracking.
+            <p className="text-xs sm:text-sm text-slate-500 mt-1 font-normal">
+              Most requested online application services
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {[
-              { step: '01', title: 'Choose Service', desc: 'Select your required digital service from our categories.' },
-              { step: '02', title: 'Fill Application', desc: 'Enter mandatory applicant details in our guided form.' },
-              { step: '03', title: 'Upload Documents', desc: 'Attach PDF/JPG proof documents securely.' },
-              { step: '04', title: 'Make Payment', desc: 'Pay processing charges online via Razorpay.' },
-              { step: '05', title: 'Get Application ID', desc: 'Receive instant unique tracking code (ESV-2026-XXXXXX).' },
-              { step: '06', title: 'Track Status', desc: 'Monitor real-time approval status & download receipts.' }
-            ].map((st, i) => (
-              <div key={i} className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
-                <span className="text-2xl font-extrabold text-blue-400">{st.step}</span>
-                <h4 className="font-heading font-bold text-xs text-white">{st.title}</h4>
-                <p className="text-[10px] text-slate-400 leading-relaxed">{st.desc}</p>
+          <Link
+            to="/services"
+            className="text-xs font-bold text-slate-800 hover:text-orange-600 flex items-center gap-1 shrink-0 transition-colors"
+          >
+            View All Services <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {[
+            { title: 'Aadhaar Enrollment', desc: 'New Aadhaar enrollment services', slug: 'aadhaar-services', icon: <Fingerprint className="w-6 h-6 text-orange-500" /> },
+            { title: 'Aadhaar Update', desc: 'Update Aadhaar details online', slug: 'aadhaar', icon: <Fingerprint className="w-6 h-6 text-orange-500" /> },
+            { title: 'PAN Card', desc: 'New PAN card application', slug: 'pan-services', icon: <CreditCard className="w-6 h-6 text-blue-600" /> },
+            { title: 'Voter ID', desc: 'New voter ID application', slug: 'voter', icon: <Vote className="w-6 h-6 text-amber-700" /> },
+            { title: 'Passport', desc: 'Passport application services', slug: 'passport', icon: <Globe className="w-6 h-6 text-blue-900" /> },
+            { title: 'Driving Licence', desc: 'Driving licence application', slug: 'driving-licence', icon: <Car className="w-6 h-6 text-slate-800" /> }
+          ].map((srv, idx) => (
+            <div
+              key={idx}
+              className="bg-white rounded-xl border border-slate-200/90 p-5 shadow-xs hover:shadow-md transition-all duration-200 flex flex-col justify-between items-center text-center space-y-4 group"
+            >
+              <div className="space-y-2 flex flex-col items-center">
+                <div className="w-12 h-12 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center">
+                  {srv.icon}
+                </div>
+
+                <h3 className="font-heading font-extrabold text-sm text-slate-900 group-hover:text-slate-800 transition-colors">
+                  {srv.title}
+                </h3>
+
+                <p className="text-xs text-slate-500 font-normal">
+                  {srv.desc}
+                </p>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* 6. APPLICATION / ENQUIRY STATUS CARD SECTION */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white text-slate-900 p-8 rounded-2xl border border-slate-200 shadow-md space-y-4">
-          <div className="max-w-2xl space-y-1">
-            <span className="text-[11px] font-bold text-blue-900 uppercase tracking-wider">
-              Application Tracker
-            </span>
-            <h2 className="font-heading font-extrabold text-2xl text-slate-900">
-              Check Your Application Status
-            </h2>
-            <p className="text-xs text-slate-500">
-              Enter your unique Application ID (e.g. ESV-2026-000001) received after submission to check current status.
-            </p>
-          </div>
-
-          <form onSubmit={handleTrackSubmit} className="max-w-2xl space-y-3">
-            <div className="flex flex-col sm:flex-row gap-3">
-              <input
-                type="text"
-                placeholder="Enter Application ID (e.g. ESV-2026-000001)"
-                value={trackingIdInput}
-                onChange={(e) => {
-                  setTrackingIdInput(e.target.value);
-                  setTrackValidationError('');
-                }}
-                className={`w-full bg-slate-50 text-slate-900 placeholder-slate-400 text-xs rounded-xl px-4 py-3.5 border ${
-                  trackValidationError ? 'border-rose-500 ring-1 ring-rose-500' : 'border-slate-300'
-                } outline-none focus:border-blue-900 focus:bg-white`}
-              />
-              <button
-                type="submit"
-                className="bg-blue-900 hover:bg-blue-950 text-white font-extrabold text-xs px-7 py-3.5 rounded-xl shadow transition-colors shrink-0 flex items-center justify-center gap-2"
+              <Link
+                to={srv.slug === 'aadhaar' ? '/services/aadhaar' : `/services/${srv.slug}`}
+                className="w-auto bg-white hover:bg-slate-50 text-slate-900 font-bold text-xs px-6 py-2 rounded-lg border border-slate-300 hover:border-slate-800 transition-colors shadow-2xs"
               >
-                <FileSearch className="w-4 h-4" /> Check Status
-              </button>
+                Apply Now
+              </Link>
             </div>
-
-            {trackValidationError && (
-              <p className="text-xs font-bold text-rose-600 flex items-center gap-1">
-                <AlertCircle className="w-4 h-4" /> {trackValidationError}
-              </p>
-            )}
-          </form>
+          ))}
         </div>
       </section>
 
-      {/* 7. REAL DATABASE STATISTICS BAR */}
-      <section className="bg-blue-950 text-white py-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-            <div className="space-y-0.5">
-              <span className="text-2xl sm:text-3xl font-extrabold text-emerald-400">
-                {stats.servicesAvailable}+
-              </span>
-              <p className="text-xs text-slate-300 font-medium">Digital Services Available</p>
+      {/* 4. CHECK APPLICATION STATUS BANNER (EXACT REFERENCE MATCHER) */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+        <div className="bg-blue-50/70 rounded-2xl border border-blue-100/90 p-8 sm:p-10 shadow-xs relative overflow-hidden">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            
+            {/* Left Search Input */}
+            <div className="lg:col-span-7 space-y-4">
+              <div>
+                <h2 className="font-heading font-extrabold text-2xl sm:text-3xl text-slate-900">
+                  Check Application Status
+                </h2>
+                <p className="text-xs sm:text-sm text-slate-600 mt-1 font-normal">
+                  Enter your application ID to track the status of your application
+                </p>
+              </div>
+
+              <form onSubmit={handleTrackSubmit} className="space-y-3">
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <input
+                    type="text"
+                    placeholder="Enter Application ID"
+                    value={trackingIdInput}
+                    onChange={(e) => {
+                      setTrackingIdInput(e.target.value);
+                      setTrackValidationError('');
+                    }}
+                    className={`w-full bg-white text-slate-900 placeholder-slate-400 text-xs sm:text-sm rounded-xl px-4 py-3.5 border ${
+                      trackValidationError ? 'border-rose-500 ring-1 ring-rose-500' : 'border-slate-300'
+                    } outline-none focus:border-slate-800 shadow-xs`}
+                  />
+                  <button
+                    type="submit"
+                    className="bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold text-xs sm:text-sm px-8 py-3.5 rounded-xl shadow-md transition-colors shrink-0"
+                  >
+                    Check Status
+                  </button>
+                </div>
+
+                {trackValidationError && (
+                  <p className="text-xs font-bold text-rose-600 flex items-center gap-1">
+                    <AlertCircle className="w-4 h-4" /> {trackValidationError}
+                  </p>
+                )}
+              </form>
             </div>
 
-            <div className="space-y-0.5">
-              <span className="text-2xl sm:text-3xl font-extrabold text-blue-300">
-                {stats.applicationsProcessed.toLocaleString()}+
-              </span>
-              <p className="text-xs text-slate-300 font-medium">Applications Processed</p>
+            {/* Right Magnifying Glass / Application Status Clipboard Illustration */}
+            <div className="lg:col-span-5 flex justify-center lg:justify-end">
+              <div className="relative w-48 sm:w-56 bg-white p-5 rounded-2xl shadow-md border border-blue-100 text-center space-y-3">
+                <div className="bg-[#0b192c] text-white py-1.5 px-3 rounded-lg text-[11px] font-extrabold tracking-wider uppercase inline-block">
+                  APPLICATION STATUS
+                </div>
+                <div className="space-y-2 text-left text-[10px] text-slate-600">
+                  <div className="h-2 bg-slate-200 rounded w-3/4"></div>
+                  <div className="h-2 bg-slate-200 rounded w-1/2"></div>
+                  <div className="h-2 bg-slate-200 rounded w-5/6"></div>
+                  <div className="h-2 bg-slate-200 rounded w-2/3"></div>
+                </div>
+                <div className="pt-2 border-t border-slate-100 flex justify-center">
+                  <div className="w-12 h-12 rounded-full bg-orange-50 border border-orange-200 flex items-center justify-center text-orange-500 shadow-xs">
+                    <Search className="w-6 h-6" />
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div className="space-y-0.5">
-              <span className="text-2xl sm:text-3xl font-extrabold text-emerald-400">
-                {stats.happyCustomers.toLocaleString()}+
-              </span>
-              <p className="text-xs text-slate-300 font-medium">Registered Citizens</p>
-            </div>
-
-            <div className="space-y-0.5">
-              <span className="text-2xl sm:text-3xl font-extrabold text-amber-400">
-                {stats.supportAvailable}
-              </span>
-              <p className="text-xs text-slate-300 font-medium">Support SLA</p>
-            </div>
           </div>
         </div>
       </section>
 
-      {/* 8. NON-GOVERNMENT FACILITATION DISCLAIMER NOTICE */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-amber-50 rounded-xl border border-amber-200 p-5 flex items-start gap-3">
-          <ShieldAlert className="w-5 h-5 text-amber-700 shrink-0 mt-0.5" />
-          <div className="space-y-1 text-xs text-amber-900">
-            <h4 className="font-bold text-xs text-amber-950">Important Service Notice & Disclaimer</h4>
-            <p className="leading-relaxed font-normal">
-              This website is a private application assistance and facilitation portal. We provide document preparation, online application submission guidance, and status tracking services. Official government rules and verification standards apply to all final application approvals.
-            </p>
+      {/* 5. VALUE PROPOSITIONS (EASY TO USE, SECURE & RELIABLE, 24/7 SUPPORT) */}
+      <section className="bg-[#f8fafc] border-y border-slate-200/80 py-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <div className="bg-white p-6 rounded-xl border border-slate-200/80 shadow-xs flex items-center gap-4">
+              <div className="w-12 h-12 rounded-full bg-blue-50 border border-blue-200 flex items-center justify-center text-slate-900 shrink-0">
+                <Grid className="w-6 h-6" />
+              </div>
+              <div>
+                <h4 className="font-heading font-extrabold text-sm text-slate-900">Easy to Use</h4>
+                <p className="text-xs text-slate-500 mt-0.5 font-normal">Simple and user-friendly interface for all your needs</p>
+              </div>
+            </div>
+
+            <div className="bg-white p-6 rounded-xl border border-slate-200/80 shadow-xs flex items-center gap-4">
+              <div className="w-12 h-12 rounded-full bg-blue-50 border border-blue-200 flex items-center justify-center text-slate-900 shrink-0">
+                <ShieldCheck className="w-6 h-6" />
+              </div>
+              <div>
+                <h4 className="font-heading font-extrabold text-sm text-slate-900">Secure & Reliable</h4>
+                <p className="text-xs text-slate-500 mt-0.5 font-normal">Your data is safe with our secure platform</p>
+              </div>
+            </div>
+
+            <div className="bg-white p-6 rounded-xl border border-slate-200/80 shadow-xs flex items-center gap-4">
+              <div className="w-12 h-12 rounded-full bg-blue-50 border border-blue-200 flex items-center justify-center text-slate-900 shrink-0">
+                <PhoneCall className="w-6 h-6" />
+              </div>
+              <div>
+                <h4 className="font-heading font-extrabold text-sm text-slate-900">24/7 Support</h4>
+                <p className="text-xs text-slate-500 mt-0.5 font-normal">We're here to help you anytime, anywhere</p>
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
