@@ -85,23 +85,23 @@ export default function Navbar() {
             </div>
           </Link>
 
-          {/* 2. DESKTOP SEARCH BAR */}
-          <form onSubmit={handleSearchSubmit} className="hidden lg:flex items-center relative w-72">
+          {/* 2. DESKTOP SEARCH BAR (Visible on XL screens) */}
+          <form onSubmit={handleSearchSubmit} className="hidden xl:flex items-center relative w-56 xl:w-72 shrink-0">
             <input
               type="text"
               placeholder="Search services (Aadhaar, PAN, Patta)..."
               value={navSearch}
               onChange={(e) => setNavSearch(e.target.value)}
-              className="w-full bg-slate-50 text-slate-900 placeholder-slate-400 text-xs rounded-xl pl-9 pr-4 py-2.5 border border-slate-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:bg-white outline-none transition-all"
+              className="w-full bg-slate-50 text-slate-900 placeholder-slate-400 text-xs rounded-xl pl-9 pr-4 py-2 border border-slate-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:bg-white outline-none transition-all"
             />
             <Search className="w-4 h-4 text-slate-400 absolute left-3" />
           </form>
 
           {/* 3. DESKTOP NAVIGATION LINKS */}
-          <nav className="hidden md:flex items-center gap-6 text-xs font-bold text-slate-700">
+          <nav className="hidden md:flex items-center gap-2 lg:gap-4 xl:gap-6 text-xs font-bold text-slate-700 shrink-0">
             <Link
               to="/"
-              className={`transition-colors ${isActive('/') ? 'text-blue-900 font-extrabold' : 'hover:text-blue-900'}`}
+              className={`whitespace-nowrap transition-colors ${isActive('/') ? 'text-blue-900 font-extrabold' : 'hover:text-blue-900'}`}
             >
               Home
             </Link>
@@ -110,7 +110,7 @@ export default function Navbar() {
             <div className="relative" ref={megaMenuRef}>
               <button
                 onClick={() => setMegaMenuOpen(!megaMenuOpen)}
-                className={`flex items-center gap-1.5 transition-colors ${
+                className={`flex items-center gap-1 whitespace-nowrap transition-colors ${
                   isActive('/services') || megaMenuOpen ? 'text-blue-900 font-extrabold' : 'hover:text-blue-900'
                 }`}
               >
@@ -173,26 +173,26 @@ export default function Navbar() {
 
             <Link
               to="/about"
-              className={`transition-colors ${isActive('/about') ? 'text-blue-900 font-extrabold' : 'hover:text-blue-900'}`}
+              className={`whitespace-nowrap transition-colors ${isActive('/about') ? 'text-blue-900 font-extrabold' : 'hover:text-blue-900'}`}
             >
               About
             </Link>
 
             <Link
               to="/contact"
-              className={`transition-colors ${isActive('/contact') ? 'text-blue-900 font-extrabold' : 'hover:text-blue-900'}`}
+              className={`whitespace-nowrap transition-colors ${isActive('/contact') ? 'text-blue-900 font-extrabold' : 'hover:text-blue-900'}`}
             >
               Contact
             </Link>
 
             <Link
               to="/track"
-              className={`flex items-center gap-1.5 bg-blue-900 hover:bg-blue-950 text-white px-3.5 py-2 rounded-xl transition-all shadow-sm ${
+              className={`flex items-center gap-1.5 whitespace-nowrap bg-blue-900 hover:bg-blue-950 text-white px-3 py-2 rounded-xl transition-all shadow-sm shrink-0 ${
                 isActive('/track') ? 'ring-2 ring-blue-400' : ''
               }`}
             >
-              <FileSearch className="w-3.5 h-3.5 text-blue-200" />
-              Check Application Status
+              <FileSearch className="w-3.5 h-3.5 text-blue-200 shrink-0" />
+              <span>Check Application Status</span>
             </Link>
           </nav>
 
