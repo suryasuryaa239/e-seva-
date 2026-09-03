@@ -121,10 +121,10 @@ export default function Home() {
   };
 
   return (
-    <div className="space-y-12 pb-16 bg-slate-50 selection:bg-blue-600 selection:text-white">
+    <div className="space-y-0 bg-slate-50 selection:bg-[#0b192c] selection:text-white">
       
       {/* 1. HERO / WELCOME SECTION (STEP 2 SPECIFICATION) */}
-      <section className="bg-gradient-to-b from-slate-100/80 via-slate-50 to-white text-slate-900 py-14 sm:py-20 border-b border-slate-200/80 relative overflow-hidden">
+      <section className="bg-gradient-to-b from-slate-100/90 via-slate-50 to-white text-slate-900 py-16 sm:py-20 border-b border-slate-200/80 relative overflow-hidden">
         
         {/* Soft Background Pattern Graphic */}
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:16px_16px]"></div>
@@ -192,7 +192,8 @@ export default function Home() {
       </section>
 
       {/* 2. E-SERVICES CATEGORIES GRID (STEP 3 SPECIFICATION) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10 pt-12 pb-6">
+      <section className="bg-white py-16 sm:py-20 border-b border-slate-200/80">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         
         {/* CENTERED SECTION HEADER */}
         <div className="text-center max-w-2xl mx-auto space-y-2">
@@ -265,10 +266,12 @@ export default function Home() {
           </Link>
         </div>
 
+        </div>
       </section>
 
       {/* 3. POPULAR SERVICES GRID (STEP 4 SPECIFICATION) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10 py-10 border-t border-slate-200/80">
+      <section className="bg-slate-50/80 py-16 sm:py-20 border-b border-slate-200/80">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         
         {/* CENTERED SECTION HEADER */}
         <div className="text-center max-w-2xl mx-auto space-y-2">
@@ -347,10 +350,12 @@ export default function Home() {
           </Link>
         </div>
 
+        </div>
       </section>
 
       {/* 4. HOW IT WORKS SECTION (STEP 5 SPECIFICATION) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 py-12 border-t border-slate-200/80">
+      <section className="bg-white py-16 sm:py-20 border-b border-slate-200/80">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         
         {/* CENTERED SECTION HEADER */}
         <div className="text-center max-w-2xl mx-auto space-y-2">
@@ -424,16 +429,16 @@ export default function Home() {
             ))}
           </div>
         </div>
-
+        </div>
       </section>
 
       {/* 5. CHECK APPLICATION STATUS BANNER */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-t border-slate-200/80">
-        <div className="space-y-10">
+      <section className="bg-slate-50/80 py-16 sm:py-20 border-b border-slate-200/80">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
           
           {/* CENTERED SECTION HEADER */}
           <div className="text-center max-w-2xl mx-auto space-y-2">
-            <span className="inline-block text-xs font-extrabold text-orange-600 uppercase tracking-widest bg-orange-50 border border-orange-200/80 px-3 py-1 rounded-full">
+            <span className="inline-block text-xs font-extrabold text-orange-600 uppercase tracking-widest bg-orange-50 border border-orange-200/80 px-3.5 py-1 rounded-full">
               APPLICATION STATUS
             </span>
             <h2 className="font-heading font-extrabold text-3xl sm:text-4xl text-slate-900 tracking-tight">
@@ -502,7 +507,7 @@ export default function Home() {
       </section>
 
       {/* 6. WHY CHOOSE US SECTION (STEP 6 SPECIFICATION) */}
-      <section className="bg-slate-50 border-t border-slate-200/80 py-14">
+      <section className="bg-white py-16 sm:py-20 border-b border-slate-200/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           
           {/* CENTERED SECTION HEADER */}
@@ -586,57 +591,60 @@ export default function Home() {
       </section>
 
       {/* 7. APPLICATION CTA / TRACK BANNER (STEP 7 SPECIFICATION) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="bg-[#0b192c] rounded-3xl p-8 sm:p-12 border border-slate-800 shadow-xl text-white relative overflow-hidden">
-          
-          {/* Subtle Background Accent Orbs */}
-          <div className="absolute -right-16 -bottom-16 w-80 h-80 bg-orange-500/10 rounded-full blur-3xl pointer-events-none"></div>
-          <div className="absolute -left-16 -top-16 w-60 h-60 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
+      <section className="bg-slate-50/80 py-16 sm:py-20 border-b border-slate-200/80">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-[#0b192c] rounded-3xl p-8 sm:p-12 border border-slate-800 shadow-xl text-white relative overflow-hidden">
             
-            {/* LEFT CONTENT COLUMN */}
-            <div className="lg:col-span-7 space-y-4 text-center lg:text-left">
-              <div>
-                <span className="inline-block text-xs font-extrabold text-orange-400 uppercase tracking-widest bg-orange-950/60 border border-orange-500/30 px-3.5 py-1 rounded-full">
-                  NEED HELP WITH YOUR APPLICATION?
-                </span>
+            {/* Subtle Background Accent Orbs */}
+            <div className="absolute -right-16 -bottom-16 w-80 h-80 bg-orange-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div className="absolute -left-16 -top-16 w-60 h-60 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
+              
+              {/* LEFT CONTENT COLUMN */}
+              <div className="lg:col-span-7 space-y-4 text-center lg:text-left">
+                <div>
+                  <span className="inline-block text-xs font-extrabold text-orange-400 uppercase tracking-widest bg-orange-950/60 border border-orange-500/30 px-3.5 py-1 rounded-full">
+                    NEED HELP WITH YOUR APPLICATION?
+                  </span>
+                </div>
+
+                <h2 className="font-heading font-extrabold text-3xl sm:text-4xl lg:text-5xl text-white tracking-tight leading-tight">
+                  Apply Easily. <span className="text-orange-400">Track Anytime.</span>
+                </h2>
+
+                <p className="text-slate-300 text-xs sm:text-sm max-w-xl font-normal leading-relaxed">
+                  Submit your application online and keep track of its progress using your Application ID from any device.
+                </p>
               </div>
 
-              <h2 className="font-heading font-extrabold text-3xl sm:text-4xl lg:text-5xl text-white tracking-tight leading-tight">
-                Apply Easily. <span className="text-orange-400">Track Anytime.</span>
-              </h2>
+              {/* RIGHT BUTTONS COLUMN */}
+              <div className="lg:col-span-5 flex flex-col sm:flex-row lg:flex-col xl:flex-row items-center justify-center lg:justify-end gap-3.5">
+                <Link
+                  to="/services"
+                  className="w-full sm:w-auto bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-xs sm:text-sm px-7 py-3.5 rounded-xl shadow-md hover:shadow-lg transition-all text-center flex items-center justify-center gap-2 group"
+                >
+                  <span>Explore Services</span>
+                  <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform" />
+                </Link>
 
-              <p className="text-slate-300 text-xs sm:text-sm max-w-xl font-normal leading-relaxed">
-                Submit your application online and keep track of its progress using your Application ID from any device.
-              </p>
+                <Link
+                  to="/track"
+                  className="w-full sm:w-auto bg-white/10 hover:bg-white/20 text-white border border-white/20 font-bold text-xs sm:text-sm px-7 py-3.5 rounded-xl transition-all text-center flex items-center justify-center gap-2 group"
+                >
+                  <span>Track Application</span>
+                  <ArrowRight className="w-4 h-4 text-orange-400 group-hover:translate-x-1 transition-transform" />
+                </Link>
+              </div>
+
             </div>
-
-            {/* RIGHT BUTTONS COLUMN */}
-            <div className="lg:col-span-5 flex flex-col sm:flex-row lg:flex-col xl:flex-row items-center justify-center lg:justify-end gap-3.5">
-              <Link
-                to="/services"
-                className="w-full sm:w-auto bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-xs sm:text-sm px-7 py-3.5 rounded-xl shadow-md hover:shadow-lg transition-all text-center flex items-center justify-center gap-2 group"
-              >
-                <span>Explore Services</span>
-                <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform" />
-              </Link>
-
-              <Link
-                to="/track"
-                className="w-full sm:w-auto bg-white/10 hover:bg-white/20 text-white border border-white/20 font-bold text-xs sm:text-sm px-7 py-3.5 rounded-xl transition-all text-center flex items-center justify-center gap-2 group"
-              >
-                <span>Track Application</span>
-                <ArrowRight className="w-4 h-4 text-orange-400 group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </div>
-
           </div>
         </div>
       </section>
 
       {/* 8. ABOUT / TRUST SECTION (STEP 8 SPECIFICATION) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 border-t border-slate-200/80">
+      <section className="bg-white py-16 sm:py-20 border-b border-slate-200/80">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
           
           {/* LEFT SIDE: VISUAL MOCKUP */}
@@ -736,11 +744,12 @@ export default function Home() {
           </div>
 
         </div>
+        </div>
       </section>
 
       {/* 9. CONTACT / SUPPORT SECTION (STEP 9 SPECIFICATION) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 border-t border-slate-200/80">
-        <div className="space-y-12">
+      <section className="bg-slate-50/80 py-16 sm:py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           
           {/* CENTERED SECTION HEADER */}
           <div className="text-center max-w-2xl mx-auto space-y-2">
