@@ -5,21 +5,7 @@ import {
   Eye, Edit3, ShieldAlert, Sparkles, FolderOpen, Calendar, RefreshCw, Plus
 } from 'lucide-react';
 import Breadcrumbs from '../components/Breadcrumbs';
-
-const STATUS_BADGES = {
-  DRAFT: 'bg-amber-100 text-amber-800 border-amber-300',
-  SUBMITTED: 'bg-blue-100 text-blue-900 border-blue-300 font-extrabold',
-  Pending: 'bg-yellow-100 text-yellow-800 border-yellow-300',
-  UNDER_REVIEW: 'bg-indigo-100 text-indigo-900 border-indigo-300',
-  Processing: 'bg-purple-100 text-purple-900 border-purple-300',
-  PROCESSING: 'bg-purple-100 text-purple-900 border-purple-300',
-  Approved: 'bg-emerald-100 text-emerald-900 border-emerald-300 font-extrabold',
-  APPROVED: 'bg-emerald-100 text-emerald-900 border-emerald-300 font-extrabold',
-  Completed: 'bg-emerald-100 text-emerald-900 border-emerald-300 font-extrabold',
-  COMPLETED: 'bg-emerald-100 text-emerald-900 border-emerald-300 font-extrabold',
-  Rejected: 'bg-rose-100 text-rose-900 border-rose-300',
-  REJECTED: 'bg-rose-100 text-rose-900 border-rose-300'
-};
+import StatusBadge from '../components/StatusBadge';
 
 export default function MyApplications() {
   const navigate = useNavigate();
@@ -41,7 +27,6 @@ export default function MyApplications() {
 
       const token = localStorage.getItem('token');
       if (!token) {
-        // Redirect to login if unauthenticated
         navigate('/login?redirect=/my-applications');
         return;
       }
@@ -79,7 +64,7 @@ export default function MyApplications() {
       <div className="max-w-7xl mx-auto space-y-6">
 
         {/* Breadcrumb */}
-        <Breadcrumbs items={[{ label: 'My Applications Dashboard' }]} />
+        <Breadcrumbs items={[{ label: 'My Applications Portfolio' }]} />
 
         {/* Top Header Card */}
         <div className="bg-[#0b192c] rounded-3xl p-6 sm:p-8 text-white shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6 border border-slate-800 relative overflow-hidden">
@@ -100,10 +85,10 @@ export default function MyApplications() {
             </p>
           </div>
 
-          <div className="flex items-center space-x-3 relative z-10">
+          <div className="flex items-center space-x-3 relative z-10 w-full sm:w-auto">
             <button
               onClick={fetchMyApplications}
-              className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white font-bold text-xs rounded-xl border border-slate-700 flex items-center space-x-2 transition-all shadow-sm"
+              className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white font-bold text-xs rounded-xl border border-slate-700 flex items-center justify-center space-x-2 transition-all shadow-sm flex-1 sm:flex-none"
             >
               <RefreshCw className={`w-4 h-4 text-orange-400 ${loading ? 'animate-spin' : ''}`} />
               <span>Refresh</span>
@@ -111,9 +96,9 @@ export default function MyApplications() {
 
             <Link
               to="/services"
-              className="px-5 py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-black text-xs rounded-xl shadow-md hover:shadow-lg transition-all flex items-center space-x-1.5"
+              className="px-5 py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-black text-xs rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center space-x-1.5 flex-1 sm:flex-none"
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="w-4 h-4 text-white" />
               <span>New Service Request</span>
             </Link>
           </div>
@@ -135,7 +120,7 @@ export default function MyApplications() {
 
           <div className="flex items-center space-x-2 w-full sm:w-auto">
             <Filter className="w-4 h-4 text-orange-500 flex-shrink-0" />
-            <label className="text-xs font-extrabold text-slate-700 whitespace-nowrap uppercase tracking-wider">Filter Status:</label>
+            <label className="text-xs font-extrabold text-slate-700 whitespace-nowrap uppercase tracking-wider">Status:</label>
             <select
               value={statusFilter}
               onChange={e => setStatusFilter(e.target.value)}
@@ -166,23 +151,29 @@ export default function MyApplications() {
             <p className="text-xs text-slate-600 mt-1">{error}</p>
           </div>
         ) : filteredApps.length === 0 ? (
-          <div className="bg-white rounded-3xl shadow-sm p-12 text-center border border-slate-200 space-y-4">
+          <div className="bg-white rounded-3xl shadow-sm p-10 text-center border border-slate-200 space-y-4 max-w-lg mx-auto">
             <FolderOpen className="w-16 h-16 text-slate-300 mx-auto" />
             <div className="space-y-1">
-              <h3 className="text-base font-extrabold text-slate-900">No Applications Found</h3>
-              <p className="text-xs text-slate-500">You have no applications matching status "{statusFilter}".</p>
+              <h3 className="text-base font-black text-slate-900">No applications yet</h3>
+              <p className="text-xs text-slate-500">
+                {searchTerm || statusFilter !== 'All' 
+                  ? `No applications matching filter criteria.` 
+                  : `Start by choosing a digital service from our catalog.`}
+              </p>
             </div>
             <Link
               to="/services"
-              className="inline-flex items-center space-x-2 px-5 py-2.5 bg-[#0b192c] text-white font-extrabold text-xs rounded-xl hover:bg-orange-600 shadow-md transition-all"
+              className="inline-flex items-center space-x-2 px-5 py-3 bg-[#0b192c] text-white font-extrabold text-xs rounded-xl hover:bg-orange-600 shadow-md transition-all"
             >
-              <span>Explore Services & Apply Now</span>
+              <span>Explore Services</span>
               <ArrowRight className="w-4 h-4 text-orange-400" />
             </Link>
           </div>
         ) : (
           <div className="bg-white rounded-3xl border border-slate-200/90 shadow-xl overflow-hidden">
-            <div className="overflow-x-auto">
+            
+            {/* DESKTOP TABLE */}
+            <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-[#0b192c] text-[11px] font-black text-slate-300 uppercase tracking-wider border-b border-slate-800">
@@ -197,7 +188,6 @@ export default function MyApplications() {
                 <tbody className="divide-y divide-slate-100 text-xs font-medium">
                   {filteredApps.map((app) => {
                     const isDraft = app.status === 'DRAFT';
-                    const badgeClass = STATUS_BADGES[app.status] || STATUS_BADGES.SUBMITTED;
 
                     return (
                       <tr key={app.id} className="hover:bg-slate-50/80 transition-colors">
@@ -213,9 +203,7 @@ export default function MyApplications() {
                           {new Date(app.created_at || app.submitted_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
                         </td>
                         <td className="py-4.5 px-4 sm:px-6 whitespace-nowrap">
-                          <span className={`inline-flex items-center px-3 py-1 rounded-full text-[11px] font-extrabold border ${badgeClass}`}>
-                            {app.status}
-                          </span>
+                          <StatusBadge status={app.status} />
                         </td>
                         <td className="py-4.5 px-4 sm:px-6 text-slate-600 whitespace-nowrap">
                           <span className="font-extrabold text-emerald-700 text-sm">₹{app.total_fee || 0}</span>
@@ -245,6 +233,51 @@ export default function MyApplications() {
                 </tbody>
               </table>
             </div>
+
+            {/* MOBILE STACKED CARDS */}
+            <div className="md:hidden p-4 space-y-3">
+              {filteredApps.map((app) => {
+                const isDraft = app.status === 'DRAFT';
+
+                return (
+                  <div key={app.id} className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="font-mono text-xs font-black text-orange-600 bg-white px-2.5 py-1 rounded-lg border border-slate-200">
+                        {app.application_number}
+                      </span>
+                      <StatusBadge status={app.status} />
+                    </div>
+
+                    <div className="space-y-1">
+                      <h4 className="font-black text-slate-900 text-sm">{app.service_name || 'Digital Service'}</h4>
+                      <div className="flex items-center justify-between text-[11px] text-slate-500">
+                        <span className="font-mono">Logged: {new Date(app.created_at || app.submitted_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
+                        <span className="font-black text-emerald-700">₹{app.total_fee || 0}</span>
+                      </div>
+                    </div>
+
+                    <div>
+                      {isDraft ? (
+                        <Link
+                          to={`/apply/${app.service_id}?draftId=${app.id}`}
+                          className="w-full block text-center py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs rounded-xl shadow-xs"
+                        >
+                          Resume Draft
+                        </Link>
+                      ) : (
+                        <Link
+                          to={`/my-applications/${app.id}`}
+                          className="w-full block text-center py-2.5 bg-[#0b192c] hover:bg-orange-600 text-white font-extrabold text-xs rounded-xl shadow-xs"
+                        >
+                          View Details
+                        </Link>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
           </div>
         )}
 
