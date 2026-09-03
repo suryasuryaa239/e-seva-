@@ -2053,7 +2053,11 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Start Server
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`E-Seva REST API Server running on port ${PORT} (0.0.0.0)`);
-});
+// Start Server if not running on Vercel
+if (!process.env.VERCEL) {
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`E-Seva REST API Server running on port ${PORT} (0.0.0.0)`);
+  });
+}
+
+export default app;
