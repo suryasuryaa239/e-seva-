@@ -8,8 +8,12 @@ const __dirname = path.dirname(__filename);
 
 const BACKUP_DIR = path.join(__dirname, '..', 'backups', 'database');
 
-if (!fs.existsSync(BACKUP_DIR)) {
-  fs.mkdirSync(BACKUP_DIR, { recursive: true });
+try {
+  if (!fs.existsSync(BACKUP_DIR)) {
+    fs.mkdirSync(BACKUP_DIR, { recursive: true });
+  }
+} catch (err) {
+  console.warn('[BACKUP_DIR WARNING] Read-only filesystem:', err.message);
 }
 
 /**

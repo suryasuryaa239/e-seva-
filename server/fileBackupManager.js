@@ -16,9 +16,20 @@ const BACKUP_DOCS_DIR = path.join(__dirname, 'backups', 'documents');
  * Initializes private storage directories
  */
 export function initPrivateStorageDirs() {
-  [UPLOADS_BASE, DOCUMENTS_DIR, RESUMES_DIR, TEMP_DIR, BACKUP_DOCS_DIR].forEach(dir => {
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
+  const targetBase = process.env.VERCEL ? '/tmp' : __dirname;
+  [
+    path.join(targetBase, 'uploads'),
+    path.join(targetBase, 'uploads', 'documents'),
+    path.join(targetBase, 'uploads', 'resumes'),
+    path.join(targetBase, 'uploads', 'temp'),
+    path.join(targetBase, 'backups', 'documents')
+  ].forEach(dir => {
+    try {
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+    } catch (err) {
+      console.warn('[STORAGE DIR WARNING] Read-only environment:', err.message);
     }
   });
 }
