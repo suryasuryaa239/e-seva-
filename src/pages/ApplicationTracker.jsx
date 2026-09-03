@@ -58,55 +58,65 @@ export default function ApplicationTracker() {
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 font-sans selection:bg-blue-600 selection:text-white">
       <Breadcrumbs items={[{ label: 'Track Application Status' }]} />
 
-      {/* Tracker Search Header */}
-      <div className="bg-gradient-to-r from-blue-950 via-blue-900 to-slate-900 text-white p-8 sm:p-10 rounded-2xl shadow-md border border-blue-800 space-y-4">
-        <div>
-          <span className="text-xs font-extrabold text-emerald-400 uppercase tracking-wider bg-blue-950 px-3 py-1 rounded-full border border-blue-800">
-            Real-Time Tracking System
-          </span>
-          <h1 className="font-heading font-extrabold text-2xl sm:text-3xl text-white mt-2">
-            Check Application Status
-          </h1>
-          <p className="text-xs text-slate-200 font-normal">
-            Check live processing state, government SLA timeline, and official Admin Remarks.
-          </p>
-        </div>
+      {/* CENTERED SECTION HEADER (STEP 5 SPECIFICATION) */}
+      <div className="text-center max-w-2xl mx-auto space-y-2 pt-4">
+        <span className="inline-block text-xs font-extrabold text-orange-600 uppercase tracking-widest bg-orange-50 border border-orange-200/80 px-3 py-1 rounded-full">
+          APPLICATION STATUS
+        </span>
+        <h1 className="font-heading font-extrabold text-3xl sm:text-4xl text-slate-900 tracking-tight">
+          Track Your Application
+        </h1>
+        <p className="text-xs sm:text-sm text-slate-500 font-normal leading-relaxed">
+          Enter your application details to quickly check the current status of your application.
+        </p>
+      </div>
 
-        <form onSubmit={handleTrackSubmit} className="grid grid-cols-1 sm:grid-cols-12 gap-3 pt-2">
-          <div className="sm:col-span-6">
-            <label className="text-[11px] font-semibold text-slate-300 block mb-1">
-              Application ID / Tracking Number *
+      {/* CENTERED TRACKING CARD */}
+      <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-4 max-w-3xl mx-auto">
+        <form onSubmit={handleTrackSubmit} className="grid grid-cols-1 sm:grid-cols-12 gap-3">
+          <div className="sm:col-span-7">
+            <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider block mb-1.5">
+              Application ID <span className="text-orange-500">*</span>
             </label>
             <input
               type="text"
               placeholder="e.g. ESV-2026-000001"
               value={appId}
               onChange={(e) => setAppId(e.target.value)}
-              className="w-full bg-white/10 text-white text-xs font-mono rounded-xl px-4 py-3 border border-white/20 focus:border-emerald-400 outline-none"
+              className="w-full bg-slate-50 text-slate-900 text-xs font-mono rounded-xl px-4 py-3 border border-slate-300 focus:border-slate-900 focus:bg-white outline-none transition-all"
             />
           </div>
 
-          <div className="sm:col-span-4">
-            <label className="text-[11px] font-semibold text-slate-300 block mb-1">
-              Mobile Number (Optional Verification)
+          <div className="sm:col-span-5">
+            <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider block mb-1.5">
+              Mobile Number (Optional)
             </label>
             <input
               type="text"
               placeholder="10-digit phone number"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              className="w-full bg-white/10 text-white text-xs rounded-xl px-4 py-3 border border-white/20 focus:border-emerald-400 outline-none"
+              className="w-full bg-slate-50 text-slate-900 text-xs rounded-xl px-4 py-3 border border-slate-300 focus:border-slate-900 focus:bg-white outline-none transition-all"
             />
           </div>
 
-          <div className="sm:col-span-2 flex items-end">
+          <div className="sm:col-span-12 pt-2">
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs py-3 rounded-xl shadow transition-colors flex items-center justify-center gap-1.5"
+              className="w-full bg-[#0b192c] hover:bg-orange-600 text-white font-extrabold text-xs sm:text-sm py-3.5 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 group disabled:opacity-50"
             >
-              {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
-              Track
+              {loading ? (
+                <>
+                  <RefreshCw className="w-4 h-4 animate-spin text-orange-400" />
+                  <span>Checking Status...</span>
+                </>
+              ) : (
+                <>
+                  <Search className="w-4 h-4 text-orange-400 group-hover:scale-110 transition-transform" />
+                  <span>Check Status</span>
+                </>
+              )}
             </button>
           </div>
         </form>

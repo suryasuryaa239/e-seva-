@@ -320,73 +320,77 @@ export default function Home() {
 
       </section>
 
-      {/* 4. CHECK APPLICATION STATUS BANNER (EXACT REFERENCE MATCHER) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
-        <div className="bg-blue-50/70 rounded-2xl border border-blue-100/90 p-8 sm:p-10 shadow-xs relative overflow-hidden">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            
-            {/* Left Search Input */}
-            <div className="lg:col-span-7 space-y-4">
-              <div>
-                <h2 className="font-heading font-extrabold text-2xl sm:text-3xl text-slate-900">
-                  Check Application Status
-                </h2>
-                <p className="text-xs sm:text-sm text-slate-600 mt-1 font-normal">
-                  Enter your application ID to track the status of your application
-                </p>
-              </div>
+      {/* 4. CHECK APPLICATION STATUS BANNER (STEP 5 SPECIFICATION) */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-t border-slate-200/80">
+        <div className="space-y-10">
+          
+          {/* CENTERED SECTION HEADER */}
+          <div className="text-center max-w-2xl mx-auto space-y-2">
+            <span className="inline-block text-xs font-extrabold text-orange-600 uppercase tracking-widest bg-orange-50 border border-orange-200/80 px-3 py-1 rounded-full">
+              APPLICATION STATUS
+            </span>
+            <h2 className="font-heading font-extrabold text-3xl sm:text-4xl text-slate-900 tracking-tight">
+              Track Your Application
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-500 font-normal leading-relaxed">
+              Enter your application details to quickly check the current status of your application.
+            </p>
+          </div>
 
-              <form onSubmit={handleTrackSubmit} className="space-y-3">
+          {/* CENTERED TRACKING CARD */}
+          <div className="max-w-3xl mx-auto bg-white rounded-2xl border border-slate-200/90 p-6 sm:p-10 shadow-sm space-y-6">
+            <form onSubmit={handleTrackSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider block">
+                  Application ID <span className="text-orange-500">*</span>
+                </label>
+
                 <div className="flex flex-col sm:flex-row gap-3">
-                  <input
-                    type="text"
-                    placeholder="Enter Application ID"
-                    value={trackingIdInput}
-                    onChange={(e) => {
-                      setTrackingIdInput(e.target.value);
-                      setTrackValidationError('');
-                    }}
-                    className={`w-full bg-white text-slate-900 placeholder-slate-400 text-xs sm:text-sm rounded-xl px-4 py-3.5 border ${
-                      trackValidationError ? 'border-rose-500 ring-1 ring-rose-500' : 'border-slate-300'
-                    } outline-none focus:border-slate-800 shadow-xs`}
-                  />
+                  <div className="relative flex-1">
+                    <input
+                      type="text"
+                      placeholder="Enter Application ID (e.g. ESV-2026-000001)"
+                      value={trackingIdInput}
+                      onChange={(e) => {
+                        setTrackingIdInput(e.target.value);
+                        setTrackValidationError('');
+                      }}
+                      className={`w-full bg-slate-50 text-slate-900 placeholder-slate-400 text-xs sm:text-sm rounded-xl pl-11 pr-4 py-3.5 border ${
+                        trackValidationError ? 'border-rose-500 ring-1 ring-rose-500 bg-rose-50/20' : 'border-slate-300 focus:border-slate-900 focus:bg-white'
+                      } outline-none transition-all font-mono`}
+                    />
+                    <FileSearch className="w-5 h-5 text-slate-400 absolute left-3.5 top-3.5" />
+                  </div>
+
                   <button
                     type="submit"
-                    className="bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold text-xs sm:text-sm px-8 py-3.5 rounded-xl shadow-md transition-colors shrink-0"
+                    className="bg-[#0b192c] hover:bg-orange-600 text-white font-extrabold text-xs sm:text-sm px-8 py-3.5 rounded-xl shadow-md hover:shadow-lg transition-all shrink-0 flex items-center justify-center gap-2 group"
                   >
-                    Check Status
+                    <span>Check Status</span>
+                    <ArrowRight className="w-4 h-4 text-orange-400 group-hover:translate-x-1 transition-transform" />
                   </button>
                 </div>
-
-                {trackValidationError && (
-                  <p className="text-xs font-bold text-rose-600 flex items-center gap-1">
-                    <AlertCircle className="w-4 h-4" /> {trackValidationError}
-                  </p>
-                )}
-              </form>
-            </div>
-
-            {/* Right Magnifying Glass / Application Status Clipboard Illustration */}
-            <div className="lg:col-span-5 flex justify-center lg:justify-end">
-              <div className="relative w-48 sm:w-56 bg-white p-5 rounded-2xl shadow-md border border-blue-100 text-center space-y-3">
-                <div className="bg-[#0b192c] text-white py-1.5 px-3 rounded-lg text-[11px] font-extrabold tracking-wider uppercase inline-block">
-                  APPLICATION STATUS
-                </div>
-                <div className="space-y-2 text-left text-[10px] text-slate-600">
-                  <div className="h-2 bg-slate-200 rounded w-3/4"></div>
-                  <div className="h-2 bg-slate-200 rounded w-1/2"></div>
-                  <div className="h-2 bg-slate-200 rounded w-5/6"></div>
-                  <div className="h-2 bg-slate-200 rounded w-2/3"></div>
-                </div>
-                <div className="pt-2 border-t border-slate-100 flex justify-center">
-                  <div className="w-12 h-12 rounded-full bg-orange-50 border border-orange-200 flex items-center justify-center text-orange-500 shadow-xs">
-                    <Search className="w-6 h-6" />
-                  </div>
-                </div>
               </div>
-            </div>
 
+              {/* VALIDATION ERROR MESSAGE */}
+              {trackValidationError && (
+                <div className="bg-rose-50 border border-rose-200 text-rose-700 px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                  <span>{trackValidationError}</span>
+                </div>
+              )}
+            </form>
+
+            <div className="pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between text-xs text-slate-500 gap-2">
+              <span className="flex items-center gap-1.5 font-medium">
+                <ShieldCheck className="w-4 h-4 text-emerald-600" /> Instant Real-Time Application Tracking
+              </span>
+              <Link to="/track" className="font-bold text-slate-800 hover:text-orange-600 transition-colors">
+                Advanced Tracking Page →
+              </Link>
+            </div>
           </div>
+
         </div>
       </section>
 
