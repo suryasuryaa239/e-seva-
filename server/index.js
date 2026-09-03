@@ -18,8 +18,10 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const JWT_SECRET = process.env.JWT_SECRET || 'eseva_super_secret_jwt_key_2026';
 
-// Initialize production background maintenance jobs
-initCronJobs();
+// Initialize production background maintenance jobs (disable on Vercel serverless)
+if (!process.env.VERCEL) {
+  initCronJobs();
+}
 
 // Uploads setup
 const uploadsDir = process.env.VERCEL ? path.join('/tmp', 'uploads') : path.join(__dirname, 'uploads');
