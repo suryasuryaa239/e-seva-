@@ -132,34 +132,52 @@ export default function AadhaarServicesCatalog() {
     <div className="min-h-screen bg-slate-50 py-10 px-4 sm:px-6 lg:px-8 font-sans selection:bg-blue-600 selection:text-white">
       <div className="max-w-7xl mx-auto space-y-8">
 
-        {/* Header Hero Banner */}
-        <div className="bg-gradient-to-r from-blue-950 via-blue-900 to-slate-900 rounded-2xl p-8 sm:p-10 text-white shadow-md relative overflow-hidden border border-blue-800 space-y-4">
-          <div className="relative z-10 max-w-3xl space-y-2">
-            <div className="inline-flex items-center space-x-2 px-3 py-1 bg-blue-800/80 text-amber-300 text-xs font-bold rounded-full border border-blue-700/80">
-              <Fingerprint className="w-4 h-4 text-amber-400" />
-              <span>Aadhaar Assistance Hub</span>
+        {/* Header Hero Banner with Stylized Aadhaar Digital Identity Graphic */}
+        <div className="bg-[#0b192c] rounded-3xl p-8 sm:p-12 text-white shadow-xl relative overflow-hidden border border-slate-800 space-y-6">
+          
+          {/* Stylized Aadhaar Digital Identity Vector Pattern Background Overlay */}
+          <div className="absolute inset-0 opacity-15 pointer-events-none flex items-center justify-end overflow-hidden">
+            <svg className="w-full h-full max-w-2xl text-orange-500 opacity-30 transform translate-x-1/4 scale-125" viewBox="0 0 500 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="50" y="40" width="400" height="220" rx="20" fill="currentColor" fillOpacity="0.05" stroke="currentColor" strokeWidth="2" strokeDasharray="8 4" />
+              <circle cx="120" cy="120" r="35" fill="currentColor" fillOpacity="0.1" stroke="currentColor" strokeWidth="2" />
+              <path d="M120 95 C110 95 105 105 105 120 C105 135 120 145 120 145 C120 145 135 135 135 120 C135 105 130 95 120 95 Z" stroke="currentColor" strokeWidth="1.5" />
+              <rect x="180" y="95" width="220" height="12" rx="4" fill="currentColor" fillOpacity="0.3" />
+              <rect x="180" y="120" width="160" height="10" rx="4" fill="currentColor" fillOpacity="0.2" />
+              <rect x="180" y="140" width="190" height="10" rx="4" fill="currentColor" fillOpacity="0.2" />
+              <rect x="75" y="190" width="325" height="40" rx="8" fill="currentColor" fillOpacity="0.08" stroke="currentColor" strokeWidth="1" />
+              <path d="M90 210 H380" stroke="currentColor" strokeWidth="2" strokeDasharray="4 2" />
+            </svg>
+          </div>
+
+          <div className="relative z-10 max-w-3xl space-y-3">
+            <div className="inline-flex items-center space-x-2 px-3.5 py-1 bg-orange-500/10 text-orange-400 text-xs font-extrabold rounded-full border border-orange-500/20">
+              <Fingerprint className="w-4 h-4 text-orange-400" />
+              <span>AADHAAR DIGITAL ASSISTANCE DESK</span>
             </div>
-            <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-white">
+            
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-heading font-extrabold tracking-tight text-white">
               Aadhaar Services Catalog
             </h1>
-            <p className="text-slate-200 text-xs sm:text-sm leading-relaxed font-normal">
-              Digital application assistance for address updates, mobile linking, PVC card orders, mandatory document re-validations, and e-Aadhaar downloads.
+            
+            <p className="text-slate-300 text-xs sm:text-sm leading-relaxed font-normal max-w-2xl">
+              Professional application assistance for address updates, mobile linking, PVC smart card orders, mandatory 10-year document re-validations, and instant e-Aadhaar downloads.
             </p>
           </div>
 
           {/* Search Input Box */}
           <div className="relative z-10 pt-2 max-w-xl">
-            <div className="relative">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+            <div className="relative flex items-center">
+              <Search className="w-4 h-4 text-orange-400 absolute left-4 pointer-events-none" />
               <input
                 type="text"
                 placeholder="Search Aadhaar services (e.g. Address, Mobile, PVC, Name)..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-white/10 border border-white/20 rounded-xl pl-10 pr-4 py-3 text-xs text-white placeholder-slate-300 outline-none focus:border-amber-400 focus:bg-white/20"
+                className="w-full bg-slate-900/80 text-white placeholder-slate-400 text-xs sm:text-sm rounded-2xl pl-11 pr-4 py-3.5 border border-slate-700 focus:border-orange-500 focus:bg-slate-900 outline-none transition-all shadow-xs font-medium"
               />
             </div>
           </div>
+
         </div>
 
         {/* Sub-Services Grid */}
