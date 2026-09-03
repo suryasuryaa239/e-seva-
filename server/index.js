@@ -2038,9 +2038,21 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Standardized 404 Handler
-app.use((req, res, next) => {
-  res.status(404).json({ error: `Route not found: ${req.method} ${req.path}` });
+// Serve Unified Production React Frontend static build files from dist
+const distDir = path.join(__dirname, '../dist');
+if (fs.existsSync(distDir)) {
+  app.use(express.static(distDir));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
+      return next();
+    }
+    res.sendFile(path.join(distDir, 'index.html'));
+  });
+}
+
+// Standardized 404 Handler for API routes
+app.use('/api', (req, res) => {
+  res.status(404).json({ error: `API route not found: ${req.method} ${req.path}` });
 });
 
 // Global Error Handler Middleware
