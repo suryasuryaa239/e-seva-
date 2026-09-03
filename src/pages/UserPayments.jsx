@@ -68,9 +68,9 @@ export default function UserPayments() {
       <Breadcrumbs items={[{ label: 'User Payment Ledger' }]} />
 
       {/* Header Banner */}
-      <div className="bg-slate-900 text-white rounded-3xl p-8 sm:p-10 shadow-xl relative overflow-hidden">
+      <div className="bg-[#0b192c] text-white rounded-3xl p-8 sm:p-10 shadow-xl relative overflow-hidden">
         <div className="relative z-10 space-y-2">
-          <div className="inline-flex items-center space-x-2 px-3 py-1 bg-emerald-950 text-emerald-400 text-xs font-bold rounded-full border border-emerald-800">
+          <div className="inline-flex items-center space-x-2 px-3 py-1 bg-orange-950/80 text-orange-400 text-xs font-bold rounded-full border border-orange-800/80">
             <CreditCard className="w-3.5 h-3.5" />
             <span>Digital Payment Ledger & Receipts</span>
           </div>
@@ -89,10 +89,10 @@ export default function UserPayments() {
       )}
 
       {/* Payments Table / List */}
-      <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden">
         <div className="p-6 border-b border-slate-100 flex items-center justify-between">
           <h2 className="font-bold text-slate-900 text-base flex items-center gap-2">
-            <ShieldCheck className="w-5 h-5 text-indigo-600" />
+            <ShieldCheck className="w-5 h-5 text-orange-500" />
             <span>Payment Audit Trail</span>
           </h2>
           <span className="text-xs font-mono text-slate-500 font-semibold">Total Records: {payments.length}</span>
@@ -100,7 +100,7 @@ export default function UserPayments() {
 
         {loading ? (
           <div className="p-12 text-center text-slate-500 space-y-3">
-            <RefreshCw className="w-6 h-6 animate-spin mx-auto text-indigo-600" />
+            <RefreshCw className="w-6 h-6 animate-spin mx-auto text-orange-500" />
             <p className="text-xs font-medium">Loading transaction ledger...</p>
           </div>
         ) : payments.length === 0 ? (
@@ -110,7 +110,7 @@ export default function UserPayments() {
             <p className="text-xs text-slate-400">Your service payment receipts will appear here once you submit an application.</p>
             <Link
               to="/services"
-              className="inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-600 text-white rounded-xl font-bold text-xs shadow hover:bg-indigo-700 transition-colors"
+              className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-orange-500 text-white rounded-xl font-extrabold text-xs shadow hover:bg-orange-600 transition-colors"
             >
               Browse Services <ArrowRight className="w-3.5 h-3.5" />
             </Link>
@@ -133,7 +133,6 @@ export default function UserPayments() {
                 {payments.map((p) => {
                   const isPaid = p.payment_status === 'PAID';
                   const isPending = p.payment_status === 'PENDING';
-                  const isFailed = p.payment_status === 'FAILED';
 
                   return (
                     <tr key={p.id} className="hover:bg-slate-50/80 transition-colors">
@@ -141,7 +140,7 @@ export default function UserPayments() {
                         <div>{p.receipt_number}</div>
                         <div className="text-[10px] text-slate-400 font-normal">{p.payment_transaction_id}</div>
                       </td>
-                      <td className="py-4 px-6 font-mono text-indigo-600 font-bold">
+                      <td className="py-4 px-6 font-mono text-orange-600 font-bold">
                         <Link to={`/my-applications/${p.application_id}`} className="hover:underline">
                           {p.application_number}
                         </Link>
@@ -167,7 +166,7 @@ export default function UserPayments() {
                         {isPaid ? (
                           <Link
                             to={`/my-applications/${p.application_id}`}
-                            className="inline-flex items-center gap-1 px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-xs font-bold transition-colors"
+                            className="inline-flex items-center gap-1 px-3 py-1.5 bg-orange-50 hover:bg-orange-100 text-orange-700 rounded-lg text-xs font-bold transition-colors border border-orange-200/80"
                           >
                             <FileText className="w-3.5 h-3.5" /> View Receipt
                           </Link>
@@ -175,7 +174,7 @@ export default function UserPayments() {
                           <button
                             onClick={() => handleRetryPayment(p.application_id)}
                             disabled={retryingId === p.application_id}
-                            className="inline-flex items-center gap-1 px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-xs font-bold transition-colors shadow"
+                            className="inline-flex items-center gap-1 px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-white rounded-lg text-xs font-bold transition-colors shadow"
                           >
                             <RefreshCw className={`w-3.5 h-3.5 ${retryingId === p.application_id ? 'animate-spin' : ''}`} />
                             Retry Payment
@@ -193,7 +192,7 @@ export default function UserPayments() {
 
       {/* Facilitation Disclaimer */}
       <div className="p-4 bg-slate-100 rounded-2xl border border-slate-200 text-xs text-slate-500 flex items-start gap-2">
-        <ShieldCheck className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
+        <ShieldCheck className="w-4 h-4 text-orange-600 shrink-0 mt-0.5" />
         <p>
           <span className="font-bold text-slate-700">Notice:</span> Service charges displayed on this portal are facilitation/service charges. Official government fees, where applicable, may be separate.
         </p>

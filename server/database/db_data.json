@@ -1965,6 +1965,20 @@
       "submitted_at": "2026-09-03T10:00:54.672Z",
       "admin_remarks": "Application submitted successfully. Under verification by E-Seva team.",
       "total_fee": 50
+    },
+    {
+      "id": 11,
+      "created_at": "2026-09-03T19:54:31.280Z",
+      "application_number": "ESV-2026-DRAFT-000001",
+      "user_id": 1,
+      "service_id": 1,
+      "user_name": "Karthik Subramanian",
+      "user_email": "user@eseva.gov.in",
+      "user_phone": "9876543210",
+      "status": "DRAFT",
+      "current_step": "2",
+      "admin_remarks": "Application saved as draft.",
+      "total_fee": 50
     }
   ],
   "application_field_values": [
@@ -2215,6 +2229,142 @@
       "field_id": 18,
       "field_label": "Correct Date of Birth",
       "value": "2006-01-05"
+    },
+    {
+      "id": 32,
+      "created_at": "2026-09-03T19:54:31.284Z",
+      "application_id": 11,
+      "field_id": null,
+      "field_label": "user_name",
+      "value": "Karthik Subramanian"
+    },
+    {
+      "id": 33,
+      "created_at": "2026-09-03T19:54:31.286Z",
+      "application_id": 11,
+      "field_id": null,
+      "field_label": "dob",
+      "value": ""
+    },
+    {
+      "id": 34,
+      "created_at": "2026-09-03T19:54:31.288Z",
+      "application_id": 11,
+      "field_id": null,
+      "field_label": "gender",
+      "value": "Male"
+    },
+    {
+      "id": 35,
+      "created_at": "2026-09-03T19:54:31.290Z",
+      "application_id": 11,
+      "field_id": null,
+      "field_label": "user_phone",
+      "value": "9876543210"
+    },
+    {
+      "id": 36,
+      "created_at": "2026-09-03T19:54:31.292Z",
+      "application_id": 11,
+      "field_id": null,
+      "field_label": "user_email",
+      "value": "user@eseva.gov.in"
+    },
+    {
+      "id": 37,
+      "created_at": "2026-09-03T19:54:31.295Z",
+      "application_id": 11,
+      "field_id": null,
+      "field_label": "address",
+      "value": ""
+    },
+    {
+      "id": 38,
+      "created_at": "2026-09-03T19:54:31.299Z",
+      "application_id": 11,
+      "field_id": 9,
+      "field_label": "District",
+      "value": "Chennai"
+    },
+    {
+      "id": 39,
+      "created_at": "2026-09-03T19:54:31.303Z",
+      "application_id": 11,
+      "field_id": 10,
+      "field_label": "State",
+      "value": "Tamil Nadu"
+    },
+    {
+      "id": 40,
+      "created_at": "2026-09-03T19:54:31.307Z",
+      "application_id": 11,
+      "field_id": 8,
+      "field_label": "6-Digit PIN Code",
+      "value": "600017"
+    },
+    {
+      "id": 41,
+      "created_at": "2026-09-03T19:54:31.312Z",
+      "application_id": 11,
+      "field_id": 1,
+      "field_label": "12-Digit Aadhaar Number",
+      "value": "123456789012"
+    },
+    {
+      "id": 42,
+      "created_at": "2026-09-03T19:54:31.314Z",
+      "application_id": 11,
+      "field_id": 2,
+      "field_label": "Full Name (as in Aadhaar)",
+      "value": "Karthik Subramanian"
+    },
+    {
+      "id": 43,
+      "created_at": "2026-09-03T19:54:31.316Z",
+      "application_id": 11,
+      "field_id": 3,
+      "field_label": "C/O (Father / Husband / Guardian Name)",
+      "value": "Subramanian"
+    },
+    {
+      "id": 44,
+      "created_at": "2026-09-03T19:54:31.320Z",
+      "application_id": 11,
+      "field_id": 4,
+      "field_label": "House / Building / Apartment No.",
+      "value": "Flat 101, block A"
+    },
+    {
+      "id": 45,
+      "created_at": "2026-09-03T19:54:31.331Z",
+      "application_id": 11,
+      "field_id": 5,
+      "field_label": "Street / Road / Lane Name",
+      "value": "Anna Salai"
+    },
+    {
+      "id": 46,
+      "created_at": "2026-09-03T19:54:31.336Z",
+      "application_id": 11,
+      "field_id": 6,
+      "field_label": "Landmark",
+      "value": "Near Metro"
+    },
+    {
+      "id": 47,
+      "created_at": "2026-09-03T19:54:31.346Z",
+      "application_id": 11,
+      "field_id": 7,
+      "field_label": "Area / Locality / Sector",
+      "value": "T Nagar"
+    },
+    {
+      "id": 48,
+      "created_at": "2026-09-03T19:54:31.355Z",
+      "application_id": 11,
+      "field_id": 11,
+      "field_label": "Reason for Address Change",
+      "value": "Relocation"
     }
   ],
   "application_documents": [

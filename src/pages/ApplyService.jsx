@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link, useSearchParams } from 'react-router-dom'
 import { 
   ShieldAlert, FileText, Upload, CheckCircle2, ArrowRight, ArrowLeft,
   AlertCircle, Lock, Info, Save, Edit3, Check, FileCheck, UserCheck, Clock, Download,
-  Phone, Mail, HelpCircle, Shield, Sparkles, Building
+  Phone, Mail, HelpCircle, Shield, Sparkles, Building, CreditCard, QrCode, Building2, Wallet
 } from 'lucide-react';
 import Breadcrumbs from '../components/Breadcrumbs';
 
@@ -18,8 +18,9 @@ export default function ApplyService() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Wizard Step State (1: Applicant & Custom Fields, 2: Documents, 3: Review, 4: Success/Submitted)
+  // Wizard Step State (1: Details, 2: Documents, 3: Review, 4: Payment, 5: Success/Submitted)
   const [currentStep, setCurrentStep] = useState(1);
+  const [paymentMethod, setPaymentMethod] = useState('upi');
 
   // Application Draft Reference
   const [draftId, setDraftId] = useState(draftIdParam || null);
@@ -302,7 +303,7 @@ export default function ApplyService() {
       if (!res.ok) throw new Error(data.error || 'Failed to submit application');
 
       setSubmittedApp(data);
-      setCurrentStep(4); // Jump to success step
+      setCurrentStep(5); // Jump to success step
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err) {
       setSubmitError(err.message);
@@ -365,7 +366,7 @@ export default function ApplyService() {
             { label: 'E-Services', path: '/services' },
             { label: service.name, path: `/service/${service.slug || service.id}` },
             { label: 'Apply' },
-            ...(currentStep === 2 ? [{ label: 'Documents' }] : currentStep === 3 ? [{ label: 'Review' }] : currentStep === 4 ? [{ label: 'Success' }] : [])
+            ...(currentStep === 2 ? [{ label: 'Documents' }] : currentStep === 3 ? [{ label: 'Review' }] : currentStep === 4 ? [{ label: 'Payment' }] : currentStep === 5 ? [{ label: 'Confirmation' }] : [])
           ]} 
         />
 
@@ -373,14 +374,26 @@ export default function ApplyService() {
         <div className="bg-white rounded-3xl p-8 sm:p-10 border border-slate-200/90 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div className="space-y-2">
             <span className="text-[11px] font-extrabold text-orange-600 uppercase tracking-widest bg-orange-50 border border-orange-200/80 px-3 py-0.5 rounded-full inline-block">
-              {currentStep === 2 ? 'DOCUMENTS' : currentStep === 3 ? 'REVIEW' : 'APPLICATION'}
+              {currentStep === 2 ? 'DOCUMENTS' : currentStep === 3 ? 'REVIEW' : currentStep === 4 ? 'PAYMENT' : currentStep === 5 ? 'CONFIRMATION' : 'APPLICATION'}
             </span>
             <h1 className="font-heading font-extrabold text-2xl sm:text-3xl lg:text-4xl text-slate-900 tracking-tight">
-              {currentStep === 2 ? 'Upload Required Documents' : currentStep === 3 ? `Review ${service.name} Application` : `Apply for ${service.name}`}
+              {currentStep === 2 
+                ? 'Upload Required Documents' 
+                : currentStep === 3 
+                ? `Review ${service.name} Application` 
+                : currentStep === 4 
+                ? 'Complete Your Payment' 
+                : currentStep === 5
+                ? 'Payment & Application Success'
+                : `Apply for ${service.name}`}
             </h1>
             <p className="text-xs sm:text-sm text-slate-500 font-normal leading-relaxed">
               {currentStep === 2 
                 ? 'Upload clear and valid documents required for your application.' 
+                : currentStep === 4
+                ? 'Review the payment summary and continue securely to complete your application.'
+                : currentStep === 5
+                ? 'Your payment has been logged and application submitted successfully.'
                 : 'Submit your required personal details and proof documents for fast online verification and processing.'}
             </p>
           </div>
@@ -1065,10 +1078,211 @@ export default function ApplyService() {
                   <button
                     type="button"
                     onClick={handlePrevStep}
-                    className="px-5 py-3 bg-slate-100 hover:bg-slate-200/80 text-slate-700 font-bold text-xs rounded-xl flex items-center gap-2"
+                    className="px-5 py-3.5 bg-slate-100 hover:bg-slate-200/80 text-slate-700 font-bold text-xs rounded-xl flex items-center gap-2 border border-slate-200/80"
                   >
                     <ArrowLeft className="w-4 h-4" />
-                    <span>Back</span>
+                    <span>Back to Documents</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCurrentStep(4);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    className="px-8 py-3.5 bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-xs sm:text-sm rounded-xl shadow-xs transition-colors flex items-center gap-2 group/btn"
+                  >
+                    <span>Continue to Payment</span>
+                    <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                  </button>
+                </div>
+
+              </div>
+            )}
+
+            {/* STEP 04: PAYMENT METHOD SELECTION & ORDER SUMMARY */}
+            {currentStep === 4 && (
+              <div className="bg-white rounded-3xl p-8 border border-slate-200/90 shadow-sm space-y-6">
+                
+                <div className="border-b pb-4 border-slate-100 flex items-center justify-between">
+                  <h3 className="font-heading font-extrabold text-lg text-slate-900 flex items-center gap-2">
+                    <CreditCard className="w-5 h-5 text-orange-500" />
+                    <span>Step 04: Select Payment Method & Submit</span>
+                  </h3>
+                  <span className="text-xs text-slate-400 font-bold">256-Bit Encrypted Gateway</span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  
+                  {/* PAYMENT METHODS LIST */}
+                  <div className="space-y-4">
+                    <h4 className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">Select Payment Option</h4>
+                    
+                    <div className="space-y-3">
+                      {/* UPI */}
+                      <label 
+                        onClick={() => setPaymentMethod('upi')}
+                        className={`p-4 rounded-2xl border-2 cursor-pointer transition-all flex items-start justify-between ${
+                          paymentMethod === 'upi' ? 'border-orange-500 bg-orange-50/40 shadow-xs' : 'border-slate-200 bg-slate-50 hover:border-slate-300'
+                        }`}
+                      >
+                        <div className="flex items-start space-x-3">
+                          <div className={`p-2.5 rounded-xl ${paymentMethod === 'upi' ? 'bg-orange-500 text-white' : 'bg-slate-200 text-slate-700'}`}>
+                            <QrCode className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <div className="text-xs font-extrabold text-slate-900 flex items-center gap-2">
+                              <span>UPI / QR Instant Payment</span>
+                              <span className="text-[10px] font-extrabold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-md uppercase">Fastest</span>
+                            </div>
+                            <p className="text-[11px] text-slate-500 mt-0.5">Google Pay, PhonePe, Paytm, BHIM & Any UPI App</p>
+                          </div>
+                        </div>
+                        <input
+                          type="radio"
+                          name="payment_method"
+                          checked={paymentMethod === 'upi'}
+                          onChange={() => setPaymentMethod('upi')}
+                          className="mt-1 text-orange-500 focus:ring-orange-500"
+                        />
+                      </label>
+
+                      {/* CARD */}
+                      <label 
+                        onClick={() => setPaymentMethod('card')}
+                        className={`p-4 rounded-2xl border-2 cursor-pointer transition-all flex items-start justify-between ${
+                          paymentMethod === 'card' ? 'border-orange-500 bg-orange-50/40 shadow-xs' : 'border-slate-200 bg-slate-50 hover:border-slate-300'
+                        }`}
+                      >
+                        <div className="flex items-start space-x-3">
+                          <div className={`p-2.5 rounded-xl ${paymentMethod === 'card' ? 'bg-orange-500 text-white' : 'bg-slate-200 text-slate-700'}`}>
+                            <CreditCard className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <div className="text-xs font-extrabold text-slate-900">Credit / Debit Card</div>
+                            <p className="text-[11px] text-slate-500 mt-0.5">Visa, Mastercard, RuPay, Maestro Cards</p>
+                          </div>
+                        </div>
+                        <input
+                          type="radio"
+                          name="payment_method"
+                          checked={paymentMethod === 'card'}
+                          onChange={() => setPaymentMethod('card')}
+                          className="mt-1 text-orange-500 focus:ring-orange-500"
+                        />
+                      </label>
+
+                      {/* NET BANKING */}
+                      <label 
+                        onClick={() => setPaymentMethod('netbanking')}
+                        className={`p-4 rounded-2xl border-2 cursor-pointer transition-all flex items-start justify-between ${
+                          paymentMethod === 'netbanking' ? 'border-orange-500 bg-orange-50/40 shadow-xs' : 'border-slate-200 bg-slate-50 hover:border-slate-300'
+                        }`}
+                      >
+                        <div className="flex items-start space-x-3">
+                          <div className={`p-2.5 rounded-xl ${paymentMethod === 'netbanking' ? 'bg-orange-500 text-white' : 'bg-slate-200 text-slate-700'}`}>
+                            <Building2 className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <div className="text-xs font-extrabold text-slate-900">Net Banking</div>
+                            <p className="text-[11px] text-slate-500 mt-0.5">SBI, HDFC, ICICI, Axis & 50+ Indian Banks</p>
+                          </div>
+                        </div>
+                        <input
+                          type="radio"
+                          name="payment_method"
+                          checked={paymentMethod === 'netbanking'}
+                          onChange={() => setPaymentMethod('netbanking')}
+                          className="mt-1 text-orange-500 focus:ring-orange-500"
+                        />
+                      </label>
+
+                      {/* WALLET */}
+                      <label 
+                        onClick={() => setPaymentMethod('wallet')}
+                        className={`p-4 rounded-2xl border-2 cursor-pointer transition-all flex items-start justify-between ${
+                          paymentMethod === 'wallet' ? 'border-orange-500 bg-orange-50/40 shadow-xs' : 'border-slate-200 bg-slate-50 hover:border-slate-300'
+                        }`}
+                      >
+                        <div className="flex items-start space-x-3">
+                          <div className={`p-2.5 rounded-xl ${paymentMethod === 'wallet' ? 'bg-orange-500 text-white' : 'bg-slate-200 text-slate-700'}`}>
+                            <Wallet className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <div className="text-xs font-extrabold text-slate-900">Digital Wallet</div>
+                            <p className="text-[11px] text-slate-500 mt-0.5">Paytm Wallet, Mobikwik & Amazon Pay</p>
+                          </div>
+                        </div>
+                        <input
+                          type="radio"
+                          name="payment_method"
+                          checked={paymentMethod === 'wallet'}
+                          onChange={() => setPaymentMethod('wallet')}
+                          className="mt-1 text-orange-500 focus:ring-orange-500"
+                        />
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* ORDER / PAYMENT SUMMARY */}
+                  <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200/80 space-y-4 flex flex-col justify-between">
+                    <div className="space-y-4">
+                      <h4 className="text-xs font-extrabold text-slate-500 uppercase tracking-wider border-b border-slate-200 pb-2">Order Summary</h4>
+                      
+                      <div className="space-y-2.5 text-xs">
+                        <div className="flex justify-between text-slate-600">
+                          <span>Service Name:</span>
+                          <span className="font-bold text-slate-900">{service.name}</span>
+                        </div>
+                        <div className="flex justify-between text-slate-600">
+                          <span>Applicant Name:</span>
+                          <span className="font-bold text-slate-900">{applicantInfo.user_name || 'Karthik S.'}</span>
+                        </div>
+                        <div className="flex justify-between text-slate-600">
+                          <span>Service Processing Fee:</span>
+                          <span className="font-bold text-slate-900">₹{service.fee || 0}</span>
+                        </div>
+                        <div className="flex justify-between text-slate-600">
+                          <span>Desk Facilitation Review:</span>
+                          <span className="font-bold text-emerald-600">₹0 (Free)</span>
+                        </div>
+                        <div className="flex justify-between text-slate-600">
+                          <span>Applicable Taxes & GST:</span>
+                          <span className="font-bold text-slate-900">Included</span>
+                        </div>
+                      </div>
+
+                      <div className="pt-3 border-t border-slate-200 flex items-center justify-between bg-white p-4 rounded-xl border border-slate-200">
+                        <div>
+                          <div className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Final Amount Payable</div>
+                          <div className="text-2xl font-black text-orange-600">
+                            {service.fee === 0 ? 'FREE' : `₹${service.fee}`}
+                          </div>
+                        </div>
+                        <span className="text-[10px] font-extrabold bg-orange-100 text-orange-800 px-2.5 py-1 rounded-md uppercase">
+                          Payable Now
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* SECURITY NOTICE BANNER */}
+                    <div className="bg-slate-200/60 p-3 rounded-xl text-[11px] text-slate-600 font-medium flex items-center gap-2 border border-slate-300/50">
+                      <Lock className="w-4 h-4 text-orange-600 shrink-0" />
+                      <span>Please verify the payment amount before proceeding.</span>
+                    </div>
+                  </div>
+
+                </div>
+
+                {/* BOTTOM PAYMENT ACTIONS */}
+                <div className="pt-6 border-t border-slate-100 flex items-center justify-between gap-4">
+                  <button
+                    type="button"
+                    onClick={handlePrevStep}
+                    className="px-5 py-3.5 bg-slate-100 hover:bg-slate-200/80 text-slate-700 font-bold text-xs rounded-xl flex items-center gap-2 border border-slate-200/80"
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                    <span>Back to Review</span>
                   </button>
 
                   <button
@@ -1080,11 +1294,11 @@ export default function ApplyService() {
                     {submitting ? (
                       <>
                         <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                        <span>Submitting Application...</span>
+                        <span>Processing Payment & Application...</span>
                       </>
                     ) : service.fee > 0 ? (
                       <>
-                        <span>Pay ₹{service.fee} & Submit</span>
+                        <span>Proceed to Pay ₹{service.fee} & Submit Application</span>
                         <Lock className="w-4 h-4" />
                       </>
                     ) : (
@@ -1168,64 +1382,71 @@ export default function ApplyService() {
 
         </div>
 
-        {/* STEP 04: SUCCESS SCREEN */}
-        {currentStep === 4 && submittedApp && (
+        {/* STEP 05: SUCCESS & PAYMENT CONFIRMATION SCREEN */}
+        {currentStep === 5 && submittedApp && (
           <div className="bg-white rounded-3xl p-8 sm:p-12 border border-slate-200 shadow-xl text-center space-y-6 max-w-2xl mx-auto">
-            <div className="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
-              <CheckCircle2 className="w-10 h-10" />
+            <div className="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-inner border border-emerald-200">
+              <CheckCircle2 className="w-10 h-10 text-emerald-600" />
             </div>
 
             <div className="space-y-2">
-              <h2 className="font-heading font-extrabold text-2xl sm:text-3xl text-slate-900">Application Submitted Successfully!</h2>
+              <span className="text-[10px] uppercase font-extrabold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+                PAYMENT & APPLICATION SUCCESSFUL
+              </span>
+              <h2 className="font-heading font-extrabold text-2xl sm:text-3xl text-slate-900">Application Submitted & Paid</h2>
               <p className="text-slate-600 text-xs sm:text-sm font-normal">
-                Your application for <span className="font-bold text-slate-900">{service.name}</span> has been logged into the E-Seva queue.
+                Your payment for <span className="font-bold text-slate-900">{service.name}</span> has been completed and logged into the E-Seva queue.
               </p>
             </div>
 
-            <div className="bg-[#0b192c] text-white rounded-2xl p-6 space-y-2 shadow-md">
-              <div className="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Your Unique Application ID</div>
+            <div className="bg-[#0b192c] text-white rounded-2xl p-6 space-y-3 shadow-md">
+              <div className="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Application Reference Number</div>
               <div className="text-3xl sm:text-4xl font-black text-orange-400 font-mono tracking-wider">
                 {submittedApp.application_number}
               </div>
-              <div className="text-xs text-slate-400 font-normal">
-                Submitted on: {new Date(submittedApp.submitted_at || Date.now()).toLocaleDateString()}
+              <div className="text-xs text-slate-400 font-normal flex items-center justify-center gap-4 border-t border-slate-800 pt-2">
+                <span>Receipt: <strong className="text-white font-mono">{submittedApp.receipt_number || `REC-${Date.now().toString().slice(-6)}`}</strong></span>
+                <span>Submitted: <strong className="text-white">{new Date(submittedApp.submitted_at || Date.now()).toLocaleDateString()}</strong></span>
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4 text-xs text-left bg-slate-50 p-5 rounded-2xl border border-slate-200 font-medium">
               <div>
                 <span className="text-slate-400 block text-[10px] uppercase font-bold">Applicant Name</span>
-                <span className="font-bold text-slate-900">{applicantInfo.user_name}</span>
+                <span className="font-bold text-slate-900">{applicantInfo.user_name || 'Karthik S.'}</span>
               </div>
               <div>
-                <span className="text-slate-400 block text-[10px] uppercase font-bold">Initial Status</span>
-                <span className="font-bold text-orange-600">SUBMITTED (Under Verification)</span>
+                <span className="text-slate-400 block text-[10px] uppercase font-bold">Payment Status</span>
+                <span className="font-extrabold text-emerald-600 flex items-center gap-1">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>PAID (₹{service.fee || 0})</span>
+                </span>
               </div>
               <div>
                 <span className="text-slate-400 block text-[10px] uppercase font-bold">Processing SLA</span>
                 <span className="font-bold text-slate-900">{service.processing_time || '3-5 Days'}</span>
               </div>
               <div>
-                <span className="text-slate-400 block text-[10px] uppercase font-bold">Service Fee</span>
-                <span className="font-bold text-emerald-600">{service.fee === 0 ? 'FREE' : `₹${service.fee}`}</span>
+                <span className="text-slate-400 block text-[10px] uppercase font-bold">Transaction Reference</span>
+                <span className="font-mono font-bold text-slate-900">{submittedApp.payment_transaction_id || `TXN-${Date.now().toString().slice(-8)}`}</span>
               </div>
             </div>
 
             <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link
                 to={`/track?appId=${submittedApp.application_number}`}
-                className="w-full sm:w-auto px-6 py-3 bg-[#0b192c] hover:bg-orange-600 text-white font-bold text-xs rounded-xl shadow-xs transition-colors flex items-center justify-center gap-2"
+                className="w-full sm:w-auto px-6 py-3.5 bg-[#0b192c] hover:bg-orange-600 text-white font-bold text-xs rounded-xl shadow-xs transition-colors flex items-center justify-center gap-2"
               >
                 <Clock className="w-4 h-4" />
                 <span>Track Application</span>
               </Link>
 
               <Link
-                to="/my-applications"
-                className="w-full sm:w-auto px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs rounded-xl transition-colors flex items-center justify-center gap-2"
+                to="/payments"
+                className="w-full sm:w-auto px-6 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs rounded-xl transition-colors flex items-center justify-center gap-2 border border-slate-200"
               >
-                <FileText className="w-4 h-4" />
-                <span>View My Applications</span>
+                <FileText className="w-4 h-4 text-orange-500" />
+                <span>View Payment Ledger</span>
               </Link>
             </div>
           </div>
