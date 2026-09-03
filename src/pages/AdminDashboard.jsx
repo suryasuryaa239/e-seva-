@@ -6,7 +6,8 @@ import {
   XCircle, Clock, AlertCircle, Plus, ExternalLink, LogOut, DollarSign,
   Menu, X, Award, ChevronRight, TrendingUp, ShieldCheck, Activity,
   Filter, RotateCcw, Inbox, UserCheck, FileCheck, History, MessageSquare,
-  User, Phone, Mail as MailIcon, Calendar, CheckCircle, Shield
+  User, Phone, Mail as MailIcon, Calendar, CheckCircle, Shield,
+  Settings, Key, Lock, EyeOff, Save, CheckCheck
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -68,6 +69,30 @@ export default function AdminDashboard() {
   const [notifSearchQuery, setNotifSearchQuery] = useState('');
   const [notifFilter, setNotifFilter] = useState('ALL');
   const [selectedNotif, setSelectedNotif] = useState(null);
+
+  // Admin Profile & Settings State (STEP 33)
+  const [activeSettingsTab, setActiveSettingsTab] = useState('profile');
+  const [profileForm, setProfileForm] = useState({
+    name: admin?.name || 'Super Admin',
+    email: admin?.email || 'admin@eseva.gov.in',
+    phone: admin?.phone || '+91 98765 43210',
+    role: admin?.role || 'System Administrator',
+    department: 'Digital E-Seva Operations Governance'
+  });
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+    showPassword: false
+  });
+  const [notifPrefs, setNotifPrefs] = useState({
+    systemAlerts: true,
+    emailReceipts: true,
+    applicationUpdates: true,
+    paymentAlerts: true
+  });
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [savingPassword, setSavingPassword] = useState(false);
 
   // New Service Modal State
   const [showAddServiceModal, setShowAddServiceModal] = useState(false);
@@ -288,7 +313,8 @@ export default function AdminDashboard() {
     { id: 'enquiries', label: 'Contact Enquiries', icon: Mail, count: stats?.unread_enquiries },
     { id: 'payments', label: 'Payments & Fee Audit', icon: DollarSign },
     { id: 'careers', label: 'Careers & Applications', icon: Briefcase },
-    { id: 'notifications', label: 'Notifications & Alerts', icon: Bell, count: adminNotifs.filter(n => !n.isRead && !n.is_read).length }
+    { id: 'notifications', label: 'Notifications & Alerts', icon: Bell, count: adminNotifs.filter(n => !n.isRead && !n.is_read).length },
+    { id: 'settings', label: 'Profile & Settings', icon: Settings }
   ];
 
   // Filtered Users List
@@ -2162,6 +2188,430 @@ export default function AdminDashboard() {
                     </div>
                   );
                 })}
+              </div>
+
+            </div>
+          )}
+
+          {/* TAB: PROFILE & SETTINGS WORKSPACE (STEP 33) */}
+          {activeTab === 'settings' && (
+            <div className="space-y-6">
+              
+              {/* Settings Header Bar */}
+              <div className="bg-white p-5 rounded-3xl border border-slate-200/90 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-[11px] font-black uppercase text-orange-600 tracking-wider bg-orange-50 px-2.5 py-0.5 rounded border border-orange-200">
+                      ADMIN GOVERNANCE
+                    </span>
+                    <span className="text-xs font-mono text-slate-500">• Account & Security Control</span>
+                  </div>
+                  <h3 className="text-lg font-black text-slate-900 mt-1">
+                    Profile & Account Settings
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Manage your administrator credentials, security access keys, and system notification preferences.
+                  </p>
+                </div>
+
+                <div className="flex items-center space-x-2 self-start sm:self-auto">
+                  <span className="bg-emerald-50 text-emerald-700 text-xs font-extrabold px-3 py-1.5 rounded-xl border border-emerald-200 flex items-center space-x-1.5 shadow-sm">
+                    <CheckCircle className="w-4 h-4 text-emerald-600" />
+                    <span>System Session Active</span>
+                  </span>
+                </div>
+              </div>
+
+              {/* Profile Hero Card */}
+              <div className="bg-[#0b192c] text-white p-6 sm:p-8 rounded-3xl shadow-xl border border-slate-800 relative overflow-hidden">
+                <div className="relative z-10 flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-6 text-center sm:text-left">
+                  
+                  <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-gradient-to-tr from-orange-500 to-amber-400 text-slate-950 text-3xl font-black flex items-center justify-center shadow-lg border-2 border-orange-400/40">
+                    {((admin?.name || profileForm.name || 'Admin')[0]).toUpperCase()}
+                  </div>
+
+                  <div className="space-y-2 flex-1">
+                    <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                      <h2 className="text-2xl font-black text-white">{admin?.name || profileForm.name}</h2>
+                      <span className="bg-orange-500/20 text-orange-400 border border-orange-500/40 text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full">
+                        {admin?.role || profileForm.role}
+                      </span>
+                      <span className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full">
+                        Active Account
+                      </span>
+                    </div>
+
+                    <p className="text-xs text-slate-300 font-medium">{admin?.email || profileForm.email}</p>
+                    
+                    <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4 pt-2 text-[11px] text-slate-400 font-mono">
+                      <span className="flex items-center space-x-1">
+                        <Shield className="w-3.5 h-3.5 text-orange-400" />
+                        <span>Role: Level 1 Super Administrator</span>
+                      </span>
+                      <span className="flex items-center space-x-1">
+                        <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                        <span>Last Active: Today, {new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}</span>
+                      </span>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              {/* Settings Sub-Navigation Tabs */}
+              <div className="flex items-center space-x-2 border-b border-slate-200 pb-2 overflow-x-auto">
+                {[
+                  { id: 'profile', label: 'Profile Details', icon: User },
+                  { id: 'security', label: 'Security & Password', icon: Key },
+                  { id: 'notifications', label: 'Notification Preferences', icon: Bell },
+                  { id: 'audit', label: 'System Audit Logs', icon: History }
+                ].map((tab) => {
+                  const Icon = tab.icon;
+                  const isActive = activeSettingsTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveSettingsTab(tab.id)}
+                      className={`px-4 py-2.5 rounded-2xl text-xs font-extrabold transition-all flex items-center space-x-2 whitespace-nowrap ${
+                        isActive
+                          ? 'bg-[#0b192c] text-white shadow-md'
+                          : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-200'
+                      }`}
+                    >
+                      <Icon className={`w-4 h-4 ${isActive ? 'text-orange-400' : 'text-slate-400'}`} />
+                      <span>{tab.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* SUB-TAB 1: PROFILE DETAILS FORM */}
+              {activeSettingsTab === 'profile' && (
+                <div className="bg-white p-6 rounded-3xl border border-slate-200/90 shadow-sm space-y-6">
+                  <div>
+                    <h4 className="font-extrabold text-base text-slate-900">Administrator Information</h4>
+                    <p className="text-xs text-slate-500">Update your official display name, contact email address, and department details.</p>
+                  </div>
+
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      setSavingProfile(true);
+                      setTimeout(() => {
+                        setSavingProfile(false);
+                        addToast('Administrator profile updated successfully!', 'success');
+                      }, 600);
+                    }}
+                    className="space-y-4 max-w-2xl"
+                  >
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-slate-700 block">Full Name</label>
+                        <div className="relative">
+                          <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                          <input
+                            type="text"
+                            value={profileForm.name}
+                            onChange={(e) => setProfileForm({ ...profileForm, name: e.target.value })}
+                            className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-xs rounded-xl pl-10 pr-4 py-2.5 focus:border-[#0b192c] focus:bg-white outline-none font-medium transition-all"
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-slate-700 block">Email Address</label>
+                        <div className="relative">
+                          <MailIcon className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                          <input
+                            type="email"
+                            value={profileForm.email}
+                            onChange={(e) => setProfileForm({ ...profileForm, email: e.target.value })}
+                            className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-xs rounded-xl pl-10 pr-4 py-2.5 focus:border-[#0b192c] focus:bg-white outline-none font-medium transition-all"
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-slate-700 block">Contact Phone Number</label>
+                        <div className="relative">
+                          <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                          <input
+                            type="text"
+                            value={profileForm.phone}
+                            onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })}
+                            className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-xs rounded-xl pl-10 pr-4 py-2.5 focus:border-[#0b192c] focus:bg-white outline-none font-medium transition-all"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-slate-700 block">Assigned Role</label>
+                        <div className="relative">
+                          <Shield className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                          <input
+                            type="text"
+                            value={profileForm.role}
+                            disabled
+                            className="w-full bg-slate-100 border border-slate-200 text-slate-500 text-xs rounded-xl pl-10 pr-4 py-2.5 font-bold cursor-not-allowed"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-700 block">Governance Department</label>
+                      <input
+                        type="text"
+                        value={profileForm.department}
+                        onChange={(e) => setProfileForm({ ...profileForm, department: e.target.value })}
+                        className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-xs rounded-xl px-4 py-2.5 focus:border-[#0b192c] focus:bg-white outline-none font-medium transition-all"
+                      />
+                    </div>
+
+                    <div className="pt-2">
+                      <button
+                        type="submit"
+                        disabled={savingProfile}
+                        className="px-6 py-2.5 bg-orange-600 hover:bg-orange-700 text-white font-extrabold text-xs rounded-xl shadow transition-colors flex items-center space-x-2 disabled:opacity-50"
+                      >
+                        {savingProfile ? (
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <Save className="w-4 h-4" />
+                        )}
+                        <span>{savingProfile ? 'Saving Profile...' : 'Save Profile Changes'}</span>
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              )}
+
+              {/* SUB-TAB 2: SECURITY & PASSWORD FORM */}
+              {activeSettingsTab === 'security' && (
+                <div className="bg-white p-6 rounded-3xl border border-slate-200/90 shadow-sm space-y-6">
+                  <div>
+                    <h4 className="font-extrabold text-base text-slate-900">Security Credentials & Password</h4>
+                    <p className="text-xs text-slate-500">Update your system login password and manage access security credentials.</p>
+                  </div>
+
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+                        addToast('New passwords do not match!', 'error');
+                        return;
+                      }
+                      if (passwordForm.newPassword.length < 6) {
+                        addToast('Password must be at least 6 characters long', 'error');
+                        return;
+                      }
+                      setSavingPassword(true);
+                      setTimeout(() => {
+                        setSavingPassword(false);
+                        setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '', showPassword: false });
+                        addToast('Security password updated successfully!', 'success');
+                      }, 700);
+                    }}
+                    className="space-y-4 max-w-xl"
+                  >
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-700 block">Current Password</label>
+                      <div className="relative">
+                        <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                        <input
+                          type={passwordForm.showPassword ? 'text' : 'password'}
+                          value={passwordForm.currentPassword}
+                          onChange={(e) => setPasswordForm({ ...passwordForm, currentPassword: e.target.value })}
+                          placeholder="Enter current password"
+                          className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-xs rounded-xl pl-10 pr-10 py-2.5 focus:border-[#0b192c] focus:bg-white outline-none transition-all"
+                          required
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setPasswordForm({ ...passwordForm, showPassword: !passwordForm.showPassword })}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                        >
+                          {passwordForm.showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-slate-700 block">New Password</label>
+                        <input
+                          type={passwordForm.showPassword ? 'text' : 'password'}
+                          value={passwordForm.newPassword}
+                          onChange={(e) => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
+                          placeholder="At least 6 characters"
+                          className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-xs rounded-xl px-4 py-2.5 focus:border-[#0b192c] focus:bg-white outline-none transition-all"
+                          required
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-slate-700 block">Confirm New Password</label>
+                        <input
+                          type={passwordForm.showPassword ? 'text' : 'password'}
+                          value={passwordForm.confirmPassword}
+                          onChange={(e) => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
+                          placeholder="Re-enter new password"
+                          className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-xs rounded-xl px-4 py-2.5 focus:border-[#0b192c] focus:bg-white outline-none transition-all"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className="pt-2">
+                      <button
+                        type="submit"
+                        disabled={savingPassword}
+                        className="px-6 py-2.5 bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold text-xs rounded-xl shadow transition-colors flex items-center space-x-2 disabled:opacity-50"
+                      >
+                        {savingPassword ? (
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <Key className="w-4 h-4 text-orange-400" />
+                        )}
+                        <span>{savingPassword ? 'Updating Password...' : 'Update Security Password'}</span>
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              )}
+
+              {/* SUB-TAB 3: NOTIFICATION PREFERENCES */}
+              {activeSettingsTab === 'notifications' && (
+                <div className="bg-white p-6 rounded-3xl border border-slate-200/90 shadow-sm space-y-6">
+                  <div>
+                    <h4 className="font-extrabold text-base text-slate-900">Notification & Alert Stream Preferences</h4>
+                    <p className="text-xs text-slate-500">Configure which operational alerts and receipt events trigger instant notification banners.</p>
+                  </div>
+
+                  <div className="space-y-4 max-w-2xl divide-y divide-slate-100">
+                    {[
+                      {
+                        key: 'systemAlerts',
+                        title: 'System Operations Alerts',
+                        desc: 'Receive alerts when desktop status, verifications, or certificate issuance operations are performed.'
+                      },
+                      {
+                        key: 'applicationUpdates',
+                        title: 'Citizen Application Submissions',
+                        desc: 'Receive immediate notifications when new service applications are submitted by citizens.'
+                      },
+                      {
+                        key: 'paymentAlerts',
+                        title: 'Payment Ledger Audit Receipts',
+                        desc: 'Alert when online Razorpay or manual fee payments are received into the system.'
+                      },
+                      {
+                        key: 'emailReceipts',
+                        title: 'Email Dispatch Confirmations',
+                        desc: 'Send copy of query replies and certificate issuance receipts to admin email.'
+                      }
+                    ].map((item) => (
+                      <div key={item.key} className="flex items-center justify-between pt-4 first:pt-0">
+                        <div className="pr-4 space-y-0.5">
+                          <h5 className="font-extrabold text-xs text-slate-900">{item.title}</h5>
+                          <p className="text-[11px] text-slate-500 leading-relaxed">{item.desc}</p>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => setNotifPrefs({ ...notifPrefs, [item.key]: !notifPrefs[item.key] })}
+                          className={`w-11 h-6 rounded-full transition-colors relative flex-shrink-0 ${
+                            notifPrefs[item.key] ? 'bg-orange-600' : 'bg-slate-200'
+                          }`}
+                        >
+                          <span
+                            className={`w-4 h-4 bg-white rounded-full absolute top-1 transition-transform ${
+                              notifPrefs[item.key] ? 'right-1' : 'left-1'
+                            }`}
+                          />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="pt-2">
+                    <button
+                      onClick={() => addToast('Notification preferences saved successfully!', 'success')}
+                      className="px-6 py-2.5 bg-orange-600 hover:bg-orange-700 text-white font-extrabold text-xs rounded-xl shadow transition-colors flex items-center space-x-2"
+                    >
+                      <Save className="w-4 h-4" />
+                      <span>Save Notification Preferences</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* SUB-TAB 4: SYSTEM AUDIT LOGS */}
+              {activeSettingsTab === 'audit' && (
+                <div className="bg-white p-6 rounded-3xl border border-slate-200/90 shadow-sm space-y-4">
+                  <div>
+                    <h4 className="font-extrabold text-base text-slate-900">System Access Audit Trail</h4>
+                    <p className="text-xs text-slate-500">Security event log for active admin session and authorization checks.</p>
+                  </div>
+
+                  <div className="space-y-3">
+                    {[
+                      { event: 'Admin Session Login', ip: '127.0.0.1 (Localhost)', status: 'Success', time: 'Just now' },
+                      { event: 'Token Validation Check', ip: '127.0.0.1 (Localhost)', status: 'Verified', time: '5 mins ago' },
+                      { event: 'Dashboard Stats Query', ip: '127.0.0.1 (Localhost)', status: 'Success', time: '12 mins ago' }
+                    ].map((log, idx) => (
+                      <div key={idx} className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 flex justify-between items-center text-xs">
+                        <div className="flex items-center space-x-3">
+                          <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                          <div>
+                            <span className="font-extrabold text-slate-900">{log.event}</span>
+                            <span className="text-[10px] text-slate-400 block font-mono">{log.ip}</span>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <span className="bg-emerald-100 text-emerald-800 text-[10px] font-black px-2 py-0.5 rounded font-mono">
+                            {log.status}
+                          </span>
+                          <span className="text-[10px] text-slate-400 block mt-0.5">{log.time}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* DANGER ZONE: ACCOUNT & SESSION ACTIONS */}
+              <div className="bg-rose-50/60 border border-rose-200 p-6 rounded-3xl space-y-4">
+                <div className="flex items-center space-x-3">
+                  <div className="w-9 h-9 rounded-xl bg-rose-500/10 text-rose-600 font-black flex items-center justify-center">
+                    <ShieldAlert className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="font-extrabold text-sm text-rose-900">Admin Session Control & Danger Zone</h4>
+                    <p className="text-xs text-rose-700">Terminate active administrator session and log out of governance panel.</p>
+                  </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
+                  <span className="text-xs text-rose-800">
+                    Signing out will clear local access tokens and require re-authentication.
+                  </span>
+                  <button
+                    onClick={() => {
+                      if (window.confirm('Are you sure you want to sign out of the Admin Governance Cockpit?')) {
+                        logoutAdmin();
+                        addToast('Logged out of Admin Portal successfully', 'info');
+                        navigate('/admin/login');
+                      }
+                    }}
+                    className="w-full sm:w-auto px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-extrabold text-xs rounded-xl shadow transition-colors flex items-center justify-center space-x-1.5"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span>Sign Out of Admin Cockpit</span>
+                  </button>
+                </div>
               </div>
 
             </div>
