@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Fingerprint, CreditCard, Vote, FileText, MapPin, Globe,
-  Car, Briefcase, Zap, Grid, ArrowRight, Search, FileSearch,
+  Car, Briefcase, Zap, Grid, ArrowRight, Search, FileSearch, FileCheck,
   ShieldCheck, CheckCircle2, Clock, Users, PhoneCall, HelpCircle,
   AlertCircle, Sparkles, Building2, ExternalLink, ShieldAlert, Award, Lock, Landmark
 } from 'lucide-react';
@@ -10,7 +10,8 @@ import { useToast } from '../context/ToastContext';
 
 export default function Home() {
   const navigate = useNavigate();
-  const { addToast } = useToast();
+  const toast = useToast();
+  const addToast = toast?.addToast || (() => {});
 
   const [categories, setCategories] = useState([]);
   const [popularServices, setPopularServices] = useState([]);
@@ -28,12 +29,12 @@ export default function Home() {
 
   useEffect(() => {
     Promise.all([
-      fetch('/api/categories').then((r) => r.json()),
-      fetch('/api/services').then((r) => r.json()),
-      fetch('/api/admin/dashboard').then((r) => r.ok ? r.json() : null)
+      fetch('/api/categories').then((r) => r.ok ? r.json() : []).catch(() => []),
+      fetch('/api/services').then((r) => r.ok ? r.json() : []).catch(() => []),
+      fetch('/api/admin/dashboard').then((r) => r.ok ? r.json() : null).catch(() => null)
     ])
       .then(([catData, srvData, dashData]) => {
-        setCategories(catData || []);
+        setCategories(Array.isArray(catData) ? catData : []);
         
         if (srvData && Array.isArray(srvData)) {
           setPopularServices(srvData.slice(0, 8));
@@ -48,7 +49,7 @@ export default function Home() {
           });
         }
       })
-      .catch((err) => console.error(err));
+      .catch((err) => console.error('Fetch error:', err));
   }, []);
 
   const handleHeroSearch = (e) => {
