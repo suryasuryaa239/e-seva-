@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import {
   Fingerprint, CreditCard, Vote, FileText, MapPin, Globe,
   Car, Briefcase, Zap, Grid, ArrowRight, Search, FileSearch, FileCheck,
-  ShieldCheck, CheckCircle2, Clock, Users, PhoneCall, HelpCircle,
+  ShieldCheck, CheckCircle2, Clock, Users, PhoneCall, HelpCircle, Headset, MousePointer,
   AlertCircle, Sparkles, Building2, ExternalLink, ShieldAlert, Award, Lock, Landmark
 } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
@@ -477,38 +477,83 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 5. VALUE PROPOSITIONS (EASY TO USE, SECURE & RELIABLE, 24/7 SUPPORT) */}
-      <section className="bg-[#f8fafc] border-y border-slate-200/80 py-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {/* 6. WHY CHOOSE US SECTION (STEP 6 SPECIFICATION) */}
+      <section className="bg-slate-50 border-t border-slate-200/80 py-14">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+          
+          {/* CENTERED SECTION HEADER */}
+          <div className="text-center max-w-2xl mx-auto space-y-2">
+            <span className="inline-block text-xs font-extrabold text-orange-600 uppercase tracking-widest bg-orange-50 border border-orange-200/80 px-3.5 py-1 rounded-full">
+              WHY CHOOSE US
+            </span>
+            <h2 className="font-heading font-extrabold text-3xl sm:text-4xl text-slate-900 tracking-tight">
+              Why Choose Our Services?
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-500 font-normal leading-relaxed">
+              A simple, convenient and reliable way to access digital services.
+            </p>
+          </div>
+
+          {/* 4 FEATURE CARDS GRID */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             
-            <div className="bg-white p-6 rounded-xl border border-slate-200/80 shadow-xs flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-blue-50 border border-blue-200 flex items-center justify-center text-slate-900 shrink-0">
-                <Grid className="w-6 h-6" />
+            {/* CARD 01: EASY TO USE */}
+            <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs hover:shadow-md hover:border-orange-500/40 transition-all duration-300 hover:-translate-y-1 flex flex-col items-start space-y-4 group h-full">
+              <div className="w-12 h-12 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center group-hover:scale-105 transition-transform">
+                <MousePointer className="w-6 h-6 text-orange-600" />
               </div>
-              <div>
-                <h4 className="font-heading font-extrabold text-sm text-slate-900">Easy to Use</h4>
-                <p className="text-xs text-slate-500 mt-0.5 font-normal">Simple and user-friendly interface for all your needs</p>
-              </div>
-            </div>
-
-            <div className="bg-white p-6 rounded-xl border border-slate-200/80 shadow-xs flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-blue-50 border border-blue-200 flex items-center justify-center text-slate-900 shrink-0">
-                <ShieldCheck className="w-6 h-6" />
-              </div>
-              <div>
-                <h4 className="font-heading font-extrabold text-sm text-slate-900">Secure & Reliable</h4>
-                <p className="text-xs text-slate-500 mt-0.5 font-normal">Your data is safe with our secure platform</p>
+              <div className="space-y-1.5">
+                <h3 className="font-heading font-extrabold text-base text-slate-900 group-hover:text-orange-600 transition-colors">
+                  Easy to Use
+                </h3>
+                <p className="text-xs text-slate-500 font-normal leading-relaxed">
+                  Simple and user-friendly process for accessing digital services.
+                </p>
               </div>
             </div>
 
-            <div className="bg-white p-6 rounded-xl border border-slate-200/80 shadow-xs flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-blue-50 border border-blue-200 flex items-center justify-center text-slate-900 shrink-0">
-                <PhoneCall className="w-6 h-6" />
+            {/* CARD 02: SECURE & RELIABLE */}
+            <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs hover:shadow-md hover:border-orange-500/40 transition-all duration-300 hover:-translate-y-1 flex flex-col items-start space-y-4 group h-full">
+              <div className="w-12 h-12 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center group-hover:scale-105 transition-transform">
+                <ShieldCheck className="w-6 h-6 text-orange-600" />
               </div>
-              <div>
-                <h4 className="font-heading font-extrabold text-sm text-slate-900">24/7 Support</h4>
-                <p className="text-xs text-slate-500 mt-0.5 font-normal">We're here to help you anytime, anywhere</p>
+              <div className="space-y-1.5">
+                <h3 className="font-heading font-extrabold text-base text-slate-900 group-hover:text-orange-600 transition-colors">
+                  Secure & Reliable
+                </h3>
+                <p className="text-xs text-slate-500 font-normal leading-relaxed">
+                  Your application information is handled through a secure service process.
+                </p>
+              </div>
+            </div>
+
+            {/* CARD 03: QUICK PROCESSING */}
+            <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs hover:shadow-md hover:border-orange-500/40 transition-all duration-300 hover:-translate-y-1 flex flex-col items-start space-y-4 group h-full">
+              <div className="w-12 h-12 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center group-hover:scale-105 transition-transform">
+                <Clock className="w-6 h-6 text-orange-600" />
+              </div>
+              <div className="space-y-1.5">
+                <h3 className="font-heading font-extrabold text-base text-slate-900 group-hover:text-orange-600 transition-colors">
+                  Quick Processing
+                </h3>
+                <p className="text-xs text-slate-500 font-normal leading-relaxed">
+                  Submit your application conveniently and follow its progress.
+                </p>
+              </div>
+            </div>
+
+            {/* CARD 04: CUSTOMER SUPPORT */}
+            <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs hover:shadow-md hover:border-orange-500/40 transition-all duration-300 hover:-translate-y-1 flex flex-col items-start space-y-4 group h-full">
+              <div className="w-12 h-12 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center group-hover:scale-105 transition-transform">
+                <Headset className="w-6 h-6 text-orange-600" />
+              </div>
+              <div className="space-y-1.5">
+                <h3 className="font-heading font-extrabold text-base text-slate-900 group-hover:text-orange-600 transition-colors">
+                  Customer Support
+                </h3>
+                <p className="text-xs text-slate-500 font-normal leading-relaxed">
+                  Get assistance whenever you need help with your application.
+                </p>
               </div>
             </div>
 
