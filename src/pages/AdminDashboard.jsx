@@ -63,6 +63,12 @@ export default function AdminDashboard() {
   const [careerStatusFilter, setCareerStatusFilter] = useState('All');
   const [selectedCareerApp, setSelectedCareerApp] = useState(null);
 
+  // Admin Notifications & Alerts State (STEP 32)
+  const [adminNotifs, setAdminNotifs] = useState([]);
+  const [notifSearchQuery, setNotifSearchQuery] = useState('');
+  const [notifFilter, setNotifFilter] = useState('ALL');
+  const [selectedNotif, setSelectedNotif] = useState(null);
+
   // New Service Modal State
   const [showAddServiceModal, setShowAddServiceModal] = useState(false);
 
@@ -146,6 +152,19 @@ export default function AdminDashboard() {
     } catch (e) {}
   };
 
+  const fetchAdminNotifs = async () => {
+    if (!adminToken) return;
+    try {
+      const res = await fetch('/api/admin/notifications', {
+        headers: { Authorization: `Bearer ${adminToken}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setAdminNotifs(data.notifications || []);
+      }
+    } catch (e) {}
+  };
+
   const handleRefund = async (paymentId) => {
     if (!window.confirm('Are you sure you want to issue a full refund for this payment?')) return;
     try {
@@ -178,7 +197,8 @@ export default function AdminDashboard() {
       fetchEnquiries(),
       fetchCareers(),
       fetchServices(),
-      fetchPayments()
+      fetchPayments(),
+      fetchAdminNotifs()
     ]).then(() => setLoading(false));
   }, [adminToken, navigate]);
 
@@ -267,7 +287,8 @@ export default function AdminDashboard() {
     { id: 'customers', label: 'Users Directory', icon: Users, count: stats?.total_users || customers.length },
     { id: 'enquiries', label: 'Contact Enquiries', icon: Mail, count: stats?.unread_enquiries },
     { id: 'payments', label: 'Payments & Fee Audit', icon: DollarSign },
-    { id: 'careers', label: 'Careers & Applications', icon: Briefcase }
+    { id: 'careers', label: 'Careers & Applications', icon: Briefcase },
+    { id: 'notifications', label: 'Notifications & Alerts', icon: Bell, count: adminNotifs.filter(n => !n.isRead && !n.is_read).length }
   ];
 
   // Filtered Users List
@@ -331,6 +352,22 @@ export default function AdminDashboard() {
     const matchesStatus = careerStatusFilter === 'All' ||
       (c.status && c.status.toLowerCase() === careerStatusFilter.toLowerCase());
     return matchesSearch && matchesStatus;
+  });
+
+  // Filtered Admin Notifications & Alerts (STEP 32)
+  const filteredAdminNotifs = adminNotifs.filter(n => {
+    const matchesSearch = !notifSearchQuery ||
+      (n.title && n.title.toLowerCase().includes(notifSearchQuery.toLowerCase())) ||
+      (n.message && n.message.toLowerCase().includes(notifSearchQuery.toLowerCase())) ||
+      (n.id && String(n.id).includes(notifSearchQuery));
+    
+    let matchesFilter = true;
+    if (notifFilter === 'UNREAD') matchesFilter = !n.isRead && !n.is_read;
+    else if (notifFilter === 'SUBMISSIONS') matchesFilter = n.type === 'APPLICATION_SUBMITTED';
+    else if (notifFilter === 'PAYMENTS') matchesFilter = n.type && n.type.includes('PAYMENT');
+    else if (notifFilter === 'DOCUMENTS') matchesFilter = n.type && n.type.includes('DOCUMENT');
+
+    return matchesSearch && matchesFilter;
   });
 
   return (
@@ -1864,6 +1901,272 @@ export default function AdminDashboard() {
             </div>
           )}
 
+          {/* TAB: NOTIFICATIONS & ALERTS STREAM (STEP 32) */}
+          {activeTab === 'notifications' && (
+            <div className="space-y-6">
+              
+              <div className="bg-white p-5 rounded-3xl border border-slate-200/90 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-[11px] font-black uppercase text-orange-600 tracking-wider bg-orange-50 px-2.5 py-0.5 rounded border border-orange-200">
+                      OPERATIONS COCKPIT
+                    </span>
+                    <span className="text-xs font-mono text-slate-500">• System Alerts & Communications</span>
+                  </div>
+                  <h3 className="text-lg font-black text-slate-900 mt-1">
+                    Notifications & Communication Stream
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Real-time operational alerts for citizen application submissions, fee payments, and verification events.
+                  </p>
+                </div>
+
+                <div className="flex items-center space-x-2 self-start sm:self-auto">
+                  {adminNotifs.filter(n => !n.isRead && !n.is_read).length > 0 && (
+                    <button
+                      onClick={async () => {
+                        try {
+                          await fetch('/api/admin/notifications/read-all', {
+                            method: 'PUT',
+                            headers: { Authorization: `Bearer ${adminToken}` }
+                          });
+                          addToast('All admin notifications marked as read', 'success');
+                          fetchAdminNotifs();
+                        } catch (e) {}
+                      }}
+                      className="px-3 py-2 bg-orange-50 hover:bg-orange-100 text-orange-600 border border-orange-200 text-xs font-extrabold rounded-xl transition-colors flex items-center space-x-1.5 shadow-sm"
+                    >
+                      <CheckCheck className="w-3.5 h-3.5" />
+                      <span>Mark All Read</span>
+                    </button>
+                  )}
+                  <button
+                    onClick={() => {
+                      setNotifSearchQuery('');
+                      setNotifFilter('ALL');
+                    }}
+                    className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-colors flex items-center space-x-1.5"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    <span>Reset Filters</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Notification Statistics Header Cards */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-3">
+                  <div className="w-10 h-10 rounded-xl bg-orange-500/10 text-orange-600 flex items-center justify-center font-black">
+                    <Bell className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Total Alerts</span>
+                    <div className="text-xl font-black text-slate-900">{adminNotifs.length}</div>
+                  </div>
+                </div>
+
+                <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-3">
+                  <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center font-black">
+                    <Clock className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Unread Alerts</span>
+                    <div className="text-xl font-black text-amber-600">
+                      {adminNotifs.filter(n => !n.isRead && !n.is_read).length}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-3">
+                  <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center font-black">
+                    <FileText className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Submissions</span>
+                    <div className="text-xl font-black text-blue-600">
+                      {adminNotifs.filter(n => n.type === 'APPLICATION_SUBMITTED').length}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-3">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center font-black">
+                    <CreditCard className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Payments & Fees</span>
+                    <div className="text-xl font-black text-emerald-600">
+                      {adminNotifs.filter(n => n.type && n.type.includes('PAYMENT')).length}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Search & Filter Toolbar */}
+              <div className="bg-white p-4 rounded-3xl border border-slate-200/90 shadow-sm space-y-3">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+                  <div className="relative w-full sm:w-80">
+                    <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="text"
+                      placeholder="Search alerts by title or content..."
+                      value={notifSearchQuery}
+                      onChange={(e) => setNotifSearchQuery(e.target.value)}
+                      className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-xs rounded-xl pl-10 pr-4 py-2.5 focus:border-[#0b192c] focus:bg-white outline-none transition-all shadow-inner"
+                    />
+                    {notifSearchQuery && (
+                      <button
+                        onClick={() => setNotifSearchQuery('')}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs font-bold"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="flex items-center space-x-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
+                    {[
+                      { id: 'ALL', label: 'All Alerts' },
+                      { id: 'UNREAD', label: 'Unread Only' },
+                      { id: 'SUBMISSIONS', label: 'Submissions' },
+                      { id: 'PAYMENTS', label: 'Payments' },
+                      { id: 'DOCUMENTS', label: 'Documents' }
+                    ].map((f) => (
+                      <button
+                        key={f.id}
+                        onClick={() => setNotifFilter(f.id)}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+                          notifFilter === f.id
+                            ? 'bg-[#0b192c] text-white shadow-sm font-black'
+                            : 'bg-slate-50 text-slate-600 hover:text-slate-900 border border-slate-200'
+                        }`}
+                      >
+                        {f.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="text-xs text-slate-500 font-medium pt-2 border-t border-slate-100">
+                  Showing <strong className="text-slate-900">{filteredAdminNotifs.length}</strong> system operations alerts
+                </div>
+              </div>
+
+              {/* Desktop Notifications Table (`hidden md:block`) */}
+              <div className="bg-white border border-slate-200/90 rounded-3xl overflow-hidden shadow-sm hidden md:block">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs text-slate-700">
+                    <thead className="bg-slate-50 text-slate-500 font-extrabold uppercase tracking-wider text-[10px] border-b border-slate-200 sticky top-0">
+                      <tr>
+                        <th className="py-3.5 px-4">Alert Event</th>
+                        <th className="py-3.5 px-4">Category</th>
+                        <th className="py-3.5 px-4">Message Summary</th>
+                        <th className="py-3.5 px-4">Timestamp</th>
+                        <th className="py-3.5 px-4">Status</th>
+                        <th className="py-3.5 px-4 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {filteredAdminNotifs.map((n) => {
+                        const isUnread = !n.isRead && !n.is_read;
+                        const isPayment = n.type && n.type.includes('PAYMENT');
+                        const isDoc = n.type && n.type.includes('DOCUMENT');
+
+                        return (
+                          <tr key={n.id} className={`hover:bg-slate-50/80 transition-colors ${isUnread ? 'bg-orange-50/20 font-semibold' : ''}`}>
+                            <td className="py-4 px-4">
+                              <div className="flex items-center space-x-3">
+                                <div className={`w-9 h-9 rounded-xl flex items-center justify-center font-black flex-shrink-0 ${
+                                  isPayment ? 'bg-emerald-500/10 text-emerald-600' :
+                                  isDoc ? 'bg-rose-500/10 text-rose-600' :
+                                  'bg-orange-500/10 text-orange-600'
+                                }`}>
+                                  {isPayment ? <CreditCard className="w-4 h-4" /> :
+                                   isDoc ? <ShieldAlert className="w-4 h-4" /> :
+                                   <Bell className="w-4 h-4" />}
+                                </div>
+                                <div className="font-extrabold text-slate-900 text-sm">{n.title}</div>
+                              </div>
+                            </td>
+                            <td className="py-4 px-4">
+                              <span className="font-bold text-slate-700 text-[11px] uppercase bg-slate-100 px-2 py-0.5 rounded border border-slate-200 font-mono">
+                                {n.type || 'SYSTEM'}
+                              </span>
+                            </td>
+                            <td className="py-4 px-4 text-slate-600 max-w-xs truncate">
+                              {n.message}
+                            </td>
+                            <td className="py-4 px-4 font-semibold text-slate-600 font-mono text-[11px]">
+                              {new Date(n.createdAt || n.created_at || Date.now()).toLocaleString('en-IN')}
+                            </td>
+                            <td className="py-4 px-4">
+                              {isUnread ? (
+                                <span className="bg-amber-100 text-amber-900 text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full border border-amber-300">
+                                  UNREAD
+                                </span>
+                              ) : (
+                                <span className="bg-slate-100 text-slate-500 text-[10px] font-bold uppercase px-2 py-0.5 rounded-full">
+                                  Read
+                                </span>
+                              )}
+                            </td>
+                            <td className="py-4 px-4 text-right">
+                              <button
+                                onClick={() => setSelectedNotif(n)}
+                                className="bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold px-3 py-1.5 rounded-xl text-xs transition-colors shadow flex items-center space-x-1 ml-auto"
+                              >
+                                <Eye className="w-3.5 h-3.5 text-orange-400" />
+                                <span>Inspect Alert</span>
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Mobile Stacked Notification Cards (`md:hidden`) */}
+              <div className="space-y-3 md:hidden">
+                {filteredAdminNotifs.map((n) => {
+                  const isUnread = !n.isRead && !n.is_read;
+
+                  return (
+                    <div key={n.id} className={`p-4 rounded-2xl border shadow-sm space-y-2.5 ${
+                      isUnread ? 'bg-orange-50/30 border-orange-200' : 'bg-white border-slate-200'
+                    }`}>
+                      <div className="flex justify-between items-start">
+                        <div className="flex items-center space-x-2">
+                          <Bell className="w-4 h-4 text-orange-600" />
+                          <h4 className="font-extrabold text-sm text-slate-900">{n.title}</h4>
+                        </div>
+                        {isUnread && (
+                          <span className="bg-amber-100 text-amber-900 text-[9px] font-black px-2 py-0.5 rounded-full border border-amber-300">
+                            NEW
+                          </span>
+                        )}
+                      </div>
+
+                      <p className="text-xs text-slate-600 leading-relaxed">{n.message}</p>
+
+                      <div className="flex justify-between items-center pt-2 border-t border-slate-100 text-[10px] text-slate-400 font-mono">
+                        <span>{new Date(n.createdAt || n.created_at || Date.now()).toLocaleDateString('en-IN')}</span>
+                        <button
+                          onClick={() => setSelectedNotif(n)}
+                          className="font-bold text-orange-600 hover:text-orange-700 underline text-xs"
+                        >
+                          Inspect Details →
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+            </div>
+          )}
+
           {/* DASHBOARD OVERVIEW */}
           {activeTab === 'dashboard' && stats && (
             <div className="space-y-6">
@@ -2727,6 +3030,73 @@ export default function AdminDashboard() {
               className="w-full py-2.5 bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold text-xs rounded-xl transition-colors shadow"
             >
               Close Candidate Inspector
+            </button>
+
+          </div>
+        </div>
+      )}
+
+      {/* NOTIFICATION DETAILS INSPECTOR MODAL (STEP 32) */}
+      {selectedNotif && (
+        <div className="fixed inset-0 bg-slate-950/75 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white border border-slate-200 rounded-3xl max-w-lg w-full p-6 space-y-6 shadow-2xl">
+            
+            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 rounded-2xl bg-orange-500/10 text-orange-600 font-black flex items-center justify-center text-lg shadow-sm">
+                  <Bell className="w-6 h-6" />
+                </div>
+                <div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-[10px] font-black uppercase text-orange-600 tracking-wider bg-orange-50 px-2 py-0.5 rounded border border-orange-200">
+                      OPERATIONS ALERT AUDIT
+                    </span>
+                    <span className="text-xs font-mono text-slate-500">• ID #{selectedNotif.id}</span>
+                  </div>
+                  <h3 className="font-extrabold text-lg text-slate-900 mt-0.5">{selectedNotif.title}</h3>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setSelectedNotif(null)}
+                className="p-2 text-slate-400 hover:text-slate-600 bg-slate-100 rounded-xl transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-4 text-xs">
+              
+              <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                <span className="text-slate-500 font-bold text-[11px] block uppercase tracking-wider">Alert Metadata</span>
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div>
+                    <span className="text-slate-400 block font-mono">Category Type</span>
+                    <span className="font-extrabold text-slate-900 uppercase font-mono">{selectedNotif.type || 'SYSTEM'}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 block font-mono">Timestamp</span>
+                    <span className="font-bold text-slate-900">
+                      {new Date(selectedNotif.createdAt || selectedNotif.created_at || Date.now()).toLocaleString('en-IN')}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <span className="text-slate-500 font-bold text-[11px] uppercase tracking-wider">Full Message Content</span>
+                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 text-slate-800 leading-relaxed font-normal">
+                  {selectedNotif.message}
+                </div>
+              </div>
+
+            </div>
+
+            <button
+              onClick={() => setSelectedNotif(null)}
+              className="w-full py-2.5 bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold text-xs rounded-xl transition-colors shadow"
+            >
+              Close Alert Inspector
             </button>
 
           </div>
