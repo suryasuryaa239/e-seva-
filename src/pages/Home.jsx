@@ -247,14 +247,14 @@ export default function Home() {
         
         {/* CENTERED SECTION HEADER */}
         <div className="text-center max-w-2xl mx-auto space-y-2">
-          <span className="inline-block text-xs font-extrabold text-orange-600 uppercase tracking-widest bg-orange-50 border border-orange-200/80 px-3 py-1 rounded-full">
+          <span className="inline-block text-xs font-extrabold text-orange-600 uppercase tracking-widest bg-orange-50 border border-orange-200/80 px-3.5 py-1 rounded-full">
             POPULAR SERVICES
           </span>
           <h2 className="font-heading font-extrabold text-3xl sm:text-4xl text-slate-900 tracking-tight">
             Most Requested Services
           </h2>
           <p className="text-xs sm:text-sm text-slate-500 font-normal leading-relaxed">
-            Quickly access the services our customers use most often.
+            Quickly access the digital services our customers use most often.
           </p>
         </div>
 
