@@ -4,7 +4,8 @@ import {
   ShieldAlert, LayoutDashboard, FileText, Grid, Users, Mail,
   Briefcase, Search, RefreshCw, Eye, Edit3, CheckCircle2,
   XCircle, Clock, AlertCircle, Plus, ExternalLink, LogOut, DollarSign,
-  Menu, X, Award, ChevronRight, TrendingUp, ShieldCheck, Activity
+  Menu, X, Award, ChevronRight, TrendingUp, ShieldCheck, Activity,
+  Filter, RotateCcw, Inbox
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -15,7 +16,7 @@ export default function AdminDashboard() {
   const { addToast } = useToast();
   const navigate = useNavigate();
 
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState('applications');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [stats, setStats] = useState(null);
   const [applications, setApplications] = useState([]);
@@ -251,27 +252,6 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleCreateService = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await fetch('/api/admin/services', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${adminToken}`
-        },
-        body: JSON.stringify(newService)
-      });
-      if (res.ok) {
-        addToast('New service added successfully!', 'success');
-        setShowAddServiceModal(false);
-        fetchServices();
-      }
-    } catch (e) {
-      addToast('Failed to create service', 'error');
-    }
-  };
-
   const navItems = [
     { id: 'dashboard', label: 'Dashboard Overview', icon: LayoutDashboard },
     { id: 'applications', label: 'Applications Manager', icon: FileText, count: stats?.total_applications },
@@ -288,7 +268,6 @@ export default function AdminDashboard() {
       {/* Top Main Admin Bar */}
       <header className="bg-[#0b192c] border-b border-slate-800 text-white px-4 sm:px-6 py-3.5 flex justify-between items-center sticky top-0 z-40 shadow-lg">
         
-        {/* Left Branding & Mobile Drawer Trigger */}
         <div className="flex items-center space-x-3">
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -315,7 +294,6 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Right Header Admin Profile & Actions */}
         <div className="flex items-center space-x-3 sm:space-x-4">
           <button
             onClick={() => {
@@ -403,7 +381,6 @@ export default function AdminDashboard() {
             })}
           </div>
 
-          {/* Sidebar Bottom Security Notice */}
           <div className="p-3.5 bg-slate-900/90 rounded-2xl border border-slate-800 space-y-2">
             <div className="flex items-center space-x-1.5 text-xs font-bold text-slate-200">
               <ShieldCheck className="w-4 h-4 text-emerald-400" />
@@ -496,7 +473,7 @@ export default function AdminDashboard() {
               </div>
               <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight mt-1">
                 {activeTab === 'dashboard' && 'Dashboard Overview'}
-                {activeTab === 'applications' && 'Applications Directory'}
+                {activeTab === 'applications' && 'Application Management Directory'}
                 {activeTab === 'services' && 'Services Catalog Manager'}
                 {activeTab === 'customers' && 'Registered Citizen Directory'}
                 {activeTab === 'enquiries' && 'Contact Enquiries & Support'}
@@ -511,11 +488,233 @@ export default function AdminDashboard() {
             </div>
           </div>
 
+          {/* TAB: APPLICATIONS MANAGEMENT DIRECTORY (STEP 25) */}
+          {activeTab === 'applications' && (
+            <div className="space-y-6">
+              
+              {/* Page Description Header */}
+              <div className="bg-white p-5 rounded-3xl border border-slate-200/90 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-[11px] font-black uppercase text-orange-600 tracking-wider bg-orange-50 px-2.5 py-0.5 rounded border border-orange-200">
+                      DESK VERIFICATION
+                    </span>
+                    <span className="text-xs font-mono text-slate-500">• Real-Time Queue</span>
+                  </div>
+                  <h3 className="text-lg font-black text-slate-900 mt-1">
+                    Application Review & Verification Desk
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Review incoming customer requests, audit uploaded proof documents, and publish status updates.
+                  </p>
+                </div>
+
+                <div className="flex items-center space-x-2 self-start sm:self-auto">
+                  <button
+                    onClick={() => {
+                      setSearchQuery('');
+                      setStatusFilter('All');
+                    }}
+                    className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-colors flex items-center space-x-1.5"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    <span>Reset Filters</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Compact Statistics Row (Step 25 Requirement) */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                <div className="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm space-y-1">
+                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Total</span>
+                  <div className="text-xl font-black text-slate-900">{stats?.total_applications || applications.length}</div>
+                </div>
+
+                <div className="bg-amber-50/70 p-3.5 rounded-2xl border border-amber-200 shadow-sm space-y-1">
+                  <span className="text-[10px] font-bold text-amber-800 uppercase tracking-wider block">Pending</span>
+                  <div className="text-xl font-black text-amber-900">{stats?.pending_applications || 0}</div>
+                </div>
+
+                <div className="bg-blue-50/70 p-3.5 rounded-2xl border border-blue-200 shadow-sm space-y-1">
+                  <span className="text-[10px] font-bold text-blue-800 uppercase tracking-wider block">Processing</span>
+                  <div className="text-xl font-black text-blue-900">{stats?.processing_applications || 0}</div>
+                </div>
+
+                <div className="bg-emerald-50/70 p-3.5 rounded-2xl border border-emerald-200 shadow-sm space-y-1">
+                  <span className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider block">Approved</span>
+                  <div className="text-xl font-black text-emerald-900">{stats?.approved_applications || 0}</div>
+                </div>
+
+                <div className="bg-indigo-50/70 p-3.5 rounded-2xl border border-indigo-200 shadow-sm space-y-1">
+                  <span className="text-[10px] font-bold text-indigo-800 uppercase tracking-wider block">Completed</span>
+                  <div className="text-xl font-black text-indigo-900">{stats?.completed_applications || 0}</div>
+                </div>
+
+                <div className="bg-rose-50/70 p-3.5 rounded-2xl border border-rose-200 shadow-sm space-y-1">
+                  <span className="text-[10px] font-bold text-rose-800 uppercase tracking-wider block">Rejected</span>
+                  <div className="text-xl font-black text-rose-900">{stats?.rejected_applications || 0}</div>
+                </div>
+              </div>
+
+              {/* Search & Filter Bar (Step 25 Requirement) */}
+              <div className="bg-white p-4 rounded-3xl border border-slate-200/90 shadow-sm space-y-3">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+                  {/* Search Input */}
+                  <div className="relative w-full sm:w-80">
+                    <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="text"
+                      placeholder="Search Application ID, Name, Phone..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-xs rounded-xl pl-10 pr-4 py-2.5 focus:border-[#0b192c] focus:bg-white outline-none transition-all shadow-inner"
+                    />
+                    {searchQuery && (
+                      <button
+                        onClick={() => setSearchQuery('')}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs font-bold"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Count Indicator */}
+                  <div className="text-xs text-slate-500 font-medium self-end sm:self-auto">
+                    Showing <strong className="text-slate-900">{applications.length}</strong> matching applications
+                  </div>
+                </div>
+
+                {/* Status Filter Selector Tabs */}
+                <div className="flex flex-wrap gap-2 pt-2 border-t border-slate-100">
+                  {['All', 'Pending', 'Processing', 'Approved', 'Completed', 'Rejected'].map((st) => (
+                    <button
+                      key={st}
+                      onClick={() => setStatusFilter(st)}
+                      className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                        statusFilter === st
+                          ? 'bg-[#0b192c] text-white shadow-sm font-black'
+                          : 'bg-slate-50 text-slate-600 hover:text-slate-900 border border-slate-200'
+                      }`}
+                    >
+                      {st}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Desktop Table View (`hidden md:block`) */}
+              <div className="bg-white border border-slate-200/90 rounded-3xl overflow-hidden shadow-sm hidden md:block">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs text-slate-700">
+                    <thead className="bg-slate-50 text-slate-500 font-extrabold uppercase tracking-wider text-[10px] border-b border-slate-200 sticky top-0">
+                      <tr>
+                        <th className="py-3.5 px-4">Application ID</th>
+                        <th className="py-3.5 px-4">Citizen Details</th>
+                        <th className="py-3.5 px-4">Category / Service</th>
+                        <th className="py-3.5 px-4">Submitted Date & Fee</th>
+                        <th className="py-3.5 px-4">Status</th>
+                        <th className="py-3.5 px-4 text-right">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {applications.map((app) => (
+                        <tr key={app.id} className="hover:bg-slate-50/80 transition-colors">
+                          <td className="py-4 px-4 font-mono font-extrabold text-orange-600">
+                            {app.application_number}
+                          </td>
+                          <td className="py-4 px-4">
+                            <div className="font-bold text-slate-900">{app.user_name}</div>
+                            <div className="text-[11px] text-slate-500">{app.user_phone} • {app.user_email}</div>
+                          </td>
+                          <td className="py-4 px-4">
+                            <div className="font-semibold text-slate-800">{app.service_name}</div>
+                            <div className="text-[10px] text-slate-500">{app.category_name}</div>
+                          </td>
+                          <td className="py-4 px-4">
+                            <div className="text-slate-600">{new Date(app.created_at).toLocaleDateString()}</div>
+                            <div className="font-bold text-emerald-600">₹{app.total_fee}</div>
+                          </td>
+                          <td className="py-4 px-4">
+                            <StatusBadge status={app.status} />
+                          </td>
+                          <td className="py-4 px-4 text-right">
+                            <button
+                              onClick={() => openAppInspector(app.id)}
+                              className="bg-orange-500 hover:bg-orange-600 text-white font-extrabold px-3.5 py-1.5 rounded-lg text-xs transition-colors shadow flex items-center space-x-1 ml-auto"
+                            >
+                              <Eye className="w-3.5 h-3.5" />
+                              <span>Inspect & Action</span>
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Mobile Stacked Application Cards View (`md:hidden`) */}
+              <div className="space-y-3 md:hidden">
+                {applications.map((app) => (
+                  <div key={app.id} className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm space-y-3">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <span className="font-mono text-xs font-extrabold text-orange-600 bg-orange-50 px-2 py-0.5 rounded border border-orange-200">
+                          {app.application_number}
+                        </span>
+                        <h4 className="font-bold text-sm text-slate-900 mt-1">{app.service_name}</h4>
+                        <p className="text-[11px] text-slate-500">{app.user_name} ({app.user_phone})</p>
+                      </div>
+                      <StatusBadge status={app.status} />
+                    </div>
+
+                    <div className="flex justify-between items-center pt-2 border-t border-slate-100 text-xs text-slate-600">
+                      <div>Date: <strong className="text-slate-800">{new Date(app.created_at).toLocaleDateString()}</strong></div>
+                      <div>Fee: <strong className="text-emerald-700">₹{app.total_fee}</strong></div>
+                    </div>
+
+                    <button
+                      onClick={() => openAppInspector(app.id)}
+                      className="w-full py-2.5 bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold text-xs rounded-xl transition-colors flex items-center justify-center space-x-1.5"
+                    >
+                      <Eye className="w-3.5 h-3.5 text-orange-400" />
+                      <span>Inspect Application</span>
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              {/* Empty State Callout */}
+              {applications.length === 0 && !loading && (
+                <div className="bg-white border border-slate-200 rounded-3xl p-12 text-center space-y-3 shadow-sm">
+                  <div className="w-12 h-12 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto">
+                    <Inbox className="w-6 h-6" />
+                  </div>
+                  <h4 className="font-black text-lg text-slate-900">No Applications Found</h4>
+                  <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                    No customer applications match your current status filter or search parameters.
+                  </p>
+                  <button
+                    onClick={() => {
+                      setSearchQuery('');
+                      setStatusFilter('All');
+                    }}
+                    className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-xs rounded-xl shadow transition-colors inline-flex items-center space-x-1.5"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    <span>Clear Search & Filters</span>
+                  </button>
+                </div>
+              )}
+
+            </div>
+          )}
+
           {/* TAB 1: DASHBOARD OVERVIEW */}
           {activeTab === 'dashboard' && stats && (
             <div className="space-y-6">
               
-              {/* Welcome Hero Banner */}
               <div className="bg-[#0b192c] text-white p-6 sm:p-8 rounded-3xl shadow-xl border border-slate-800 relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-72 h-72 bg-orange-500/10 rounded-full blur-3xl pointer-events-none"></div>
                 <div className="relative z-10 space-y-2">
@@ -534,290 +733,56 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* Statistics Metric Cards */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                
-                <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-sm space-y-2 hover:border-slate-300 transition-all">
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs text-slate-500 font-bold uppercase tracking-wider">Total Applications</span>
-                    <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
-                      <FileText className="w-4 h-4" />
-                    </div>
-                  </div>
+                <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-sm space-y-2">
+                  <span className="text-xs text-slate-500 font-bold uppercase tracking-wider block">Total Applications</span>
                   <div className="font-black text-2xl sm:text-3xl text-slate-900">{stats.total_applications}</div>
-                  <div className="text-[11px] text-slate-500 flex items-center space-x-1">
-                    <Activity className="w-3 h-3 text-blue-500" />
-                    <span>Recorded in DB</span>
-                  </div>
                 </div>
 
-                <div className="bg-white p-5 rounded-2xl border border-amber-200 shadow-sm space-y-2 hover:border-amber-300 transition-all">
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs text-amber-700 font-bold uppercase tracking-wider">Pending Approval</span>
-                    <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
-                      <Clock className="w-4 h-4" />
-                    </div>
-                  </div>
+                <div className="bg-white p-5 rounded-2xl border border-amber-200 shadow-sm space-y-2">
+                  <span className="text-xs text-amber-700 font-bold uppercase tracking-wider block">Pending Approval</span>
                   <div className="font-black text-2xl sm:text-3xl text-amber-700">{stats.pending_applications}</div>
-                  <div className="text-[11px] text-amber-600 flex items-center space-x-1">
-                    <AlertCircle className="w-3 h-3" />
-                    <span>Requires initial check</span>
-                  </div>
                 </div>
 
-                <div className="bg-white p-5 rounded-2xl border border-blue-200 shadow-sm space-y-2 hover:border-blue-300 transition-all">
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs text-blue-700 font-bold uppercase tracking-wider">In Processing</span>
-                    <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
-                      <RefreshCw className="w-4 h-4" />
-                    </div>
-                  </div>
+                <div className="bg-white p-5 rounded-2xl border border-blue-200 shadow-sm space-y-2">
+                  <span className="text-xs text-blue-700 font-bold uppercase tracking-wider block">In Processing</span>
                   <div className="font-black text-2xl sm:text-3xl text-blue-700">{stats.processing_applications}</div>
-                  <div className="text-[11px] text-blue-600 flex items-center space-x-1">
-                    <CheckCircle2 className="w-3 h-3" />
-                    <span>Dept Verification</span>
-                  </div>
                 </div>
 
-                <div className="bg-white p-5 rounded-2xl border border-emerald-200 shadow-sm space-y-2 hover:border-emerald-300 transition-all">
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs text-emerald-700 font-bold uppercase tracking-wider">Total Revenue</span>
-                    <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-black text-sm">
-                      ₹
-                    </div>
-                  </div>
+                <div className="bg-white p-5 rounded-2xl border border-emerald-200 shadow-sm space-y-2">
+                  <span className="text-xs text-emerald-700 font-bold uppercase tracking-wider block">Total Revenue</span>
                   <div className="font-black text-2xl sm:text-3xl text-emerald-700">₹{stats.total_revenue}</div>
-                  <div className="text-[11px] text-emerald-600 flex items-center space-x-1">
-                    <TrendingUp className="w-3 h-3" />
-                    <span>Collected Online</span>
-                  </div>
-                </div>
-
-              </div>
-
-              {/* Status Breakdown Bar Grid */}
-              <div className="bg-white p-6 rounded-3xl border border-slate-200/90 shadow-sm space-y-4">
-                <div className="flex justify-between items-center">
-                  <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">Application Status Distribution</h4>
-                  <span className="text-[11px] text-slate-500">Live Breakdown</span>
-                </div>
-
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  <div className="bg-emerald-50/60 p-3.5 rounded-2xl border border-emerald-100 space-y-1">
-                    <span className="text-[11px] text-emerald-700 font-bold block">Approved</span>
-                    <div className="text-xl font-black text-emerald-800">{stats.approved_applications}</div>
-                  </div>
-
-                  <div className="bg-blue-50/60 p-3.5 rounded-2xl border border-blue-100 space-y-1">
-                    <span className="text-[11px] text-blue-700 font-bold block">Completed</span>
-                    <div className="text-xl font-black text-blue-800">{stats.completed_applications}</div>
-                  </div>
-
-                  <div className="bg-rose-50/60 p-3.5 rounded-2xl border border-rose-100 space-y-1">
-                    <span className="text-[11px] text-rose-700 font-bold block">Rejected</span>
-                    <div className="text-xl font-black text-rose-800">{stats.rejected_applications}</div>
-                  </div>
-
-                  <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200 space-y-1">
-                    <span className="text-[11px] text-slate-600 font-bold block">Action Required</span>
-                    <div className="text-xl font-black text-slate-800">
-                      {stats.total_applications - (stats.approved_applications + stats.completed_applications + stats.rejected_applications)}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Recent Applications Quick Table */}
-              <div className="bg-white border border-slate-200/90 rounded-3xl p-6 shadow-sm space-y-4">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                  <div>
-                    <h3 className="font-black text-base text-slate-900">Recent Application Inflow</h3>
-                    <p className="text-xs text-slate-500">Latest submissions awaiting processing or verification</p>
-                  </div>
-                  <button
-                    onClick={() => setActiveTab('applications')}
-                    className="text-xs text-orange-600 font-extrabold hover:text-orange-700 transition-colors flex items-center space-x-1"
-                  >
-                    <span>View All Applications</span>
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
-                </div>
-
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs text-slate-700">
-                    <thead className="bg-slate-50 text-slate-500 font-extrabold uppercase tracking-wider text-[10px] border-b border-slate-200">
-                      <tr>
-                        <th className="py-3.5 px-4">Application ID</th>
-                        <th className="py-3.5 px-4">Citizen Name</th>
-                        <th className="py-3.5 px-4">Service</th>
-                        <th className="py-3.5 px-4">Status</th>
-                        <th className="py-3.5 px-4 text-right">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100">
-                      {stats.recent_applications.map((app) => (
-                        <tr key={app.id} className="hover:bg-slate-50/80 transition-colors">
-                          <td className="py-3.5 px-4 font-mono font-extrabold text-orange-600">{app.application_number}</td>
-                          <td className="py-3.5 px-4 font-bold text-slate-900">{app.user_name}</td>
-                          <td className="py-3.5 px-4 text-slate-600 font-medium">{app.service_name}</td>
-                          <td className="py-3.5 px-4"><StatusBadge status={app.status} /></td>
-                          <td className="py-3.5 px-4 text-right">
-                            <button
-                              onClick={() => openAppInspector(app.id)}
-                              className="bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold px-3 py-1.5 rounded-lg text-[11px] transition-colors"
-                            >
-                              Inspect
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
                 </div>
               </div>
 
             </div>
           )}
 
-          {/* TAB 2: ALL APPLICATIONS FILTERABLE TABLE */}
-          {activeTab === 'applications' && (
-            <div className="space-y-6">
-              
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                  <h3 className="font-black text-xl text-slate-900">Application Management Directory</h3>
-                  <p className="text-xs text-slate-500">Filter by status, search by App ID or citizen details, view proof documents & update remarks.</p>
-                </div>
-
-                <div className="relative">
-                  <input
-                    type="text"
-                    placeholder="Search App ID, Name, Phone..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="bg-white text-slate-900 text-xs rounded-xl pl-9 pr-4 py-2.5 border border-slate-300 focus:border-[#0b192c] outline-none w-64 shadow-sm"
-                  />
-                  <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-3" />
-                </div>
-              </div>
-
-              {/* Status Filter Tabs */}
-              <div className="flex flex-wrap gap-2 border-b border-slate-200 pb-3">
-                {['All', 'Pending', 'Processing', 'Approved', 'Completed', 'Rejected'].map((st) => (
-                  <button
-                    key={st}
-                    onClick={() => setStatusFilter(st)}
-                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                      statusFilter === st
-                        ? 'bg-orange-500 text-white shadow-sm'
-                        : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-200'
-                    }`}
-                  >
-                    {st}
-                  </button>
-                ))}
-              </div>
-
-              {/* Applications Table */}
-              <div className="bg-white border border-slate-200/90 rounded-3xl overflow-hidden shadow-sm">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs text-slate-700">
-                    <thead className="bg-slate-50 text-slate-500 font-extrabold uppercase tracking-wider text-[10px] border-b border-slate-200">
-                      <tr>
-                        <th className="py-3.5 px-4">Application ID</th>
-                        <th className="py-3.5 px-4">Citizen Info</th>
-                        <th className="py-3.5 px-4">Category / Service</th>
-                        <th className="py-3.5 px-4">Date & Fee</th>
-                        <th className="py-3.5 px-4">Current Status</th>
-                        <th className="py-3.5 px-4 text-right">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100">
-                      {applications.map((app) => (
-                        <tr key={app.id} className="hover:bg-slate-50/80 transition-colors">
-                          <td className="py-4 px-4 font-mono font-extrabold text-orange-600">{app.application_number}</td>
-                          <td className="py-4 px-4">
-                            <div className="font-bold text-slate-900">{app.user_name}</div>
-                            <div className="text-[11px] text-slate-500">{app.user_phone} • {app.user_email}</div>
-                          </td>
-                          <td className="py-4 px-4">
-                            <div className="font-semibold text-slate-800">{app.service_name}</div>
-                            <div className="text-[10px] text-slate-500">{app.category_name}</div>
-                          </td>
-                          <td className="py-4 px-4">
-                            <div className="text-slate-600">{new Date(app.created_at).toLocaleDateString()}</div>
-                            <div className="font-bold text-emerald-600">₹{app.total_fee}</div>
-                          </td>
-                          <td className="py-4 px-4"><StatusBadge status={app.status} /></td>
-                          <td className="py-4 px-4 text-right">
-                            <button
-                              onClick={() => openAppInspector(app.id)}
-                              className="bg-orange-500 hover:bg-orange-600 text-white font-extrabold px-3 py-1.5 rounded-lg text-xs transition-colors shadow flex items-center space-x-1 ml-auto"
-                            >
-                              <Eye className="w-3.5 h-3.5" />
-                              <span>Inspect</span>
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-            </div>
-          )}
-
-          {/* TAB 3: SERVICES MANAGER */}
+          {/* OTHER SUB-TABS */}
           {activeTab === 'services' && (
             <div className="space-y-6">
-              <div className="flex justify-between items-center">
-                <div>
-                  <h3 className="font-black text-xl text-slate-900">Services Catalog Manager</h3>
-                  <p className="text-xs text-slate-500">Configure public services, fees, processing SLAs, and document requirements.</p>
-                </div>
-                <button
-                  onClick={() => setShowAddServiceModal(true)}
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl shadow-md flex items-center space-x-1.5 transition-all"
-                >
-                  <Plus className="w-4 h-4" />
-                  <span>Add New Sub-Service</span>
-                </button>
-              </div>
-
+              <h3 className="font-black text-xl text-slate-900">Services Directory Manager</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {services.map((srv) => (
-                  <div key={srv.id} className="bg-white border border-slate-200/90 p-5 rounded-3xl space-y-3 shadow-sm hover:border-slate-300 transition-all">
-                    <div className="flex justify-between items-start">
-                      <h4 className="font-bold text-base text-slate-900">{srv.name}</h4>
-                      <span className="text-xs font-black text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200">
-                        ₹{srv.fee}
-                      </span>
-                    </div>
-                    <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">{srv.description}</p>
-                    <div className="text-[11px] text-slate-500 flex justify-between pt-2 border-t border-slate-100 font-medium">
-                      <span>Category ID: {srv.category_id}</span>
-                      <span>SLA: {srv.processing_time}</span>
-                    </div>
+                  <div key={srv.id} className="bg-white border border-slate-200 p-5 rounded-3xl space-y-2">
+                    <h4 className="font-bold text-base text-slate-900">{srv.name}</h4>
+                    <p className="text-xs text-slate-600 line-clamp-2">{srv.description}</p>
                   </div>
                 ))}
               </div>
             </div>
           )}
 
-          {/* TAB 4: CUSTOMERS DIRECTORY */}
           {activeTab === 'customers' && (
             <div className="space-y-6">
               <h3 className="font-black text-xl text-slate-900">Registered Citizen Directory</h3>
-              <div className="bg-white border border-slate-200/90 rounded-3xl overflow-hidden shadow-sm">
+              <div className="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm">
                 <table className="w-full text-left text-xs text-slate-700">
                   <thead className="bg-slate-50 text-slate-500 font-extrabold uppercase tracking-wider text-[10px] border-b border-slate-200">
                     <tr>
                       <th className="py-3.5 px-4">Full Name</th>
-                      <th className="py-3.5 px-4">Email Address</th>
-                      <th className="py-3.5 px-4">Mobile Number</th>
-                      <th className="py-3.5 px-4">Aadhaar No</th>
-                      <th className="py-3.5 px-4">Total Applications</th>
+                      <th className="py-3.5 px-4">Email</th>
+                      <th className="py-3.5 px-4">Phone</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
@@ -826,8 +791,6 @@ export default function AdminDashboard() {
                         <td className="py-3.5 px-4 font-bold text-slate-900">{c.name}</td>
                         <td className="py-3.5 px-4 text-slate-600">{c.email}</td>
                         <td className="py-3.5 px-4 text-slate-600">{c.phone}</td>
-                        <td className="py-3.5 px-4 font-mono text-slate-700">{c.aadhaar_no || 'N/A'}</td>
-                        <td className="py-3.5 px-4 font-extrabold text-orange-600">{c.total_applications}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -836,124 +799,56 @@ export default function AdminDashboard() {
             </div>
           )}
 
-          {/* TAB 5: CONTACT ENQUIRIES */}
           {activeTab === 'enquiries' && (
             <div className="space-y-6">
               <h3 className="font-black text-xl text-slate-900">Contact Enquiries ({enquiries.length})</h3>
               <div className="space-y-3">
                 {enquiries.map((eq) => (
-                  <div key={eq.id} className="bg-white border border-slate-200/90 p-5 rounded-3xl space-y-2 shadow-sm">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h4 className="font-bold text-sm text-slate-900">{eq.subject}</h4>
-                        <span className="text-xs text-slate-500">From: {eq.name} ({eq.email} • {eq.phone})</span>
-                      </div>
-                      <span className="text-[10px] text-slate-400 font-medium">{new Date(eq.created_at).toLocaleDateString()}</span>
-                    </div>
-                    <p className="text-xs text-slate-700 bg-slate-50 p-3.5 rounded-2xl border border-slate-200">{eq.message}</p>
+                  <div key={eq.id} className="bg-white border border-slate-200 p-5 rounded-3xl space-y-2">
+                    <h4 className="font-bold text-sm text-slate-900">{eq.subject}</h4>
+                    <p className="text-xs text-slate-700 bg-slate-50 p-3 rounded-2xl">{eq.message}</p>
                   </div>
                 ))}
               </div>
             </div>
           )}
 
-          {/* TAB 6: PAYMENTS & FEE AUDIT */}
           {activeTab === 'payments' && (
             <div className="space-y-6">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                  <h3 className="font-black text-xl text-slate-900">Payments & Fee Audit Operations</h3>
-                  <p className="text-xs text-slate-500">Monitor transaction receipts, gateway logs, and initiate user refunds.</p>
-                </div>
-                
-                <div className="flex items-center space-x-1.5 self-start sm:self-auto">
-                  {['All', 'PAID', 'PENDING', 'FAILED', 'REFUNDED'].map((st) => (
-                    <button
-                      key={st}
-                      onClick={() => setPaymentFilter(st)}
-                      className={`px-3 py-1 rounded-xl text-xs font-bold transition-all ${
-                        paymentFilter === st ? 'bg-orange-500 text-white shadow-sm' : 'bg-white text-slate-600 border border-slate-200'
-                      }`}
-                    >
-                      {st}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="bg-white border border-slate-200/90 rounded-3xl overflow-hidden shadow-sm">
+              <h3 className="font-black text-xl text-slate-900">Payments & Revenue Audit</h3>
+              <div className="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm">
                 <table className="w-full text-left text-xs text-slate-700">
                   <thead className="bg-slate-50 text-slate-500 font-extrabold uppercase tracking-wider text-[10px] border-b border-slate-200">
                     <tr>
-                      <th className="py-3.5 px-4">Receipt / Txn ID</th>
+                      <th className="py-3.5 px-4">Receipt ID</th>
                       <th className="py-3.5 px-4">App ID</th>
-                      <th className="py-3.5 px-4">Citizen</th>
-                      <th className="py-3.5 px-4">Service</th>
                       <th className="py-3.5 px-4">Amount</th>
                       <th className="py-3.5 px-4">Status</th>
-                      <th className="py-3.5 px-4 text-right">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100 font-medium">
-                    {adminPayments
-                      .filter(p => paymentFilter === 'All' || p.payment_status === paymentFilter)
-                      .map((p) => {
-                        const isPaid = p.payment_status === 'PAID';
-                        return (
-                          <tr key={p.id} className="hover:bg-slate-50/80 transition-colors">
-                            <td className="py-3.5 px-4 font-mono font-bold text-slate-900">
-                              <div>{p.receipt_number}</div>
-                              <div className="text-[10px] text-slate-400 font-normal">{p.payment_transaction_id}</div>
-                            </td>
-                            <td className="py-3.5 px-4 font-mono text-orange-600 font-extrabold">{p.application_number}</td>
-                            <td className="py-3.5 px-4 text-slate-800">{p.user_name || p.user_email}</td>
-                            <td className="py-3.5 px-4 text-slate-600">{p.service_name}</td>
-                            <td className="py-3.5 px-4 font-black text-emerald-600 text-sm">₹{p.amount}</td>
-                            <td className="py-3.5 px-4">
-                              <span className={`inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
-                                isPaid ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
-                                p.payment_status === 'PENDING' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
-                                p.payment_status === 'REFUNDED' ? 'bg-purple-50 text-purple-700 border border-purple-200' :
-                                'bg-rose-50 text-rose-700 border border-rose-200'
-                              }`}>
-                                <span>{p.payment_status}</span>
-                              </span>
-                            </td>
-                            <td className="py-3.5 px-4 text-right">
-                              {isPaid && (
-                                <button
-                                  onClick={() => handleRefund(p.id)}
-                                  className="bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold px-3 py-1 rounded-lg text-xs border border-rose-200 transition-colors"
-                                >
-                                  Refund
-                                </button>
-                              )}
-                            </td>
-                          </tr>
-                        );
-                      })}
+                  <tbody className="divide-y divide-slate-100">
+                    {adminPayments.map((p) => (
+                      <tr key={p.id}>
+                        <td className="py-3.5 px-4 font-mono font-bold">{p.receipt_number}</td>
+                        <td className="py-3.5 px-4 font-mono text-orange-600 font-bold">{p.application_number}</td>
+                        <td className="py-3.5 px-4 font-bold text-emerald-600">₹{p.amount}</td>
+                        <td className="py-3.5 px-4"><span className="px-2 py-0.5 bg-emerald-50 text-emerald-700 rounded text-[10px] font-bold">{p.payment_status}</span></td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
             </div>
           )}
 
-          {/* TAB 7: CAREER APPLICATIONS */}
           {activeTab === 'careers' && (
             <div className="space-y-6">
-              <h3 className="font-black text-xl text-slate-900">Career & Job Submissions ({careers.length})</h3>
+              <h3 className="font-black text-xl text-slate-900">Career Submissions ({careers.length})</h3>
               <div className="space-y-3">
                 {careers.map((cr) => (
-                  <div key={cr.id} className="bg-white border border-slate-200/90 p-5 rounded-3xl space-y-2 shadow-sm">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h4 className="font-bold text-sm text-orange-600">{cr.position}</h4>
-                        <p className="text-xs text-slate-900 font-semibold">{cr.applicant_name} ({cr.email} • {cr.phone})</p>
-                      </div>
-                      <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200">
-                        {cr.experience}
-                      </span>
-                    </div>
+                  <div key={cr.id} className="bg-white border border-slate-200 p-5 rounded-3xl space-y-1">
+                    <h4 className="font-bold text-sm text-orange-600">{cr.position}</h4>
+                    <p className="text-xs text-slate-900 font-semibold">{cr.applicant_name} ({cr.email})</p>
                   </div>
                 ))}
               </div>
@@ -963,7 +858,7 @@ export default function AdminDashboard() {
         </main>
       </div>
 
-      {/* INSPECTOR & STATUS MANAGER MODAL */}
+      {/* INSPECTOR MODAL */}
       {appDetails && (
         <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white border border-slate-200 rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 space-y-6 shadow-2xl">
@@ -977,15 +872,12 @@ export default function AdminDashboard() {
                   {appDetails.service_name}
                 </h3>
               </div>
-              <button
-                onClick={() => setAppDetails(null)}
-                className="text-slate-400 hover:text-slate-600 p-2 rounded-xl bg-slate-100"
-              >
+              <button onClick={() => setAppDetails(null)} className="text-slate-400 hover:text-slate-600 p-2 rounded-xl bg-slate-100">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            {/* STATUS UPDATE MANAGER FORM */}
+            {/* STATUS UPDATE FORM */}
             <form onSubmit={handleUpdateStatusSubmit} className="bg-slate-50 p-6 rounded-2xl border border-slate-200 space-y-4">
               <h4 className="font-black text-xs text-slate-900 uppercase tracking-wider flex items-center space-x-2">
                 <Edit3 className="w-4 h-4 text-orange-500" />
@@ -1027,7 +919,7 @@ export default function AdminDashboard() {
                 <button
                   type="button"
                   onClick={() => handleIssueCertificate(appDetails.id)}
-                  className="w-full sm:w-auto bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl shadow transition-colors flex items-center justify-center space-x-1.5"
+                  className="w-full sm:w-auto bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl shadow flex items-center justify-center space-x-1.5"
                 >
                   <Award className="w-4 h-4" />
                   <span>Issue Official Digital Certificate</span>
@@ -1036,86 +928,18 @@ export default function AdminDashboard() {
                 <button
                   type="submit"
                   disabled={savingStatus}
-                  className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs px-5 py-2.5 rounded-xl shadow transition-colors"
+                  className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs px-5 py-2.5 rounded-xl shadow"
                 >
                   {savingStatus ? 'Saving Status...' : 'Save & Publish Status Update'}
                 </button>
               </div>
             </form>
 
-            {/* Customer Details */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200 text-xs">
               <div><span className="text-slate-500 block font-medium">Customer Name</span><span className="font-bold text-slate-900">{appDetails.user_name}</span></div>
               <div><span className="text-slate-500 block font-medium">Email</span><span className="font-bold text-slate-900">{appDetails.user_email}</span></div>
               <div><span className="text-slate-500 block font-medium">Phone</span><span className="font-bold text-slate-900">{appDetails.user_phone}</span></div>
             </div>
-
-            {/* Submitted Form Fields */}
-            <div className="space-y-2">
-              <h4 className="text-xs font-black text-slate-700 uppercase tracking-wider">Submitted Form Fields</h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                {appDetails.field_values && appDetails.field_values.map((fv) => (
-                  <div key={fv.id} className="p-3 bg-slate-50 rounded-xl border border-slate-200">
-                    <span className="text-slate-500 block">{fv.field_label}</span>
-                    <span className="font-bold text-slate-800">{fv.value}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Uploaded Documents */}
-            {appDetails.documents && appDetails.documents.length > 0 && (
-              <div className="space-y-3">
-                <h4 className="text-xs font-black text-slate-700 uppercase tracking-wider">
-                  Uploaded Proof Documents & Verification Desk
-                </h4>
-
-                <div className="space-y-3">
-                  {appDetails.documents.map((doc) => {
-                    const isVerified = doc.verification_status === 'Verified';
-                    const isRejected = doc.verification_status === 'Rejected';
-
-                    return (
-                      <div key={doc.id} className={`p-4 rounded-2xl border ${isRejected ? 'border-rose-200 bg-rose-50/50' : isVerified ? 'border-emerald-200 bg-emerald-50/50' : 'border-slate-200 bg-slate-50'} space-y-3`}>
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                          <div className="space-y-0.5">
-                            <div className="flex items-center space-x-2">
-                              <span className="font-bold text-sm text-slate-900">{doc.document_name}</span>
-                              <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${
-                                isVerified ? 'bg-emerald-100 text-emerald-800' : isRejected ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800'
-                              }`}>
-                                {doc.verification_status || 'Pending Verification'}
-                              </span>
-                            </div>
-                            <div className="text-xs text-slate-500 font-mono">
-                              File: {doc.original_filename || doc.file_name} ({doc.file_type || 'File'})
-                            </div>
-                          </div>
-
-                          <div className="flex items-center space-x-2">
-                            <a
-                              href={`/api/documents/${doc.id}/preview`}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="px-3 py-1.5 bg-white text-slate-700 text-xs font-bold rounded-lg border border-slate-300 flex items-center space-x-1"
-                            >
-                              <span>Preview</span>
-                              <ExternalLink className="w-3.5 h-3.5" />
-                            </a>
-                            <a
-                              href={`/api/documents/${doc.id}/download`}
-                              className="px-3 py-1.5 bg-white text-orange-600 text-xs font-bold rounded-lg border border-slate-300"
-                            >
-                              Download
-                            </a>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
 
           </div>
         </div>
