@@ -364,7 +364,8 @@ export default function ApplyService() {
           items={[
             { label: 'E-Services', path: '/services' },
             { label: service.name, path: `/service/${service.slug || service.id}` },
-            { label: 'Apply' }
+            { label: 'Apply' },
+            ...(currentStep === 2 ? [{ label: 'Documents' }] : currentStep === 3 ? [{ label: 'Review' }] : currentStep === 4 ? [{ label: 'Success' }] : [])
           ]} 
         />
 
@@ -372,13 +373,15 @@ export default function ApplyService() {
         <div className="bg-white rounded-3xl p-8 sm:p-10 border border-slate-200/90 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div className="space-y-2">
             <span className="text-[11px] font-extrabold text-orange-600 uppercase tracking-widest bg-orange-50 border border-orange-200/80 px-3 py-0.5 rounded-full inline-block">
-              APPLICATION
+              {currentStep === 2 ? 'DOCUMENTS' : currentStep === 3 ? 'REVIEW' : 'APPLICATION'}
             </span>
             <h1 className="font-heading font-extrabold text-2xl sm:text-3xl lg:text-4xl text-slate-900 tracking-tight">
-              Apply for {service.name}
+              {currentStep === 2 ? 'Upload Required Documents' : currentStep === 3 ? `Review ${service.name} Application` : `Apply for ${service.name}`}
             </h1>
             <p className="text-xs sm:text-sm text-slate-500 font-normal leading-relaxed">
-              Submit your required personal details and proof documents for fast online verification and processing.
+              {currentStep === 2 
+                ? 'Upload clear and valid documents required for your application.' 
+                : 'Submit your required personal details and proof documents for fast online verification and processing.'}
             </p>
           </div>
 
@@ -733,6 +736,25 @@ export default function ApplyService() {
                   <span className="text-xs text-slate-400 font-bold">PDF, JPG, PNG (Max 5MB)</span>
                 </div>
 
+                {/* COMPACT APPLICATION SUMMARY CARD */}
+                <div className="p-5 bg-slate-900 text-white rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm border border-slate-800">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
+                      <span>Ref ID:</span>
+                      <span className="text-orange-400 font-mono">{draftId ? `APP-DRAFT-${draftId.toString().padStart(4, '0')}` : 'APP-REF-2026'}</span>
+                    </div>
+                    <h4 className="font-extrabold text-sm text-white">{service.name}</h4>
+                    <p className="text-xs text-slate-300 font-normal">
+                      Applicant: <span className="font-bold text-white">{applicantInfo.user_name || 'Karthik S.'}</span>
+                    </p>
+                  </div>
+                  <div className="bg-slate-800 border border-slate-700 px-3.5 py-1.5 rounded-xl text-right">
+                    <div className="text-[10px] text-slate-400 uppercase font-extrabold">Status</div>
+                    <div className="text-xs font-bold text-orange-400">Documents Pending (Step 2 of 4)</div>
+                  </div>
+                </div>
+
+                {/* REQUIRED DOCUMENTS GRID */}
                 {service.documents && service.documents.length > 0 ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {service.documents.map((doc, idx) => {
@@ -784,8 +806,8 @@ export default function ApplyService() {
                               <FileText className="w-4 h-4 text-orange-500" />
                               <span>{docName}</span>
                             </span>
-                            <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-md uppercase ${
-                              doc.is_required !== false && doc.required !== false ? 'bg-amber-100 text-amber-800' : 'bg-slate-200 text-slate-700'
+                            <span className={`text-[10px] font-extrabold px-2.5 py-0.5 rounded-md uppercase ${
+                              doc.is_required !== false && doc.required !== false ? 'bg-amber-100 text-amber-800 border border-amber-200' : 'bg-slate-200 text-slate-700'
                             }`}>
                               {doc.is_required !== false && doc.required !== false ? 'Required' : 'Optional'}
                             </span>
@@ -795,15 +817,16 @@ export default function ApplyService() {
                             {doc.description || 'Upload clear scanned copy or photo proof'}
                           </p>
 
-                          <div className="text-[10px] text-slate-400 font-bold">
-                            PDF, JPG, PNG • Max {maxMB}MB
+                          <div className="text-[10px] text-slate-400 font-bold flex items-center gap-2">
+                            <span className="bg-slate-200/60 px-2 py-0.5 rounded text-slate-600">PDF, JPG, PNG</span>
+                            <span>Max {maxMB}MB</span>
                           </div>
 
                           {!currentFile ? (
                             <div className="space-y-2 pt-1">
-                              <label className="block w-full py-3 px-3 bg-white border border-slate-200 rounded-xl text-center cursor-pointer hover:bg-orange-50 hover:border-orange-300 transition-colors">
+                              <label className="block w-full py-3.5 px-3 bg-white border border-slate-200 rounded-xl text-center cursor-pointer hover:bg-orange-50 hover:border-orange-300 transition-colors shadow-xs">
                                 <span className="text-xs font-extrabold text-orange-600 flex items-center justify-center gap-1.5">
-                                  <Upload className="w-3.5 h-3.5" />
+                                  <Upload className="w-4 h-4" />
                                   <span>Choose File or Drag & Drop</span>
                                 </span>
                                 <input
@@ -815,35 +838,41 @@ export default function ApplyService() {
                               </label>
                             </div>
                           ) : (
-                            <div className="p-3 bg-white rounded-xl border border-emerald-200 shadow-xs space-y-2">
+                            <div className="p-3.5 bg-white rounded-xl border border-emerald-200 shadow-xs space-y-2">
                               <div className="flex items-center justify-between">
                                 <div className="flex items-center space-x-2 truncate">
-                                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                                  <CheckCircle2 className="w-4.5 h-4.5 text-emerald-600 shrink-0" />
                                   <span className="text-xs font-bold text-slate-800 truncate">{currentFile.name}</span>
                                 </div>
-                                <span className="text-[10px] text-slate-400 font-semibold">
+                                <span className="text-[10px] font-extrabold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-md">
                                   {(currentFile.size / (1024 * 1024)).toFixed(2)} MB
                                 </span>
                               </div>
 
-                              <div className="flex items-center justify-end space-x-2 pt-1 border-t border-slate-100">
-                                <label className="text-[11px] font-bold text-orange-600 hover:underline cursor-pointer">
-                                  Replace
-                                  <input
-                                    type="file"
-                                    accept=".pdf,.jpg,.jpeg,.png"
-                                    onChange={e => e.target.files[0] && processSelectedFile(docName, e.target.files[0], maxMB)}
-                                    className="hidden"
-                                  />
-                                </label>
-                                <span className="text-slate-300">|</span>
-                                <button
-                                  type="button"
-                                  onClick={() => setFiles(prev => ({ ...prev, [docName]: null }))}
-                                  className="text-[11px] font-bold text-rose-600 hover:underline"
-                                >
-                                  Remove
-                                </button>
+                              <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
+                                <span className="text-[10px] font-bold text-emerald-700 flex items-center gap-1">
+                                  <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                                  <span>Successfully Uploaded</span>
+                                </span>
+                                <div className="flex items-center space-x-2">
+                                  <label className="text-[11px] font-bold text-orange-600 hover:underline cursor-pointer">
+                                    Replace
+                                    <input
+                                      type="file"
+                                      accept=".pdf,.jpg,.jpeg,.png"
+                                      onChange={e => e.target.files[0] && processSelectedFile(docName, e.target.files[0], maxMB)}
+                                      className="hidden"
+                                    />
+                                  </label>
+                                  <span className="text-slate-300">|</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => setFiles(prev => ({ ...prev, [docName]: null }))}
+                                    className="text-[11px] font-bold text-rose-600 hover:underline"
+                                  >
+                                    Remove
+                                  </button>
+                                </div>
                               </div>
                             </div>
                           )}
@@ -864,24 +893,46 @@ export default function ApplyService() {
                   </div>
                 )}
 
+                {/* INFORMATION NOTICE CARD */}
+                <div className="bg-orange-50/70 border border-orange-200/80 p-4 rounded-2xl flex items-start space-x-3 text-xs text-orange-900 font-medium">
+                  <Info className="w-5 h-5 text-orange-600 shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-extrabold text-orange-950">Document Notice: </span>
+                    Please upload clear and readable documents. Make sure the details match your application.
+                  </div>
+                </div>
+
+                {/* BOTTOM ACTIONS */}
                 <div className="pt-6 border-t border-slate-100 flex items-center justify-between gap-4">
                   <button
                     type="button"
                     onClick={handlePrevStep}
-                    className="px-5 py-3 bg-slate-100 hover:bg-slate-200/80 text-slate-700 font-bold text-xs rounded-xl flex items-center gap-2"
+                    className="px-5 py-3.5 bg-slate-100 hover:bg-slate-200/80 text-slate-700 font-bold text-xs rounded-xl flex items-center gap-2 border border-slate-200/80"
                   >
                     <ArrowLeft className="w-4 h-4" />
                     <span>Back to Details</span>
                   </button>
 
-                  <button
-                    type="button"
-                    onClick={handleNextStep}
-                    className="px-8 py-3.5 bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-xs sm:text-sm rounded-xl shadow-xs transition-colors flex items-center gap-2 group/btn"
-                  >
-                    <span>Proceed to Review</span>
-                    <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
-                  </button>
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={handleSaveDraft}
+                      disabled={savingDraft}
+                      className="px-4 py-3.5 bg-slate-100 hover:bg-slate-200/80 text-slate-700 font-bold text-xs rounded-xl border border-slate-200/80 flex items-center gap-2 transition-colors"
+                    >
+                      <Save className="w-4 h-4 text-orange-500" />
+                      <span>{savingDraft ? 'Saving...' : 'Save Draft'}</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={handleNextStep}
+                      className="px-8 py-3.5 bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-xs sm:text-sm rounded-xl shadow-xs transition-colors flex items-center gap-2 group/btn"
+                    >
+                      <span>Continue to Review</span>
+                      <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                    </button>
+                  </div>
                 </div>
 
               </div>
