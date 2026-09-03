@@ -73,15 +73,15 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-20">
           
           {/* 1. BRANDING LOGO */}
-          <Link to="/" className="flex items-center gap-3 group shrink-0">
-            <div className="w-11 h-11 rounded-xl bg-blue-900 flex items-center justify-center text-white shadow group-hover:bg-blue-800 transition-colors">
-              <Landmark className="w-6 h-6 text-white" />
+          <Link to="/" className="flex items-center gap-2 sm:gap-3 group shrink">
+            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-blue-900 flex items-center justify-center text-white shadow group-hover:bg-blue-800 transition-colors shrink-0">
+              <Landmark className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
             </div>
-            <div>
-              <div className="font-heading font-extrabold text-xl sm:text-2xl tracking-tight text-blue-950 flex items-center gap-1.5">
-                E-CONNECT <span className="text-emerald-700 text-[10px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded bg-emerald-50 border border-emerald-200">E-SEVA PORTAL</span>
+            <div className="min-w-0">
+              <div className="font-heading font-extrabold text-base sm:text-2xl tracking-tight text-blue-950 flex items-center gap-1 sm:gap-1.5 truncate">
+                E-CONNECT <span className="hidden xs:inline-block sm:inline-block text-emerald-700 text-[9px] sm:text-[10px] font-extrabold uppercase tracking-widest px-1.5 py-0.2 sm:px-2 sm:py-0.5 rounded bg-emerald-50 border border-emerald-200">E-SEVA</span>
               </div>
-              <p className="text-[10px] text-slate-500 font-medium">Digital Service Application Assistance Desk</p>
+              <p className="text-[9px] sm:text-[10px] text-slate-500 font-medium truncate max-w-[170px] xs:max-w-[220px] sm:max-w-none">Digital Service Assistance Desk</p>
             </div>
           </Link>
 

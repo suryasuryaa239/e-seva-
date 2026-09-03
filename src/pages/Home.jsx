@@ -143,10 +143,10 @@ export default function Home() {
               </div>
 
               {/* Trust Badges */}
-              <div className="pt-4 border-t border-blue-800/80 flex items-center justify-center lg:justify-start gap-6 text-xs text-slate-300 font-medium">
-                <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-emerald-400" /> Dynamic Form Filling</span>
-                <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-emerald-400" /> Unique Application ID</span>
-                <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-emerald-400" /> Secure Payments</span>
+              <div className="pt-4 border-t border-blue-800/80 flex flex-wrap items-center justify-center lg:justify-start gap-3 sm:gap-6 text-xs text-slate-300 font-medium">
+                <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" /> Dynamic Form Filling</span>
+                <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" /> Unique Application ID</span>
+                <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" /> Secure Payments</span>
               </div>
             </div>
 
