@@ -98,165 +98,63 @@ export default function Home() {
   return (
     <div className="space-y-12 pb-16 bg-slate-50 selection:bg-blue-600 selection:text-white">
       
-      {/* 1. HERO / WELCOME SECTION */}
-      <section className="bg-gradient-to-b from-slate-50 via-white to-slate-50/50 text-slate-900 py-12 sm:py-20 border-b border-slate-200 relative overflow-hidden">
+      {/* 1. HERO / WELCOME SECTION (EXACT REFERENCE IMAGE MATCH) */}
+      <section className="bg-gradient-to-b from-slate-100/80 via-slate-50 to-white text-slate-900 py-14 sm:py-20 border-b border-slate-200/80 relative overflow-hidden">
         
-        {/* Subtle Background Pattern Elements */}
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-orange-100/40 rounded-full blur-3xl -z-0 pointer-events-none"></div>
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-slate-200/40 rounded-full blur-3xl -z-0 pointer-events-none"></div>
+        {/* Soft Background City Silhouette Pattern Graphic */}
+        <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:16px_16px]"></div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
             
             {/* ========================================================================= */}
             {/* LEFT CONTENT COLUMN */}
             {/* ========================================================================= */}
             <div className="lg:col-span-6 space-y-6 text-center lg:text-left">
               
-              {/* Small Label */}
-              <div className="inline-flex items-center gap-2 bg-orange-50 border border-orange-200/80 text-orange-600 text-[11px] font-extrabold px-3.5 py-1.5 rounded-full uppercase tracking-wider shadow-xs">
-                <Sparkles className="w-3.5 h-3.5 text-orange-500" />
-                <span>DIGITAL SERVICES</span>
-              </div>
-
-              {/* Main Heading */}
-              <h1 className="font-heading font-extrabold text-3xl sm:text-5xl lg:text-5xl tracking-tight leading-[1.15] text-slate-900">
-                Your Trusted <span className="text-slate-900 underline decoration-orange-500 decoration-wavy decoration-2">Digital Service</span> Partner
+              {/* Heading: Welcome to E-Seva */}
+              <h1 className="font-heading font-extrabold text-4xl sm:text-5xl lg:text-6xl tracking-tight leading-tight text-slate-900">
+                Welcome to <span className="text-orange-500 font-extrabold">E-Seva</span>
               </h1>
 
-              {/* Supporting Text */}
-              <p className="text-slate-600 text-sm sm:text-base max-w-xl font-normal leading-relaxed">
-                Conveniently access and apply for essential digital services online. From Aadhaar updates and PAN cards to Voter ID and Official Certificates, our guided portal makes service processing simple and secure.
+              {/* Subtitle text */}
+              <p className="text-slate-600 text-lg sm:text-xl max-w-xl font-medium leading-relaxed">
+                Your one-stop solution for all your online service needs
               </p>
 
               {/* Action Buttons */}
-              <div className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3.5">
-                {/* Primary Button */}
+              <div className="pt-3 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+                {/* Explore Services Button */}
                 <Link
                   to="/services"
-                  className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs px-7 py-3.5 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 border border-slate-800 group"
+                  className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-sm px-8 py-3.5 rounded-lg shadow-md hover:shadow-lg transition-all text-center"
                 >
-                  <span>Explore Services</span>
-                  <ArrowRight className="w-4 h-4 text-orange-400 group-hover:translate-x-1 transition-transform" />
+                  Explore Services
                 </Link>
 
-                {/* Secondary Button */}
+                {/* Track Application Button */}
                 <Link
                   to="/track"
-                  className="w-full sm:w-auto bg-white hover:bg-slate-50 text-slate-800 font-bold text-xs px-7 py-3.5 rounded-xl border border-slate-300 hover:border-slate-800 shadow-xs transition-all flex items-center justify-center gap-2"
+                  className="w-full sm:w-auto bg-white hover:bg-slate-50 text-slate-800 font-bold text-sm px-8 py-3.5 rounded-lg border border-slate-300 hover:border-slate-800 shadow-xs transition-all text-center"
                 >
-                  <FileSearch className="w-4 h-4 text-slate-600" />
-                  <span>Track Application</span>
+                  Track Application
                 </Link>
               </div>
 
-              {/* Trust Features Checklist */}
-              <div className="pt-4 border-t border-slate-200/80 flex flex-wrap items-center justify-center lg:justify-start gap-4 sm:gap-6 text-xs text-slate-600 font-medium">
-                <span className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4 text-orange-500 shrink-0" /> Fast Application Desk
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4 text-orange-500 shrink-0" /> Verified Processors
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4 text-orange-500 shrink-0" /> Real-Time Status SLA
-                </span>
-              </div>
             </div>
 
             {/* ========================================================================= */}
-            {/* RIGHT VISUAL ILLUSTRATION (Laptop + Smartphone + Digital Service Cards) */}
+            {/* RIGHT CONTENT COLUMN: EXACT DEVICE MOCKUP IMAGE */}
             {/* ========================================================================= */}
             <div className="lg:col-span-6 flex justify-center lg:justify-end">
-              <div className="relative w-full max-w-lg">
-                
-                {/* Main Laptop Mockup Container */}
-                <div className="bg-slate-900 p-2.5 sm:p-3 rounded-2xl shadow-2xl border border-slate-800 relative z-10">
-                  {/* Laptop Screen Header */}
-                  <div className="flex items-center justify-between bg-slate-800 px-3 py-2 rounded-t-xl border-b border-slate-700">
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
-                      <span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
-                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                    </div>
-                    <div className="bg-slate-900 text-slate-400 text-[9px] font-mono px-3 py-0.5 rounded-md border border-slate-700 truncate max-w-[180px]">
-                      eseva.digital-portal.in
-                    </div>
-                    <div className="w-4"></div>
-                  </div>
-
-                  {/* Laptop Screen Inner Content */}
-                  <div className="bg-slate-50 p-4 rounded-b-xl space-y-3.5 text-slate-900">
-                    
-                    {/* Inner App Navigation Mock */}
-                    <div className="flex items-center justify-between bg-white p-2.5 rounded-lg border border-slate-200 shadow-xs">
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-md bg-slate-900 flex items-center justify-center text-white text-[10px]">
-                          <Landmark className="w-3.5 h-3.5" />
-                        </div>
-                        <span className="font-heading font-extrabold text-xs text-slate-900">E-SEVA PORTAL</span>
-                      </div>
-                      <span className="text-[9px] font-bold text-orange-600 bg-orange-50 px-2 py-0.5 rounded border border-orange-200">
-                        ONLINE DESK
-                      </span>
-                    </div>
-
-                    {/* Inner Service Preview Grid */}
-                    <div className="grid grid-cols-3 gap-2 text-center">
-                      <div className="bg-white p-2.5 rounded-lg border border-slate-200 shadow-xs flex flex-col items-center gap-1">
-                        <Fingerprint className="w-4 h-4 text-orange-500" />
-                        <span className="text-[10px] font-bold text-slate-800">Aadhaar</span>
-                      </div>
-                      <div className="bg-white p-2.5 rounded-lg border border-slate-200 shadow-xs flex flex-col items-center gap-1">
-                        <CreditCard className="w-4 h-4 text-slate-800" />
-                        <span className="text-[10px] font-bold text-slate-800">PAN Card</span>
-                      </div>
-                      <div className="bg-white p-2.5 rounded-lg border border-slate-200 shadow-xs flex flex-col items-center gap-1">
-                        <FileText className="w-4 h-4 text-emerald-600" />
-                        <span className="text-[10px] font-bold text-slate-800">Patta/Cert.</span>
-                      </div>
-                    </div>
-
-                    {/* Inner Application Status Tracker Bar */}
-                    <div className="bg-white p-3 rounded-lg border border-slate-200 space-y-1.5 shadow-xs">
-                      <div className="flex justify-between items-center text-[10px]">
-                        <span className="font-bold text-slate-700">Application ESV-2026-0841</span>
-                        <span className="font-extrabold text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200">APPROVED</span>
-                      </div>
-                      <div className="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
-                        <div className="bg-emerald-500 h-full w-full rounded-full"></div>
-                      </div>
-                    </div>
-
-                  </div>
+              <div className="relative w-full max-w-xl">
+                <div className="relative group">
+                  <img
+                    src="/hero_devices.png"
+                    alt="E-Seva Digital Portal Devices Mockup"
+                    className="w-full h-auto object-contain rounded-2xl shadow-xl transition-all duration-300 group-hover:scale-[1.01]"
+                  />
                 </div>
-
-                {/* Overlapping Smartphone Device Mockup (Floating Right) */}
-                <div className="absolute -bottom-4 -right-3 sm:-right-5 w-40 sm:w-44 bg-slate-900 p-2 rounded-2xl shadow-2xl border border-slate-800 z-20 hidden sm:block">
-                  <div className="bg-slate-50 p-2.5 rounded-xl space-y-2 text-slate-900">
-                    <div className="w-8 h-1 bg-slate-300 rounded-full mx-auto mb-1"></div>
-                    <div className="flex items-center gap-1.5">
-                      <ShieldCheck className="w-3.5 h-3.5 text-slate-900" />
-                      <span className="text-[9px] font-extrabold text-slate-900">Live Status</span>
-                    </div>
-                    <div className="bg-white p-2 rounded-lg border border-slate-200 text-[9px] space-y-1 shadow-xs">
-                      <div className="font-bold text-slate-800">Aadhaar Address</div>
-                      <div className="text-orange-600 font-extrabold bg-orange-50 px-1 rounded">PROCESSING</div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Floating Card Accent Badge (Top Left) */}
-                <div className="absolute -top-4 -left-3 sm:-left-6 bg-white p-2.5 sm:p-3 rounded-xl border border-slate-200 shadow-xl z-20 flex items-center gap-2.5 animate-bounce duration-1000">
-                  <div className="w-8 h-8 rounded-lg bg-orange-50 border border-orange-200 flex items-center justify-center text-orange-600">
-                    <Award className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <span className="font-bold text-xs text-slate-900 block">Verified Desk</span>
-                    <span className="text-[9px] text-slate-500 block font-normal">Official Guidelines</span>
-                  </div>
-                </div>
-
               </div>
             </div>
 
