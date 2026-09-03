@@ -611,6 +611,109 @@ export default function Home() {
         </div>
       </section>
 
+      {/* 8. ABOUT / TRUST SECTION (STEP 8 SPECIFICATION) */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 border-t border-slate-200/80">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+          
+          {/* LEFT SIDE: VISUAL MOCKUP */}
+          <div className="lg:col-span-6 flex justify-center order-2 lg:order-1">
+            <div className="relative w-full max-w-lg">
+              <div className="relative group">
+                <img
+                  src="/hero_devices.png"
+                  alt="E-Seva Online Digital Service Portal Platform"
+                  className="w-full h-auto object-contain rounded-2xl shadow-lg border border-slate-200/80 transition-all duration-300 group-hover:scale-[1.01]"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* RIGHT SIDE: CONTENT & 3 TRUST HIGHLIGHTS */}
+          <div className="lg:col-span-6 space-y-6 text-left order-1 lg:order-2">
+            
+            {/* SMALL UPPERCASE LABEL */}
+            <div>
+              <span className="inline-block text-xs font-extrabold text-orange-600 uppercase tracking-widest bg-orange-50 border border-orange-200/80 px-3.5 py-1 rounded-full">
+                ABOUT E-SEVA
+              </span>
+            </div>
+
+            {/* HEADING */}
+            <h2 className="font-heading font-extrabold text-3xl sm:text-4xl text-slate-900 tracking-tight leading-tight">
+              Making Digital Services <span className="text-orange-500 font-extrabold">Simple for Everyone</span>
+            </h2>
+
+            {/* SUPPORTING PARAGRAPH */}
+            <p className="text-slate-600 text-xs sm:text-sm font-normal leading-relaxed">
+              E-Seva provides a convenient platform to access and manage a wide range of digital service assistance from one place.
+            </p>
+
+            {/* 3 TRUST / HIGHLIGHT ITEMS */}
+            <div className="space-y-4 pt-2">
+              
+              {/* ITEM 1 */}
+              <div className="flex items-start gap-3 bg-white p-3.5 rounded-xl border border-slate-200/90 shadow-xs">
+                <div className="w-7 h-7 rounded-lg bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 shrink-0 mt-0.5 font-extrabold text-sm">
+                  ✓
+                </div>
+                <div className="space-y-0.5">
+                  <h4 className="font-heading font-extrabold text-xs sm:text-sm text-slate-900">
+                    Easy Service Access
+                  </h4>
+                  <p className="text-xs text-slate-500 font-normal">
+                    Access multiple services from one platform.
+                  </p>
+                </div>
+              </div>
+
+              {/* ITEM 2 */}
+              <div className="flex items-start gap-3 bg-white p-3.5 rounded-xl border border-slate-200/90 shadow-xs">
+                <div className="w-7 h-7 rounded-lg bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 shrink-0 mt-0.5 font-extrabold text-sm">
+                  ✓
+                </div>
+                <div className="space-y-0.5">
+                  <h4 className="font-heading font-extrabold text-xs sm:text-sm text-slate-900">
+                    Simple Application Process
+                  </h4>
+                  <p className="text-xs text-slate-500 font-normal">
+                    Complete your application through an easy-to-follow process.
+                  </p>
+                </div>
+              </div>
+
+              {/* ITEM 3 */}
+              <div className="flex items-start gap-3 bg-white p-3.5 rounded-xl border border-slate-200/90 shadow-xs">
+                <div className="w-7 h-7 rounded-lg bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 shrink-0 mt-0.5 font-extrabold text-sm">
+                  ✓
+                </div>
+                <div className="space-y-0.5">
+                  <h4 className="font-heading font-extrabold text-xs sm:text-sm text-slate-900">
+                    Application Tracking
+                  </h4>
+                  <p className="text-xs text-slate-500 font-normal">
+                    Track your submitted application using your Application ID.
+                  </p>
+                </div>
+              </div>
+
+            </div>
+
+            {/* ACTION BUTTON */}
+            <div className="pt-2">
+              <Link
+                to="/about"
+                className="inline-flex items-center gap-2 bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold text-xs sm:text-sm px-7 py-3.5 rounded-xl shadow-md hover:shadow-lg transition-all text-center group"
+              >
+                <span>Learn More</span>
+                <ArrowRight className="w-4 h-4 text-orange-400 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
     </div>
   );
 }
