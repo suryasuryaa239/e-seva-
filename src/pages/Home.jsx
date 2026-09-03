@@ -561,6 +561,56 @@ export default function Home() {
         </div>
       </section>
 
+      {/* 7. APPLICATION CTA / TRACK BANNER (STEP 7 SPECIFICATION) */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="bg-[#0b192c] rounded-3xl p-8 sm:p-12 border border-slate-800 shadow-xl text-white relative overflow-hidden">
+          
+          {/* Subtle Background Accent Orbs */}
+          <div className="absolute -right-16 -bottom-16 w-80 h-80 bg-orange-500/10 rounded-full blur-3xl pointer-events-none"></div>
+          <div className="absolute -left-16 -top-16 w-60 h-60 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
+            
+            {/* LEFT CONTENT COLUMN */}
+            <div className="lg:col-span-7 space-y-4 text-center lg:text-left">
+              <div>
+                <span className="inline-block text-xs font-extrabold text-orange-400 uppercase tracking-widest bg-orange-950/60 border border-orange-500/30 px-3.5 py-1 rounded-full">
+                  NEED HELP WITH YOUR APPLICATION?
+                </span>
+              </div>
+
+              <h2 className="font-heading font-extrabold text-3xl sm:text-4xl lg:text-5xl text-white tracking-tight leading-tight">
+                Apply Easily. <span className="text-orange-400">Track Anytime.</span>
+              </h2>
+
+              <p className="text-slate-300 text-xs sm:text-sm max-w-xl font-normal leading-relaxed">
+                Submit your application online and keep track of its progress using your Application ID from any device.
+              </p>
+            </div>
+
+            {/* RIGHT BUTTONS COLUMN */}
+            <div className="lg:col-span-5 flex flex-col sm:flex-row lg:flex-col xl:flex-row items-center justify-center lg:justify-end gap-3.5">
+              <Link
+                to="/services"
+                className="w-full sm:w-auto bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-xs sm:text-sm px-7 py-3.5 rounded-xl shadow-md hover:shadow-lg transition-all text-center flex items-center justify-center gap-2 group"
+              >
+                <span>Explore Services</span>
+                <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform" />
+              </Link>
+
+              <Link
+                to="/track"
+                className="w-full sm:w-auto bg-white/10 hover:bg-white/20 text-white border border-white/20 font-bold text-xs sm:text-sm px-7 py-3.5 rounded-xl transition-all text-center flex items-center justify-center gap-2 group"
+              >
+                <span>Track Application</span>
+                <ArrowRight className="w-4 h-4 text-orange-400 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
     </div>
   );
 }
