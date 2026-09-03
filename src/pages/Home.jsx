@@ -162,57 +162,80 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 2. E-SERVICES CATEGORIES GRID (EXACT REFERENCE 8 CARDS) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 pt-6">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-b border-slate-200/80 pb-4">
-          <div>
-            <h2 className="font-heading font-extrabold text-2xl sm:text-3xl text-slate-900">
-              E-Services
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-500 mt-1 font-normal">
-              Explore our wide range of online services designed to make your life easier
-            </p>
-          </div>
-
-          <Link
-            to="/services"
-            className="text-xs font-bold text-slate-800 hover:text-orange-600 flex items-center gap-1 shrink-0 transition-colors"
-          >
-            View All Services <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
+      {/* 2. E-SERVICES CATEGORIES GRID (STEP 3 SPECIFICATION) */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10 pt-12 pb-6">
+        
+        {/* CENTERED SECTION HEADER */}
+        <div className="text-center max-w-2xl mx-auto space-y-2">
+          <span className="inline-block text-xs font-extrabold text-orange-600 uppercase tracking-widest bg-orange-50 border border-orange-200/80 px-3 py-1 rounded-full">
+            OUR SERVICES
+          </span>
+          <h2 className="font-heading font-extrabold text-3xl sm:text-4xl text-slate-900 tracking-tight">
+            Explore Our Digital Services
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-500 font-normal leading-relaxed">
+            Choose from our wide range of digital services and assistance.
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-5">
+        {/* 11 SERVICE CATEGORIES GRID */}
+        {/* Desktop: 4 per row, Tablet: 2 or 3 per row, Mobile: 1 per row */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
           {[
-            { name: 'Aadhaar', slug: 'aadhaar', desc: 'Aadhaar related services and updates', color: 'text-amber-600 bg-amber-50 border-amber-200', icon: <Fingerprint className="w-7 h-7 text-orange-500" /> },
-            { name: 'PAN', slug: 'pan', desc: 'PAN card related services', color: 'text-blue-600 bg-blue-50 border-blue-200', icon: <CreditCard className="w-7 h-7 text-blue-600" /> },
-            { name: 'Voter ID', slug: 'voter', desc: 'Voter ID related services', color: 'text-amber-700 bg-amber-50 border-amber-200', icon: <Vote className="w-7 h-7 text-amber-700" /> },
-            { name: 'Certificates', slug: 'certificates', desc: 'Various certificates and documents', color: 'text-rose-600 bg-rose-50 border-rose-200', icon: <FileText className="w-7 h-7 text-amber-600" /> },
-            { name: 'Land & Patta', slug: 'land', desc: 'Land & Patta related services', color: 'text-emerald-600 bg-emerald-50 border-emerald-200', icon: <MapPin className="w-7 h-7 text-emerald-600" /> },
-            { name: 'Passport', slug: 'passport', desc: 'Passport related services', color: 'text-blue-900 bg-blue-50 border-blue-200', icon: <Globe className="w-7 h-7 text-blue-900" /> },
-            { name: 'Driving Licence', slug: 'driving-licence', desc: 'Driving licence related services', color: 'text-slate-800 bg-slate-100 border-slate-200', icon: <Car className="w-7 h-7 text-slate-800" /> },
-            { name: 'Vehicle', slug: 'vehicle', desc: 'Vehicle related services', color: 'text-red-600 bg-red-50 border-red-200', icon: <Car className="w-7 h-7 text-red-600" /> }
+            { name: 'Aadhaar Services', slug: 'aadhaar', desc: 'Aadhaar enrollment, name, address & mobile updates', icon: <Fingerprint className="w-6 h-6 text-orange-500" /> },
+            { name: 'PAN Services', slug: 'pan-services', desc: 'New PAN card application, correction & reprint', icon: <CreditCard className="w-6 h-6 text-orange-500" /> },
+            { name: 'Voter ID Services', slug: 'voter', desc: 'New voter registration & address correction', icon: <Vote className="w-6 h-6 text-orange-500" /> },
+            { name: 'Certificates', slug: 'certificates', desc: 'Income, community, native, birth & death certificates', icon: <FileText className="w-6 h-6 text-orange-500" /> },
+            { name: 'Land & Patta', slug: 'land', desc: 'Patta transfer, Chitta, FMB sketch & encumbrance', icon: <MapPin className="w-6 h-6 text-orange-500" /> },
+            { name: 'Passport Services', slug: 'passport', desc: 'Fresh passport application, re-issue & Tatkaal', icon: <Globe className="w-6 h-6 text-orange-500" /> },
+            { name: 'Driving Licence', slug: 'driving-licence', desc: 'Learner license, DL renewal & address change', icon: <Car className="w-6 h-6 text-orange-500" /> },
+            { name: 'Vehicle Services', slug: 'vehicle', desc: 'RC transfer, NOC & fitness certificate', icon: <Car className="w-6 h-6 text-orange-500" /> },
+            { name: 'Business Services', slug: 'business', desc: 'MSME/Udyam registration, GST & FSSAI license', icon: <Briefcase className="w-6 h-6 text-orange-500" /> },
+            { name: 'Utility Services', slug: 'utility', desc: 'Electricity connection, water tax & property tax', icon: <Zap className="w-6 h-6 text-orange-500" /> },
+            { name: 'Other Digital Services', slug: 'other', desc: 'Ration card, pension schemes & digital services', icon: <Grid className="w-6 h-6 text-orange-500" /> }
           ].map((cat, idx) => (
             <Link
               key={idx}
               to={cat.slug === 'aadhaar' ? '/services/aadhaar' : `/services/${cat.slug}`}
-              className="bg-white rounded-xl border border-slate-200/90 p-5 shadow-xs hover:shadow-md hover:border-slate-300 transition-all duration-200 flex flex-col items-center text-center space-y-3 group"
+              className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs hover:shadow-md hover:border-orange-500/50 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between space-y-4 group"
             >
-              <div className="w-14 h-14 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center group-hover:scale-105 transition-transform">
-                {cat.icon}
+              <div className="space-y-3">
+                {/* ICON & ACCENT */}
+                <div className="w-12 h-12 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center group-hover:scale-105 transition-transform">
+                  {cat.icon}
+                </div>
+
+                {/* CATEGORY NAME & DESCRIPTION */}
+                <div>
+                  <h3 className="font-heading font-extrabold text-base text-slate-900 group-hover:text-orange-600 transition-colors">
+                    {cat.name}
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-1 font-normal leading-relaxed">
+                    {cat.desc}
+                  </p>
+                </div>
               </div>
 
-              <div>
-                <h3 className="font-heading font-extrabold text-sm text-slate-900 group-hover:text-orange-600 transition-colors">
-                  {cat.name}
-                </h3>
-                <p className="text-[11px] text-slate-500 mt-1 font-normal leading-normal">
-                  {cat.desc}
-                </p>
+              {/* VIEW SERVICES ACTION & ARROW */}
+              <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-slate-800 group-hover:text-orange-600 transition-colors">
+                <span>View Services</span>
+                <ArrowRight className="w-4 h-4 text-orange-500 group-hover:translate-x-1.5 transition-transform" />
               </div>
             </Link>
           ))}
         </div>
+
+        {/* CENTERED "VIEW ALL SERVICES" BUTTON */}
+        <div className="pt-4 flex justify-center">
+          <Link
+            to="/services"
+            className="bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold text-xs sm:text-sm px-8 py-3.5 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2 group"
+          >
+            <span>View All Services</span>
+            <ArrowRight className="w-4 h-4 text-orange-400 group-hover:translate-x-1 transition-transform" />
+          </Link>
+        </div>
+
       </section>
 
       {/* 3. POPULAR SERVICES GRID (EXACT REFERENCE MATCHER) */}
