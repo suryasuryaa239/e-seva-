@@ -238,62 +238,86 @@ export default function Home() {
 
       </section>
 
-      {/* 3. POPULAR SERVICES GRID (EXACT REFERENCE MATCHER) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 pt-4">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-b border-slate-200/80 pb-4">
-          <div>
-            <h2 className="font-heading font-extrabold text-2xl sm:text-3xl text-slate-900">
-              Popular Services
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-500 mt-1 font-normal">
-              Most requested online application services
-            </p>
-          </div>
-
-          <Link
-            to="/services"
-            className="text-xs font-bold text-slate-800 hover:text-orange-600 flex items-center gap-1 shrink-0 transition-colors"
-          >
-            View All Services <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
+      {/* 3. POPULAR SERVICES GRID (STEP 4 SPECIFICATION) */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10 py-10 border-t border-slate-200/80">
+        
+        {/* CENTERED SECTION HEADER */}
+        <div className="text-center max-w-2xl mx-auto space-y-2">
+          <span className="inline-block text-xs font-extrabold text-orange-600 uppercase tracking-widest bg-orange-50 border border-orange-200/80 px-3 py-1 rounded-full">
+            POPULAR SERVICES
+          </span>
+          <h2 className="font-heading font-extrabold text-3xl sm:text-4xl text-slate-900 tracking-tight">
+            Most Requested Services
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-500 font-normal leading-relaxed">
+            Quickly access the services our customers use most often.
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {[
-            { title: 'Aadhaar Enrollment', desc: 'New Aadhaar enrollment services', slug: 'aadhaar-services', icon: <Fingerprint className="w-6 h-6 text-orange-500" /> },
-            { title: 'Aadhaar Update', desc: 'Update Aadhaar details online', slug: 'aadhaar', icon: <Fingerprint className="w-6 h-6 text-orange-500" /> },
-            { title: 'PAN Card', desc: 'New PAN card application', slug: 'pan-services', icon: <CreditCard className="w-6 h-6 text-blue-600" /> },
-            { title: 'Voter ID', desc: 'New voter ID application', slug: 'voter', icon: <Vote className="w-6 h-6 text-amber-700" /> },
-            { title: 'Passport', desc: 'Passport application services', slug: 'passport', icon: <Globe className="w-6 h-6 text-blue-900" /> },
-            { title: 'Driving Licence', desc: 'Driving licence application', slug: 'driving-licence', icon: <Car className="w-6 h-6 text-slate-800" /> }
-          ].map((srv, idx) => (
+        {/* POPULAR SERVICE CARDS GRID */}
+        {/* Desktop: 4 per row, Tablet: 2 per row, Mobile: 1 per row */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {(popularServices.length > 0 ? popularServices : [
+            { id: 1, name: 'Aadhaar Enrollment', category_slug: 'aadhaar', slug: 'aadhaar-services', description: 'New Aadhaar enrollment services & appointment', fee: 0 },
+            { id: 2, name: 'Aadhaar Address Update', category_slug: 'aadhaar', slug: 'aadhaar', description: 'Update Aadhaar address details online', fee: 50 },
+            { id: 3, name: 'PAN Card Application', category_slug: 'pan', slug: 'pan-services', description: 'New PAN card application & correction', fee: 107 },
+            { id: 4, name: 'Voter ID Registration', category_slug: 'voter', slug: 'voter', description: 'New voter ID application & EPIC download', fee: 0 },
+            { id: 5, name: 'Income Certificate', category_slug: 'certificates', slug: 'certificates', description: 'Official income certificate application', fee: 60 },
+            { id: 6, name: 'Patta Chitta Transfer', category_slug: 'land', slug: 'land', description: 'Land Patta transfer & Chitta extract', fee: 100 },
+            { id: 7, name: 'Passport Application', category_slug: 'passport', slug: 'passport', description: 'Fresh passport & Tatkaal application', fee: 1500 },
+            { id: 8, name: 'Driving Licence Renewal', category_slug: 'driving-licence', slug: 'driving-licence', description: 'Driving licence renewal & address update', fee: 400 }
+          ]).map((srv) => (
             <div
-              key={idx}
-              className="bg-white rounded-xl border border-slate-200/90 p-5 shadow-xs hover:shadow-md transition-all duration-200 flex flex-col justify-between items-center text-center space-y-4 group"
+              key={srv.id}
+              className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs hover:shadow-md hover:border-orange-500/40 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between space-y-4 group h-full"
             >
-              <div className="space-y-2 flex flex-col items-center">
-                <div className="w-12 h-12 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center">
-                  {srv.icon}
+              <div className="space-y-3">
+                {/* ICON & PRICE TAG */}
+                <div className="flex items-center justify-between">
+                  <div className="w-12 h-12 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center group-hover:scale-105 transition-transform">
+                    {getCategoryIcon(srv.category_slug)}
+                  </div>
+                  <span className="text-[11px] font-extrabold text-orange-700 bg-orange-50 border border-orange-200/80 px-2.5 py-0.5 rounded-full">
+                    {srv.fee > 0 ? `₹${srv.fee}` : 'FREE'}
+                  </span>
                 </div>
 
-                <h3 className="font-heading font-extrabold text-sm text-slate-900 group-hover:text-slate-800 transition-colors">
-                  {srv.title}
-                </h3>
-
-                <p className="text-xs text-slate-500 font-normal">
-                  {srv.desc}
-                </p>
+                {/* SERVICE NAME & ONE-LINE DESCRIPTION */}
+                <div>
+                  <h3 className="font-heading font-extrabold text-base text-slate-900 group-hover:text-orange-600 transition-colors line-clamp-1">
+                    {srv.name}
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-1 font-normal line-clamp-2 leading-relaxed">
+                    {srv.description}
+                  </p>
+                </div>
               </div>
 
-              <Link
-                to={srv.slug === 'aadhaar' ? '/services/aadhaar' : `/services/${srv.slug}`}
-                className="w-auto bg-white hover:bg-slate-50 text-slate-900 font-bold text-xs px-6 py-2 rounded-lg border border-slate-300 hover:border-slate-800 transition-colors shadow-2xs"
-              >
-                Apply Now
-              </Link>
+              {/* APPLY NOW BUTTON WITH ARROW */}
+              <div className="pt-2">
+                <Link
+                  to={srv.slug === 'aadhaar' ? '/services/aadhaar' : `/service/${srv.slug}`}
+                  className="w-full bg-[#0b192c] hover:bg-orange-600 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-xs transition-colors flex items-center justify-center gap-1.5 group/btn"
+                >
+                  <span>Apply Now</span>
+                  <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform" />
+                </Link>
+              </div>
             </div>
           ))}
         </div>
+
+        {/* CENTERED "VIEW ALL SERVICES" BUTTON */}
+        <div className="pt-2 flex justify-center">
+          <Link
+            to="/services"
+            className="text-xs sm:text-sm font-extrabold text-slate-800 hover:text-orange-600 flex items-center gap-1.5 group transition-colors"
+          >
+            <span>View All Services</span>
+            <ArrowRight className="w-4 h-4 text-orange-500 group-hover:translate-x-1 transition-transform" />
+          </Link>
+        </div>
+
       </section>
 
       {/* 4. CHECK APPLICATION STATUS BANNER (EXACT REFERENCE MATCHER) */}
