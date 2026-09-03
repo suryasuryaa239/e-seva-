@@ -30,17 +30,20 @@ class LocalDatabase {
   }
 
   init() {
+    this.data = { ...initialTables };
     const tmpPath = path.join('/tmp', 'db_data.json');
-    const targetPath = (process.env.VERCEL && fs.existsSync(tmpPath)) ? tmpPath : DB_FILE;
 
-    if (fs.existsSync(targetPath)) {
-      try {
-        const raw = fs.readFileSync(targetPath, 'utf8');
-        const parsed = JSON.parse(raw);
-        this.data = { ...initialTables, ...parsed };
-      } catch (err) {
-        console.error('Error reading db_data.json, starting fresh:', err);
+    try {
+      if (process.env.VERCEL && fs.existsSync(tmpPath)) {
+        const raw = fs.readFileSync(tmpPath, 'utf8');
+        this.data = { ...initialTables, ...JSON.parse(raw) };
+      } else if (fs.existsSync(DB_FILE)) {
+        const raw = fs.readFileSync(DB_FILE, 'utf8');
+        this.data = { ...initialTables, ...JSON.parse(raw) };
       }
+    } catch (err) {
+      console.warn('[DB INIT WARNING] Using initial seed state:', err.message);
+      this.data = { ...initialTables };
     }
   }
 
