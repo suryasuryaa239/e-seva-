@@ -171,14 +171,14 @@ export default function Home() {
         
         {/* CENTERED SECTION HEADER */}
         <div className="text-center max-w-2xl mx-auto space-y-2">
-          <span className="inline-block text-xs font-extrabold text-orange-600 uppercase tracking-widest bg-orange-50 border border-orange-200/80 px-3 py-1 rounded-full">
-            OUR SERVICES
+          <span className="inline-block text-xs font-extrabold text-orange-600 uppercase tracking-widest bg-orange-50 border border-orange-200/80 px-3.5 py-1 rounded-full">
+            OUR SERVICES CATEGORIES
           </span>
           <h2 className="font-heading font-extrabold text-3xl sm:text-4xl text-slate-900 tracking-tight">
             Explore Our Digital Services
           </h2>
           <p className="text-xs sm:text-sm text-slate-500 font-normal leading-relaxed">
-            Choose from our wide range of digital services and assistance.
+            Access a wide range of digital services from one convenient portal.
           </p>
         </div>
 
