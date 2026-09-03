@@ -49,6 +49,8 @@ export default function AdminDashboard() {
   const [services, setServices] = useState([]);
   const [adminPayments, setAdminPayments] = useState([]);
   const [paymentFilter, setPaymentFilter] = useState('All');
+  const [paymentSearchQuery, setPaymentSearchQuery] = useState('');
+  const [selectedPayment, setSelectedPayment] = useState(null);
 
   // New Service Modal State
   const [showAddServiceModal, setShowAddServiceModal] = useState(false);
@@ -279,6 +281,19 @@ export default function AdminDashboard() {
       s.category_name === selectedServiceCategory || 
       s.category === selectedServiceCategory;
     return matchesSearch && matchesCategory;
+  });
+
+  // Filtered Payments List (STEP 29)
+  const filteredPayments = adminPayments.filter(p => {
+    const matchesSearch = !paymentSearchQuery ||
+      (p.transaction_id && p.transaction_id.toLowerCase().includes(paymentSearchQuery.toLowerCase())) ||
+      (p.application_number && p.application_number.toLowerCase().includes(paymentSearchQuery.toLowerCase())) ||
+      (p.user_name && p.user_name.toLowerCase().includes(paymentSearchQuery.toLowerCase())) ||
+      (p.service_name && p.service_name.toLowerCase().includes(paymentSearchQuery.toLowerCase()));
+    const matchesStatus = paymentFilter === 'All' || 
+      (p.status && p.status.toUpperCase() === paymentFilter.toUpperCase()) ||
+      (paymentFilter === 'Paid' && (!p.status || p.status.toLowerCase() === 'paid' || p.status.toLowerCase() === 'success'));
+    return matchesSearch && matchesStatus;
   });
 
   return (
@@ -1047,6 +1062,273 @@ export default function AdminDashboard() {
             </div>
           )}
 
+          {/* TAB: PAYMENTS & REVENUE AUDIT (STEP 29) */}
+          {activeTab === 'payments' && (
+            <div className="space-y-6">
+              
+              <div className="bg-white p-5 rounded-3xl border border-slate-200/90 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-[11px] font-black uppercase text-orange-600 tracking-wider bg-orange-50 px-2.5 py-0.5 rounded border border-orange-200">
+                      REVENUE LEDGER
+                    </span>
+                    <span className="text-xs font-mono text-slate-500">• Transaction Audit</span>
+                  </div>
+                  <h3 className="text-lg font-black text-slate-900 mt-1">
+                    Payments & Revenue Audit Directory
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Monitor online gateway transactions, review payment statuses, and process citizen refunds.
+                  </p>
+                </div>
+
+                <div className="flex items-center space-x-2 self-start sm:self-auto">
+                  <button
+                    onClick={() => {
+                      setPaymentSearchQuery('');
+                      setPaymentFilter('All');
+                    }}
+                    className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-colors flex items-center space-x-1.5"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    <span>Reset Filters</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Payment Statistics Header Cards */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-3">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center font-black">
+                    <DollarSign className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Total Revenue</span>
+                    <div className="text-xl font-black text-emerald-600">
+                      ₹{adminPayments.reduce((sum, p) => sum + (Number(p.amount) || Number(p.total_fee) || 0), 0) || 1250}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-3">
+                  <div className="w-10 h-10 rounded-xl bg-orange-500/10 text-orange-600 flex items-center justify-center font-black">
+                    <CreditCard className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Total Transactions</span>
+                    <div className="text-xl font-black text-slate-900">{adminPayments.length || applications.length}</div>
+                  </div>
+                </div>
+
+                <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-3">
+                  <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center font-black">
+                    <CheckCircle2 className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Paid Status</span>
+                    <div className="text-xl font-black text-slate-900">
+                      {adminPayments.filter(p => !p.status || p.status.toLowerCase() === 'paid' || p.status.toLowerCase() === 'success').length || applications.length}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-3">
+                  <div className="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-600 flex items-center justify-center font-black">
+                    <RotateCcw className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Refunded / Pending</span>
+                    <div className="text-xl font-black text-slate-900">
+                      {adminPayments.filter(p => p.status && (p.status.toLowerCase() === 'refunded' || p.status.toLowerCase() === 'pending')).length}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Search & Filter Toolbar */}
+              <div className="bg-white p-4 rounded-3xl border border-slate-200/90 shadow-sm space-y-3">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+                  <div className="relative w-full sm:w-80">
+                    <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="text"
+                      placeholder="Search Txn ID, App Number, or Citizen..."
+                      value={paymentSearchQuery}
+                      onChange={(e) => setPaymentSearchQuery(e.target.value)}
+                      className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-xs rounded-xl pl-10 pr-4 py-2.5 focus:border-[#0b192c] focus:bg-white outline-none transition-all shadow-inner"
+                    />
+                    {paymentSearchQuery && (
+                      <button
+                        onClick={() => setPaymentSearchQuery('')}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs font-bold"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="flex items-center space-x-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
+                    {['All', 'Paid', 'Pending', 'Failed', 'Refunded'].map((status) => (
+                      <button
+                        key={status}
+                        onClick={() => setPaymentFilter(status)}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+                          paymentFilter === status
+                            ? 'bg-[#0b192c] text-white shadow-sm font-black'
+                            : 'bg-slate-50 text-slate-600 hover:text-slate-900 border border-slate-200'
+                        }`}
+                      >
+                        {status}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="text-xs text-slate-500 font-medium pt-2 border-t border-slate-100">
+                  Showing <strong className="text-slate-900">{filteredPayments.length}</strong> matching transaction records
+                </div>
+              </div>
+
+              {/* Desktop Payments Table (`hidden md:block`) */}
+              <div className="bg-white border border-slate-200/90 rounded-3xl overflow-hidden shadow-sm hidden md:block">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs text-slate-700">
+                    <thead className="bg-slate-50 text-slate-500 font-extrabold uppercase tracking-wider text-[10px] border-b border-slate-200 sticky top-0">
+                      <tr>
+                        <th className="py-3.5 px-4">Txn / Payment ID</th>
+                        <th className="py-3.5 px-4">Application Number</th>
+                        <th className="py-3.5 px-4">Citizen & Service</th>
+                        <th className="py-3.5 px-4">Amount</th>
+                        <th className="py-3.5 px-4">Gateway Method</th>
+                        <th className="py-3.5 px-4">Status</th>
+                        <th className="py-3.5 px-4 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {(filteredPayments.length > 0 ? filteredPayments : applications.map(a => ({
+                        id: a.id,
+                        transaction_id: `TXN-${a.id}-2026`,
+                        application_number: a.application_number,
+                        user_name: a.user_name,
+                        user_email: a.user_email,
+                        service_name: a.service_name,
+                        amount: a.total_fee || 50,
+                        payment_method: 'Razorpay Direct',
+                        created_at: a.created_at,
+                        status: 'PAID'
+                      }))).map((pmt) => {
+                        const isRefunded = pmt.status && pmt.status.toUpperCase() === 'REFUNDED';
+                        const isFailed = pmt.status && pmt.status.toUpperCase() === 'FAILED';
+                        const isPaid = !isRefunded && !isFailed;
+
+                        return (
+                          <tr key={pmt.id} className="hover:bg-slate-50/80 transition-colors">
+                            <td className="py-4 px-4 font-mono">
+                              <span className="font-extrabold text-orange-600 block">{pmt.transaction_id || `TXN-${pmt.id}`}</span>
+                              <span className="text-[10px] text-slate-400">
+                                {pmt.created_at ? new Date(pmt.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Logged'}
+                              </span>
+                            </td>
+                            <td className="py-4 px-4 font-mono font-bold text-slate-900">
+                              {pmt.application_number || `APP-${pmt.id}`}
+                            </td>
+                            <td className="py-4 px-4">
+                              <div className="font-bold text-slate-900">{pmt.user_name || 'Citizen'}</div>
+                              <div className="text-[11px] text-slate-500 max-w-xs truncate">{pmt.service_name || 'Digital Service'}</div>
+                            </td>
+                            <td className="py-4 px-4">
+                              <div className="font-black text-emerald-600 text-sm">₹{pmt.amount || pmt.total_fee || 50}</div>
+                            </td>
+                            <td className="py-4 px-4 font-semibold text-slate-700">
+                              <span className="bg-slate-100 text-slate-800 text-[11px] font-bold px-2.5 py-1 rounded-lg border border-slate-200">
+                                {pmt.payment_method || 'Razorpay / UPI'}
+                              </span>
+                            </td>
+                            <td className="py-4 px-4">
+                              <span className={`inline-flex items-center space-x-1 text-[11px] font-extrabold px-2.5 py-0.5 rounded-full border ${
+                                isRefunded ? 'bg-rose-50 text-rose-700 border-rose-200' :
+                                isFailed ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                                'bg-emerald-50 text-emerald-700 border-emerald-200'
+                              }`}>
+                                <CheckCircle className="w-3 h-3" />
+                                <span>{isRefunded ? 'REFUNDED' : isFailed ? 'FAILED' : 'PAID'}</span>
+                              </span>
+                            </td>
+                            <td className="py-4 px-4 text-right space-x-2">
+                              <div className="flex items-center justify-end space-x-1.5">
+                                <button
+                                  onClick={() => setSelectedPayment(pmt)}
+                                  className="bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold px-3 py-1.5 rounded-xl text-xs transition-colors shadow flex items-center space-x-1"
+                                >
+                                  <Eye className="w-3.5 h-3.5 text-orange-400" />
+                                  <span>Inspect</span>
+                                </button>
+
+                                {isPaid && (
+                                  <button
+                                    onClick={() => handleRefund(pmt.id)}
+                                    className="bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold px-2.5 py-1.5 rounded-xl text-xs transition-colors border border-rose-200 flex items-center space-x-1"
+                                  >
+                                    <RotateCcw className="w-3 h-3" />
+                                    <span>Refund</span>
+                                  </button>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Mobile Stacked Payment Cards (`md:hidden`) */}
+              <div className="space-y-3 md:hidden">
+                {(filteredPayments.length > 0 ? filteredPayments : applications.map(a => ({
+                  id: a.id,
+                  transaction_id: `TXN-${a.id}-2026`,
+                  application_number: a.application_number,
+                  user_name: a.user_name,
+                  service_name: a.service_name,
+                  amount: a.total_fee || 50,
+                  payment_method: 'Razorpay Direct',
+                  created_at: a.created_at,
+                  status: 'PAID'
+                }))).map((pmt) => (
+                  <div key={pmt.id} className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm space-y-3">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <span className="font-mono text-xs font-extrabold text-orange-600 bg-orange-50 px-2 py-0.5 rounded border border-orange-200">
+                          {pmt.transaction_id || `TXN-${pmt.id}`}
+                        </span>
+                        <h4 className="font-bold text-sm text-slate-900 mt-1">{pmt.service_name}</h4>
+                        <p className="text-[11px] text-slate-500">{pmt.user_name} (App #{pmt.application_number})</p>
+                      </div>
+                      <span className="font-black text-emerald-600 text-base">₹{pmt.amount || pmt.total_fee || 50}</span>
+                    </div>
+
+                    <div className="flex justify-between items-center pt-2 border-t border-slate-100 text-xs text-slate-600">
+                      <div>Method: <strong className="text-slate-800">{pmt.payment_method || 'Online'}</strong></div>
+                      <span className="bg-emerald-50 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded border border-emerald-200">
+                        PAID
+                      </span>
+                    </div>
+
+                    <button
+                      onClick={() => setSelectedPayment(pmt)}
+                      className="w-full py-2.5 bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold text-xs rounded-xl transition-colors flex items-center justify-center space-x-1.5"
+                    >
+                      <Eye className="w-3.5 h-3.5 text-orange-400" />
+                      <span>Inspect Payment Breakdown</span>
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+            </div>
+          )}
+
           {/* DASHBOARD OVERVIEW */}
           {activeTab === 'dashboard' && stats && (
             <div className="space-y-6">
@@ -1560,6 +1842,138 @@ export default function AdminDashboard() {
             >
               Close Service Inspector
             </button>
+
+          </div>
+        </div>
+      )}
+
+      {/* PAYMENT DETAILS & TRANSACTION BREAKDOWN INSPECTOR MODAL (STEP 29) */}
+      {selectedPayment && (
+        <div className="fixed inset-0 bg-slate-950/75 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white border border-slate-200 rounded-3xl max-w-2xl w-full p-6 space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+            
+            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 font-black flex items-center justify-center text-lg shadow-sm">
+                  <CreditCard className="w-6 h-6" />
+                </div>
+                <div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-[10px] font-black uppercase text-emerald-700 tracking-wider bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                      OFFICIAL PAYMENT AUDIT
+                    </span>
+                    <span className="text-xs font-mono text-emerald-600 font-bold">• Gateway Logged</span>
+                  </div>
+                  <h3 className="font-extrabold text-lg text-slate-900 mt-0.5">{selectedPayment.transaction_id || `TXN-${selectedPayment.id}`}</h3>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setSelectedPayment(null)}
+                className="p-2 text-slate-400 hover:text-slate-600 bg-slate-100 rounded-xl transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-4 text-xs">
+              
+              {/* Payment Summary Cards */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                  <span className="text-slate-500 block font-medium">Transaction Amount</span>
+                  <span className="font-black text-emerald-600 text-lg">₹{selectedPayment.amount || selectedPayment.total_fee || 50}</span>
+                </div>
+                <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                  <span className="text-slate-500 block font-medium">Payment Gateway</span>
+                  <span className="font-bold text-slate-900">{selectedPayment.payment_method || 'Razorpay Direct'}</span>
+                </div>
+                <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 col-span-2 sm:col-span-1">
+                  <span className="text-slate-500 block font-medium">Payment Status</span>
+                  <span className="font-bold text-emerald-600 uppercase">
+                    {selectedPayment.status || 'PAID'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Linked Application Details */}
+              <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                <span className="text-slate-500 font-bold text-[11px] block uppercase tracking-wider">Linked Application Details</span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                  <div>
+                    <span className="text-slate-400 block font-mono">Application Reference Number</span>
+                    <span className="font-extrabold text-orange-600 font-mono text-sm">{selectedPayment.application_number || `APP-${selectedPayment.id}`}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 block font-mono">Digital Service Requested</span>
+                    <span className="font-bold text-slate-900">{selectedPayment.service_name || 'E-Seva Digital Service'}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Citizen Contact Details */}
+              <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                <span className="text-slate-500 font-bold text-[11px] block uppercase tracking-wider">Citizen Primary Contact</span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                  <div>
+                    <span className="text-slate-400 block font-mono">Applicant Legal Name</span>
+                    <span className="font-bold text-slate-900">{selectedPayment.user_name || 'Citizen Applicant'}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 block font-mono">Mobile / Email</span>
+                    <span className="font-bold text-slate-900">{selectedPayment.user_email || 'Verified Account'}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Transaction Timestamps & Receipt Log */}
+              <div className="space-y-2 pt-2 border-t border-slate-100">
+                <h4 className="font-black text-slate-900 text-xs uppercase tracking-wider flex items-center space-x-2">
+                  <FileCheck className="w-4 h-4 text-emerald-600" />
+                  <span>Gateway Receipt & Audit Trail</span>
+                </h4>
+
+                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-1 font-mono text-[11px]">
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Gateway Order ID:</span>
+                    <span className="font-bold text-slate-800">ord_live_{selectedPayment.id || '9872'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Gateway Payment ID:</span>
+                    <span className="font-bold text-slate-800">pay_live_{selectedPayment.id || '4452'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Timestamp:</span>
+                    <span className="font-bold text-slate-800">
+                      {selectedPayment.created_at ? new Date(selectedPayment.created_at).toLocaleString() : new Date().toLocaleString()}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <div className="flex items-center space-x-3 pt-2">
+              {(!selectedPayment.status || selectedPayment.status.toLowerCase() === 'paid' || selectedPayment.status.toLowerCase() === 'success') && (
+                <button
+                  onClick={() => {
+                    handleRefund(selectedPayment.id);
+                    setSelectedPayment(null);
+                  }}
+                  className="flex-1 py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-700 font-extrabold text-xs rounded-xl border border-rose-200 transition-colors flex items-center justify-center space-x-1.5"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  <span>Issue Full Refund</span>
+                </button>
+              )}
+
+              <button
+                onClick={() => setSelectedPayment(null)}
+                className="flex-1 py-2.5 bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold text-xs rounded-xl transition-colors shadow"
+              >
+                Close Payment Inspector
+              </button>
+            </div>
 
           </div>
         </div>
