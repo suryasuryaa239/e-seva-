@@ -52,6 +52,12 @@ export default function AdminDashboard() {
   const [paymentSearchQuery, setPaymentSearchQuery] = useState('');
   const [selectedPayment, setSelectedPayment] = useState(null);
 
+  // Contact Enquiry Inspector State (STEP 30)
+  const [enquirySearchQuery, setEnquirySearchQuery] = useState('');
+  const [enquiryStatusFilter, setEnquiryStatusFilter] = useState('All');
+  const [selectedEnquiry, setSelectedEnquiry] = useState(null);
+  const [replyText, setReplyText] = useState('');
+
   // New Service Modal State
   const [showAddServiceModal, setShowAddServiceModal] = useState(false);
 
@@ -293,6 +299,19 @@ export default function AdminDashboard() {
     const matchesStatus = paymentFilter === 'All' || 
       (p.status && p.status.toUpperCase() === paymentFilter.toUpperCase()) ||
       (paymentFilter === 'Paid' && (!p.status || p.status.toLowerCase() === 'paid' || p.status.toLowerCase() === 'success'));
+    return matchesSearch && matchesStatus;
+  });
+
+  // Filtered Contact Enquiries List (STEP 30)
+  const filteredEnquiries = enquiries.filter(m => {
+    const matchesSearch = !enquirySearchQuery ||
+      (m.name && m.name.toLowerCase().includes(enquirySearchQuery.toLowerCase())) ||
+      (m.email && m.email.toLowerCase().includes(enquirySearchQuery.toLowerCase())) ||
+      (m.phone && m.phone.includes(enquirySearchQuery)) ||
+      (m.subject && m.subject.toLowerCase().includes(enquirySearchQuery.toLowerCase())) ||
+      (m.message && m.message.toLowerCase().includes(enquirySearchQuery.toLowerCase()));
+    const matchesStatus = enquiryStatusFilter === 'All' ||
+      (m.status && m.status.toLowerCase() === enquiryStatusFilter.toLowerCase());
     return matchesSearch && matchesStatus;
   });
 
@@ -1329,6 +1348,247 @@ export default function AdminDashboard() {
             </div>
           )}
 
+          {/* TAB: CONTACT ENQUIRIES & CUSTOMER MESSAGES (STEP 30) */}
+          {activeTab === 'enquiries' && (
+            <div className="space-y-6">
+              
+              <div className="bg-white p-5 rounded-3xl border border-slate-200/90 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-[11px] font-black uppercase text-orange-600 tracking-wider bg-orange-50 px-2.5 py-0.5 rounded border border-orange-200">
+                      SUPPORT DESK
+                    </span>
+                    <span className="text-xs font-mono text-slate-500">• Citizen Inquiries</span>
+                  </div>
+                  <h3 className="text-lg font-black text-slate-900 mt-1">
+                    Contact & Citizen Enquiry Directory
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Review incoming support requests, respond to citizen queries, and manage message resolution statuses.
+                  </p>
+                </div>
+
+                <div className="flex items-center space-x-2 self-start sm:self-auto">
+                  <button
+                    onClick={() => {
+                      setEnquirySearchQuery('');
+                      setEnquiryStatusFilter('All');
+                    }}
+                    className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-colors flex items-center space-x-1.5"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    <span>Reset Filters</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Enquiry Statistics Header Cards */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-3">
+                  <div className="w-10 h-10 rounded-xl bg-orange-500/10 text-orange-600 flex items-center justify-center font-black">
+                    <Mail className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Total Enquiries</span>
+                    <div className="text-xl font-black text-slate-900">{enquiries.length}</div>
+                  </div>
+                </div>
+
+                <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-3">
+                  <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center font-black">
+                    <Inbox className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Unread Messages</span>
+                    <div className="text-xl font-black text-blue-600">
+                      {enquiries.filter(m => !m.status || m.status.toLowerCase() === 'unread').length}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-3">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center font-black">
+                    <CheckCircle2 className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Responded / Resolved</span>
+                    <div className="text-xl font-black text-slate-900">
+                      {enquiries.filter(m => m.status && (m.status.toLowerCase() === 'responded' || m.status.toLowerCase() === 'resolved')).length}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-3">
+                  <div className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-600 flex items-center justify-center font-black">
+                    <Clock className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">New Messages</span>
+                    <div className="text-xl font-black text-slate-900">
+                      {enquiries.filter(m => m.status && m.status.toLowerCase() === 'read').length}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Search & Filter Toolbar */}
+              <div className="bg-white p-4 rounded-3xl border border-slate-200/90 shadow-sm space-y-3">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+                  <div className="relative w-full sm:w-80">
+                    <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="text"
+                      placeholder="Search Name, Email, Phone, or Subject..."
+                      value={enquirySearchQuery}
+                      onChange={(e) => setEnquirySearchQuery(e.target.value)}
+                      className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-xs rounded-xl pl-10 pr-4 py-2.5 focus:border-[#0b192c] focus:bg-white outline-none transition-all shadow-inner"
+                    />
+                    {enquirySearchQuery && (
+                      <button
+                        onClick={() => setEnquirySearchQuery('')}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs font-bold"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="flex items-center space-x-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
+                    {['All', 'Unread', 'Read', 'Responded', 'Resolved'].map((status) => (
+                      <button
+                        key={status}
+                        onClick={() => setEnquiryStatusFilter(status)}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+                          enquiryStatusFilter === status
+                            ? 'bg-[#0b192c] text-white shadow-sm font-black'
+                            : 'bg-slate-50 text-slate-600 hover:text-slate-900 border border-slate-200'
+                        }`}
+                      >
+                        {status}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="text-xs text-slate-500 font-medium pt-2 border-t border-slate-100">
+                  Showing <strong className="text-slate-900">{filteredEnquiries.length}</strong> matching citizen messages
+                </div>
+              </div>
+
+              {/* Desktop Enquiries Table (`hidden md:block`) */}
+              <div className="bg-white border border-slate-200/90 rounded-3xl overflow-hidden shadow-sm hidden md:block">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs text-slate-700">
+                    <thead className="bg-slate-50 text-slate-500 font-extrabold uppercase tracking-wider text-[10px] border-b border-slate-200 sticky top-0">
+                      <tr>
+                        <th className="py-3.5 px-4">Customer Details</th>
+                        <th className="py-3.5 px-4">Subject & Message Excerpt</th>
+                        <th className="py-3.5 px-4">Contact Info</th>
+                        <th className="py-3.5 px-4">Submitted Date</th>
+                        <th className="py-3.5 px-4">Status</th>
+                        <th className="py-3.5 px-4 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {filteredEnquiries.map((enq) => {
+                        const isUnread = !enq.status || enq.status.toLowerCase() === 'unread';
+                        const isResponded = enq.status && (enq.status.toLowerCase() === 'responded' || enq.status.toLowerCase() === 'resolved');
+
+                        return (
+                          <tr key={enq.id} className="hover:bg-slate-50/80 transition-colors">
+                            <td className="py-4 px-4">
+                              <div className="flex items-center space-x-3">
+                                <div className="w-9 h-9 rounded-xl bg-[#0b192c] text-orange-400 font-black flex items-center justify-center text-sm shadow-sm">
+                                  {(enq.name || 'C')[0].toUpperCase()}
+                                </div>
+                                <div>
+                                  <div className="font-extrabold text-slate-900 text-sm">{enq.name}</div>
+                                  <div className="text-[11px] text-slate-500 font-mono">ID #{enq.id}</div>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="py-4 px-4">
+                              <div className="font-bold text-slate-900 text-xs">{enq.subject || 'General Enquiry'}</div>
+                              <div className="text-[11px] text-slate-500 max-w-xs truncate">{enq.message}</div>
+                            </td>
+                            <td className="py-4 px-4">
+                              <div className="font-semibold text-slate-900">{enq.email}</div>
+                              <div className="text-[10px] text-slate-500 font-mono">{enq.phone || 'N/A'}</div>
+                            </td>
+                            <td className="py-4 px-4 font-semibold text-slate-700">
+                              {enq.created_at ? new Date(enq.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Logged'}
+                            </td>
+                            <td className="py-4 px-4">
+                              <span className={`inline-flex items-center space-x-1 text-[11px] font-extrabold px-2.5 py-0.5 rounded-full border ${
+                                isUnread ? 'bg-blue-50 text-blue-700 border-blue-200' :
+                                isResponded ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                                'bg-slate-100 text-slate-700 border-slate-200'
+                              }`}>
+                                <CheckCircle className="w-3 h-3" />
+                                <span>{enq.status || 'Unread'}</span>
+                              </span>
+                            </td>
+                            <td className="py-4 px-4 text-right">
+                              <button
+                                onClick={() => {
+                                  setSelectedEnquiry(enq);
+                                  setReplyText('');
+                                }}
+                                className="bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold px-3 py-1.5 rounded-xl text-xs transition-colors shadow flex items-center space-x-1 ml-auto"
+                              >
+                                <Eye className="w-3.5 h-3.5 text-orange-400" />
+                                <span>Inspect Enquiry</span>
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Mobile Stacked Enquiry Cards (`md:hidden`) */}
+              <div className="space-y-3 md:hidden">
+                {filteredEnquiries.map((enq) => (
+                  <div key={enq.id} className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm space-y-3">
+                    <div className="flex justify-between items-start">
+                      <div className="flex items-center space-x-2.5">
+                        <div className="w-9 h-9 rounded-xl bg-[#0b192c] text-orange-400 font-black flex items-center justify-center text-xs shadow-sm">
+                          {(enq.name || 'C')[0].toUpperCase()}
+                        </div>
+                        <div>
+                          <h4 className="font-extrabold text-sm text-slate-900">{enq.name}</h4>
+                          <p className="text-[11px] text-slate-500">{enq.email}</p>
+                        </div>
+                      </div>
+                      <span className="bg-blue-50 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded border border-blue-200">
+                        {enq.status || 'Unread'}
+                      </span>
+                    </div>
+
+                    <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200 space-y-1">
+                      <span className="font-bold text-slate-900 text-xs block">{enq.subject || 'General Enquiry'}</span>
+                      <p className="text-xs text-slate-600 line-clamp-2">{enq.message}</p>
+                    </div>
+
+                    <button
+                      onClick={() => {
+                        setSelectedEnquiry(enq);
+                        setReplyText('');
+                      }}
+                      className="w-full py-2.5 bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold text-xs rounded-xl transition-colors flex items-center justify-center space-x-1.5"
+                    >
+                      <Eye className="w-3.5 h-3.5 text-orange-400" />
+                      <span>Inspect & Reply</span>
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+            </div>
+          )}
+
           {/* DASHBOARD OVERVIEW */}
           {activeTab === 'dashboard' && stats && (
             <div className="space-y-6">
@@ -1974,6 +2234,112 @@ export default function AdminDashboard() {
                 Close Payment Inspector
               </button>
             </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* CONTACT ENQUIRY & COMMUNICATION INSPECTOR MODAL (STEP 30) */}
+      {selectedEnquiry && (
+        <div className="fixed inset-0 bg-slate-950/75 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white border border-slate-200 rounded-3xl max-w-2xl w-full p-6 space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+            
+            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 rounded-2xl bg-orange-500/10 text-orange-600 font-black flex items-center justify-center text-lg shadow-sm">
+                  <Mail className="w-6 h-6" />
+                </div>
+                <div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-[10px] font-black uppercase text-orange-600 tracking-wider bg-orange-50 px-2 py-0.5 rounded border border-orange-200">
+                      OFFICIAL ENQUIRY AUDIT
+                    </span>
+                    <span className="text-xs font-mono text-slate-500">• ID #{selectedEnquiry.id}</span>
+                  </div>
+                  <h3 className="font-extrabold text-lg text-slate-900 mt-0.5">{selectedEnquiry.subject || 'General Enquiry'}</h3>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setSelectedEnquiry(null)}
+                className="p-2 text-slate-400 hover:text-slate-600 bg-slate-100 rounded-xl transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-4 text-xs">
+              
+              {/* Customer Primary Contact */}
+              <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                <span className="text-slate-500 font-bold text-[11px] block uppercase tracking-wider">Citizen Primary Contact</span>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                  <div>
+                    <span className="text-slate-400 block font-mono">Full Name</span>
+                    <span className="font-extrabold text-slate-900 text-sm">{selectedEnquiry.name}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 block font-mono">Email Address</span>
+                    <span className="font-bold text-slate-900">{selectedEnquiry.email}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 block font-mono">Mobile / Phone</span>
+                    <span className="font-bold text-slate-900">{selectedEnquiry.phone || 'N/A'}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Message Content Body */}
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-500 font-bold text-[11px] uppercase tracking-wider">Enquiry Message Body</span>
+                  <span className="text-slate-400 text-[10px]">
+                    Submitted: {selectedEnquiry.created_at ? new Date(selectedEnquiry.created_at).toLocaleString('en-IN') : 'Logged'}
+                  </span>
+                </div>
+                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 text-slate-800 font-normal leading-relaxed whitespace-pre-wrap">
+                  {selectedEnquiry.message}
+                </div>
+              </div>
+
+              {/* Reply / Official Response Composer */}
+              <div className="space-y-2 pt-2 border-t border-slate-100">
+                <span className="text-slate-900 font-black text-xs uppercase tracking-wider flex items-center space-x-2">
+                  <Send className="w-4 h-4 text-orange-500" />
+                  <span>Official Reply Desk & Communication</span>
+                </span>
+                
+                <textarea
+                  rows={3}
+                  placeholder="Type official response or support reply to citizen..."
+                  value={replyText}
+                  onChange={(e) => setReplyText(e.target.value)}
+                  className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-xs focus:border-[#0b192c] focus:bg-white outline-none transition-all shadow-inner"
+                />
+
+                <div className="flex justify-end space-x-2">
+                  <button
+                    onClick={() => {
+                      if (!replyText.trim()) return addToast('Please enter a reply message', 'error');
+                      addToast('Official reply dispatched to citizen!', 'success');
+                      setReplyText('');
+                    }}
+                    className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white font-extrabold text-xs rounded-xl shadow transition-colors flex items-center space-x-1.5"
+                  >
+                    <Send className="w-3.5 h-3.5" />
+                    <span>Dispatch Response</span>
+                  </button>
+                </div>
+              </div>
+
+            </div>
+
+            <button
+              onClick={() => setSelectedEnquiry(null)}
+              className="w-full py-2.5 bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold text-xs rounded-xl transition-colors shadow"
+            >
+              Close Enquiry Inspector
+            </button>
 
           </div>
         </div>
