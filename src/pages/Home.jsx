@@ -98,44 +98,50 @@ export default function Home() {
   return (
     <div className="space-y-12 pb-16 bg-slate-50 selection:bg-blue-600 selection:text-white">
       
-      {/* 1. HERO / WELCOME SECTION (EXACT REFERENCE IMAGE MATCH) */}
+      {/* 1. HERO / WELCOME SECTION (STEP 2 SPECIFICATION) */}
       <section className="bg-gradient-to-b from-slate-100/80 via-slate-50 to-white text-slate-900 py-14 sm:py-20 border-b border-slate-200/80 relative overflow-hidden">
         
-        {/* Soft Background City Silhouette Pattern Graphic */}
+        {/* Soft Background Pattern Graphic */}
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:16px_16px]"></div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
             
-            {/* ========================================================================= */}
             {/* LEFT CONTENT COLUMN */}
-            {/* ========================================================================= */}
             <div className="lg:col-span-6 space-y-6 text-center lg:text-left">
               
-              {/* Heading: Welcome to E-Seva */}
+              {/* SMALL UPPERCASE LABEL */}
+              <div>
+                <span className="inline-block text-xs font-extrabold text-orange-600 uppercase tracking-widest bg-orange-50 border border-orange-200/80 px-3.5 py-1 rounded-full">
+                  DIGITAL SERVICES
+                </span>
+              </div>
+
+              {/* HEADING */}
               <h1 className="font-heading font-extrabold text-4xl sm:text-5xl lg:text-6xl tracking-tight leading-tight text-slate-900">
-                Welcome to <span className="text-orange-500 font-extrabold">E-Seva</span>
+                Your Trusted <span className="text-orange-500 font-extrabold">Digital Service Partner</span>
               </h1>
 
-              {/* Subtitle text */}
-              <p className="text-slate-600 text-lg sm:text-xl max-w-xl font-medium leading-relaxed">
-                Your one-stop solution for all your online service needs
+              {/* SUPPORTING TEXT */}
+              <p className="text-slate-600 text-base sm:text-lg max-w-xl font-normal leading-relaxed">
+                Conveniently access and apply for a wide range of official digital services through our secure single-window portal.
               </p>
 
-              {/* Action Buttons */}
+              {/* ACTION BUTTONS */}
               <div className="pt-3 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
-                {/* Explore Services Button */}
+                {/* Primary Button: Explore Services */}
                 <Link
                   to="/services"
-                  className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-sm px-8 py-3.5 rounded-lg shadow-md hover:shadow-lg transition-all text-center"
+                  className="w-full sm:w-auto bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold text-xs sm:text-sm px-8 py-3.5 rounded-xl shadow-md hover:shadow-lg transition-all text-center flex items-center justify-center gap-2 group"
                 >
-                  Explore Services
+                  <span>Explore Services</span>
+                  <ArrowRight className="w-4 h-4 text-orange-400 group-hover:translate-x-1 transition-transform" />
                 </Link>
 
-                {/* Track Application Button */}
+                {/* Secondary Button: Track Application */}
                 <Link
                   to="/track"
-                  className="w-full sm:w-auto bg-white hover:bg-slate-50 text-slate-800 font-bold text-sm px-8 py-3.5 rounded-lg border border-slate-300 hover:border-slate-800 shadow-xs transition-all text-center"
+                  className="w-full sm:w-auto bg-white hover:bg-slate-50 text-slate-800 font-bold text-xs sm:text-sm px-8 py-3.5 rounded-xl border border-slate-300 hover:border-slate-800 shadow-xs transition-all text-center"
                 >
                   Track Application
                 </Link>
@@ -143,9 +149,7 @@ export default function Home() {
 
             </div>
 
-            {/* ========================================================================= */}
-            {/* RIGHT CONTENT COLUMN: EXACT DEVICE MOCKUP IMAGE */}
-            {/* ========================================================================= */}
+            {/* RIGHT CONTENT COLUMN: DIGITAL SERVICES ILLUSTRATION */}
             <div className="lg:col-span-6 flex justify-center lg:justify-end">
               <div className="relative w-full max-w-xl">
                 <div className="relative group">
