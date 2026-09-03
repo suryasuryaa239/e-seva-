@@ -30,22 +30,27 @@ class LocalDatabase {
   }
 
   init() {
-    if (fs.existsSync(DB_FILE)) {
+    const tmpPath = path.join('/tmp', 'db_data.json');
+    const targetPath = (process.env.VERCEL && fs.existsSync(tmpPath)) ? tmpPath : DB_FILE;
+
+    if (fs.existsSync(targetPath)) {
       try {
-        const raw = fs.readFileSync(DB_FILE, 'utf8');
+        const raw = fs.readFileSync(targetPath, 'utf8');
         const parsed = JSON.parse(raw);
         this.data = { ...initialTables, ...parsed };
       } catch (err) {
         console.error('Error reading db_data.json, starting fresh:', err);
-        this.save();
       }
-    } else {
-      this.save();
     }
   }
 
   save() {
-    fs.writeFileSync(DB_FILE, JSON.stringify(this.data, null, 2), 'utf8');
+    try {
+      const targetPath = process.env.VERCEL ? path.join('/tmp', 'db_data.json') : DB_FILE;
+      fs.writeFileSync(targetPath, JSON.stringify(this.data, null, 2), 'utf8');
+    } catch (err) {
+      console.warn('[DB SAVE WARNING] Read-only environment, state maintained in-memory:', err.message);
+    }
   }
 
   all(tableName, filterFn = null) {

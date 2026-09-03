@@ -22,9 +22,13 @@ const JWT_SECRET = process.env.JWT_SECRET || 'eseva_super_secret_jwt_key_2026';
 initCronJobs();
 
 // Uploads setup
-const uploadsDir = path.join(__dirname, 'uploads');
+const uploadsDir = process.env.VERCEL ? path.join('/tmp', 'uploads') : path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
+  try {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  } catch (err) {
+    console.warn('Uploads dir creation warning:', err);
+  }
 }
 
 // Multer Storage Configuration
