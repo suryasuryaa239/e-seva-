@@ -3,7 +3,8 @@ import { useParams, useNavigate, Link, useSearchParams } from 'react-router-dom'
 import { 
   ShieldAlert, FileText, Upload, CheckCircle2, ArrowRight, ArrowLeft,
   AlertCircle, Lock, Info, Save, Edit3, Check, FileCheck, UserCheck, Clock, Download,
-  Phone, Mail, HelpCircle, Shield, Sparkles, Building, CreditCard, QrCode, Building2, Wallet
+  Phone, Mail, HelpCircle, Shield, Sparkles, Building, CreditCard, QrCode, Building2, Wallet,
+  Copy, Printer, ExternalLink
 } from 'lucide-react';
 import Breadcrumbs from '../components/Breadcrumbs';
 
@@ -25,6 +26,7 @@ export default function ApplyService() {
   // Application Draft Reference
   const [draftId, setDraftId] = useState(draftIdParam || null);
   const [submittedApp, setSubmittedApp] = useState(null);
+  const [copiedAppId, setCopiedAppId] = useState(false);
 
   // Form Field State
   const [applicantInfo, setApplicantInfo] = useState({
@@ -1384,71 +1386,213 @@ export default function ApplyService() {
 
         {/* STEP 05: SUCCESS & PAYMENT CONFIRMATION SCREEN */}
         {currentStep === 5 && submittedApp && (
-          <div className="bg-white rounded-3xl p-8 sm:p-12 border border-slate-200 shadow-xl text-center space-y-6 max-w-2xl mx-auto">
-            <div className="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-inner border border-emerald-200">
-              <CheckCircle2 className="w-10 h-10 text-emerald-600" />
+          <div className="max-w-3xl mx-auto space-y-6">
+            
+            {/* 1. SUCCESS HERO CARD */}
+            <div className="bg-white rounded-3xl p-8 sm:p-10 border border-slate-200/90 shadow-xl text-center space-y-4">
+              <div className="w-20 h-20 bg-emerald-100/80 text-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-inner border border-emerald-200/80 ring-8 ring-emerald-50">
+                <CheckCircle2 className="w-10 h-10 text-emerald-600" />
+              </div>
+
+              <div className="space-y-1.5">
+                <span className="text-[10px] uppercase font-extrabold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200 inline-block tracking-wider">
+                  APPLICATION SUBMITTED & PAID
+                </span>
+                <h2 className="font-heading font-extrabold text-2xl sm:text-3xl text-slate-900 tracking-tight">
+                  Application Submitted Successfully
+                </h2>
+                <p className="text-slate-600 text-xs sm:text-sm max-w-lg mx-auto font-normal leading-relaxed">
+                  Your application for <strong className="text-slate-900 font-bold">{service.name}</strong> has been successfully submitted and logged into the E-Seva system.
+                </p>
+              </div>
             </div>
 
-            <div className="space-y-2">
-              <span className="text-[10px] uppercase font-extrabold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
-                PAYMENT & APPLICATION SUCCESSFUL
-              </span>
-              <h2 className="font-heading font-extrabold text-2xl sm:text-3xl text-slate-900">Application Submitted & Paid</h2>
-              <p className="text-slate-600 text-xs sm:text-sm font-normal">
-                Your payment for <span className="font-bold text-slate-900">{service.name}</span> has been completed and logged into the E-Seva queue.
-              </p>
-            </div>
+            {/* 2. APPLICATION ID HIGHLIGHT CARD WITH COPY BUTTON */}
+            <div className="bg-[#0b192c] text-white rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-800 space-y-4 text-center relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/10 rounded-full blur-2xl pointer-events-none"></div>
+              
+              <div className="text-[11px] uppercase tracking-widest text-slate-400 font-extrabold">
+                YOUR APPLICATION ID
+              </div>
 
-            <div className="bg-[#0b192c] text-white rounded-2xl p-6 space-y-3 shadow-md">
-              <div className="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Application Reference Number</div>
-              <div className="text-3xl sm:text-4xl font-black text-orange-400 font-mono tracking-wider">
+              <div className="text-3xl sm:text-4xl md:text-5xl font-black text-orange-400 font-mono tracking-wider drop-shadow-sm select-all">
                 {submittedApp.application_number}
               </div>
-              <div className="text-xs text-slate-400 font-normal flex items-center justify-center gap-4 border-t border-slate-800 pt-2">
-                <span>Receipt: <strong className="text-white font-mono">{submittedApp.receipt_number || `REC-${Date.now().toString().slice(-6)}`}</strong></span>
-                <span>Submitted: <strong className="text-white">{new Date(submittedApp.submitted_at || Date.now()).toLocaleDateString()}</strong></span>
+
+              <div className="pt-2 flex justify-center">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (submittedApp.application_number) {
+                      navigator.clipboard.writeText(submittedApp.application_number);
+                      setCopiedAppId(true);
+                      setTimeout(() => setCopiedAppId(false), 2000);
+                    }
+                  }}
+                  className={`px-5 py-2.5 rounded-xl font-extrabold text-xs transition-all flex items-center gap-2 border shadow-sm ${
+                    copiedAppId 
+                      ? 'bg-emerald-600 text-white border-emerald-500' 
+                      : 'bg-slate-800 hover:bg-slate-700 text-white border-slate-700 hover:border-orange-500'
+                  }`}
+                >
+                  {copiedAppId ? (
+                    <>
+                      <Check className="w-4 h-4 text-emerald-300" />
+                      <span>Copied to Clipboard!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-4 h-4 text-orange-400" />
+                      <span>Copy Application ID</span>
+                    </>
+                  )}
+                </button>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 text-xs text-left bg-slate-50 p-5 rounded-2xl border border-slate-200 font-medium">
-              <div>
-                <span className="text-slate-400 block text-[10px] uppercase font-bold">Applicant Name</span>
-                <span className="font-bold text-slate-900">{applicantInfo.user_name || 'Karthik S.'}</span>
-              </div>
-              <div>
-                <span className="text-slate-400 block text-[10px] uppercase font-bold">Payment Status</span>
-                <span className="font-extrabold text-emerald-600 flex items-center gap-1">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>PAID (₹{service.fee || 0})</span>
+            {/* 3. PAYMENT CONFIRMATION CARD */}
+            <div className="bg-white rounded-3xl p-6 border border-slate-200/90 shadow-sm space-y-4">
+              <h3 className="font-heading font-extrabold text-sm text-slate-900 flex items-center justify-between border-b pb-3 border-slate-100">
+                <span className="flex items-center gap-2">
+                  <CreditCard className="w-4 h-4 text-orange-500" />
+                  <span>Payment Confirmation</span>
                 </span>
-              </div>
-              <div>
-                <span className="text-slate-400 block text-[10px] uppercase font-bold">Processing SLA</span>
-                <span className="font-bold text-slate-900">{service.processing_time || '3-5 Days'}</span>
-              </div>
-              <div>
-                <span className="text-slate-400 block text-[10px] uppercase font-bold">Transaction Reference</span>
-                <span className="font-mono font-bold text-slate-900">{submittedApp.payment_transaction_id || `TXN-${Date.now().toString().slice(-8)}`}</span>
+                <span className="text-[11px] font-extrabold bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full border border-emerald-200 flex items-center gap-1">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>PAID</span>
+                </span>
+              </h3>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
+                <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
+                  <span className="text-slate-400 block text-[10px] font-extrabold uppercase">Paid Amount</span>
+                  <span className="font-black text-slate-900 text-sm">₹{submittedApp.amount || service.fee || 50}</span>
+                </div>
+                <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
+                  <span className="text-slate-400 block text-[10px] font-extrabold uppercase">Payment Status</span>
+                  <span className="font-bold text-emerald-600">Successful</span>
+                </div>
+                <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
+                  <span className="text-slate-400 block text-[10px] font-extrabold uppercase">Transaction Ref</span>
+                  <span className="font-mono font-bold text-slate-900 truncate block">
+                    {submittedApp.payment_transaction_id || `TXN-${Date.now().toString().slice(-8)}`}
+                  </span>
+                </div>
+                <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
+                  <span className="text-slate-400 block text-[10px] font-extrabold uppercase">Date & Time</span>
+                  <span className="font-bold text-slate-800">
+                    {new Date(submittedApp.submitted_at || Date.now()).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                  </span>
+                </div>
               </div>
             </div>
 
-            <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
+            {/* 4. DYNAMIC APPLICATION SUMMARY CARD */}
+            <div className="bg-white rounded-3xl p-6 border border-slate-200/90 shadow-sm space-y-4">
+              <h3 className="font-heading font-extrabold text-sm text-slate-900 border-b pb-3 border-slate-100 flex items-center gap-2">
+                <FileText className="w-4 h-4 text-orange-500" />
+                <span>Application Summary</span>
+              </h3>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
+                <div>
+                  <span className="text-slate-400 block text-[10px] font-extrabold uppercase">Service Name</span>
+                  <span className="font-bold text-slate-900">{service.name}</span>
+                </div>
+                <div>
+                  <span className="text-slate-400 block text-[10px] font-extrabold uppercase">Applicant Name</span>
+                  <span className="font-bold text-slate-900">{applicantInfo.user_name || submittedApp.user_name || 'Karthik S.'}</span>
+                </div>
+                <div>
+                  <span className="text-slate-400 block text-[10px] uppercase font-bold">Application Date</span>
+                  <span className="font-bold text-slate-900">
+                    {new Date(submittedApp.submitted_at || Date.now()).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-slate-400 block text-[10px] uppercase font-bold">Current Status</span>
+                  <span className="font-bold text-blue-600">{submittedApp.status || 'SUBMITTED'}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* 5. WHAT'S NEXT? 3-STEP VISUAL WORKFLOW */}
+            <div className="bg-white rounded-3xl p-6 border border-slate-200/90 shadow-sm space-y-4">
+              <h3 className="font-heading font-extrabold text-sm text-slate-900 border-b pb-3 border-slate-100 flex items-center gap-2">
+                <Clock className="w-4 h-4 text-orange-500" />
+                <span>What's Next? Application Timeline</span>
+              </h3>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 relative">
+                {/* Step 1 */}
+                <div className="bg-emerald-50/70 border border-emerald-200 p-4 rounded-2xl space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-black text-emerald-800 uppercase tracking-wider">Step 01</span>
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  </div>
+                  <h4 className="font-extrabold text-xs text-slate-900">Application Received</h4>
+                  <p className="text-[11px] text-slate-600 font-normal">Logged into E-Seva portal system</p>
+                </div>
+
+                {/* Step 2 */}
+                <div className="bg-orange-50/70 border border-orange-200 p-4 rounded-2xl space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-black text-orange-800 uppercase tracking-wider">Step 02</span>
+                    <span className="w-2.5 h-2.5 bg-orange-500 rounded-full animate-ping"></span>
+                  </div>
+                  <h4 className="font-extrabold text-xs text-slate-900">Under Review</h4>
+                  <p className="text-[11px] text-slate-600 font-normal">Facilitation desk verifying proof uploads</p>
+                </div>
+
+                {/* Step 3 */}
+                <div className="bg-slate-50 border border-slate-200 p-4 rounded-2xl space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Step 03</span>
+                    <Clock className="w-4 h-4 text-slate-400" />
+                  </div>
+                  <h4 className="font-extrabold text-xs text-slate-900">Track & Receive</h4>
+                  <p className="text-[11px] text-slate-600 font-normal">Track status online for output certificate</p>
+                </div>
+              </div>
+            </div>
+
+            {/* 6. ACTION BUTTONS (Track, View My Apps, Download Receipt) */}
+            <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link
                 to={`/track?appId=${submittedApp.application_number}`}
-                className="w-full sm:w-auto px-6 py-3.5 bg-[#0b192c] hover:bg-orange-600 text-white font-bold text-xs rounded-xl shadow-xs transition-colors flex items-center justify-center gap-2"
+                className="w-full sm:w-auto px-6 py-3.5 bg-[#0b192c] hover:bg-orange-600 text-white font-extrabold text-xs rounded-xl shadow-xs transition-colors flex items-center justify-center gap-2"
               >
-                <Clock className="w-4 h-4" />
+                <Clock className="w-4 h-4 text-orange-400" />
                 <span>Track Application</span>
               </Link>
 
               <Link
-                to="/payments"
-                className="w-full sm:w-auto px-6 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs rounded-xl transition-colors flex items-center justify-center gap-2 border border-slate-200"
+                to="/my-applications"
+                className="w-full sm:w-auto px-6 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-extrabold text-xs rounded-xl transition-colors flex items-center justify-center gap-2 border border-slate-200"
               >
                 <FileText className="w-4 h-4 text-orange-500" />
-                <span>View Payment Ledger</span>
+                <span>View My Applications</span>
               </Link>
+
+              <button
+                type="button"
+                onClick={() => window.print()}
+                className="w-full sm:w-auto px-6 py-3.5 bg-white hover:bg-slate-50 text-slate-800 font-extrabold text-xs rounded-xl transition-colors flex items-center justify-center gap-2 border border-slate-200 shadow-xs"
+              >
+                <Printer className="w-4 h-4 text-slate-600" />
+                <span>Download / Print Receipt</span>
+              </button>
             </div>
+
+            {/* 7. IMPORTANT INFORMATION NOTICE */}
+            <div className="bg-amber-50/80 border border-amber-200/90 p-4 rounded-2xl flex items-start space-x-3 text-xs text-amber-950 font-medium">
+              <Info className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+              <div>
+                <span className="font-extrabold text-amber-950">Important Notice: </span>
+                Please save your Application ID (<strong className="font-mono">{submittedApp.application_number}</strong>) for future reference and tracking.
+              </div>
+            </div>
+
           </div>
         )}
 

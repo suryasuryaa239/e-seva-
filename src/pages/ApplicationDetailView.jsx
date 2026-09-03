@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { 
   FileText, Clock, CheckCircle2, AlertCircle, ArrowLeft, ShieldAlert,
-  UserCheck, FileCheck, Download, History, MessageSquare, ExternalLink, Award
+  UserCheck, FileCheck, Download, History, MessageSquare, ExternalLink, Award, Copy, Check, Printer
 } from 'lucide-react';
 import CertificatePrint from '../components/CertificatePrint';
 
@@ -29,6 +29,7 @@ export default function ApplicationDetailView() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showCertModal, setShowCertModal] = useState(false);
+  const [copiedAppId, setCopiedAppId] = useState(false);
 
   useEffect(() => {
     fetchApplicationDetails();
@@ -112,25 +113,59 @@ export default function ApplicationDetailView() {
         </div>
 
         {/* Top Summary Banner */}
-        <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-2xl p-6 sm:p-8 text-white shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-          <div className="space-y-2">
+        <div className="bg-[#0b192c] rounded-3xl p-6 sm:p-8 text-white shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6 border border-slate-800 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-48 h-48 bg-orange-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+          <div className="space-y-3 relative z-10">
             <div className="flex items-center space-x-3">
               <span className={`px-3 py-1 rounded-full text-xs font-black border ${badgeClass}`}>
                 STATUS: {details.status}
               </span>
-              <span className="text-xs text-slate-400">
-                Logged: {new Date(details.created_at || details.submitted_at).toLocaleDateString()}
+              <span className="text-xs text-slate-400 font-medium">
+                Logged: {new Date(details.created_at || details.submitted_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
               </span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold font-mono tracking-wide text-emerald-400">
-              {details.application_number}
-            </h1>
+
+            <div className="flex items-center space-x-3 flex-wrap gap-y-2">
+              <h1 className="text-2xl sm:text-3xl font-black font-mono tracking-wide text-orange-400 select-all">
+                {details.application_number}
+              </h1>
+
+              <button
+                type="button"
+                onClick={() => {
+                  if (details.application_number) {
+                    navigator.clipboard.writeText(details.application_number);
+                    setCopiedAppId(true);
+                    setTimeout(() => setCopiedAppId(false), 2000);
+                  }
+                }}
+                className={`px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all flex items-center space-x-1 border ${
+                  copiedAppId 
+                    ? 'bg-emerald-600 text-white border-emerald-500' 
+                    : 'bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border-slate-700'
+                }`}
+              >
+                {copiedAppId ? (
+                  <>
+                    <Check className="w-3.5 h-3.5 text-emerald-300" />
+                    <span>Copied!</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-3.5 h-3.5 text-orange-400" />
+                    <span>Copy ID</span>
+                  </>
+                )}
+              </button>
+            </div>
+
             <p className="text-slate-300 text-sm font-semibold">
               {details.service_name || 'Digital Service'} ({details.category_name || 'E-Seva Category'})
             </p>
           </div>
 
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-3 flex-wrap gap-2 relative z-10">
             {(details.status === 'Approved' || details.status === 'APPROVED' || details.status === 'Completed' || details.status === 'COMPLETED') && (
               <button
                 onClick={() => setShowCertModal(true)}
@@ -142,11 +177,11 @@ export default function ApplicationDetailView() {
             )}
 
             <button
-              onClick={() => alert(`Downloading Receipt for ${details.application_number}...`)}
+              onClick={() => window.print()}
               className="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black text-xs rounded-xl shadow-md transition-all flex items-center space-x-2"
             >
-              <Download className="w-4 h-4" />
-              <span>Download Receipt</span>
+              <Printer className="w-4 h-4" />
+              <span>Download / Print Receipt</span>
             </button>
           </div>
         </div>
