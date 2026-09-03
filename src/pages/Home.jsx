@@ -324,7 +324,85 @@ export default function Home() {
 
       </section>
 
-      {/* 4. CHECK APPLICATION STATUS BANNER (STEP 5 SPECIFICATION) */}
+      {/* 4. HOW IT WORKS SECTION (STEP 5 SPECIFICATION) */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 py-12 border-t border-slate-200/80">
+        
+        {/* CENTERED SECTION HEADER */}
+        <div className="text-center max-w-2xl mx-auto space-y-2">
+          <span className="inline-block text-xs font-extrabold text-orange-600 uppercase tracking-widest bg-orange-50 border border-orange-200/80 px-3.5 py-1 rounded-full">
+            HOW IT WORKS
+          </span>
+          <h2 className="font-heading font-extrabold text-3xl sm:text-4xl text-slate-900 tracking-tight">
+            Simple & Easy Process
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-500 font-normal leading-relaxed">
+            Complete your digital service application in just a few simple steps.
+          </p>
+        </div>
+
+        {/* 4-STEP PROCESS GRID WITH CONNECTING LINE */}
+        <div className="relative">
+          {/* Connecting Line (Desktop) */}
+          <div className="hidden lg:block absolute top-14 left-24 right-24 h-0.5 bg-slate-200 z-0"></div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 relative z-10">
+            {[
+              {
+                step: '01',
+                title: 'Choose a Service',
+                desc: 'Find and select the service you need.',
+                icon: <Search className="w-6 h-6 text-orange-600" />
+              },
+              {
+                step: '02',
+                title: 'Submit Details',
+                desc: 'Fill in the required information and upload documents.',
+                icon: <FileText className="w-6 h-6 text-orange-600" />
+              },
+              {
+                step: '03',
+                title: 'Make Payment',
+                desc: 'Review your application and complete the payment.',
+                icon: <CreditCard className="w-6 h-6 text-orange-600" />
+              },
+              {
+                step: '04',
+                title: 'Track Application',
+                desc: 'Receive your application ID and track the progress.',
+                icon: <FileCheck className="w-6 h-6 text-orange-600" />
+              }
+            ].map((item, idx) => (
+              <div
+                key={idx}
+                className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs hover:shadow-md hover:border-orange-500/40 transition-all duration-300 hover:-translate-y-1 flex flex-col items-center text-center space-y-4 group"
+              >
+                {/* ICON & NUMBER BADGE */}
+                <div className="relative">
+                  <div className="w-16 h-16 rounded-2xl bg-orange-50 border border-orange-100 flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform">
+                    {item.icon}
+                  </div>
+                  <span className="absolute -top-2 -right-2 bg-[#0b192c] text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full border-2 border-white shadow-xs">
+                    {item.step}
+                  </span>
+                </div>
+
+                {/* TITLE & DESCRIPTION */}
+                <div className="space-y-1.5">
+                  <h3 className="font-heading font-extrabold text-base text-slate-900 group-hover:text-orange-600 transition-colors">
+                    {item.title}
+                  </h3>
+                  <p className="text-xs text-slate-500 font-normal leading-relaxed">
+                    {item.desc}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+      </section>
+
+      {/* 5. CHECK APPLICATION STATUS BANNER */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-t border-slate-200/80">
         <div className="space-y-10">
           
