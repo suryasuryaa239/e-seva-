@@ -58,6 +58,11 @@ export default function AdminDashboard() {
   const [selectedEnquiry, setSelectedEnquiry] = useState(null);
   const [replyText, setReplyText] = useState('');
 
+  // Career Application Inspector State (STEP 31)
+  const [careerSearchQuery, setCareerSearchQuery] = useState('');
+  const [careerStatusFilter, setCareerStatusFilter] = useState('All');
+  const [selectedCareerApp, setSelectedCareerApp] = useState(null);
+
   // New Service Modal State
   const [showAddServiceModal, setShowAddServiceModal] = useState(false);
 
@@ -312,6 +317,19 @@ export default function AdminDashboard() {
       (m.message && m.message.toLowerCase().includes(enquirySearchQuery.toLowerCase()));
     const matchesStatus = enquiryStatusFilter === 'All' ||
       (m.status && m.status.toLowerCase() === enquiryStatusFilter.toLowerCase());
+    return matchesSearch && matchesStatus;
+  });
+
+  // Filtered Career Applications List (STEP 31)
+  const filteredCareers = careers.filter(c => {
+    const matchesSearch = !careerSearchQuery ||
+      (c.applicant_name && c.applicant_name.toLowerCase().includes(careerSearchQuery.toLowerCase())) ||
+      (c.email && c.email.toLowerCase().includes(careerSearchQuery.toLowerCase())) ||
+      (c.phone && c.phone.includes(careerSearchQuery)) ||
+      (c.position && c.position.toLowerCase().includes(careerSearchQuery.toLowerCase())) ||
+      (c.experience && c.experience.toLowerCase().includes(careerSearchQuery.toLowerCase()));
+    const matchesStatus = careerStatusFilter === 'All' ||
+      (c.status && c.status.toLowerCase() === careerStatusFilter.toLowerCase());
     return matchesSearch && matchesStatus;
   });
 
@@ -1589,6 +1607,263 @@ export default function AdminDashboard() {
             </div>
           )}
 
+          {/* TAB: CAREER APPLICATIONS & CANDIDATE RECRUITMENT (STEP 31) */}
+          {activeTab === 'careers' && (
+            <div className="space-y-6">
+              
+              <div className="bg-white p-5 rounded-3xl border border-slate-200/90 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-[11px] font-black uppercase text-orange-600 tracking-wider bg-orange-50 px-2.5 py-0.5 rounded border border-orange-200">
+                      RECRUITMENT DESK
+                    </span>
+                    <span className="text-xs font-mono text-slate-500">• Candidate Applications</span>
+                  </div>
+                  <h3 className="text-lg font-black text-slate-900 mt-1">
+                    Career Applications & Candidate Recruitment
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Review job applications, inspect candidate resumes, and manage recruitment pipeline statuses.
+                  </p>
+                </div>
+
+                <div className="flex items-center space-x-2 self-start sm:self-auto">
+                  <button
+                    onClick={() => {
+                      setCareerSearchQuery('');
+                      setCareerStatusFilter('All');
+                    }}
+                    className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-colors flex items-center space-x-1.5"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    <span>Reset Filters</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Career Statistics Header Cards */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-3">
+                  <div className="w-10 h-10 rounded-xl bg-orange-500/10 text-orange-600 flex items-center justify-center font-black">
+                    <Briefcase className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Total Candidates</span>
+                    <div className="text-xl font-black text-slate-900">{careers.length}</div>
+                  </div>
+                </div>
+
+                <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-3">
+                  <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center font-black">
+                    <FileText className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Received / New</span>
+                    <div className="text-xl font-black text-blue-600">
+                      {careers.filter(c => !c.status || c.status.toLowerCase() === 'received').length}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-3">
+                  <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center font-black">
+                    <Clock className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Under Review</span>
+                    <div className="text-xl font-black text-amber-600">
+                      {careers.filter(c => c.status && c.status.toLowerCase() === 'under review').length}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-3">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center font-black">
+                    <UserCheck className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Shortlisted</span>
+                    <div className="text-xl font-black text-emerald-600">
+                      {careers.filter(c => c.status && (c.status.toLowerCase() === 'shortlisted' || c.status.toLowerCase() === 'hired')).length}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Search & Filter Toolbar */}
+              <div className="bg-white p-4 rounded-3xl border border-slate-200/90 shadow-sm space-y-3">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+                  <div className="relative w-full sm:w-80">
+                    <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="text"
+                      placeholder="Search Candidate, Email, Position, Experience..."
+                      value={careerSearchQuery}
+                      onChange={(e) => setCareerSearchQuery(e.target.value)}
+                      className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-xs rounded-xl pl-10 pr-4 py-2.5 focus:border-[#0b192c] focus:bg-white outline-none transition-all shadow-inner"
+                    />
+                    {careerSearchQuery && (
+                      <button
+                        onClick={() => setCareerSearchQuery('')}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs font-bold"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="flex items-center space-x-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
+                    {['All', 'Received', 'Under Review', 'Shortlisted', 'Rejected'].map((status) => (
+                      <button
+                        key={status}
+                        onClick={() => setCareerStatusFilter(status)}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+                          careerStatusFilter === status
+                            ? 'bg-[#0b192c] text-white shadow-sm font-black'
+                            : 'bg-slate-50 text-slate-600 hover:text-slate-900 border border-slate-200'
+                        }`}
+                      >
+                        {status}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="text-xs text-slate-500 font-medium pt-2 border-t border-slate-100">
+                  Showing <strong className="text-slate-900">{filteredCareers.length}</strong> matching candidate applications
+                </div>
+              </div>
+
+              {/* Desktop Career Applications Table (`hidden md:block`) */}
+              <div className="bg-white border border-slate-200/90 rounded-3xl overflow-hidden shadow-sm hidden md:block">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs text-slate-700">
+                    <thead className="bg-slate-50 text-slate-500 font-extrabold uppercase tracking-wider text-[10px] border-b border-slate-200 sticky top-0">
+                      <tr>
+                        <th className="py-3.5 px-4">Candidate Profile</th>
+                        <th className="py-3.5 px-4">Applied Position</th>
+                        <th className="py-3.5 px-4">Experience Level</th>
+                        <th className="py-3.5 px-4">Resume / CV</th>
+                        <th className="py-3.5 px-4">Applied Date</th>
+                        <th className="py-3.5 px-4">Status</th>
+                        <th className="py-3.5 px-4 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {filteredCareers.map((car) => {
+                        const isShortlisted = car.status && car.status.toLowerCase() === 'shortlisted';
+                        const isRejected = car.status && car.status.toLowerCase() === 'rejected';
+
+                        return (
+                          <tr key={car.id} className="hover:bg-slate-50/80 transition-colors">
+                            <td className="py-4 px-4">
+                              <div className="flex items-center space-x-3">
+                                <div className="w-9 h-9 rounded-xl bg-[#0b192c] text-orange-400 font-black flex items-center justify-center text-sm shadow-sm">
+                                  {(car.applicant_name || 'C')[0].toUpperCase()}
+                                </div>
+                                <div>
+                                  <div className="font-extrabold text-slate-900 text-sm">{car.applicant_name}</div>
+                                  <div className="text-[11px] text-slate-500">{car.email} • {car.phone || 'N/A'}</div>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="py-4 px-4">
+                              <span className="font-bold text-slate-900 text-xs bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200">
+                                {car.position}
+                              </span>
+                            </td>
+                            <td className="py-4 px-4 font-semibold text-slate-700">
+                              {car.experience || 'Entry Level'}
+                            </td>
+                            <td className="py-4 px-4">
+                              {car.resume_file ? (
+                                <a
+                                  href={car.resume_file}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center space-x-1 font-bold text-xs text-orange-600 bg-orange-50 hover:bg-orange-100 px-2.5 py-1 rounded-lg border border-orange-200 transition-colors"
+                                >
+                                  <Paperclip className="w-3 h-3" />
+                                  <span>View Resume</span>
+                                </a>
+                              ) : (
+                                <span className="text-[11px] text-slate-400 italic">No File</span>
+                              )}
+                            </td>
+                            <td className="py-4 px-4 font-semibold text-slate-700">
+                              {car.created_at ? new Date(car.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Logged'}
+                            </td>
+                            <td className="py-4 px-4">
+                              <span className={`inline-flex items-center space-x-1 text-[11px] font-extrabold px-2.5 py-0.5 rounded-full border ${
+                                isShortlisted ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                                isRejected ? 'bg-rose-50 text-rose-700 border-rose-200' :
+                                'bg-blue-50 text-blue-700 border-blue-200'
+                              }`}>
+                                <CheckCircle className="w-3 h-3" />
+                                <span>{car.status || 'Received'}</span>
+                              </span>
+                            </td>
+                            <td className="py-4 px-4 text-right">
+                              <button
+                                onClick={() => setSelectedCareerApp(car)}
+                                className="bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold px-3 py-1.5 rounded-xl text-xs transition-colors shadow flex items-center space-x-1 ml-auto"
+                              >
+                                <Eye className="w-3.5 h-3.5 text-orange-400" />
+                                <span>Inspect Profile</span>
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Mobile Stacked Candidate Cards (`md:hidden`) */}
+              <div className="space-y-3 md:hidden">
+                {filteredCareers.map((car) => (
+                  <div key={car.id} className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm space-y-3">
+                    <div className="flex justify-between items-start">
+                      <div className="flex items-center space-x-2.5">
+                        <div className="w-9 h-9 rounded-xl bg-[#0b192c] text-orange-400 font-black flex items-center justify-center text-xs shadow-sm">
+                          {(car.applicant_name || 'C')[0].toUpperCase()}
+                        </div>
+                        <div>
+                          <h4 className="font-extrabold text-sm text-slate-900">{car.applicant_name}</h4>
+                          <p className="text-[11px] text-slate-500">{car.email}</p>
+                        </div>
+                      </div>
+                      <span className="bg-blue-50 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded border border-blue-200">
+                        {car.status || 'Received'}
+                      </span>
+                    </div>
+
+                    <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200 space-y-1 text-xs">
+                      <div className="flex justify-between">
+                        <span className="text-slate-500">Position:</span>
+                        <strong className="text-slate-900">{car.position}</strong>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-slate-500">Experience:</span>
+                        <strong className="text-slate-800">{car.experience || 'Entry Level'}</strong>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={() => setSelectedCareerApp(car)}
+                      className="w-full py-2.5 bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold text-xs rounded-xl transition-colors flex items-center justify-center space-x-1.5"
+                    >
+                      <Eye className="w-3.5 h-3.5 text-orange-400" />
+                      <span>Inspect Candidate Profile</span>
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+            </div>
+          )}
+
           {/* DASHBOARD OVERVIEW */}
           {activeTab === 'dashboard' && stats && (
             <div className="space-y-6">
@@ -2339,6 +2614,119 @@ export default function AdminDashboard() {
               className="w-full py-2.5 bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold text-xs rounded-xl transition-colors shadow"
             >
               Close Enquiry Inspector
+            </button>
+
+          </div>
+        </div>
+      )}
+
+      {/* CANDIDATE DETAILS & RESUME INSPECTOR MODAL (STEP 31) */}
+      {selectedCareerApp && (
+        <div className="fixed inset-0 bg-slate-950/75 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white border border-slate-200 rounded-3xl max-w-2xl w-full p-6 space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+            
+            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 rounded-2xl bg-orange-500/10 text-orange-600 font-black flex items-center justify-center text-lg shadow-sm">
+                  <Briefcase className="w-6 h-6" />
+                </div>
+                <div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-[10px] font-black uppercase text-orange-600 tracking-wider bg-orange-50 px-2 py-0.5 rounded border border-orange-200">
+                      CANDIDATE AUDIT
+                    </span>
+                    <span className="text-xs font-mono text-slate-500">• ID #{selectedCareerApp.id}</span>
+                  </div>
+                  <h3 className="font-extrabold text-lg text-slate-900 mt-0.5">{selectedCareerApp.applicant_name}</h3>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setSelectedCareerApp(null)}
+                className="p-2 text-slate-400 hover:text-slate-600 bg-slate-100 rounded-xl transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-4 text-xs">
+              
+              {/* Candidate Summary Cards */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                  <span className="text-slate-500 block font-medium">Applied Position</span>
+                  <span className="font-bold text-slate-900 text-xs">{selectedCareerApp.position}</span>
+                </div>
+                <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                  <span className="text-slate-500 block font-medium">Experience Level</span>
+                  <span className="font-bold text-slate-900 text-xs">{selectedCareerApp.experience || 'Entry Level'}</span>
+                </div>
+                <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 col-span-2 sm:col-span-1">
+                  <span className="text-slate-500 block font-medium">Pipeline Status</span>
+                  <span className="font-bold text-blue-600 uppercase text-xs">
+                    {selectedCareerApp.status || 'Received'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Candidate Contact Information */}
+              <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                <span className="text-slate-500 font-bold text-[11px] block uppercase tracking-wider">Candidate Primary Contact</span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                  <div>
+                    <span className="text-slate-400 block font-mono">Email Address</span>
+                    <span className="font-bold text-slate-900">{selectedCareerApp.email}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 block font-mono">Mobile / Phone</span>
+                    <span className="font-bold text-slate-900">{selectedCareerApp.phone || 'N/A'}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Uploaded Resume / CV File Document Card */}
+              <div className="space-y-2 pt-2 border-t border-slate-100">
+                <h4 className="font-black text-slate-900 text-xs uppercase tracking-wider flex items-center space-x-2">
+                  <Paperclip className="w-4 h-4 text-orange-500" />
+                  <span>Uploaded Candidate Resume / CV</span>
+                </h4>
+
+                {selectedCareerApp.resume_file ? (
+                  <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 rounded-xl bg-orange-500/10 text-orange-600 flex items-center justify-center font-black">
+                        <FileText className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <span className="font-bold text-slate-900 text-xs block">Candidate Resume Document</span>
+                        <span className="text-[10px] text-slate-500 font-mono">{selectedCareerApp.resume_file}</span>
+                      </div>
+                    </div>
+
+                    <a
+                      href={selectedCareerApp.resume_file}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white font-extrabold text-xs rounded-xl shadow transition-colors flex items-center space-x-1.5"
+                    >
+                      <Paperclip className="w-3.5 h-3.5" />
+                      <span>Download File</span>
+                    </a>
+                  </div>
+                ) : (
+                  <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 text-slate-400 italic text-xs">
+                    No resume file was attached with this application.
+                  </div>
+                )}
+              </div>
+
+            </div>
+
+            <button
+              onClick={() => setSelectedCareerApp(null)}
+              className="w-full py-2.5 bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold text-xs rounded-xl transition-colors shadow"
+            >
+              Close Candidate Inspector
             </button>
 
           </div>
