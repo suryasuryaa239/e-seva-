@@ -50,28 +50,26 @@ export default function ServicesDirectory() {
     return matchesCategory && matchesSearch;
   });
 
-  const getCategoryIcon = (slug) => {
-    switch (slug) {
-      case 'aadhaar':
-      case 'aadhaar-services': return <Fingerprint className="w-6 h-6 text-orange-500" />;
-      case 'pan':
-      case 'pan-services': return <CreditCard className="w-6 h-6 text-orange-500" />;
-      case 'voter':
-      case 'voter-id-services': return <Vote className="w-6 h-6 text-orange-500" />;
-      case 'certificates': return <FileText className="w-6 h-6 text-orange-500" />;
-      case 'land':
-      case 'land-patta-services': return <MapPin className="w-6 h-6 text-orange-500" />;
-      case 'passport':
-      case 'passport-services': return <Globe className="w-6 h-6 text-orange-500" />;
-      case 'driving-licence':
-      case 'vehicle':
-      case 'driving-vehicle-services': return <Car className="w-6 h-6 text-orange-500" />;
-      case 'business':
-      case 'business-services': return <Briefcase className="w-6 h-6 text-orange-500" />;
-      case 'utility':
-      case 'utility-services': return <Zap className="w-6 h-6 text-orange-500" />;
-      default: return <Grid className="w-6 h-6 text-orange-500" />;
-    }
+  const getCategoryIcon = (slug = '') => {
+    const s = slug.toLowerCase();
+    let img = '/cat_ration.png';
+    if (s.includes('aadhaar')) img = '/cat_aadhaar.png';
+    else if (s.includes('pan')) img = '/cat_pan.png';
+    else if (s.includes('voter')) img = '/cat_voter.png';
+    else if (s.includes('certificate')) img = '/cat_certificates.png';
+    else if (s.includes('land')) img = '/cat_land.png';
+    else if (s.includes('passport')) img = '/cat_passport.png';
+    else if (s.includes('driving') || s.includes('vehicle')) img = '/cat_driving.png';
+    else if (s.includes('business')) img = '/cat_business.png';
+    else if (s.includes('utility')) img = '/cat_utility.png';
+
+    return (
+      <img
+        src={img}
+        alt={slug}
+        className="w-full h-full object-contain drop-shadow-sm"
+      />
+    );
   };
 
   return (

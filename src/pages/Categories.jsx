@@ -10,6 +10,20 @@ const iconMap = {
   Fingerprint, CreditCard, Vote, FileText, MapPin, Globe, Car, Briefcase, Zap, Grid
 };
 
+const getCategoryImage = (slug = '') => {
+  const s = slug.toLowerCase();
+  if (s.includes('aadhaar')) return '/cat_aadhaar.png';
+  if (s.includes('pan')) return '/cat_pan.png';
+  if (s.includes('voter')) return '/cat_voter.png';
+  if (s.includes('certificate')) return '/cat_certificates.png';
+  if (s.includes('land')) return '/cat_land.png';
+  if (s.includes('passport')) return '/cat_passport.png';
+  if (s.includes('driving') || s.includes('vehicle')) return '/cat_driving.png';
+  if (s.includes('business')) return '/cat_business.png';
+  if (s.includes('utility')) return '/cat_utility.png';
+  return '/cat_ration.png';
+};
+
 export default function Categories() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -50,6 +64,7 @@ export default function Categories() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {categories.map((cat) => {
             const IconComp = iconMap[cat.icon] || Grid;
+            const imgPath = getCategoryImage(cat.slug);
             return (
               <div
                 key={cat.id}
@@ -57,10 +72,10 @@ export default function Categories() {
               >
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <div className="w-12 h-12 rounded-xl bg-indigo-50 group-hover:bg-indigo-600 text-indigo-600 group-hover:text-white flex items-center justify-center transition-all duration-300">
-                      <IconComp className="w-6 h-6" />
+                    <div className="w-14 h-14 rounded-2xl bg-slate-50 border border-slate-200 p-1.5 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <img src={imgPath} alt={cat.name} className="w-full h-full object-contain drop-shadow-md" />
                     </div>
-                    <span className="text-xs font-bold bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full border border-indigo-100">
+                    <span className="text-xs font-bold bg-orange-50 text-orange-700 px-3 py-1 rounded-full border border-orange-100">
                       {cat.services_count || 0} Sub-Services
                     </span>
                   </div>

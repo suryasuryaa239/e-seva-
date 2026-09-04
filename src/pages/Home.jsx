@@ -212,27 +212,46 @@ export default function Home() {
         {/* Desktop: 4 per row, Tablet: 2 or 3 per row, Mobile: 1 per row */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
           {[
-            { name: 'Aadhaar Services', slug: 'aadhaar', desc: 'Aadhaar enrollment, name, address & mobile updates', icon: <Fingerprint className="w-6 h-6 text-orange-500" /> },
-            { name: 'PAN Services', slug: 'pan-services', desc: 'New PAN card application, correction & reprint', icon: <CreditCard className="w-6 h-6 text-orange-500" /> },
-            { name: 'Voter ID Services', slug: 'voter', desc: 'New voter registration & address correction', icon: <Vote className="w-6 h-6 text-orange-500" /> },
-            { name: 'Certificates', slug: 'certificates', desc: 'Income, community, native, birth & death certificates', icon: <FileText className="w-6 h-6 text-orange-500" /> },
-            { name: 'Land & Patta', slug: 'land', desc: 'Patta transfer, Chitta, FMB sketch & encumbrance', icon: <MapPin className="w-6 h-6 text-orange-500" /> },
-            { name: 'Passport Services', slug: 'passport', desc: 'Fresh passport application, re-issue & Tatkaal', icon: <Globe className="w-6 h-6 text-orange-500" /> },
-            { name: 'Driving Licence', slug: 'driving-licence', desc: 'Learner license, DL renewal & address change', icon: <Car className="w-6 h-6 text-orange-500" /> },
-            { name: 'Vehicle Services', slug: 'vehicle', desc: 'RC transfer, NOC & fitness certificate', icon: <Car className="w-6 h-6 text-orange-500" /> },
-            { name: 'Business Services', slug: 'business', desc: 'MSME/Udyam registration, GST & FSSAI license', icon: <Briefcase className="w-6 h-6 text-orange-500" /> },
-            { name: 'Utility Services', slug: 'utility', desc: 'Electricity connection, water tax & property tax', icon: <Zap className="w-6 h-6 text-orange-500" /> },
-            { name: 'Other Digital Services', slug: 'other', desc: 'Ration card, pension schemes & digital services', icon: <Grid className="w-6 h-6 text-orange-500" /> }
+            { name: 'Aadhaar Services', slug: 'aadhaar', desc: 'Aadhaar enrollment, name, address & mobile updates', icon: <Fingerprint className="w-6 h-6 text-orange-500" />, image: '/cat_aadhaar.png' },
+            { name: 'PAN Services', slug: 'pan-services', desc: 'New PAN card application, correction & reprint', icon: <CreditCard className="w-6 h-6 text-orange-500" />, image: '/cat_pan.png' },
+            { name: 'Voter ID Services', slug: 'voter', desc: 'New voter registration & address correction', icon: <Vote className="w-6 h-6 text-orange-500" />, image: '/cat_voter.png' },
+            { name: 'Certificates', slug: 'certificates', desc: 'Income, community, native, birth & death certificates', icon: <FileText className="w-6 h-6 text-orange-500" />, image: '/cat_certificates.png' },
+            { name: 'Land & Patta', slug: 'land', desc: 'Patta transfer, Chitta, FMB sketch & encumbrance', icon: <MapPin className="w-6 h-6 text-orange-500" />, image: '/cat_land.png' },
+            { name: 'Passport Services', slug: 'passport', desc: 'Fresh passport application, re-issue & Tatkaal', icon: <Globe className="w-6 h-6 text-orange-500" />, image: '/cat_passport.png' },
+            { name: 'Driving Licence', slug: 'driving-licence', desc: 'Learner license, DL renewal & address change', icon: <Car className="w-6 h-6 text-orange-500" />, image: '/cat_driving.png' },
+            { name: 'Vehicle Services', slug: 'vehicle', desc: 'RC transfer, NOC & fitness certificate', icon: <Car className="w-6 h-6 text-orange-500" />, image: '/cat_driving.png' },
+            { name: 'Business Services', slug: 'business', desc: 'MSME/Udyam registration, GST & FSSAI license', icon: <Briefcase className="w-6 h-6 text-orange-500" />, image: '/cat_business.png' },
+            { name: 'Utility Services', slug: 'utility', desc: 'Electricity connection, water tax & property tax', icon: <Zap className="w-6 h-6 text-orange-500" />, image: '/cat_utility.png' },
+            { name: 'Other Digital Services', slug: 'other', desc: 'Ration card, pension schemes & digital services', icon: <Grid className="w-6 h-6 text-orange-500" />, image: '/cat_ration.png' }
           ].map((cat, idx) => (
             <Link
               key={idx}
               to={cat.slug === 'aadhaar' ? '/services/aadhaar' : `/services/${cat.slug}`}
-              className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs hover:shadow-md hover:border-orange-500/50 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between space-y-4 group"
+              className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs hover:shadow-xl hover:border-orange-500/50 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between space-y-4 group overflow-hidden relative"
             >
-              <div className="space-y-3">
-                {/* ICON & ACCENT */}
-                <div className="w-12 h-12 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center group-hover:scale-105 transition-transform">
-                  {cat.icon}
+              {/* Subtle top accent background glow */}
+              <div className="absolute top-0 right-0 w-24 h-24 bg-orange-500/5 rounded-full blur-xl pointer-events-none group-hover:bg-orange-500/10 transition-all"></div>
+
+              <div className="space-y-3 relative z-10">
+                {/* 3D IMAGE & BADGE HEADER */}
+                <div className="flex items-center justify-between">
+                  <div className="w-14 h-14 rounded-2xl bg-slate-50 border border-slate-200/90 p-1.5 flex items-center justify-center shadow-inner group-hover:scale-110 group-hover:border-orange-200 transition-all duration-300">
+                    <img
+                      src={cat.image}
+                      alt={cat.name}
+                      className="w-full h-full object-contain drop-shadow-md"
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                        e.target.nextSibling.style.display = 'flex';
+                      }}
+                    />
+                    <div className="hidden w-full h-full items-center justify-center">
+                      {cat.icon}
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-extrabold text-orange-600 bg-orange-50 border border-orange-200/80 px-2.5 py-1 rounded-full uppercase tracking-wider">
+                    E-SERVICE
+                  </span>
                 </div>
 
                 {/* CATEGORY NAME & DESCRIPTION */}
@@ -247,7 +266,7 @@ export default function Home() {
               </div>
 
               {/* VIEW SERVICES ACTION & ARROW */}
-              <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-slate-800 group-hover:text-orange-600 transition-colors">
+              <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-extrabold text-slate-800 group-hover:text-orange-600 transition-colors relative z-10">
                 <span>View Services</span>
                 <ArrowRight className="w-4 h-4 text-orange-500 group-hover:translate-x-1.5 transition-transform" />
               </div>
