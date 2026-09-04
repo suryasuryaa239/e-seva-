@@ -36,6 +36,14 @@ import TermsOfService from './pages/TermsOfService';
 import RefundPolicy from './pages/RefundPolicy';
 import AadhaarServicesCatalog from './pages/AadhaarServicesCatalog';
 import PanServicesCatalog from './pages/PanServicesCatalog';
+import VoterServicesCatalog from './pages/VoterServicesCatalog';
+import CertificateServicesCatalog from './pages/CertificateServicesCatalog';
+import LandPattaServicesCatalog from './pages/LandPattaServicesCatalog';
+import PassportServicesCatalog from './pages/PassportServicesCatalog';
+import DrivingVehicleServicesCatalog from './pages/DrivingVehicleServicesCatalog';
+import BusinessServicesCatalog from './pages/BusinessServicesCatalog';
+import UtilityServicesCatalog from './pages/UtilityServicesCatalog';
+import RationCardServicesCatalog from './pages/RationCardServicesCatalog';
 import NotFound from './pages/NotFound';
 
 export default function App() {
@@ -57,9 +65,61 @@ export default function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/services" element={<ServicesDirectory />} />
                 <Route path="/services/aadhaar" element={<AadhaarServicesCatalog />} />
+                <Route path="/services/aadhaar-services" element={<AadhaarServicesCatalog />} />
+                <Route path="/category/aadhaar-services" element={<AadhaarServicesCatalog />} />
+                <Route path="/category/aadhaar" element={<AadhaarServicesCatalog />} />
+
                 <Route path="/services/pan-services" element={<PanServicesCatalog />} />
                 <Route path="/services/pan" element={<PanServicesCatalog />} />
                 <Route path="/pan-services" element={<PanServicesCatalog />} />
+                <Route path="/category/pan-services" element={<PanServicesCatalog />} />
+                <Route path="/category/pan" element={<PanServicesCatalog />} />
+
+                <Route path="/services/voter" element={<VoterServicesCatalog />} />
+                <Route path="/services/voter-id-services" element={<VoterServicesCatalog />} />
+                <Route path="/voter-services" element={<VoterServicesCatalog />} />
+                <Route path="/category/voter-id-services" element={<VoterServicesCatalog />} />
+                <Route path="/category/voter" element={<VoterServicesCatalog />} />
+
+                <Route path="/services/certificates" element={<CertificateServicesCatalog />} />
+                <Route path="/services/certificate-services" element={<CertificateServicesCatalog />} />
+                <Route path="/certificate-services" element={<CertificateServicesCatalog />} />
+                <Route path="/category/certificates" element={<CertificateServicesCatalog />} />
+                <Route path="/category/certificate-services" element={<CertificateServicesCatalog />} />
+
+                <Route path="/services/land" element={<LandPattaServicesCatalog />} />
+                <Route path="/services/land-patta-services" element={<LandPattaServicesCatalog />} />
+                <Route path="/category/land-patta-services" element={<LandPattaServicesCatalog />} />
+                <Route path="/category/land" element={<LandPattaServicesCatalog />} />
+
+                <Route path="/services/passport" element={<PassportServicesCatalog />} />
+                <Route path="/services/passport-services" element={<PassportServicesCatalog />} />
+                <Route path="/category/passport-services" element={<PassportServicesCatalog />} />
+                <Route path="/category/passport" element={<PassportServicesCatalog />} />
+
+                <Route path="/services/driving-licence" element={<DrivingVehicleServicesCatalog />} />
+                <Route path="/services/vehicle" element={<DrivingVehicleServicesCatalog />} />
+                <Route path="/services/driving-licence-vehicle-services" element={<DrivingVehicleServicesCatalog />} />
+                <Route path="/services/driving-vehicle-services" element={<DrivingVehicleServicesCatalog />} />
+                <Route path="/category/driving-vehicle-services" element={<DrivingVehicleServicesCatalog />} />
+                <Route path="/category/vehicle" element={<DrivingVehicleServicesCatalog />} />
+
+                <Route path="/services/business" element={<BusinessServicesCatalog />} />
+                <Route path="/services/business-services" element={<BusinessServicesCatalog />} />
+                <Route path="/category/business-services" element={<BusinessServicesCatalog />} />
+                <Route path="/category/business" element={<BusinessServicesCatalog />} />
+
+                <Route path="/services/utility" element={<UtilityServicesCatalog />} />
+                <Route path="/services/utility-services" element={<UtilityServicesCatalog />} />
+                <Route path="/category/utility-services" element={<UtilityServicesCatalog />} />
+                <Route path="/category/utility" element={<UtilityServicesCatalog />} />
+
+                <Route path="/services/other" element={<RationCardServicesCatalog />} />
+                <Route path="/services/other-digital-services" element={<RationCardServicesCatalog />} />
+                <Route path="/category/other-digital-services" element={<RationCardServicesCatalog />} />
+                <Route path="/category/other-services" element={<RationCardServicesCatalog />} />
+                <Route path="/category/other" element={<RationCardServicesCatalog />} />
+
                 <Route path="/services/:category" element={<CategoryView />} />
                 <Route path="/category/:slug" element={<CategoryView />} />
                 <Route path="/service/:serviceId" element={<ServiceDetails />} />

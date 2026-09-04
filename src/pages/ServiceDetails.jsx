@@ -6,6 +6,7 @@ import {
   Globe, Car, Briefcase, Zap, Grid, Shield, Check, Info, FileSpreadsheet, Lock
 } from 'lucide-react';
 import Breadcrumbs from '../components/Breadcrumbs';
+import { getServiceDefinition, DEFAULT_SERVICES_MAP } from '../data/servicesCatalogData';
 
 export default function ServiceDetails() {
   const { serviceId, slug } = useParams();
@@ -31,7 +32,7 @@ export default function ServiceDetails() {
         setService(data);
       } else {
         // Fallback to default catalog item if backend server endpoint is offline
-        const fallback = DEFAULT_SERVICES_MAP[serviceParam] || DEFAULT_SERVICES_MAP['aadhaar-address-update'];
+        const fallback = getServiceDefinition(serviceParam);
         if (fallback) {
           setService(fallback);
         } else {
@@ -40,7 +41,7 @@ export default function ServiceDetails() {
       }
     } catch (err) {
       // Use fallback matching serviceParam if possible
-      const fallback = DEFAULT_SERVICES_MAP[serviceParam] || DEFAULT_SERVICES_MAP['aadhaar-address-update'];
+      const fallback = getServiceDefinition(serviceParam);
       if (fallback) {
         setService(fallback);
       } else {
@@ -393,54 +394,4 @@ export default function ServiceDetails() {
   );
 }
 
-const DEFAULT_SERVICES_MAP = {
-  'aadhaar-address-update': {
-    id: 1,
-    category_name: 'Aadhaar Services',
-    category_slug: 'aadhaar-services',
-    name: 'Aadhaar Address Update',
-    slug: 'aadhaar-address-update',
-    description: 'Update your residential address in official UIDAI database with valid proof of address.',
-    eligibility: 'Resident Indian citizen holding a valid 12-digit Aadhaar card with active registered mobile number.',
-    processing_time: '3-5 Working Days',
-    fee: 50,
-    documents: [
-      { name: 'Proof of Identity (PoI)', description: 'Valid Aadhaar Card or Passport', required: true },
-      { name: 'Proof of Address (PoA)', description: 'Electricity Bill, Bank Passbook, or Rent Agreement', required: true },
-      { name: 'Mobile OTP Verification', description: 'Active registered mobile for UIDAI OTP validation', required: true }
-    ]
-  },
-  'pvc-aadhaar-card-order': {
-    id: 2,
-    category_name: 'Aadhaar Services',
-    category_slug: 'aadhaar-services',
-    name: 'PVC Aadhaar Card Order',
-    slug: 'pvc-aadhaar-card-order',
-    description: 'Order durable, waterproof plastic PVC Aadhaar Card with microtext, ghost image, and QR code.',
-    eligibility: 'Any registered Aadhaar card holder.',
-    processing_time: '7-10 Working Days',
-    fee: 50
-  },
-  'new-pan-card-application': {
-    id: 5,
-    category_name: 'PAN Services',
-    category_slug: 'pan-services',
-    name: 'New PAN Card Application (Form 49A)',
-    slug: 'new-pan-card-application',
-    description: 'Apply for fresh Permanent Account Number (PAN) for individuals and entities.',
-    eligibility: 'Any Indian citizen or entity requiring PAN for financial transactions.',
-    processing_time: '7-12 Working Days',
-    fee: 107
-  },
-  'income-certificate': {
-    id: 9,
-    category_name: 'Certificate Services',
-    category_slug: 'certificate-services',
-    name: 'Income Certificate',
-    slug: 'income-certificate',
-    description: 'Official revenue document certifying annual family income from all sources.',
-    eligibility: 'Permanent residents requiring income verification for education or government subsidies.',
-    processing_time: '7-14 Working Days',
-    fee: 60
-  }
-};
+

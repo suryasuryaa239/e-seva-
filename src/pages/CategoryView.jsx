@@ -9,9 +9,35 @@ const ICON_MAP = {
   Fingerprint, CreditCard, Vote, FileText, MapPin, Globe, Car, Briefcase, Zap, Grid
 };
 
+import { DEFAULT_SERVICES_MAP } from '../data/servicesCatalogData';
+
+const OFFLINE_CATEGORIES = {
+  'aadhaar': { name: 'Aadhaar Services', slug: 'aadhaar-services', icon: 'Fingerprint', description: 'Assistance for new enrollment, address updates, name corrections, mobile linking, PVC order, and download.' },
+  'aadhaar-services': { name: 'Aadhaar Services', slug: 'aadhaar-services', icon: 'Fingerprint', description: 'Assistance for new enrollment, address updates, name corrections, mobile linking, PVC order, and download.' },
+  'pan': { name: 'PAN Services', slug: 'pan-services', icon: 'CreditCard', description: 'New PAN Card (Form 49A/49AA), correction in existing PAN, e-PAN download, and PAN-Aadhaar linking assistance.' },
+  'pan-services': { name: 'PAN Services', slug: 'pan-services', icon: 'CreditCard', description: 'New PAN Card (Form 49A/49AA), correction in existing PAN, e-PAN download, and PAN-Aadhaar linking assistance.' },
+  'voter': { name: 'Voter ID Services', slug: 'voter-id-services', icon: 'Vote', description: 'New voter registration (Form 6), address shift (Form 8), epic download, and corrections.' },
+  'voter-id-services': { name: 'Voter ID Services', slug: 'voter-id-services', icon: 'Vote', description: 'New voter registration (Form 6), address shift (Form 8), epic download, and corrections.' },
+  'certificates': { name: 'Certificate Services', slug: 'certificates', icon: 'FileText', description: 'Income, Community, Nativity, Residence, First Graduate, and Legal Heir revenue certificates.' },
+  'certificate-services': { name: 'Certificate Services', slug: 'certificates', icon: 'FileText', description: 'Income, Community, Nativity, Residence, First Graduate, and Legal Heir revenue certificates.' },
+  'land': { name: 'Land & Patta Services', slug: 'land-patta-services', icon: 'MapPin', description: 'Patta/Chitta extraction, Patta transfer, Adangal records, and land document verification assistance.' },
+  'land-patta-services': { name: 'Land & Patta Services', slug: 'land-patta-services', icon: 'MapPin', description: 'Patta/Chitta extraction, Patta transfer, Adangal records, and land document verification assistance.' },
+  'passport': { name: 'Passport & Travel', slug: 'passport-services', icon: 'Globe', description: 'Fresh passport filing, re-issue, correction, and appointment slot booking assistance.' },
+  'passport-services': { name: 'Passport & Travel', slug: 'passport-services', icon: 'Globe', description: 'Fresh passport filing, re-issue, correction, and appointment slot booking assistance.' },
+  'driving-licence': { name: 'Vehicle & DL Services', slug: 'driving-vehicle-services', icon: 'Car', description: 'Learner Licence (LLR), Driving Licence renewal, duplicate DL, RC transfer, and FASTag assistance.' },
+  'vehicle': { name: 'Vehicle & DL Services', slug: 'driving-vehicle-services', icon: 'Car', description: 'Learner Licence (LLR), Driving Licence renewal, duplicate DL, RC transfer, and FASTag assistance.' },
+  'driving-licence-vehicle-services': { name: 'Vehicle & DL Services', slug: 'driving-vehicle-services', icon: 'Car', description: 'Learner Licence (LLR), Driving Licence renewal, duplicate DL, RC transfer, and FASTag assistance.' },
+  'business': { name: 'Business Services', slug: 'business-services', icon: 'Briefcase', description: 'Udyam MSME registration, FSSAI Food licence, GST filing, and business documentation.' },
+  'business-services': { name: 'Business Services', slug: 'business-services', icon: 'Briefcase', description: 'Udyam MSME registration, FSSAI Food licence, GST filing, and business documentation.' },
+  'utility': { name: 'Utility Services', slug: 'utility-services', icon: 'Zap', description: 'Electricity EB new connection application, bill payment assistance, and utility services.' },
+  'utility-services': { name: 'Utility Services', slug: 'utility-services', icon: 'Zap', description: 'Electricity EB new connection application, bill payment assistance, and utility services.' },
+  'other': { name: 'Ration & Smart Card Services', slug: 'other-services', icon: 'Grid', description: 'General e-Governance digital assistance, Smart Ration card filing, and citizen services.' },
+  'other-services': { name: 'Ration & Smart Card Services', slug: 'other-services', icon: 'Grid', description: 'General e-Governance digital assistance, Smart Ration card filing, and citizen services.' }
+};
+
 export default function CategoryView() {
   const { category, slug } = useParams();
-  const catSlug = slug || category || 'aadhaar-services';
+  const catSlug = (slug || category || 'aadhaar-services').toLowerCase().trim();
 
   const [categoryData, setCategoryData] = useState(null);
   const [services, setServices] = useState([]);
@@ -32,15 +58,42 @@ export default function CategoryView() {
       setError(null);
       
       const res = await fetch(`/api/categories/${catSlug}`);
-      if (!res.ok) {
-        throw new Error('Category not found');
+      if (res.ok) {
+        const data = await res.json();
+        setCategoryData(data);
+        setServices(data.services || []);
+      } else {
+        // Fallback resolution using OFFLINE_CATEGORIES & DEFAULT_SERVICES_MAP
+        const catInfo = OFFLINE_CATEGORIES[catSlug] || {
+          name: catSlug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
+          slug: catSlug,
+          icon: 'Grid',
+          description: 'Official digital e-governance service category.'
+        };
+
+        const matchingServices = Object.values(DEFAULT_SERVICES_MAP).filter(s => {
+          const sCat = (s.category_slug || s.category_name || '').toLowerCase();
+          return sCat.includes(catSlug) || catSlug.includes(sCat) || catSlug.split('-')[0] === sCat.split('-')[0];
+        });
+
+        setCategoryData(catInfo);
+        setServices(matchingServices.length > 0 ? matchingServices : Object.values(DEFAULT_SERVICES_MAP));
       }
-      
-      const data = await res.json();
-      setCategoryData(data);
-      setServices(data.services || []);
     } catch (err) {
-      setError(err.message);
+      const catInfo = OFFLINE_CATEGORIES[catSlug] || {
+        name: catSlug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
+        slug: catSlug,
+        icon: 'Grid',
+        description: 'Official digital e-governance service category.'
+      };
+
+      const matchingServices = Object.values(DEFAULT_SERVICES_MAP).filter(s => {
+        const sCat = (s.category_slug || s.category_name || '').toLowerCase();
+        return sCat.includes(catSlug) || catSlug.includes(sCat) || catSlug.split('-')[0] === sCat.split('-')[0];
+      });
+
+      setCategoryData(catInfo);
+      setServices(matchingServices.length > 0 ? matchingServices : Object.values(DEFAULT_SERVICES_MAP));
     } finally {
       setLoading(false);
     }

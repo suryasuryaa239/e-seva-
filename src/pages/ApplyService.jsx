@@ -7,6 +7,7 @@ import {
   Copy, Printer, ExternalLink
 } from 'lucide-react';
 import Breadcrumbs from '../components/Breadcrumbs';
+import { getServiceDefinition, DEFAULT_SERVICES_MAP } from '../data/servicesCatalogData';
 
 export default function ApplyService() {
   const { slug, serviceId } = useParams();
@@ -89,7 +90,7 @@ export default function ApplyService() {
         setFieldValues(initialFields);
       } else {
         // Fallback service definition
-        const fallback = DEFAULT_SERVICES_MAP[serviceParam] || DEFAULT_SERVICES_MAP['aadhaar-address-update'];
+        const fallback = getServiceDefinition(serviceParam);
         setService(fallback);
         const initialFields = {};
         if (fallback.fields) {
@@ -120,9 +121,17 @@ export default function ApplyService() {
         } catch (e) {}
       }
     } catch (err) {
-      const fallback = DEFAULT_SERVICES_MAP[serviceParam] || DEFAULT_SERVICES_MAP['aadhaar-address-update'];
+      const fallback = getServiceDefinition(serviceParam);
       if (fallback) {
         setService(fallback);
+        const initialFields = {};
+        if (fallback.fields) {
+          fallback.fields.forEach(f => {
+            const key = f.field_name || f.name;
+            initialFields[key] = f.default_value || '';
+          });
+        }
+        setFieldValues(initialFields);
       } else {
         setError(err.message);
       }
@@ -1601,22 +1610,4 @@ export default function ApplyService() {
   );
 }
 
-const DEFAULT_SERVICES_MAP = {
-  'aadhaar-address-update': {
-    id: 1,
-    category_name: 'Aadhaar Services',
-    category_slug: 'aadhaar-services',
-    name: 'Aadhaar Address Update',
-    slug: 'aadhaar-address-update',
-    description: 'Update your residential address in official UIDAI database with valid proof of address.',
-    processing_time: '3-5 Working Days',
-    fee: 50,
-    fields: [
-      { field_name: 'aadhaar_number', field_label: '12-Digit Aadhaar Number', field_type: 'text', placeholder: '1234 5678 9012', is_required: true },
-      { field_name: 'new_address', field_label: 'New Address to Update', field_type: 'textarea', placeholder: 'Enter new complete residential address', is_required: true }
-    ],
-    documents: [
-      { name: 'Proof of Address (PoA)', description: 'Electricity Bill, Bank Passbook, or Rent Agreement', required: true }
-    ]
-  }
-};
+
