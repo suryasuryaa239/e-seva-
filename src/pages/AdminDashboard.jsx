@@ -7,7 +7,7 @@ import {
   Menu, X, Award, ChevronRight, TrendingUp, ShieldCheck, Activity,
   Filter, RotateCcw, Inbox, UserCheck, FileCheck, History, MessageSquare,
   User, Phone, Mail as MailIcon, Calendar, CheckCircle, Shield,
-  Settings, Key, Lock, EyeOff, Save, CheckCheck
+  Settings, Key, Lock, EyeOff, Save, CheckCheck, Bell
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -395,6 +395,17 @@ export default function AdminDashboard() {
 
     return matchesSearch && matchesFilter;
   });
+
+  if (!adminToken) {
+    return (
+      <div className="min-h-screen bg-[#0b192c] flex flex-col items-center justify-center text-white space-y-4 font-sans">
+        <div className="w-12 h-12 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+        <p className="text-sm font-extrabold tracking-wide text-slate-300">
+          Redirecting to Admin Cockpit Login...
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-100 flex flex-col font-sans selection:bg-orange-500 selection:text-white">
