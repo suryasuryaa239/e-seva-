@@ -144,7 +144,10 @@ export default function App() {
                 <Route path="/notifications" element={<UserNotifications />} />
                 <Route path="/profile/notifications" element={<UserNotificationPreferences />} />
                 <Route path="/admin/login" element={<AdminLogin />} />
+                <Route path="/admin-login" element={<AdminLogin />} />
                 <Route path="/admin" element={<AdminDashboard />} />
+                <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                <Route path="/admin-dashboard" element={<AdminDashboard />} />
                 <Route path="/admin/notifications" element={<AdminNotifications />} />
                 <Route path="/admin/notification-templates" element={<AdminNotificationTemplates />} />
                 <Route path="*" element={<NotFound />} />

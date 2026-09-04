@@ -105,6 +105,7 @@ export default function Footer() {
               <li><Link to="/track" className="hover:text-white hover:translate-x-0.5 inline-block transition-all">Check Application Status</Link></li>
               <li><Link to="/login" className="hover:text-white hover:translate-x-0.5 inline-block transition-all">Sign In</Link></li>
               <li><Link to="/register" className="hover:text-white hover:translate-x-0.5 inline-block transition-all">Register</Link></li>
+              <li className="pt-1 border-t border-slate-800/60"><Link to="/admin/login" className="text-orange-400 font-bold hover:text-orange-300 hover:translate-x-0.5 inline-flex items-center gap-1 transition-all">🛡️ Admin Portal Cockpit</Link></li>
             </ul>
           </div>
 

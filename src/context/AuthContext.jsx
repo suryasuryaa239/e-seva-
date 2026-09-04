@@ -5,18 +5,20 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [admin, setAdmin] = useState(null);
+  const [userToken, setUserToken] = useState(localStorage.getItem('eseva_user_token') || localStorage.getItem('token'));
+  const [adminToken, setAdminToken] = useState(localStorage.getItem('eseva_admin_token') || localStorage.getItem('adminToken'));
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Check saved tokens
-    const userToken = localStorage.getItem('eseva_user_token') || localStorage.getItem('token');
-    const adminToken = localStorage.getItem('eseva_admin_token') || localStorage.getItem('adminToken');
+    const userTok = localStorage.getItem('eseva_user_token') || localStorage.getItem('token');
+    const adminTok = localStorage.getItem('eseva_admin_token') || localStorage.getItem('adminToken');
 
     const checkAuth = async () => {
-      if (userToken) {
+      if (userTok) {
         try {
           const res = await fetch('/api/auth/me', {
-            headers: { Authorization: `Bearer ${userToken}` }
+            headers: { Authorization: `Bearer ${userTok}` }
           });
           if (res.ok) {
             const data = await res.json();
@@ -24,22 +26,24 @@ export const AuthProvider = ({ children }) => {
           } else {
             localStorage.removeItem('eseva_user_token');
             localStorage.removeItem('token');
+            setUserToken(null);
           }
         } catch (e) {
           console.error(e);
         }
       }
 
-      if (adminToken) {
+      if (adminTok) {
         try {
           const res = await fetch('/api/auth/me', {
-            headers: { Authorization: `Bearer ${adminToken}` }
+            headers: { Authorization: `Bearer ${adminTok}` }
           });
           if (res.ok) {
             const data = await res.json();
             if (data.isAdmin) setAdmin(data);
           } else {
             localStorage.removeItem('eseva_admin_token');
+            setAdminToken(null);
           }
         } catch (e) {
           console.error(e);
@@ -55,24 +59,28 @@ export const AuthProvider = ({ children }) => {
   const loginUser = (userData, token) => {
     localStorage.setItem('token', token);
     localStorage.setItem('eseva_user_token', token);
+    setUserToken(token);
     setUser(userData);
   };
 
   const logoutUser = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('eseva_user_token');
+    setUserToken(null);
     setUser(null);
   };
 
   const loginAdmin = (adminData, token) => {
     localStorage.setItem('token', token);
     localStorage.setItem('eseva_admin_token', token);
+    setAdminToken(token);
     setAdmin(adminData);
   };
 
   const logoutAdmin = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('eseva_admin_token');
+    setAdminToken(null);
     setAdmin(null);
   };
 
@@ -86,8 +94,8 @@ export const AuthProvider = ({ children }) => {
         logoutUser,
         loginAdmin,
         logoutAdmin,
-        userToken: localStorage.getItem('eseva_user_token'),
-        adminToken: localStorage.getItem('eseva_admin_token')
+        userToken,
+        adminToken
       }}
     >
       {children}
