@@ -397,12 +397,21 @@ export default function AdminDashboard() {
   });
 
   if (!adminToken) {
+    setTimeout(() => {
+      navigate('/admin/login');
+    }, 100);
     return (
-      <div className="min-h-screen bg-[#0b192c] flex flex-col items-center justify-center text-white space-y-4 font-sans">
+      <div className="min-h-screen bg-[#0b192c] flex flex-col items-center justify-center text-white space-y-4 font-sans p-6 text-center">
         <div className="w-12 h-12 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
         <p className="text-sm font-extrabold tracking-wide text-slate-300">
-          Redirecting to Admin Cockpit Login...
+          Admin Session Required. Redirecting to Login...
         </p>
+        <button
+          onClick={() => navigate('/admin/login')}
+          className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-xs rounded-xl shadow transition-colors cursor-pointer"
+        >
+          Click Here to Sign In to Admin Cockpit
+        </button>
       </div>
     );
   }
