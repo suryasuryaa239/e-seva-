@@ -2629,18 +2629,306 @@ export default function AdminDashboard() {
           )}
 
           {/* DASHBOARD OVERVIEW */}
-          {activeTab === 'dashboard' && stats && (
-            <div className="space-y-6">
-              <div className="bg-[#0b192c] text-white p-6 sm:p-8 rounded-3xl shadow-xl border border-slate-800 relative overflow-hidden">
-                <div className="relative z-10 space-y-2">
-                  <h3 className="text-2xl sm:text-3xl font-black text-white">
-                    Welcome back, {admin?.name || 'Administrator'}
+          {activeTab === 'dashboard' && (
+            <div className="space-y-6 animate-in fade-in duration-200">
+              
+              {/* Hero Banner */}
+              <div className="bg-[#0b192c] text-white p-6 sm:p-8 rounded-3xl shadow-xl border border-slate-800 relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div className="absolute top-0 right-0 w-80 h-80 bg-orange-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/10 rounded-full blur-2xl pointer-events-none"></div>
+
+                <div className="relative z-10 space-y-2 max-w-2xl">
+                  <div className="flex items-center space-x-2">
+                    <span className="inline-flex items-center space-x-1.5 px-3 py-1 bg-slate-800 text-orange-400 text-[10px] font-black uppercase tracking-widest rounded-full border border-slate-700">
+                      <ShieldCheck className="w-3.5 h-3.5 text-orange-400" />
+                      <span>E-SEVA CORE GOVERNANCE COCKPIT</span>
+                    </span>
+                    <span className="text-xs text-emerald-400 font-bold flex items-center space-x-1">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                      <span>Real-time System Sync</span>
+                    </span>
+                  </div>
+
+                  <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                    Welcome back, {admin?.name || 'Super Admin'}
                   </h3>
-                  <p className="text-slate-300 text-xs sm:text-sm">
-                    Monitor applications, service performance, payments, and citizen enquiries.
+                  <p className="text-slate-300 text-xs sm:text-sm leading-relaxed">
+                    Live operational overview of citizen application queues, service performance metrics, fee revenue audits, and incoming support enquiries.
                   </p>
                 </div>
+
+                <div className="relative z-10 flex flex-wrap items-center gap-3 shrink-0">
+                  <button
+                    onClick={() => setActiveTab('applications')}
+                    className="px-5 py-3 bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-xs rounded-xl shadow-lg transition-all flex items-center space-x-2 cursor-pointer"
+                  >
+                    <FileText className="w-4 h-4" />
+                    <span>Review Application Queue ({applications.filter(a => a.status === 'Submitted' || a.status === 'Processing').length})</span>
+                  </button>
+                </div>
               </div>
+
+              {/* 4 Primary Metric Stat Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                
+                {/* 1. Total Applications */}
+                <div 
+                  onClick={() => setActiveTab('applications')}
+                  className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm hover:shadow-md transition-all cursor-pointer group"
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center font-black group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                      <FileText className="w-6 h-6" />
+                    </div>
+                    <span className="text-[10px] font-extrabold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100 uppercase tracking-wider">
+                      Applications Logged
+                    </span>
+                  </div>
+                  <div className="text-3xl font-black text-slate-900 tracking-tight">
+                    {stats?.total_applications ?? applications.length}
+                  </div>
+                  <p className="text-xs text-slate-500 font-medium mt-1 flex items-center justify-between">
+                    <span>Total Submissions</span>
+                    <ChevronRight className="w-4 h-4 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
+                  </p>
+                </div>
+
+                {/* 2. Pending Verification */}
+                <div 
+                  onClick={() => {
+                    setStatusFilter('Processing');
+                    setActiveTab('applications');
+                  }}
+                  className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm hover:shadow-md transition-all cursor-pointer group"
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center font-black group-hover:bg-amber-600 group-hover:text-white transition-colors">
+                      <Clock className="w-6 h-6" />
+                    </div>
+                    <span className="text-[10px] font-extrabold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-100 uppercase tracking-wider">
+                      Needs Action
+                    </span>
+                  </div>
+                  <div className="text-3xl font-black text-slate-900 tracking-tight">
+                    {stats?.pending_applications ?? applications.filter(a => a.status === 'Submitted' || a.status === 'Processing').length}
+                  </div>
+                  <p className="text-xs text-slate-500 font-medium mt-1 flex items-center justify-between">
+                    <span>Pending Verification</span>
+                    <ChevronRight className="w-4 h-4 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
+                  </p>
+                </div>
+
+                {/* 3. Approved & Issued */}
+                <div 
+                  onClick={() => {
+                    setStatusFilter('Approved');
+                    setActiveTab('applications');
+                  }}
+                  className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm hover:shadow-md transition-all cursor-pointer group"
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-black group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                      <CheckCircle2 className="w-6 h-6" />
+                    </div>
+                    <span className="text-[10px] font-extrabold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100 uppercase tracking-wider">
+                      Success Rate
+                    </span>
+                  </div>
+                  <div className="text-3xl font-black text-slate-900 tracking-tight">
+                    {stats?.approved_applications ?? applications.filter(a => a.status === 'Approved' || a.status === 'Completed').length}
+                  </div>
+                  <p className="text-xs text-slate-500 font-medium mt-1 flex items-center justify-between">
+                    <span>Approved & Issued</span>
+                    <ChevronRight className="w-4 h-4 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
+                  </p>
+                </div>
+
+                {/* 4. Total Revenue Audit */}
+                <div 
+                  onClick={() => setActiveTab('payments')}
+                  className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm hover:shadow-md transition-all cursor-pointer group"
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center font-black group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                      <DollarSign className="w-6 h-6" />
+                    </div>
+                    <span className="text-[10px] font-extrabold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-full border border-purple-100 uppercase tracking-wider">
+                      Revenue Ledger
+                    </span>
+                  </div>
+                  <div className="text-3xl font-black text-slate-900 tracking-tight">
+                    ₹{(stats?.total_revenue || adminPayments.reduce((acc, p) => acc + (Number(p.amount) || 0), 0) || 0).toLocaleString('en-IN')}
+                  </div>
+                  <p className="text-xs text-slate-500 font-medium mt-1 flex items-center justify-between">
+                    <span>Audited Fee Receipts</span>
+                    <ChevronRight className="w-4 h-4 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
+                  </p>
+                </div>
+
+              </div>
+
+              {/* Quick Navigation Shortcuts Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                
+                <div 
+                  onClick={() => setActiveTab('applications')}
+                  className="bg-slate-900 text-white p-5 rounded-3xl border border-slate-800 shadow-md hover:border-orange-500 transition-all cursor-pointer group flex flex-col justify-between space-y-4"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="w-10 h-10 rounded-xl bg-orange-500/20 text-orange-400 flex items-center justify-center font-bold">
+                      <FileText className="w-5 h-5" />
+                    </div>
+                    <span className="text-[11px] font-mono text-orange-400">{applications.length} Items</span>
+                  </div>
+                  <div>
+                    <h4 className="font-extrabold text-sm text-white group-hover:text-orange-400 transition-colors">
+                      Applications Manager
+                    </h4>
+                    <p className="text-[11px] text-slate-400 leading-tight mt-1">
+                      Verify submitted documents, update status, and issue official certificates.
+                    </p>
+                  </div>
+                </div>
+
+                <div 
+                  onClick={() => setActiveTab('services')}
+                  className="bg-slate-900 text-white p-5 rounded-3xl border border-slate-800 shadow-md hover:border-blue-500 transition-all cursor-pointer group flex flex-col justify-between space-y-4"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold">
+                      <Grid className="w-5 h-5" />
+                    </div>
+                    <span className="text-[11px] font-mono text-blue-400">{services.length} Services</span>
+                  </div>
+                  <div>
+                    <h4 className="font-extrabold text-sm text-white group-hover:text-blue-400 transition-colors">
+                      Services Catalog
+                    </h4>
+                    <p className="text-[11px] text-slate-400 leading-tight mt-1">
+                      Add, edit, or configure service descriptions, application fees, and processing times.
+                    </p>
+                  </div>
+                </div>
+
+                <div 
+                  onClick={() => setActiveTab('customers')}
+                  className="bg-slate-900 text-white p-5 rounded-3xl border border-slate-800 shadow-md hover:border-emerald-500 transition-all cursor-pointer group flex flex-col justify-between space-y-4"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
+                      <Users className="w-5 h-5" />
+                    </div>
+                    <span className="text-[11px] font-mono text-emerald-400">{customers.length} Citizens</span>
+                  </div>
+                  <div>
+                    <h4 className="font-extrabold text-sm text-white group-hover:text-emerald-400 transition-colors">
+                      Users Directory
+                    </h4>
+                    <p className="text-[11px] text-slate-400 leading-tight mt-1">
+                      Audit registered user profiles, contact information, and application submission history.
+                    </p>
+                  </div>
+                </div>
+
+                <div 
+                  onClick={() => setActiveTab('enquiries')}
+                  className="bg-slate-900 text-white p-5 rounded-3xl border border-slate-800 shadow-md hover:border-purple-500 transition-all cursor-pointer group flex flex-col justify-between space-y-4"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold">
+                      <Mail className="w-5 h-5" />
+                    </div>
+                    <span className="text-[11px] font-mono text-purple-400">{enquiries.length} Messages</span>
+                  </div>
+                  <div>
+                    <h4 className="font-extrabold text-sm text-white group-hover:text-purple-400 transition-colors">
+                      Contact Enquiries
+                    </h4>
+                    <p className="text-[11px] text-slate-400 leading-tight mt-1">
+                      Read and respond to citizen contact form submissions and portal support requests.
+                    </p>
+                  </div>
+                </div>
+
+              </div>
+
+              {/* Recent Applications Live Queue Table */}
+              <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden space-y-4 p-5">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                  <div>
+                    <h4 className="font-extrabold text-slate-900 text-base">
+                      Recent Application Submissions Queue
+                    </h4>
+                    <p className="text-xs text-slate-500">
+                      Live feed of recent digital service applications submitted by citizens.
+                    </p>
+                  </div>
+
+                  <button
+                    onClick={() => setActiveTab('applications')}
+                    className="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold rounded-xl transition-colors flex items-center space-x-1"
+                  >
+                    <span>View All ({applications.length})</span>
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+
+                {applications.length === 0 ? (
+                  <div className="text-center py-8 text-slate-400 text-xs font-medium">
+                    No applications submitted yet.
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs">
+                      <thead>
+                        <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase tracking-wider font-extrabold text-[10px]">
+                          <th className="py-3 px-4">Application ID</th>
+                          <th className="py-3 px-4">Citizen Name</th>
+                          <th className="py-3 px-4">Service</th>
+                          <th className="py-3 px-4">Submission Date</th>
+                          <th className="py-3 px-4">Status</th>
+                          <th className="py-3 px-4 text-right">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 font-medium text-slate-800">
+                        {applications.slice(0, 5).map((app) => (
+                          <tr key={app.id} className="hover:bg-slate-50/80 transition-colors">
+                            <td className="py-3 px-4 font-mono font-bold text-slate-900">
+                              {app.application_number || `APP-${app.id}`}
+                            </td>
+                            <td className="py-3 px-4 font-semibold">
+                              {app.user_name || app.applicant_name || 'Citizen User'}
+                            </td>
+                            <td className="py-3 px-4">
+                              <span className="font-bold text-slate-900 block">{app.service_name || 'Digital Service'}</span>
+                              <span className="text-[10px] text-slate-500">{app.category_name || 'Service Queue'}</span>
+                            </td>
+                            <td className="py-3 px-4 text-slate-500">
+                              {app.created_at ? new Date(app.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Recently'}
+                            </td>
+                            <td className="py-3 px-4">
+                              <StatusBadge status={app.status} />
+                            </td>
+                            <td className="py-3 px-4 text-right">
+                              <button
+                                onClick={() => {
+                                  setActiveTab('applications');
+                                  openAppInspector(app.id);
+                                }}
+                                className="px-3 py-1 bg-[#0b192c] hover:bg-orange-600 text-white text-[11px] font-extrabold rounded-lg transition-colors inline-flex items-center space-x-1"
+                              >
+                                <Eye className="w-3.5 h-3.5" />
+                                <span>Inspect</span>
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+
             </div>
           )}
 
