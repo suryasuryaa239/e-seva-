@@ -83,6 +83,80 @@ export const translations = {
     viewDetails: "View Details",
     noApplicationsFound: "No applications submitted yet.",
 
+    // Application Tracker
+    trackTitle: "Track Application Status",
+    trackSubtitle: "Enter your Application ID to view current progress and download issued certificates.",
+    enterAppId: "Enter Application ID (e.g., APP-2026-8492)",
+    trackNow: "Track Now",
+    statusTimeline: "Application Processing Timeline",
+    dateSubmitted: "Date Submitted",
+    lastUpdated: "Last Updated",
+    trackingHelp: "Need help tracking your application? Contact our 24/7 helpline at 1800-425-1337.",
+
+    // Auth (Login / Register / Forgot Password)
+    loginTitle: "Sign In to E-Seva Portal",
+    loginSubtitle: "Access your dashboard, track application status, and apply for digital services.",
+    registerTitle: "Create Citizen Account",
+    registerSubtitle: "Register with your mobile number or email to access 100+ e-governance services.",
+    forgotPasswordTitle: "Forgot Password",
+    forgotPasswordSubtitle: "Enter your registered email address to receive password reset instructions.",
+    emailLabel: "Email Address",
+    passwordLabel: "Password",
+    confirmPasswordLabel: "Confirm Password",
+    rememberMe: "Remember me",
+    forgotPasswordLink: "Forgot Password?",
+    dontHaveAccount: "Don't have an account?",
+    alreadyHaveAccount: "Already have an account?",
+    registerNow: "Register Now",
+    loginBtn: "Sign In",
+    registerBtn: "Create Account",
+    resetPasswordBtn: "Send Reset Link",
+
+    // User Profile & Settings
+    profileTitle: "User Profile & Account Settings",
+    personalInfo: "Personal Information",
+    saveChanges: "Save Changes",
+    changePassword: "Change Password",
+    currentPassword: "Current Password",
+    newPassword: "New Password",
+    notificationPrefs: "Notification Preferences",
+    emailNotifications: "Email Notifications",
+    smsNotifications: "SMS Notifications",
+
+    // Payments & Receipts
+    paymentLedgerTitle: "Payment History & Receipts",
+    transactionId: "Transaction ID",
+    paymentDate: "Payment Date",
+    amountPaid: "Amount Paid",
+    paymentStatus: "Payment Status",
+    paymentMethod: "Payment Method",
+    downloadReceiptBtn: "Download PDF Receipt",
+    paymentSuccessful: "Payment Successful",
+
+    // Admin Panel
+    adminPortal: "E-Seva Admin Control Cockpit",
+    adminDashboardTitle: "System Administration & Applications Overview",
+    totalUsers: "Total Registered Citizens",
+    totalApplicationsCount: "Total Applications Processed",
+    revenueGenerated: "Total Revenue Facilitated",
+    pendingApplications: "Pending Approvals",
+    allApplicationsList: "All Citizen Applications",
+    filterStatus: "Filter by Status",
+    updateStatusBtn: "Update Application Status",
+    approveApplication: "Approve Application",
+    rejectApplication: "Reject Application",
+    sendNotification: "Send SMS / Email Alert",
+
+    // Static Pages & Errors
+    aboutTitle: "About E-Seva Portal",
+    contactTitle: "Contact Helpline & Service Outlets",
+    careersTitle: "Careers & Government Project Openings",
+    privacyTitle: "Privacy Policy & Citizen Data Security",
+    termsTitle: "Terms of Service & Usage Disclaimer",
+    refundTitle: "Cancellation & Refund Policy",
+    pageNotFoundTitle: "Page Not Found (404)",
+    pageNotFoundDesc: "The page or service route you requested does not exist or has been moved.",
+
     // Status Badges
     statusPending: "Pending Review",
     statusSubmitted: "Submitted",
@@ -211,6 +285,80 @@ export const translations = {
     viewDetails: "விவரங்களைப் பார்க்க",
     noApplicationsFound: "இதுவரை எந்த விண்ணப்பமும் சமர்ப்பிக்கப்படவில்லை.",
 
+    // Application Tracker
+    trackTitle: "விண்ணப்ப நிலையை அறிதல்",
+    trackSubtitle: "தற்போதைய நிலையைப் பார்க்க மற்றும் சான்றிதழ் பதிவிறக்கம் செய்ய விண்ணப்ப எண்ணை உள்ளிடவும்.",
+    enterAppId: "விண்ணப்ப எண்ணை உள்ளிடவும் (எ.கா: APP-2026-8492)",
+    trackNow: "நிலை அறிய",
+    statusTimeline: "விண்ணப்ப பரிசீலனை நிலைகள்",
+    dateSubmitted: "சமர்ப்பிக்கப்பட்ட தேதி",
+    lastUpdated: "கடைசியாக புதுப்பிக்கப்பட்டது",
+    trackingHelp: "உதவி தேவையா? கட்டணமில்லா உதவி எண்ணை அழைக்கவும்: 1800-425-1337.",
+
+    // Auth (Login / Register / Forgot Password)
+    loginTitle: "இ-சேவை மையத்தில் உள்நுழையவும்",
+    loginSubtitle: "உங்கள் டாஷ்போர்டு அணுகவும், விண்ணப்ப நிலையை அறியவும்.",
+    registerTitle: "புதிய கணக்கு தொடங்க",
+    registerSubtitle: "100+ மின்னணு அரசு சேவைகளைப் பெற பதிவு செய்யவும்.",
+    forgotPasswordTitle: "கடவுச்சொல்லை மீட்டெடுக்க",
+    forgotPasswordSubtitle: "உங்கள் பதிவெண் மின்னஞ்சல் முகவரியை உள்ளிடவும்.",
+    emailLabel: "மின்னஞ்சல் முகவரி",
+    passwordLabel: "கடவுச்சொல்",
+    confirmPasswordLabel: "கடவுச்சொல்லை உறுதிப்படுத்துக",
+    rememberMe: "என்னை நினைவில் கொள்க",
+    forgotPasswordLink: "கடவுச்சொல் மறந்துவிட்டதா?",
+    dontHaveAccount: "கணக்கு இல்லையா?",
+    alreadyHaveAccount: "ஏற்கனவே கணக்கு உள்ளதா?",
+    registerNow: "இப்போதே பதிவு செய்ய",
+    loginBtn: "உள்நுழைக",
+    registerBtn: "கணக்கை உருவாக்கு",
+    resetPasswordBtn: "மீட்டமைப்பு இணைப்பு அனுப்புக",
+
+    // User Profile & Settings
+    profileTitle: "பயனர் சுயவிவரம் & கணக்கு அமைப்புகள்",
+    personalInfo: "தனிப்பட்ட விவரங்கள்",
+    saveChanges: "மாற்றங்களைச் சேமி",
+    changePassword: "கடவுச்சொல்லை மாற்றுக",
+    currentPassword: "தற்போதைய கடவுச்சொல்",
+    newPassword: "புதிய கடவுச்சொல்",
+    notificationPrefs: "அறிவிப்பு விருப்பங்கள்",
+    emailNotifications: "மின்னஞ்சல் அறிவிப்புகள்",
+    smsNotifications: "குறுஞ்செய்தி (SMS) அறிவிப்புகள்",
+
+    // Payments & Receipts
+    paymentLedgerTitle: "கட்டண வரலாறு & ரசீதுகள்",
+    transactionId: "பரிவர்த்தனை எண்",
+    paymentDate: "செலுத்திய தேதி",
+    amountPaid: "செலுத்தப்பட்ட தொகை",
+    paymentStatus: "கட்டண நிலை",
+    paymentMethod: "செலுத்தும் முறை",
+    downloadReceiptBtn: "PDF ரசீது பதிவிறக்கம்",
+    paymentSuccessful: "கட்டணம் வெற்றிகரமாக செலுத்தப்பட்டது",
+
+    // Admin Panel
+    adminPortal: "இ-சேவை நிர்வாகி கட்டுப்பாட்டு மையம்",
+    adminDashboardTitle: "முறைமை நிர்வாகம் & விண்ணப்பங்கள் மேலாண்மை",
+    totalUsers: "மொத்த பயனர்கள்",
+    totalApplicationsCount: "மொத்த விண்ணப்பங்கள்",
+    revenueGenerated: "மொத்த பெறப்பட்ட கட்டணம்",
+    pendingApplications: "நிலுவையில் உள்ள ஒப்புதல்கள்",
+    allApplicationsList: "அனைத்து குடிமக்கள் விண்ணப்பங்கள்",
+    filterStatus: "நிலை வாரியாக பிரிக்க",
+    updateStatusBtn: "விண்ணப்ப நிலையை மாற்றுக",
+    approveApplication: "ஒப்புதல் அளிக்கவும்",
+    rejectApplication: "நிராகரிக்கவும்",
+    sendNotification: "SMS / மின்னஞ்சல் அனுப்பவும்",
+
+    // Static Pages & Errors
+    aboutTitle: "இ-சேவை போர்ட்டல் பற்றி",
+    contactTitle: "உதவி மையம் & தொடர்பு விவரங்கள்",
+    careersTitle: "வேலைவாய்ப்பு & அரசு திட்ட பணி வாய்ப்புகள்",
+    privacyTitle: "தனியுரிமைக் கொள்கை & தரவு பாதுகாப்பு",
+    termsTitle: "சேவை விதிகள் & நிபந்தனைகள்",
+    refundTitle: "கட்டணத் திரும்பப் பெறல் கொள்கை",
+    pageNotFoundTitle: "பக்கம் கிடைக்கவில்லை (404)",
+    pageNotFoundDesc: "நீங்கள் தேடிய பக்கம் அல்லது சேவை முகவரி கிடைக்கவில்லை.",
+
     // Status Badges
     statusPending: "ஆய்வுக்கு நிலுவையில் உள்ளது",
     statusSubmitted: "சமர்ப்பிக்கப்பட்டது",
@@ -295,3 +443,4 @@ export function useLanguage() {
   }
   return context;
 }
+

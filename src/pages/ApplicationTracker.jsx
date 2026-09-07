@@ -8,8 +8,9 @@ import {
 import Breadcrumbs from '../components/Breadcrumbs';
 import StatusBadge from '../components/StatusBadge';
 import ReceiptPrint from '../components/ReceiptPrint';
+import { useLanguage } from '../context/LanguageContext';
 
-const ALL_STATUS_STEPS = [
+const ALL_STATUS_STEPS_EN = [
   { key: 'DRAFT', label: 'Draft', desc: 'Application initiated & draft saved' },
   { key: 'SUBMITTED', label: 'Submitted', desc: 'Successfully submitted & payment verified' },
   { key: 'UNDER_REVIEW', label: 'Under Review', desc: 'Assigned to nodal officer for document verification' },
@@ -18,9 +19,21 @@ const ALL_STATUS_STEPS = [
   { key: 'COMPLETED', label: 'Completed', desc: 'Digital certificate issued & service delivered' }
 ];
 
+const ALL_STATUS_STEPS_TA = [
+  { key: 'DRAFT', label: 'வரைவு', desc: 'விண்ணப்பம் உருவாக்கப்பட்டு வரைவாக சேமிக்கப்பட்டது' },
+  { key: 'SUBMITTED', label: 'சமர்ப்பிக்கப்பட்டது', desc: 'வெற்றிகரமாக சமர்ப்பிக்கப்பட்டு கட்டணம் சரிபார்க்கப்பட்டது' },
+  { key: 'UNDER_REVIEW', label: 'ஆய்வில் உள்ளது', desc: 'ஆவண சரிபார்ப்பிற்காக அதிகாரிக்கு அனுப்பப்பட்டது' },
+  { key: 'PROCESSING', label: 'பரிசீலனை', desc: 'துறை அதிகாரிகளால் ஆய்வு நடைபெறுகிறது' },
+  { key: 'APPROVED', label: 'ஒப்புதல் அளிக்கப்பட்டது', desc: 'விண்ணப்பம் ஏற்கப்பட்டு சான்றிதழ் உருவாக்கப்பட்டது' },
+  { key: 'COMPLETED', label: 'சேவை முடிந்தது', desc: 'டிஜிட்டல் சான்றிதழ் வழங்கப்பட்டு சேவை நிறைவடைந்தது' }
+];
+
 export default function ApplicationTracker() {
-  const [searchParams] = useSearchParams();
+  const { lang, t } = useLanguage();
+  const searchParams = useSearchParams()[0];
   const initialAppId = searchParams.get('appId') || '';
+
+  const statusSteps = lang === 'ta' ? ALL_STATUS_STEPS_TA : ALL_STATUS_STEPS_EN;
 
   const [appId, setAppId] = useState(initialAppId);
   const [phone, setPhone] = useState('');
@@ -44,11 +57,11 @@ export default function ApplicationTracker() {
         setTrackResult(data);
       } else {
         setTrackResult(null);
-        setError(data.error || 'No application found with provided ID');
+        setError(data.error || (lang === 'ta' ? 'கொடுக்கப்பட்ட எண்ணில் எந்த விண்ணப்பமும் இல்லை' : 'No application found with provided ID'));
       }
     } catch (err) {
       console.error(err);
-      setError('Error connecting to tracking server');
+      setError(lang === 'ta' ? 'சேவையகத்துடன் தொடர்பு கொள்ள முடியவில்லை' : 'Error connecting to tracking server');
     } finally {
       setLoading(false);
     }
@@ -63,7 +76,7 @@ export default function ApplicationTracker() {
   const handleTrackSubmit = (e) => {
     e.preventDefault();
     if (!appId.trim()) {
-      setError('Please enter a valid Application Reference ID.');
+      setError(lang === 'ta' ? 'செல்லுபடியாகும் விண்ணப்ப எண்ணை உள்ளிடவும்.' : 'Please enter a valid Application Reference ID.');
       return;
     }
     fetchStatus(appId, phone);
@@ -73,29 +86,29 @@ export default function ApplicationTracker() {
   const getStatusIndex = (status) => {
     if (!status) return 0;
     const s = status.toUpperCase();
-    const idx = ALL_STATUS_STEPS.findIndex(st => st.key === s);
+    const idx = statusSteps.findIndex(st => st.key === s);
     return idx >= 0 ? idx : 1; // Default to 1 (SUBMITTED) if unknown
   };
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 font-sans selection:bg-orange-500 selection:text-white">
       {/* Breadcrumb */}
-      <Breadcrumbs items={[{ label: 'Track Application Status' }]} />
+      <Breadcrumbs items={[{ label: t.trackTitle }]} />
 
       {/* 1. HERO / SEARCH SECTION HEADER */}
       <div className="bg-[#0b192c] rounded-3xl p-6 sm:p-10 text-white shadow-xl border border-slate-800 relative overflow-hidden text-center space-y-3">
         <div className="absolute top-0 right-0 w-72 h-72 bg-orange-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
         <span className="inline-block text-[10px] sm:text-xs font-black text-orange-400 uppercase tracking-widest bg-slate-800/80 border border-slate-700 px-3.5 py-1 rounded-full">
-          APPLICATION STATUS
+          {lang === 'ta' ? 'விண்ணப்ப நிலை' : 'APPLICATION STATUS'}
         </span>
 
         <h1 className="font-heading font-black text-2xl sm:text-4xl text-white tracking-tight">
-          Track Your Application
+          {t.trackTitle}
         </h1>
 
         <p className="text-xs sm:text-sm text-slate-300 font-normal leading-relaxed max-w-xl mx-auto">
-          Enter your Application ID to view the latest status and application details.
+          {t.trackSubtitle}
         </p>
       </div>
 

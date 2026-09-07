@@ -13,7 +13,7 @@ export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, admin, logoutUser } = useAuth();
-  const { lang, toggleLanguage, t } = useLanguage();
+  const { lang, toggleLanguage, setLanguage, t } = useLanguage();
   
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [servicesMenuOpen, setServicesMenuOpen] = useState(false);
@@ -299,17 +299,28 @@ export default function Navbar() {
           <div className="hidden lg:flex items-center gap-3">
             
             {/* LANGUAGE SWITCHER BUTTON (ENGLISH ↔ தமிழ்) */}
-            <button
-              onClick={toggleLanguage}
-              className="flex items-center gap-1.5 bg-orange-50 hover:bg-orange-100 text-orange-700 border border-orange-200 px-3 py-2 rounded-lg font-bold text-xs transition-all shadow-xs cursor-pointer"
-              title="Switch Language / மொழியை மாற்றவும்"
-            >
-              <Globe className="w-4 h-4 text-orange-600 animate-spin-slow" />
-              <span>{lang === 'en' ? 'தமிழ்' : 'English'}</span>
-              <span className="bg-orange-600 text-white text-[9px] px-1.5 py-0.2 rounded font-extrabold">
-                {lang === 'en' ? 'TA' : 'EN'}
-              </span>
-            </button>
+            <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs font-bold shadow-inner">
+              <button
+                onClick={() => setLanguage('en')}
+                className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                  lang === 'en'
+                    ? 'bg-slate-900 text-white font-extrabold shadow-sm'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+                }`}
+              >
+                English
+              </button>
+              <button
+                onClick={() => setLanguage('ta')}
+                className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                  lang === 'ta'
+                    ? 'bg-orange-600 text-white font-extrabold shadow-sm'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+                }`}
+              >
+                தமிழ்
+              </button>
+            </div>
 
             {/* CHECK APPLICATION STATUS - Outlined Button */}
             <Link
