@@ -72,19 +72,21 @@ export default function Login() {
                 eS
               </div>
               <span className="font-heading font-black text-2xl tracking-tight text-white">
-                E-Seva <span className="text-orange-400 font-bold">Portal</span>
+                {t.portalName || 'E-Seva Portal'}
               </span>
             </div>
 
             <div className="space-y-2">
               <span className="inline-block text-[10px] font-black text-orange-400 uppercase tracking-widest bg-slate-800/80 border border-slate-700 px-3 py-1 rounded-full">
-                CITIZEN SERVICES GATEWAY
+                {lang === 'ta' ? 'குடிமக்கள் சேவை இணையதளம்' : 'CITIZEN SERVICES GATEWAY'}
               </span>
               <h2 className="text-2xl font-black text-white leading-tight">
-                {isRegister ? 'Join Millions of Empowered Citizens' : 'Access Digital Government Services 24/7'}
+                {isRegister 
+                  ? (lang === 'ta' ? 'மில்லியன் கணக்கான குடிமக்களுடன் இணையுங்கள்' : 'Join Millions of Empowered Citizens') 
+                  : (lang === 'ta' ? 'டிஜிட்டல் அரசு சேவைகளை 24/7 அணுகுங்கள்' : 'Access Digital Government Services 24/7')}
               </h2>
               <p className="text-xs text-slate-300 leading-relaxed font-normal">
-                Apply for certificates, track verification in real time, and download officially signed digital documents effortlessly.
+                {lang === 'ta' ? 'சான்றிதழ்களுக்கு விண்ணப்பிக்கவும், நிகழ்நேரத்தில் சரிபார்ப்பைக் கண்காணிக்கவும், அதிகாரப்பூர்வமாக கையொப்பமிடப்பட்ட ஆவணங்களை பதிவிறக்கவும்.' : 'Apply for certificates, track verification in real time, and download officially signed digital documents effortlessly.'}
               </p>
             </div>
           </div>
@@ -96,8 +98,8 @@ export default function Login() {
                 <Sparkles className="w-4 h-4" />
               </div>
               <div>
-                <h4 className="text-xs font-bold text-slate-100">Fast Online Processing</h4>
-                <p className="text-[11px] text-slate-400">Streamlined digital submissions with zero queue wait times.</p>
+                <h4 className="text-xs font-bold text-slate-100">{lang === 'ta' ? 'வேகமான ஆன்லைன் சேவை' : 'Fast Online Processing'}</h4>
+                <p className="text-[11px] text-slate-400">{lang === 'ta' ? 'வரிசையில் நிற்காமல் விரைவான டிஜிட்டல் விண்ணப்பச் சமர்ப்பிப்பு.' : 'Streamlined digital submissions with zero queue wait times.'}</p>
               </div>
             </div>
 
@@ -106,8 +108,8 @@ export default function Login() {
                 <Clock className="w-4 h-4" />
               </div>
               <div>
-                <h4 className="text-xs font-bold text-slate-100">Real-Time Audit Timeline</h4>
-                <p className="text-[11px] text-slate-400">Track officer remarks & verification stages instantly.</p>
+                <h4 className="text-xs font-bold text-slate-100">{lang === 'ta' ? 'நிகழ்நேர தணிக்கைக் காலவரிசை' : 'Real-Time Audit Timeline'}</h4>
+                <p className="text-[11px] text-slate-400">{lang === 'ta' ? 'அதிகாரிகளின் குறிப்புகள் மற்றும் சரிபார்ப்பு நிலைகளை உடனடியாகக் கண்காணிக்கவும்.' : 'Track officer remarks & verification stages instantly.'}</p>
               </div>
             </div>
 
@@ -116,8 +118,8 @@ export default function Login() {
                 <ShieldCheck className="w-4 h-4" />
               </div>
               <div>
-                <h4 className="text-xs font-bold text-slate-100">Verified Security</h4>
-                <p className="text-[11px] text-slate-400">Encrypted credentials & authenticated portal access.</p>
+                <h4 className="text-xs font-bold text-slate-100">{lang === 'ta' ? 'பாதுகாக்கப்பட்ட சேவை' : 'Verified Security'}</h4>
+                <p className="text-[11px] text-slate-400">{lang === 'ta' ? 'என்க்ரிப்ட் செய்யப்பட்ட சான்றுகள் மற்றும் பாதுகாப்பான அணுகல்.' : 'Encrypted credentials & authenticated portal access.'}</p>
               </div>
             </div>
           </div>
@@ -134,17 +136,17 @@ export default function Login() {
 
           <div className="space-y-2">
             <span className="inline-block text-[10px] font-black text-orange-500 uppercase tracking-widest bg-orange-50 border border-orange-200/80 px-3 py-1 rounded-full">
-              {isRegister ? (t.authCreateAccount || 'CREATE ACCOUNT') : (t.authWelcomeBack || 'WELCOME BACK')}
+              {isRegister ? t.createAccountTitle : t.welcomeBack}
             </span>
 
             <h2 className="font-heading font-black text-2xl sm:text-3xl text-slate-900 tracking-tight">
-              {isRegister ? (t.registerTitle || 'Create your E-Seva account') : (t.loginTitle || 'Sign in to your account')}
+              {isRegister ? t.createAccountTitle : t.loginToAccount}
             </h2>
 
             <p className="text-xs sm:text-sm text-slate-500 font-normal">
               {isRegister
-                ? (t.registerSubtitle || 'Register to apply for digital services, submit verification documents, and track your applications.')
-                : (t.loginSubtitle || 'Access your applications, view payment records, and manage your digital services.')}
+                ? (lang === 'ta' ? 'டிஜிட்டல் சேவைகளுக்கு விண்ணப்பிக்க, சான்று ஆவணங்களைச் சமர்ப்பிக்க மற்றும் உங்கள் விண்ணப்பங்களைக் கண்காணிக்க பதிவு செய்யவும்.' : 'Register to apply for digital services, submit verification documents, and track your applications.')
+                : (lang === 'ta' ? 'உங்கள் விண்ணப்பங்களை அணுக, கட்டணப் பதிவேடுகளைப் பார்க்க மற்றும் சேவைகளை நிர்வகிக்க உள்நுழையவும்.' : 'Access your applications, view payment records, and manage your digital services.')}
             </p>
           </div>
 

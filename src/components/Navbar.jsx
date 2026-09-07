@@ -65,55 +65,55 @@ export default function Navbar() {
 
   // 11 Service Categories List
   const serviceCategories = [
-    { name: 'Aadhaar Services', slug: 'aadhaar', icon: Fingerprint, desc: 'Enrollment, Name, Address, Mobile & Photo Updates', badge: '15 Services' },
-    { name: 'PAN Card Services', slug: 'pan', icon: CreditCard, desc: 'New PAN, Corrections, Reprint & Aadhaar Link', badge: 'Popular' },
-    { name: 'Voter ID Services', slug: 'voter', icon: Vote, desc: 'New Voter Registration, Address Change & EPIC Download', badge: 'Free' },
-    { name: 'Certificates', slug: 'certificates', icon: FileText, desc: 'Income, Community, Native, Birth & Death Certificates', badge: 'Essential' },
-    { name: 'Land & Patta Services', slug: 'land', icon: MapPin, desc: 'Patta Transfer, Chitta Extraction, FMB Sketch & EC', badge: 'Land Records' },
-    { name: 'Passport Services', slug: 'passport', icon: Globe, desc: 'Fresh Passport, Re-issue & Tatkaal Applications', badge: 'National' },
-    { name: 'Driving Licence', slug: 'driving-licence', icon: Car, desc: 'Learner License, DL Renewal & Address Updates', badge: 'RTO' },
-    { name: 'Vehicle Services', slug: 'vehicle', icon: Car, desc: 'RC Transfer, NOC, Fitness Certificate & Tax Payment', badge: 'RTO' },
-    { name: 'Business Services', slug: 'business', icon: Briefcase, desc: 'MSME/Udyam, GST Registration & FSSAI Licenses', badge: 'Business' },
-    { name: 'Utility Services', slug: 'utility', icon: Zap, desc: 'Electricity Connection, Water & Property Tax Payments', badge: 'Utility' },
-    { name: 'Other Digital Services', slug: 'other', icon: Grid, desc: 'Ration Card, Pension, E-Shram & Employment Reg.', badge: 'Digital' }
+    { name: lang === 'ta' ? 'ஆதார் சேவைகள்' : 'Aadhaar Services', slug: 'aadhaar', icon: Fingerprint, desc: lang === 'ta' ? 'பதிவு, பெயர், முகவரி, மொபைல் & புகைப்பட புதுப்பிப்புகள்' : 'Enrollment, Name, Address, Mobile & Photo Updates', badge: lang === 'ta' ? '15 சேவைகள்' : '15 Services' },
+    { name: lang === 'ta' ? 'PAN அட்டை சேவைகள்' : 'PAN Card Services', slug: 'pan', icon: CreditCard, desc: lang === 'ta' ? 'புதிய PAN, திருத்தங்கள், மறுபதிப்பு & ஆதார் இணைப்பு' : 'New PAN, Corrections, Reprint & Aadhaar Link', badge: lang === 'ta' ? 'பிரபலமானது' : 'Popular' },
+    { name: lang === 'ta' ? 'வாக்காளர் அட்டை சேவைகள்' : 'Voter ID Services', slug: 'voter', icon: Vote, desc: lang === 'ta' ? 'புதிய வாக்காளர் பதிவு, முகவரி மாற்றம் & EPIC பதிவிறக்கம்' : 'New Voter Registration, Address Change & EPIC Download', badge: lang === 'ta' ? 'இலவசம்' : 'Free' },
+    { name: lang === 'ta' ? 'சான்றிதழ் சேவைகள்' : 'Certificates', slug: 'certificates', icon: FileText, desc: lang === 'ta' ? 'வருமானம், சாதி, இருப்பிடம், பிறப்பு & இறப்பு சான்றிதழ்கள்' : 'Income, Community, Native, Birth & Death Certificates', badge: lang === 'ta' ? 'முக்கியமானது' : 'Essential' },
+    { name: lang === 'ta' ? 'நிலம் & பட்டா சேவைகள்' : 'Land & Patta Services', slug: 'land', icon: MapPin, desc: lang === 'ta' ? 'பட்டா மாற்றம், சிட்டா விவரம், FMB வரைபடம் & EC' : 'Patta Transfer, Chitta Extraction, FMB Sketch & EC', badge: lang === 'ta' ? 'நில விவரங்கள்' : 'Land Records' },
+    { name: lang === 'ta' ? 'பாஸ்போர்ட் சேவைகள்' : 'Passport Services', slug: 'passport', icon: Globe, desc: lang === 'ta' ? 'புதிய பாஸ்போர்ட், மறுபதிப்பு & தட்கால் விண்ணப்பங்கள்' : 'Fresh Passport, Re-issue & Tatkaal Applications', badge: lang === 'ta' ? 'தேசியம்' : 'National' },
+    { name: lang === 'ta' ? 'ஓட்டுநர் உரிமம்' : 'Driving Licence', slug: 'driving-licence', icon: Car, desc: lang === 'ta' ? 'எல்.எல்.ஆர், ஓட்டுநர் உரிம புதுப்பித்தல் & முகவரி மாற்றம்' : 'Learner License, DL Renewal & Address Updates', badge: 'RTO' },
+    { name: lang === 'ta' ? 'வாகன சேவைகள்' : 'Vehicle Services', slug: 'vehicle', icon: Car, desc: lang === 'ta' ? 'RC மாற்றம், NOC, தகுதிச் சான்றிதழ் & வரி செலுத்துதல்' : 'RC Transfer, NOC, Fitness Certificate & Tax Payment', badge: 'RTO' },
+    { name: lang === 'ta' ? 'வணிக சேவைகள்' : 'Business Services', slug: 'business', icon: Briefcase, desc: lang === 'ta' ? 'MSME/உத்யம், GST பதிவு & FSSAI உரிமங்கள்' : 'MSME/Udyam, GST Registration & FSSAI Licenses', badge: lang === 'ta' ? 'வணிகம்' : 'Business' },
+    { name: lang === 'ta' ? 'பயன்பாட்டு சேவைகள்' : 'Utility Services', slug: 'utility', icon: Zap, desc: lang === 'ta' ? 'மின்சார இணைப்பு, குடிநீர் & சொத்து வரி செலுத்துதல்' : 'Electricity Connection, Water & Property Tax Payments', badge: lang === 'ta' ? 'பயன்பாடு' : 'Utility' },
+    { name: lang === 'ta' ? 'பிற டிஜிட்டல் சேவைகள்' : 'Other Digital Services', slug: 'other', icon: Grid, desc: lang === 'ta' ? 'ரேஷன் கார்டு, ஓய்வூதியம், இ-ஷ்ரம் & வேலைவாய்ப்பு பதிவு' : 'Ration Card, Pension, E-Shram & Employment Reg.', badge: lang === 'ta' ? 'டிஜிட்டல்' : 'Digital' }
   ];
 
   // More Navigation Links
   const moreLinks = [
-    { name: 'My Applications', path: '/my-applications', icon: FileCheck, desc: 'Track and manage your submitted applications' },
-    { name: 'Payment History', path: '/payments', icon: CreditCard, desc: 'View past fee payments and receipts' },
-    { name: 'Careers & Portal Jobs', path: '/careers', icon: Briefcase, desc: 'Join the E-Seva digital operations team' },
-    { name: 'Privacy Policy', path: '/privacy', icon: ShieldCheck, desc: 'Data privacy and security standards' },
-    { name: 'Terms of Service', path: '/terms', icon: FileText, desc: 'Portal terms of use and compliance' },
-    { name: 'Refund Policy', path: '/refund-policy', icon: HelpCircle, desc: 'Fee refund guidelines and processing' },
+    { name: lang === 'ta' ? 'எனது விண்ணப்பங்கள்' : 'My Applications', path: '/my-applications', icon: FileCheck, desc: lang === 'ta' ? 'சமர்ப்பிக்கப்பட்ட விண்ணப்பங்களைக் கண்காணிக்கவும்' : 'Track and manage your submitted applications' },
+    { name: lang === 'ta' ? 'கட்டண வரலாறு' : 'Payment History', path: '/payments', icon: CreditCard, desc: lang === 'ta' ? 'கடந்த கால கட்டண ரசீதுகளைப் பார்க்கவும்' : 'View past fee payments and receipts' },
+    { name: lang === 'ta' ? 'பணியமர்த்தல் & போர்ட்டல் வேலைகள்' : 'Careers & Portal Jobs', path: '/careers', icon: Briefcase, desc: lang === 'ta' ? 'இ-சேவை டிஜிட்டல் குழுவில் இணையுங்கள்' : 'Join the E-Seva digital operations team' },
+    { name: lang === 'ta' ? 'தனியுரிமைக் கொள்கை' : 'Privacy Policy', path: '/privacy', icon: ShieldCheck, desc: lang === 'ta' ? 'தரவு தனியுரிமை மற்றும் பாதுகாப்பு தரநிலைகள்' : 'Data privacy and security standards' },
+    { name: lang === 'ta' ? 'சேவை விதிகளும் நிபந்தனைகளும்' : 'Terms of Service', path: '/terms', icon: FileText, desc: lang === 'ta' ? 'போர்ட்டல் பயன்பாட்டு விதிமுறைகள்' : 'Portal terms of use and compliance' },
+    { name: lang === 'ta' ? 'கட்டணத் திரும்பப்பெறும் கொள்கை' : 'Refund Policy', path: '/refund-policy', icon: HelpCircle, desc: lang === 'ta' ? 'கட்டணத் திரும்பப்பெறும் வழிகாட்டுதல்கள்' : 'Fee refund guidelines and processing' },
   ];
 
   return (
-    <header className="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm text-slate-800 selection:bg-slate-900 selection:text-white">
+    <header className="bg-white/95 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50 shadow-xs text-slate-800 selection:bg-slate-900 selection:text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
+        <div className="flex items-center justify-between h-16 sm:h-20 gap-4">
           
           {/* ========================================================================= */}
           {/* LEFT: E-SEVA LOGO, BRAND NAME & TAGLINE */}
           {/* ========================================================================= */}
           <Link to="/" className="flex items-center gap-3 group shrink-0 py-1">
             {/* E-Seva Emblem Icon */}
-            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-slate-900 flex items-center justify-center text-white shadow-md group-hover:bg-slate-800 transition-all border border-slate-800 relative">
-              <Landmark className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-slate-900 flex items-center justify-center text-white shadow-md group-hover:bg-slate-800 transition-all border border-slate-800 relative shrink-0">
+              <Landmark className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
               {/* Subtle orange accent badge dot */}
-              <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-orange-500 ring-2 ring-white"></span>
+              <span className="absolute -top-0.5 -right-0.5 sm:-top-1 sm:-right-1 w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-orange-500 ring-2 ring-white"></span>
             </div>
             
-            <div className="flex flex-col">
-              <div className="flex items-center gap-2">
-                <span className="font-heading font-extrabold text-xl sm:text-2xl tracking-tight text-slate-900">
+            <div className="flex flex-col justify-center">
+              <div className="flex items-center gap-1.5 sm:gap-2 leading-none">
+                <span className="font-heading font-extrabold text-lg sm:text-2xl tracking-tight text-slate-900">
                   E-SEVA
                 </span>
-                <span className="bg-orange-50 text-orange-600 border border-orange-200 text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-md">
+                <span className="bg-orange-50 text-orange-600 border border-orange-200 text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider px-1.5 sm:px-2 py-0.5 rounded-md">
                   PORTAL
                 </span>
               </div>
-              <p className="text-[10px] sm:text-[11px] text-slate-500 font-medium tracking-wide">
+              <p className="text-[10px] sm:text-[11px] text-slate-500 font-medium tracking-wide mt-0.5 sm:mt-1 truncate max-w-[160px] sm:max-w-none">
                 {t.tagline}
               </p>
             </div>
@@ -122,12 +122,12 @@ export default function Navbar() {
           {/* ========================================================================= */}
           {/* CENTER: DESKTOP NAVIGATION LINKS */}
           {/* ========================================================================= */}
-          <nav className="hidden lg:flex items-center gap-1 xl:gap-2 text-xs font-bold text-slate-800 shrink-0">
+          <nav className="hidden lg:flex items-center gap-1 xl:gap-2 text-xs font-semibold text-slate-800 shrink-0">
             
             {/* 1. HOME */}
             <Link
               to="/"
-              className={`px-3 py-2 rounded-lg transition-all ${
+              className={`h-9 inline-flex items-center px-3 rounded-lg transition-all ${
                 isActive('/') 
                   ? 'text-slate-900 bg-slate-100 font-extrabold' 
                   : 'hover:text-slate-900 hover:bg-slate-50'
@@ -143,7 +143,7 @@ export default function Navbar() {
                   setServicesMenuOpen(!servicesMenuOpen);
                   setMoreMenuOpen(false);
                 }}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg transition-all ${
+                className={`h-9 inline-flex items-center gap-1.5 px-3 rounded-lg transition-all ${
                   isActive('/services') || location.pathname.startsWith('/services') || servicesMenuOpen
                     ? 'text-slate-900 bg-slate-100 font-extrabold'
                     : 'hover:text-slate-900 hover:bg-slate-50'
@@ -225,7 +225,7 @@ export default function Navbar() {
                   setMoreMenuOpen(!moreMenuOpen);
                   setServicesMenuOpen(false);
                 }}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg transition-all ${
+                className={`h-9 inline-flex items-center gap-1.5 px-3 rounded-lg transition-all ${
                   moreMenuOpen ? 'text-slate-900 bg-slate-100 font-extrabold' : 'hover:text-slate-900 hover:bg-slate-50'
                 }`}
               >
@@ -271,7 +271,7 @@ export default function Navbar() {
             {/* 4. ABOUT */}
             <Link
               to="/about"
-              className={`px-3 py-2 rounded-lg transition-all ${
+              className={`h-9 inline-flex items-center px-3 rounded-lg transition-all ${
                 isActive('/about') 
                   ? 'text-slate-900 bg-slate-100 font-extrabold' 
                   : 'hover:text-slate-900 hover:bg-slate-50'
@@ -283,7 +283,7 @@ export default function Navbar() {
             {/* 5. CONTACT */}
             <Link
               to="/contact"
-              className={`px-3 py-2 rounded-lg transition-all ${
+              className={`h-9 inline-flex items-center px-3 rounded-lg transition-all ${
                 isActive('/contact') 
                   ? 'text-slate-900 bg-slate-100 font-extrabold' 
                   : 'hover:text-slate-900 hover:bg-slate-50'
@@ -296,15 +296,15 @@ export default function Navbar() {
           {/* ========================================================================= */}
           {/* RIGHT: BUTTONS & AUTH ACTIONS */}
           {/* ========================================================================= */}
-          <div className="hidden lg:flex items-center gap-3">
+          <div className="hidden lg:flex items-center gap-2 xl:gap-2.5">
             
             {/* LANGUAGE SWITCHER BUTTON (ENGLISH ↔ தமிழ்) */}
-            <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs font-bold shadow-inner">
+            <div className="h-9 inline-flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200 text-xs font-bold shadow-inner">
               <button
                 onClick={() => setLanguage('en')}
-                className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                className={`h-8 px-2.5 inline-flex items-center justify-center rounded-md transition-all cursor-pointer ${
                   lang === 'en'
-                    ? 'bg-slate-900 text-white font-extrabold shadow-sm'
+                    ? 'bg-slate-900 text-white font-extrabold shadow-xs'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
                 }`}
               >
@@ -312,9 +312,9 @@ export default function Navbar() {
               </button>
               <button
                 onClick={() => setLanguage('ta')}
-                className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                className={`h-8 px-2.5 inline-flex items-center justify-center rounded-md transition-all cursor-pointer ${
                   lang === 'ta'
-                    ? 'bg-orange-600 text-white font-extrabold shadow-sm'
+                    ? 'bg-orange-600 text-white font-extrabold shadow-xs'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
                 }`}
               >
@@ -325,19 +325,19 @@ export default function Navbar() {
             {/* CHECK APPLICATION STATUS - Outlined Button */}
             <Link
               to="/track"
-              className={`flex items-center gap-1.5 text-xs font-bold px-3.5 py-2.5 rounded-lg border border-slate-300 hover:border-slate-800 text-slate-800 hover:bg-slate-50 transition-all ${
+              className={`h-9 inline-flex items-center gap-1.5 text-xs font-bold px-3 rounded-lg border border-slate-300 hover:border-slate-800 text-slate-800 hover:bg-slate-50 transition-all ${
                 isActive('/track') ? 'border-slate-900 bg-slate-50 ring-1 ring-slate-900' : ''
               }`}
             >
               <FileSearch className="w-3.5 h-3.5 text-slate-600" />
-              <span>{t.checkStatus || t.trackAppNav || (lang === 'ta' ? 'விண்ணப்பத்தை கண்காணிக்க' : 'Track Application')}</span>
+              <span>{t.checkStatus || t.trackAppNav || (lang === 'ta' ? 'விண்ணப்பத்தைக் கண்காணிக்க' : 'Track Application')}</span>
             </Link>
 
             {/* SIGN IN & REGISTER / USER PROFILE LOGIC */}
             {admin ? (
               <Link
                 to="/admin"
-                className="bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs px-4 py-2.5 rounded-lg shadow-sm transition-colors flex items-center gap-1.5"
+                className="h-9 inline-flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs px-3.5 rounded-lg shadow-sm transition-colors"
               >
                 <ShieldCheck className="w-4 h-4 text-orange-400" /> Admin Cockpit
               </Link>
@@ -349,7 +349,7 @@ export default function Navbar() {
                 <div className="relative" ref={userDropdownRef}>
                   <button
                     onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                    className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-900 font-bold text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 transition-colors"
+                    className="h-9 inline-flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-900 font-bold text-xs px-3.5 rounded-lg border border-slate-300 transition-colors"
                   >
                     <User className="w-3.5 h-3.5 text-slate-700" />
                     <span>{user.name ? user.name.split(' ')[0] : 'User'}</span>
@@ -424,7 +424,7 @@ export default function Navbar() {
                 {/* SIGN IN */}
                 <Link
                   to="/login"
-                  className="text-xs font-bold text-slate-700 hover:text-slate-950 px-3 py-2 hover:bg-slate-50 rounded-lg transition-colors uppercase"
+                  className="h-9 inline-flex items-center px-3 text-xs font-bold text-slate-700 hover:text-slate-950 hover:bg-slate-50 rounded-lg transition-colors uppercase"
                 >
                   {t.login || 'SIGN IN'}
                 </Link>
@@ -432,7 +432,7 @@ export default function Navbar() {
                 {/* REGISTER - Primary Dark Blue Button */}
                 <Link
                   to="/register"
-                  className="bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs px-4 py-2.5 rounded-lg shadow-sm transition-all flex items-center gap-1.5 border border-slate-800 uppercase"
+                  className="h-9 inline-flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs px-4 rounded-lg shadow-sm transition-all border border-slate-800 uppercase"
                 >
                   {t.registerNav || 'REGISTER'} <ArrowRight className="w-3.5 h-3.5 text-orange-400" />
                 </Link>
@@ -475,7 +475,7 @@ export default function Navbar() {
           <form onSubmit={handleSearchSubmit} className="relative">
             <input
               type="text"
-              placeholder="Search services (Aadhaar, PAN, Patta)..."
+              placeholder={t.searchPlaceholder || (lang === 'ta' ? 'சேவைகளைத் தேடவும் (ஆதார், பான், பட்டா)...' : 'Search services (Aadhaar, PAN, Patta)...')}
               value={navSearch}
               onChange={(e) => setNavSearch(e.target.value)}
               className="w-full bg-slate-50 text-slate-900 text-xs rounded-lg pl-9 pr-4 py-2.5 border border-slate-300 focus:border-slate-800 outline-none"
@@ -491,7 +491,7 @@ export default function Navbar() {
               onClick={() => setMobileMenuOpen(false)}
               className={`px-3 py-2.5 rounded-lg ${isActive('/') ? 'bg-slate-100 text-slate-950 font-extrabold' : 'hover:bg-slate-50'}`}
             >
-              HOME
+              {t.home ? t.home.toUpperCase() : (lang === 'ta' ? 'முகப்பு' : 'HOME')}
             </Link>
 
             {/* Accordion 1: E-SERVICES */}
@@ -500,7 +500,7 @@ export default function Navbar() {
                 onClick={() => setMobileServicesOpen(!mobileServicesOpen)}
                 className="w-full flex items-center justify-between px-3 py-2.5 text-left font-bold text-slate-900"
               >
-                <span>E-SERVICES CATEGORIES ({serviceCategories.length})</span>
+                <span>{lang === 'ta' ? 'சேவை பிரிவுகள்' : 'E-SERVICES CATEGORIES'} ({serviceCategories.length})</span>
                 <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${mobileServicesOpen ? 'rotate-180 text-orange-500' : ''}`} />
               </button>
 
@@ -526,7 +526,7 @@ export default function Navbar() {
                     onClick={() => setMobileMenuOpen(false)}
                     className="block px-2.5 py-2 rounded-md font-bold text-slate-900 bg-orange-50 text-orange-700 text-center mt-2 border border-orange-200"
                   >
-                    View Full Directory →
+                    {t.viewAllServices || (lang === 'ta' ? 'அனைத்து சேவைகள் →' : 'View Full Directory →')}
                   </Link>
                 </div>
               )}
@@ -538,7 +538,7 @@ export default function Navbar() {
                 onClick={() => setMobileMoreOpen(!mobileMoreOpen)}
                 className="w-full flex items-center justify-between px-3 py-2.5 text-left font-bold text-slate-900"
               >
-                <span>MORE RESOURCES ({moreLinks.length})</span>
+                <span>{lang === 'ta' ? 'கூடுதல் வளங்கள்' : 'MORE RESOURCES'} ({moreLinks.length})</span>
                 <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${mobileMoreOpen ? 'rotate-180 text-orange-500' : ''}`} />
               </button>
 
@@ -563,7 +563,7 @@ export default function Navbar() {
               onClick={() => setMobileMenuOpen(false)}
               className={`px-3 py-2.5 rounded-lg ${isActive('/about') ? 'bg-slate-100 text-slate-950 font-extrabold' : 'hover:bg-slate-50'}`}
             >
-              ABOUT
+              {t.about ? t.about.toUpperCase() : (lang === 'ta' ? 'எங்களைப் பற்றி' : 'ABOUT')}
             </Link>
 
             <Link
@@ -571,7 +571,7 @@ export default function Navbar() {
               onClick={() => setMobileMenuOpen(false)}
               className={`px-3 py-2.5 rounded-lg ${isActive('/contact') ? 'bg-slate-100 text-slate-950 font-extrabold' : 'hover:bg-slate-50'}`}
             >
-              CONTACT
+              {t.contact ? t.contact.toUpperCase() : (lang === 'ta' ? 'தொடர்புகொள்ள' : 'CONTACT')}
             </Link>
 
             <Link
@@ -579,7 +579,7 @@ export default function Navbar() {
               onClick={() => setMobileMenuOpen(false)}
               className="px-3 py-2.5 rounded-lg bg-slate-100 text-slate-900 flex items-center gap-2 border border-slate-300 font-bold"
             >
-              <FileSearch className="w-4 h-4 text-slate-700" /> CHECK APPLICATION STATUS
+              <FileSearch className="w-4 h-4 text-slate-700" /> {t.checkStatus || (lang === 'ta' ? 'விண்ணப்பத்தை கண்காணிக்க' : 'CHECK APPLICATION STATUS')}
             </Link>
           </div>
 
@@ -592,14 +592,14 @@ export default function Navbar() {
                   onClick={() => setMobileMenuOpen(false)}
                   className="bg-slate-900 text-white font-bold text-xs px-4 py-3 rounded-xl w-full text-center"
                 >
-                  My Dashboard ({user.name})
+                  {t.dashboardNav || (lang === 'ta' ? 'முகப்புப்பலகை' : 'My Dashboard')} ({user.name ? user.name.split(' ')[0] : 'User'})
                 </Link>
                 <button
                   onClick={() => {
                     logoutUser();
                     setMobileMenuOpen(false);
                   }}
-                  className="bg-rose-100 text-rose-700 p-3 rounded-xl hover:bg-rose-200"
+                  className="bg-rose-100 text-rose-700 p-3 rounded-xl hover:bg-rose-200 cursor-pointer"
                 >
                   <LogOut className="w-4 h-4" />
                 </button>
@@ -611,14 +611,14 @@ export default function Navbar() {
                   onClick={() => setMobileMenuOpen(false)}
                   className="bg-slate-100 text-slate-900 font-bold text-xs py-3 rounded-xl text-center border border-slate-300 hover:bg-slate-200"
                 >
-                  SIGN IN
+                  {t.login ? t.login.toUpperCase() : (lang === 'ta' ? 'உள்நுழைக' : 'SIGN IN')}
                 </Link>
                 <Link
                   to="/register"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="bg-slate-900 text-white font-bold text-xs py-3 rounded-xl text-center shadow hover:bg-slate-800 flex items-center justify-center gap-1"
+                  className="bg-slate-900 text-white font-bold text-xs py-3 rounded-xl text-center shadow hover:bg-slate-800 flex items-center justify-center gap-1 uppercase"
                 >
-                  REGISTER <ArrowRight className="w-3.5 h-3.5 text-orange-400" />
+                  {t.registerNav || (lang === 'ta' ? 'பதிவு செய்ய' : 'REGISTER')} <ArrowRight className="w-3.5 h-3.5 text-orange-400" />
                 </Link>
               </div>
             )}

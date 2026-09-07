@@ -5,25 +5,13 @@ import {
   UserCheck, FileCheck, Download, History, MessageSquare, ExternalLink, Award, Copy, Check, Printer, DollarSign
 } from 'lucide-react';
 import CertificatePrint from '../components/CertificatePrint';
-
-const STATUS_BADGES = {
-  DRAFT: 'bg-amber-100 text-amber-800 border-amber-200',
-  SUBMITTED: 'bg-blue-100 text-blue-800 border-blue-200',
-  Pending: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-  UNDER_REVIEW: 'bg-indigo-100 text-indigo-800 border-indigo-200',
-  Processing: 'bg-purple-100 text-purple-800 border-purple-200',
-  PROCESSING: 'bg-purple-100 text-purple-800 border-purple-200',
-  Approved: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-  APPROVED: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-  Completed: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-  COMPLETED: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-  Rejected: 'bg-rose-100 text-rose-800 border-rose-200',
-  REJECTED: 'bg-rose-100 text-rose-800 border-rose-200'
-};
+import StatusBadge from '../components/StatusBadge';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function ApplicationDetailView() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { lang, t } = useLanguage();
 
   const [details, setDetails] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -47,9 +35,9 @@ export default function ApplicationDetailView() {
       const res = await fetch(`/api/applications/${id}`, { headers });
       if (!res.ok) {
         if (res.status === 401 || res.status === 403) {
-          throw new Error('Unauthorized access. You can only view your own applications.');
+          throw new Error(lang === 'ta' ? 'அனுமதி இல்லை. உங்கள் சொந்த விண்ணப்பங்களை மட்டுமே பார்க்க முடியும்.' : 'Unauthorized access. You can only view your own applications.');
         }
-        throw new Error('Application details not found');
+        throw new Error(lang === 'ta' ? 'விண்ணப்ப விவரங்கள் கிடைக்கவில்லை' : 'Application details not found');
       }
 
       const data = await res.json();
@@ -66,7 +54,7 @@ export default function ApplicationDetailView() {
       <div className="min-h-screen bg-slate-100 py-12 px-4 flex items-center justify-center">
         <div className="bg-white rounded-3xl shadow-sm p-8 text-center max-w-sm w-full space-y-4 border border-slate-200">
           <div className="w-12 h-12 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="text-slate-700 font-bold text-xs">Retrieving application details from database...</p>
+          <p className="text-slate-700 font-bold text-xs">{lang === 'ta' ? 'தரவுத்தளத்தில் இருந்து விண்ணப்ப விவரங்கள் பெறப்படுகின்றன...' : 'Retrieving application details from database...'}</p>
         </div>
       </div>
     );
@@ -77,18 +65,16 @@ export default function ApplicationDetailView() {
       <div className="min-h-screen bg-slate-100 py-12 px-4 flex items-center justify-center">
         <div className="bg-white rounded-3xl shadow-sm p-8 text-center max-w-md w-full space-y-4 border border-slate-200">
           <AlertCircle className="w-12 h-12 text-rose-500 mx-auto" />
-          <h3 className="text-xl font-black text-slate-900">Access Restricted</h3>
-          <p className="text-slate-600 text-xs">{error || 'Could not access application details.'}</p>
+          <h3 className="text-xl font-black text-slate-900">{lang === 'ta' ? 'அணுகல் கட்டுப்படுத்தப்பட்டது' : 'Access Restricted'}</h3>
+          <p className="text-slate-600 text-xs">{error || (lang === 'ta' ? 'விண்ணப்ப விவரங்களை அணுக முடியவில்லை.' : 'Could not access application details.')}</p>
           <Link to="/my-applications" className="inline-flex items-center space-x-2 px-5 py-2.5 bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold text-xs rounded-xl shadow transition-colors">
             <ArrowLeft className="w-4 h-4 text-orange-400" />
-            <span>Back to My Applications</span>
+            <span>{t.goToDashboardBtn || (lang === 'ta' ? 'எனது விண்ணப்பங்களுக்கு திரும்பு' : 'Back to My Applications')}</span>
           </Link>
         </div>
       </div>
     );
   }
-
-  const badgeClass = STATUS_BADGES[details.status] || STATUS_BADGES.SUBMITTED;
 
   return (
     <div className="min-h-screen bg-slate-100 py-8 px-4 sm:px-6 lg:px-8 font-sans selection:bg-orange-500 selection:text-white">
@@ -96,9 +82,9 @@ export default function ApplicationDetailView() {
 
         {/* Breadcrumb */}
         <div className="flex items-center space-x-2 text-xs text-slate-500">
-          <Link to="/" className="hover:text-slate-900 transition-colors">Portal Home</Link>
+          <Link to="/" className="hover:text-slate-900 transition-colors">{t.homeNav || (lang === 'ta' ? 'முகப்பு' : 'Portal Home')}</Link>
           <span>/</span>
-          <Link to="/my-applications" className="hover:text-slate-900 transition-colors">My Applications</Link>
+          <Link to="/my-applications" className="hover:text-slate-900 transition-colors">{t.myApplicationsNav || (lang === 'ta' ? 'எனது விண்ணப்பங்கள்' : 'My Applications')}</Link>
           <span>/</span>
           <span className="font-bold text-orange-600 font-mono">{details.application_number}</span>
         </div>
@@ -107,8 +93,8 @@ export default function ApplicationDetailView() {
         <div className="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-2xl shadow-sm flex items-start space-x-3">
           <ShieldAlert className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
           <div className="text-xs text-amber-900 leading-relaxed">
-            <span className="font-extrabold">E-Seva Facilitation Notice: </span>
-            This record reflects your application submitted through E-Seva. Official department verification is handled by authorized executives.
+            <span className="font-extrabold">{lang === 'ta' ? 'இ-சேவை அறிவிப்பு: ' : 'E-Seva Facilitation Notice: '}</span>
+            {lang === 'ta' ? 'இந்த பதிவு இ-சேவை மூலம் சமர்ப்பிக்கப்பட்ட உங்கள் விண்ணப்பத்தைப் பிரதிபலிக்கிறது. துறை தணிக்கை அதிகாரப்பூர்வ அதிகாரிகளால் கையாளப்படுகிறது.' : 'This record reflects your application submitted through E-Seva. Official department verification is handled by authorized executives.'}
           </div>
         </div>
 
@@ -118,11 +104,9 @@ export default function ApplicationDetailView() {
 
           <div className="space-y-3 relative z-10">
             <div className="flex items-center space-x-3">
-              <span className={`px-3 py-1 rounded-full text-xs font-black border ${badgeClass}`}>
-                STATUS: {details.status}
-              </span>
+              <StatusBadge status={details.status} />
               <span className="text-xs text-slate-400 font-medium">
-                Logged: {new Date(details.created_at || details.submitted_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                {lang === 'ta' ? 'பதிவு செய்யப்பட்டது:' : 'Logged:'} {new Date(details.created_at || details.submitted_at).toLocaleDateString(lang === 'ta' ? 'ta-IN' : 'en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
               </span>
             </div>
 
@@ -149,19 +133,19 @@ export default function ApplicationDetailView() {
                 {copiedAppId ? (
                   <>
                     <Check className="w-3.5 h-3.5 text-emerald-300" />
-                    <span>Copied!</span>
+                    <span>{lang === 'ta' ? 'நகலெடுக்கப்பட்டது!' : 'Copied!'}</span>
                   </>
                 ) : (
                   <>
                     <Copy className="w-3.5 h-3.5 text-orange-400" />
-                    <span>Copy ID</span>
+                    <span>{lang === 'ta' ? 'நகலெடு' : 'Copy ID'}</span>
                   </>
                 )}
               </button>
             </div>
 
             <p className="text-slate-300 text-xs sm:text-sm font-semibold">
-              {details.service_name || 'Digital Service'} ({details.category_name || 'E-Seva Category'})
+              {details.service_name || (lang === 'ta' ? 'டிஜிட்டல் சேவை' : 'Digital Service')} ({details.category_name || 'E-Seva Category'})
             </p>
           </div>
 
@@ -172,7 +156,7 @@ export default function ApplicationDetailView() {
                 className="px-5 py-2.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs rounded-xl shadow-md transition-all flex items-center space-x-2"
               >
                 <Award className="w-4 h-4" />
-                <span>View / Print Certificate</span>
+                <span>{lang === 'ta' ? 'சான்றிதழைப் பார் / அச்சிடு' : 'View / Print Certificate'}</span>
               </button>
             )}
 
@@ -181,7 +165,7 @@ export default function ApplicationDetailView() {
               className="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black text-xs rounded-xl shadow-md transition-all flex items-center space-x-2"
             >
               <Printer className="w-4 h-4" />
-              <span>Download Receipt</span>
+              <span>{t.downloadPrintReceipt}</span>
             </button>
           </div>
         </div>
@@ -191,10 +175,10 @@ export default function ApplicationDetailView() {
           <div className="p-4 bg-rose-50 border border-rose-300 rounded-2xl space-y-2 text-xs text-rose-900 shadow-sm">
             <div className="flex items-center space-x-2 font-bold text-sm text-rose-700">
               <AlertCircle className="w-5 h-5" />
-              <span>Action Required: Verification Query from E-Seva Officer</span>
+              <span>{lang === 'ta' ? 'நடவடிக்கை தேவை: அதிகாரியிடமிருந்து கேள்விகள் உள்ளன' : 'Action Required: Verification Query from E-Seva Officer'}</span>
             </div>
             <p>
-              One or more of your uploaded proof documents require re-upload or clarification. Please review the rejected documents below and click <strong>"Replace Document"</strong> to submit corrected copies.
+              {lang === 'ta' ? 'நீங்கள் பதிவேற்றிய சான்று ஆவணங்களில் ஒன்று அல்லது அதற்கு மேற்பட்டவை மீண்டும் பதிவேற்றம் செய்யப்பட வேண்டும்.' : 'One or more of your uploaded proof documents require re-upload or clarification.'}
             </p>
           </div>
         )}
@@ -209,24 +193,24 @@ export default function ApplicationDetailView() {
             <div className="bg-white rounded-3xl p-6 border border-slate-200/90 shadow-sm space-y-4">
               <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider border-b pb-3 border-slate-100 flex items-center space-x-2">
                 <UserCheck className="w-4 h-4 text-orange-500" />
-                <span>Applicant Primary Contact</span>
+                <span>{t.applicantInfoSection}</span>
               </h3>
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
                 <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200">
-                  <span className="text-slate-500 block font-medium">Full Name</span>
+                  <span className="text-slate-500 block font-medium">{t.fullName}</span>
                   <span className="font-bold text-slate-900 text-sm">{details.user_name || 'N/A'}</span>
                 </div>
                 <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200">
-                  <span className="text-slate-500 block font-medium">Mobile Number</span>
+                  <span className="text-slate-500 block font-medium">{t.mobileNumber}</span>
                   <span className="font-bold text-slate-900 text-sm">{details.user_phone || 'N/A'}</span>
                 </div>
                 <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200">
-                  <span className="text-slate-500 block font-medium">Email Address</span>
+                  <span className="text-slate-500 block font-medium">{t.emailAddress}</span>
                   <span className="font-bold text-slate-900 text-sm truncate block">{details.user_email || 'N/A'}</span>
                 </div>
                 <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200">
-                  <span className="text-slate-500 block font-medium">Service Fee</span>
+                  <span className="text-slate-500 block font-medium">{t.totalFeeLabel}</span>
                   <span className="font-bold text-emerald-600 text-sm">₹{details.total_fee || 0}</span>
                 </div>
               </div>

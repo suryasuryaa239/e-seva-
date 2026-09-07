@@ -6,10 +6,12 @@ import {
 } from 'lucide-react';
 import Breadcrumbs from '../components/Breadcrumbs';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Profile() {
   const navigate = useNavigate();
   const { logoutUser } = useAuth();
+  const { lang, t } = useLanguage();
 
   const [profile, setProfile] = useState({
     name: '',
@@ -47,7 +49,7 @@ export default function Profile() {
       });
 
       if (!res.ok) {
-        throw new Error('Failed to load profile credentials');
+        throw new Error(lang === 'ta' ? 'சுயவிவரத்தைச் சான்றளிக்க முடியவில்லை' : 'Failed to load profile credentials');
       }
 
       const data = await res.json();
@@ -85,10 +87,10 @@ export default function Profile() {
 
       if (!res.ok) {
         const errData = await res.json();
-        throw new Error(errData.error || 'Failed to update profile');
+        throw new Error(errData.error || (lang === 'ta' ? 'சுயவிவரத்தைப் புதுப்பிக்க முடியவில்லை' : 'Failed to update profile'));
       }
 
-      setMessage('Profile updated successfully!');
+      setMessage(lang === 'ta' ? 'சுயவிவரம் வெற்றிகரமாகப் புதுப்பிக்கப்பட்டது!' : 'Profile updated successfully!');
       // Update local stored user
       const stored = JSON.parse(localStorage.getItem('user') || '{}');
       localStorage.setItem('user', JSON.stringify({ ...stored, name: profile.name, phone: profile.phone }));
@@ -104,7 +106,7 @@ export default function Profile() {
       <div className="min-h-[70vh] bg-slate-50 py-12 px-4 flex items-center justify-center font-sans">
         <div className="bg-white rounded-3xl shadow-xl p-8 text-center max-w-sm w-full space-y-4 border border-slate-200">
           <div className="w-12 h-12 border-4 border-[#0b192c] border-t-orange-500 rounded-full animate-spin mx-auto"></div>
-          <p className="text-slate-700 font-extrabold text-xs">Loading citizen profile credentials...</p>
+          <p className="text-slate-700 font-extrabold text-xs">{lang === 'ta' ? 'சுயவிவரக் தகவல்கள் ஏற்றப்படுகின்றன...' : 'Loading citizen profile credentials...'}</p>
         </div>
       </div>
     );
@@ -117,7 +119,7 @@ export default function Profile() {
       <div className="max-w-4xl mx-auto space-y-6">
         
         {/* 1. BREADCRUMB */}
-        <Breadcrumbs items={[{ label: 'My Account' }, { label: 'Profile' }]} />
+        <Breadcrumbs items={[{ label: lang === 'ta' ? 'எனது கணக்கு' : 'My Account' }, { label: t.profileTitle || 'Profile' }]} />
 
         {/* 2. PROFILE HEADER CARD */}
         <div className="bg-[#0b192c] rounded-3xl p-6 sm:p-8 text-white shadow-xl border border-slate-800 relative overflow-hidden flex flex-col sm:flex-row items-center sm:items-start justify-between gap-6">
@@ -131,16 +133,16 @@ export default function Profile() {
             <div className="space-y-1">
               <div className="inline-flex items-center space-x-2 px-3 py-0.5 bg-slate-800 text-orange-400 text-[10px] font-black rounded-full border border-slate-700 uppercase tracking-widest">
                 <ShieldCheck className="w-3.5 h-3.5 text-orange-400" />
-                <span>Verified Citizen Account</span>
+                <span>{lang === 'ta' ? 'சரிபார்க்கப்பட்ட கணக்கு' : 'Verified Citizen Account'}</span>
               </div>
               <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-                {profile.name || 'Citizen User'}
+                {profile.name || (lang === 'ta' ? 'குடிமகன் பயனர்' : 'Citizen User')}
               </h1>
               <p className="text-slate-300 text-xs font-mono">
-                {profile.email} • Mobile: {profile.phone || 'Not provided'}
+                {profile.email} • {lang === 'ta' ? 'மொபைல்' : 'Mobile'}: {profile.phone || (lang === 'ta' ? 'வழங்கப்படவில்லை' : 'Not provided')}
               </p>
               <p className="text-[11px] text-slate-400">
-                Registered on: {new Date(profile.created_at || Date.now()).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                {lang === 'ta' ? 'பதிவு செய்யப்பட்ட நாள்' : 'Registered on'}: {new Date(profile.created_at || Date.now()).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
               </p>
             </div>
           </div>
@@ -151,7 +153,7 @@ export default function Profile() {
               className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-extrabold text-xs rounded-xl border border-slate-700 shadow-sm transition-all flex items-center space-x-2"
             >
               <Bell className="w-4 h-4 text-orange-400" />
-              <span>Notification Settings</span>
+              <span>{t.notificationsTitle || 'Notification Settings'}</span>
             </Link>
           </div>
         </div>
@@ -176,15 +178,15 @@ export default function Profile() {
           
           <div className="border-b pb-4 border-slate-100 flex items-center justify-between">
             <div>
-              <h3 className="font-black text-slate-900 text-base">Personal Information</h3>
-              <p className="text-xs text-slate-500">Keep your personal contact details and residential address updated.</p>
+              <h3 className="font-black text-slate-900 text-base">{t.personalInfoTitle}</h3>
+              <p className="text-xs text-slate-500">{lang === 'ta' ? 'உங்கள் தனிப்பட்ட தொடர்புகள் மற்றும் முகவரியைப் புதுப்பித்த நிலையில் வைத்திருக்கவும்.' : 'Keep your personal contact details and residential address updated.'}</p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div>
               <label className="block text-xs font-extrabold text-slate-800 uppercase tracking-wider mb-1.5">
-                Full Name <span className="text-orange-500">*</span>
+                {t.fullNameLabel} <span className="text-orange-500">*</span>
               </label>
               <div className="relative">
                 <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -200,7 +202,7 @@ export default function Profile() {
 
             <div>
               <label className="block text-xs font-extrabold text-slate-800 uppercase tracking-wider mb-1.5">
-                Email Address (Read-only)
+                {t.emailAddressLabel} ({lang === 'ta' ? 'வாசிக்க மட்டும்' : 'Read-only'})
               </label>
               <div className="relative">
                 <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -215,7 +217,7 @@ export default function Profile() {
 
             <div>
               <label className="block text-xs font-extrabold text-slate-800 uppercase tracking-wider mb-1.5">
-                Mobile Number <span className="text-orange-500">*</span>
+                {t.mobileNumberLabel} <span className="text-orange-500">*</span>
               </label>
               <div className="relative">
                 <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -231,14 +233,14 @@ export default function Profile() {
 
             <div>
               <label className="block text-xs font-extrabold text-slate-800 uppercase tracking-wider mb-1.5">
-                Aadhaar Number (Protected)
+                {lang === 'ta' ? 'ஆதார் எண் (பாதுகாக்கப்பட்டது)' : 'Aadhaar Number (Protected)'}
               </label>
               <div className="relative">
                 <ShieldCheck className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
                   disabled
-                  value={profile.aadhaar_no ? `XXXX-XXXX-${profile.aadhaar_no.slice(-4)}` : 'Not Linked'}
+                  value={profile.aadhaar_no ? `XXXX-XXXX-${profile.aadhaar_no.slice(-4)}` : (lang === 'ta' ? 'இணைக்கப்படவில்லை' : 'Not Linked')}
                   className="w-full bg-slate-100 border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-xs font-mono font-semibold text-slate-500 cursor-not-allowed outline-none"
                 />
               </div>
@@ -247,14 +249,14 @@ export default function Profile() {
 
           <div className="border-t pt-6 border-slate-100 space-y-4">
             <div>
-              <h3 className="font-black text-slate-900 text-sm">Communication & Residence Address</h3>
-              <p className="text-xs text-slate-500">Official address for physical certificate dispatch and local desk processing.</p>
+              <h3 className="font-black text-slate-900 text-sm">{lang === 'ta' ? 'தொடர்பு & குடியிருப்பு முகவரி' : 'Communication & Residence Address'}</h3>
+              <p className="text-xs text-slate-500">{lang === 'ta' ? 'சான்றிதழ் அனுப்புதல் மற்றும் உள்ளூர் அலுவலர்கள் ஆய்விற்கான அதிகாரப்பூர்வ முகவரி.' : 'Official address for physical certificate dispatch and local desk processing.'}</p>
             </div>
 
             <div className="space-y-4">
               <div>
                 <label className="block text-xs font-extrabold text-slate-800 uppercase tracking-wider mb-1.5">
-                  Street Address
+                  {t.addressLabel}
                 </label>
                 <div className="relative">
                   <MapPin className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -262,7 +264,7 @@ export default function Profile() {
                     type="text"
                     value={profile.address}
                     onChange={e => setProfile({ ...profile, address: e.target.value })}
-                    placeholder="Door No, Street name, Area"
+                    placeholder={lang === 'ta' ? 'கதவு எண், தெரு பெயர், பகுதி' : 'Door No, Street name, Area'}
                     className="w-full bg-slate-50 border border-slate-300 rounded-xl pl-10 pr-4 py-3 text-xs font-semibold text-slate-900 focus:border-[#0b192c] focus:bg-white outline-none transition-all"
                   />
                 </div>
@@ -271,7 +273,7 @@ export default function Profile() {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-xs font-extrabold text-slate-800 uppercase tracking-wider mb-1.5">
-                    District
+                    {lang === 'ta' ? 'மாவட்டம்' : 'District'}
                   </label>
                   <input
                     type="text"
@@ -284,7 +286,7 @@ export default function Profile() {
 
                 <div>
                   <label className="block text-xs font-extrabold text-slate-800 uppercase tracking-wider mb-1.5">
-                    State
+                    {lang === 'ta' ? 'மாநிலம்' : 'State'}
                   </label>
                   <input
                     type="text"
@@ -296,7 +298,7 @@ export default function Profile() {
 
                 <div>
                   <label className="block text-xs font-extrabold text-slate-800 uppercase tracking-wider mb-1.5">
-                    Pincode
+                    {lang === 'ta' ? 'அஞ்சல் குறியீடு (பின்கோடு)' : 'Pincode'}
                   </label>
                   <input
                     type="text"
@@ -318,7 +320,7 @@ export default function Profile() {
               className="px-6 py-3.5 bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-xs sm:text-sm rounded-xl shadow-md hover:shadow-lg transition-all flex items-center space-x-2 group cursor-pointer"
             >
               <Save className="w-4 h-4 text-white group-hover:scale-110 transition-transform" />
-              <span>{saving ? 'Saving Changes...' : 'Save Profile Changes'}</span>
+              <span>{saving ? (lang === 'ta' ? 'சேமிக்கப்படுகிறது...' : 'Saving Changes...') : (lang === 'ta' ? 'சுயவிவர மாற்றங்களைச் சேமிக்கவும்' : 'Save Profile Changes')}</span>
             </button>
           </div>
 
@@ -334,8 +336,8 @@ export default function Profile() {
               <FileText className="w-5 h-5 text-orange-500" />
             </div>
             <div>
-              <h4 className="font-extrabold text-slate-900 text-xs">My Applications</h4>
-              <p className="text-[11px] text-slate-500">View logged submissions</p>
+              <h4 className="font-extrabold text-slate-900 text-xs">{t.myApplications}</h4>
+              <p className="text-[11px] text-slate-500">{lang === 'ta' ? 'விண்ணப்பங்களை பார்க்க' : 'View logged submissions'}</p>
             </div>
           </Link>
 
@@ -347,8 +349,8 @@ export default function Profile() {
               <Search className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="font-extrabold text-slate-900 text-xs">Track Status</h4>
-              <p className="text-[11px] text-slate-500">Check desk verification</p>
+              <h4 className="font-extrabold text-slate-900 text-xs">{t.trackAppAction}</h4>
+              <p className="text-[11px] text-slate-500">{lang === 'ta' ? 'ஆய்வு நிலையை அறிய' : 'Check desk verification'}</p>
             </div>
           </Link>
 
@@ -360,8 +362,8 @@ export default function Profile() {
               <Bell className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="font-extrabold text-slate-900 text-xs">Notification Alerts</h4>
-              <p className="text-[11px] text-slate-500">Manage SMS & Email alerts</p>
+              <h4 className="font-extrabold text-slate-900 text-xs">{t.notificationsTitle}</h4>
+              <p className="text-[11px] text-slate-500">{lang === 'ta' ? 'SMS & மின்னஞ்சல் அமைப்புகள்' : 'Manage SMS & Email alerts'}</p>
             </div>
           </Link>
         </div>
@@ -370,9 +372,9 @@ export default function Profile() {
         <div className="bg-amber-50/90 p-4 sm:p-5 rounded-2xl border border-amber-200/90 flex items-start space-x-3 text-xs text-amber-950">
           <ShieldCheck className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
           <div className="space-y-1">
-            <h4 className="font-extrabold text-amber-900">Keep Your Profile Information Current</h4>
+            <h4 className="font-extrabold text-amber-900">{lang === 'ta' ? 'சுயவிவரத் தகவலைப் புதுப்பித்த நிலையில் வைத்திருங்கள்' : 'Keep Your Profile Information Current'}</h4>
             <p className="text-slate-700 leading-relaxed">
-              Ensure your mobile number, email address, and residential details are accurate so officers can reach you without delay during desk verification.
+              {lang === 'ta' ? 'உங்கள் மொபைல் எண், மின்னஞ்சல் முகவரி மற்றும் குடியிருப்பு விவரங்கள் துல்லியமாக இருப்பதை உறுதி செய்யவும்.' : 'Ensure your mobile number, email address, and residential details are accurate so officers can reach you without delay during desk verification.'}
             </p>
           </div>
         </div>

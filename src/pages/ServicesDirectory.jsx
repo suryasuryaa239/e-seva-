@@ -5,6 +5,8 @@ import {
 } from 'lucide-react';
 import Breadcrumbs from '../components/Breadcrumbs';
 import { useLanguage } from '../context/LanguageContext';
+import { getLocalizedService } from '../data/servicesCatalogData';
+
 const CATEGORY_TA_NAMES = {
   'aadhaar-services': 'ஆதார் சேவைகள்',
   'Aadhaar Services': 'ஆதார் சேவைகள்',
@@ -81,6 +83,13 @@ export default function ServicesDirectory() {
       (srv.eligibility && srv.eligibility.toLowerCase().includes(q));
 
     return matchesCategory && matchesSearch;
+  });
+
+  const sortedServices = [...filteredServices].sort((a, b) => {
+    if (sortBy === 'price_low_high') return (a.fee || 0) - (b.fee || 0);
+    if (sortBy === 'price_high_low') return (b.fee || 0) - (a.fee || 0);
+    if (sortBy === 'newest') return (b.id || 0) - (a.id || 0);
+    return 0;
   });
 
   const getCategoryIcon = (slug = '') => {

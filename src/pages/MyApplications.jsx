@@ -66,7 +66,7 @@ export default function MyApplications() {
       <div className="max-w-7xl mx-auto space-y-6">
 
         {/* Breadcrumb */}
-        <Breadcrumbs items={[{ label: 'My Applications Portfolio' }]} />
+        <Breadcrumbs items={[{ label: lang === 'ta' ? 'எனது விண்ணப்பங்கள்' : 'My Applications Portfolio' }]} />
 
         {/* Top Header Card */}
         <div className="bg-[#0b192c] rounded-3xl p-6 sm:p-8 text-white shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6 border border-slate-800 relative overflow-hidden">
@@ -74,26 +74,26 @@ export default function MyApplications() {
 
           <div className="space-y-2 relative z-10">
             <span className="inline-block text-[10px] sm:text-xs font-black text-orange-400 uppercase tracking-widest bg-slate-800/80 border border-slate-700 px-3 py-1 rounded-full">
-              MY APPLICATION PORTFOLIO
+              {lang === 'ta' ? 'எனது விண்ணப்பத் தொகுப்பு' : 'MY APPLICATION PORTFOLIO'}
             </span>
 
             <h1 className="text-2xl sm:text-3xl font-black flex items-center space-x-3 tracking-tight text-white">
               <FolderOpen className="w-7 h-7 text-orange-400" />
-              <span>User Application Dashboard</span>
+              <span>{t.myApplications}</span>
             </h1>
 
             <p className="text-slate-300 text-xs sm:text-sm max-w-xl leading-relaxed">
-              Manage all your E-Seva service requests, draft submissions, real-time application status, and verified receipt records.
+              {lang === 'ta' ? 'உங்கள் மின்னணு சேவை விண்ணப்பங்கள், வரைவுச் சமர்ப்பிப்புகள், நிகழ்நேர நிலைகள் மற்றும் சான்றளிக்கப்பட்ட ரசீதுகளை நிர்வகிக்கவும்.' : 'Manage all your E-Seva service requests, draft submissions, real-time application status, and verified receipt records.'}
             </p>
           </div>
 
           <div className="flex items-center space-x-3 relative z-10 w-full sm:w-auto">
             <button
               onClick={fetchMyApplications}
-              className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white font-bold text-xs rounded-xl border border-slate-700 flex items-center justify-center space-x-2 transition-all shadow-sm flex-1 sm:flex-none"
+              className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white font-bold text-xs rounded-xl border border-slate-700 flex items-center justify-center space-x-2 transition-all shadow-sm flex-1 sm:flex-none cursor-pointer"
             >
               <RefreshCw className={`w-4 h-4 text-orange-400 ${loading ? 'animate-spin' : ''}`} />
-              <span>Refresh</span>
+              <span>{lang === 'ta' ? 'புதுப்பி' : 'Refresh'}</span>
             </button>
 
             <Link
@@ -101,7 +101,7 @@ export default function MyApplications() {
               className="px-5 py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-black text-xs rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center space-x-1.5 flex-1 sm:flex-none"
             >
               <Plus className="w-4 h-4 text-white" />
-              <span>New Service Request</span>
+              <span>{t.applyNewService}</span>
             </Link>
           </div>
         </div>
@@ -113,7 +113,7 @@ export default function MyApplications() {
             <Search className="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
-              placeholder="Search by Application ID or Service Name..."
+              placeholder={t.searchApplicationsPlaceholder}
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs font-semibold text-slate-800 focus:ring-2 focus:ring-[#0b192c] focus:bg-white outline-none transition-all"
@@ -122,19 +122,19 @@ export default function MyApplications() {
 
           <div className="flex items-center space-x-2 w-full sm:w-auto">
             <Filter className="w-4 h-4 text-orange-500 flex-shrink-0" />
-            <label className="text-xs font-extrabold text-slate-700 whitespace-nowrap uppercase tracking-wider">Status:</label>
+            <label className="text-xs font-extrabold text-slate-700 whitespace-nowrap uppercase tracking-wider">{t.filterLabel}:</label>
             <select
               value={statusFilter}
               onChange={e => setStatusFilter(e.target.value)}
               className="bg-slate-50 border border-slate-300 text-slate-800 text-xs font-bold rounded-xl p-3 focus:ring-2 focus:ring-[#0b192c] focus:outline-none flex-1 sm:flex-none cursor-pointer"
             >
-              <option value="All">All Statuses</option>
-              <option value="DRAFT">Drafts</option>
-              <option value="SUBMITTED">Submitted</option>
-              <option value="PROCESSING">Processing</option>
-              <option value="APPROVED">Approved</option>
-              <option value="COMPLETED">Completed</option>
-              <option value="REJECTED">Rejected</option>
+              <option value="All">{t.allFilter}</option>
+              <option value="DRAFT">{lang === 'ta' ? 'வரைவுகள்' : 'Drafts'}</option>
+              <option value="SUBMITTED">{t.pendingCard}</option>
+              <option value="PROCESSING">{t.processingCard}</option>
+              <option value="APPROVED">{t.approvedCard}</option>
+              <option value="COMPLETED">{t.completedCard}</option>
+              <option value="REJECTED">{t.rejectedCard}</option>
             </select>
           </div>
 

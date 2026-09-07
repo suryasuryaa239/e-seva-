@@ -2,10 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Bell, CheckCheck, ExternalLink, ShieldAlert, Award, FileText, CheckCircle2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function NotificationBell() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { lang, t } = useLanguage();
 
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -81,8 +83,8 @@ export default function NotificationBell() {
       {/* Bell Trigger Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 text-slate-300 hover:text-white rounded-xl hover:bg-slate-800/80 transition-colors focus:outline-none"
-        title="Notifications Cockpit"
+        className="relative p-2 text-slate-300 hover:text-white rounded-xl hover:bg-slate-800/80 transition-colors focus:outline-none cursor-pointer"
+        title={t.notificationsTitle || 'Notifications Cockpit'}
       >
         <Bell className="w-5 h-5" />
         {unreadCount > 0 && (
@@ -100,19 +102,19 @@ export default function NotificationBell() {
           <div className="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-950/80">
             <div className="flex items-center gap-2">
               <Bell className="w-4 h-4 text-amber-400" />
-              <h4 className="font-bold text-xs text-white uppercase tracking-wider">Notifications Cockpit</h4>
+              <h4 className="font-bold text-xs text-white uppercase tracking-wider">{t.notificationsTitle || 'Notifications Cockpit'}</h4>
               {unreadCount > 0 && (
                 <span className="bg-amber-500/20 text-amber-400 border border-amber-500/40 text-[10px] font-bold px-2 py-0.5 rounded-full">
-                  {unreadCount} New
+                  {unreadCount} {lang === 'ta' ? 'புதியவை' : 'New'}
                 </span>
               )}
             </div>
             {unreadCount > 0 && (
               <button
                 onClick={markAllAsRead}
-                className="text-[11px] font-semibold text-slate-400 hover:text-amber-400 flex items-center gap-1 transition-colors"
+                className="text-[11px] font-semibold text-slate-400 hover:text-amber-400 flex items-center gap-1 transition-colors cursor-pointer"
               >
-                <CheckCheck className="w-3.5 h-3.5" /> Mark all read
+                <CheckCheck className="w-3.5 h-3.5" /> {t.markAllAsRead}
               </button>
             )}
           </div>
@@ -157,7 +159,7 @@ export default function NotificationBell() {
 
                     <div className="pl-6 pt-1 flex justify-between items-center text-[10px]">
                       <span className="text-amber-400 font-semibold flex items-center gap-1 hover:underline">
-                        View Details <ExternalLink className="w-3 h-3" />
+                        {t.viewDetails} <ExternalLink className="w-3 h-3" />
                       </span>
                       {isUnread && (
                         <span className="w-2 h-2 rounded-full bg-amber-500"></span>
@@ -169,7 +171,7 @@ export default function NotificationBell() {
             ) : (
               <div className="p-8 text-center text-slate-500 space-y-2">
                 <Bell className="w-8 h-8 mx-auto opacity-30 text-slate-400" />
-                <p className="text-xs">No notifications yet</p>
+                <p className="text-xs">{t.noNotifications}</p>
               </div>
             )}
           </div>
@@ -177,10 +179,10 @@ export default function NotificationBell() {
           {/* Footer */}
           <div className="p-2.5 bg-slate-950 text-center border-t border-slate-800">
             <button
-              onClick={() => { setIsOpen(false); navigate('/dashboard'); }}
-              className="text-[11px] font-bold text-slate-400 hover:text-white transition-colors"
+              onClick={() => { setIsOpen(false); navigate('/notifications'); }}
+              className="text-[11px] font-bold text-slate-400 hover:text-white transition-colors cursor-pointer"
             >
-              View Full Dashboard Alerts
+              {lang === 'ta' ? 'அனைத்து அறிவிப்புகளையும் பார்க்க' : 'View Full Notifications Center'}
             </button>
           </div>
 

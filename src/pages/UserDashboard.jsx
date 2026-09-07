@@ -337,14 +337,14 @@ export default function UserDashboard() {
                             to={`/apply/${app.service_id}?draftId=${app.id}`}
                             className="w-full block text-center py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs rounded-xl shadow-xs"
                           >
-                            Resume Draft
+                            {lang === 'ta' ? 'வரைவைத் தொடரவும்' : 'Resume Draft'}
                           </Link>
                         ) : (
                           <Link
                             to={`/my-applications/${app.id}`}
                             className="w-full block text-center py-2.5 bg-[#0b192c] hover:bg-orange-600 text-white font-extrabold text-xs rounded-xl shadow-xs"
                           >
-                            View Details
+                            {t.viewDetails}
                           </Link>
                         )}
                       </div>

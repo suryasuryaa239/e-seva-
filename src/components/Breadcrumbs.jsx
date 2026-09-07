@@ -1,13 +1,16 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronRight, Home } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Breadcrumbs({ items }) {
+  const { lang, t } = useLanguage();
+
   return (
     <nav className="flex items-center text-xs text-slate-500 py-3 px-1 flex-wrap gap-1.5 font-medium">
       <Link to="/" className="flex items-center gap-1 hover:text-indigo-600 transition-colors">
         <Home className="w-3.5 h-3.5" />
-        <span>Home</span>
+        <span>{t.home || (lang === 'ta' ? 'முகப்பு' : 'Home')}</span>
       </Link>
 
       {items.map((item, idx) => (
