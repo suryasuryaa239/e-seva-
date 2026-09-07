@@ -26,18 +26,7 @@ export default function TopBar() {
         </div>
 
         <div className="flex items-center gap-2">
-          {/* Language Switcher Button */}
-          <button
-            onClick={toggleLanguage}
-            className="flex items-center gap-1.5 bg-orange-600 hover:bg-orange-500 text-white px-2.5 py-0.5 rounded-full font-bold text-[11px] transition-all shadow-sm cursor-pointer border border-orange-400"
-            title="Switch Language / மொழியை மாற்றவும்"
-          >
-            <Globe className="w-3 h-3 text-amber-200 animate-spin-slow" />
-            <span>{lang === 'en' ? 'English (EN)' : 'தமிழ் (TA)'}</span>
-            <span className="bg-slate-950/40 text-[9px] px-1.5 py-0.2 rounded-full font-mono text-orange-200">
-              {lang === 'en' ? 'தமிழ்' : 'EN'}
-            </span>
-          </button>
+
 
           <span className="hidden sm:flex items-center gap-1 text-emerald-400 bg-emerald-950/60 px-1.5 py-0.5 rounded border border-emerald-800/60 text-[10px] sm:text-xs font-medium">
             <ShieldCheck className="w-3 h-3" />
