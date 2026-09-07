@@ -71,11 +71,9 @@ export default function Categories() {
                 className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group"
               >
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-slate-50 to-orange-50/30 border border-slate-200 p-2 flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
-                      <img src={imgPath} alt={cat.name} className="w-full h-full object-contain drop-shadow-lg" />
-                    </div>
-                    <span className="text-xs font-bold bg-orange-50 text-orange-700 px-3 py-1 rounded-full border border-orange-100">
+                  <div className="relative w-full h-36 bg-gradient-to-br from-amber-500/10 via-orange-500/5 to-slate-100 rounded-2xl p-3 flex items-center justify-center border border-slate-200/90 overflow-hidden shadow-inner group-hover:border-orange-400/80 transition-all">
+                    <img src={imgPath} alt={cat.name} className="w-full h-full object-contain drop-shadow-2xl group-hover:scale-105 transition-transform duration-300" />
+                    <span className="absolute top-3 right-3 text-xs font-bold bg-white/90 backdrop-blur-xs text-orange-700 px-3 py-1 rounded-full border border-orange-100 shadow-xs">
                       {cat.services_count || 0} Sub-Services
                     </span>
                   </div>

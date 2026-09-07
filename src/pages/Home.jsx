@@ -235,31 +235,29 @@ export default function Home() {
               {/* Subtle top accent background glow */}
               <div className="absolute top-0 right-0 w-24 h-24 bg-orange-500/5 rounded-full blur-xl pointer-events-none group-hover:bg-orange-500/10 transition-all"></div>
 
-              <div className="space-y-3 relative z-10">
-                {/* 3D IMAGE & BADGE HEADER */}
-                <div className="flex items-center justify-between">
-                  <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-gradient-to-br from-slate-50 to-orange-50/40 border border-slate-200/90 p-2.5 flex items-center justify-center shadow-sm group-hover:scale-105 group-hover:border-orange-400 transition-all duration-300">
-                    <img
-                      src={cat.image}
-                      alt={lang === 'ta' ? cat.name_ta : cat.name}
-                      className="w-full h-full object-contain drop-shadow-xl"
-                      onError={(e) => {
-                        e.target.style.display = 'none';
-                        e.target.nextSibling.style.display = 'flex';
-                      }}
-                    />
-                    <div className="hidden w-full h-full items-center justify-center">
-                      {cat.icon}
-                    </div>
+              <div className="space-y-4 relative z-10">
+                {/* FULL-WIDTH TOP IMAGE BANNER CONTAINER */}
+                <div className="relative w-full h-36 sm:h-40 bg-gradient-to-br from-amber-500/10 via-orange-500/5 to-slate-100 rounded-2xl p-3 flex items-center justify-center border border-slate-200/90 overflow-hidden shadow-inner group-hover:border-orange-400/80 transition-all">
+                  <img
+                    src={cat.image}
+                    alt={lang === 'ta' ? cat.name_ta : cat.name}
+                    className="w-full h-full object-contain drop-shadow-2xl group-hover:scale-105 transition-transform duration-300"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      e.target.nextSibling.style.display = 'flex';
+                    }}
+                  />
+                  <div className="hidden w-full h-full items-center justify-center">
+                    {cat.icon}
                   </div>
-                  <span className="text-[10px] font-extrabold text-orange-600 bg-orange-50 border border-orange-200/80 px-2.5 py-1 rounded-full uppercase tracking-wider">
+                  <span className="absolute top-3 right-3 text-[10px] font-extrabold text-orange-700 bg-white/90 backdrop-blur-xs border border-orange-200 px-2.5 py-1 rounded-full uppercase tracking-wider shadow-xs">
                     {lang === 'ta' ? 'ஈ-சேவை' : 'E-SERVICE'}
                   </span>
                 </div>
 
                 {/* CATEGORY NAME & DESCRIPTION */}
                 <div>
-                  <h3 className="font-heading font-extrabold text-base text-slate-900 group-hover:text-orange-600 transition-colors">
+                  <h3 className="font-heading font-extrabold text-base sm:text-lg text-slate-900 group-hover:text-orange-600 transition-colors">
                     {lang === 'ta' ? cat.name_ta : cat.name}
                   </h3>
                   <p className="text-xs text-slate-500 mt-1 font-normal leading-relaxed">
