@@ -7,7 +7,7 @@ import {
   Menu, X, Award, ChevronRight, TrendingUp, ShieldCheck, Activity,
   Filter, RotateCcw, Inbox, UserCheck, FileCheck, History, MessageSquare,
   User, Phone, Mail as MailIcon, Calendar, CheckCircle, Shield,
-  Settings, Key, Lock, EyeOff, Save, CheckCheck, Bell
+  Settings, Key, Lock, EyeOff, Save, CheckCheck, Bell, CreditCard, Paperclip
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -569,6 +569,8 @@ export default function AdminDashboard() {
                 {activeTab === 'enquiries' && 'Contact Enquiries & Support'}
                 {activeTab === 'payments' && 'Payments & Revenue Audit'}
                 {activeTab === 'careers' && 'Careers & Applications'}
+                {activeTab === 'notifications' && 'Notifications & Alerts Stream'}
+                {activeTab === 'settings' && 'Profile & Settings Workspace'}
               </h2>
             </div>
 
