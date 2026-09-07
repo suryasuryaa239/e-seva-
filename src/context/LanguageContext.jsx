@@ -510,6 +510,11 @@ export function LanguageProvider({ children }) {
     return localStorage.getItem('eseva_lang') || 'en';
   });
 
+  useEffect(() => {
+    document.documentElement.lang = lang;
+    document.body.setAttribute('data-lang', lang);
+  }, [lang]);
+
   const toggleLanguage = () => {
     const nextLang = lang === 'en' ? 'ta' : 'en';
     setLang(nextLang);

@@ -9,7 +9,7 @@ html, body, #root {
 
 @layer base {
   body {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
     color: #0f172a;
     background-color: #f8fafc;
   }
@@ -17,6 +17,30 @@ html, body, #root {
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Outfit', sans-serif;
   }
+}
+
+/* ========================================================================= */
+/* TAMIL TYPOGRAPHY SYSTEM (STEP 3) */
+/* ========================================================================= */
+html[lang="ta"],
+body[data-lang="ta"],
+[data-lang="ta"] {
+  font-family: 'Noto Sans Tamil', 'Inter', system-ui, sans-serif !important;
+}
+
+html[lang="ta"] h1, html[lang="ta"] h2, html[lang="ta"] h3, html[lang="ta"] h4, html[lang="ta"] h5, html[lang="ta"] h6,
+body[data-lang="ta"] h1, body[data-lang="ta"] h2, body[data-lang="ta"] h3, body[data-lang="ta"] h4, body[data-lang="ta"] h5, body[data-lang="ta"] h6,
+[data-lang="ta"] h1, [data-lang="ta"] h2, [data-lang="ta"] h3, [data-lang="ta"] h4, [data-lang="ta"] h5, [data-lang="ta"] h6 {
+  font-family: 'Noto Sans Tamil', 'Outfit', sans-serif !important;
+  letter-spacing: normal !important;
+  line-height: 1.35 !important;
+}
+
+/* Ensure dynamic badge pill & action button auto-fitting for Tamil */
+[data-lang="ta"] .badge-pill,
+html[lang="ta"] .badge-pill {
+  white-space: nowrap;
+  letter-spacing: normal;
 }
 
 /* Glassmorphism Card Utility */
