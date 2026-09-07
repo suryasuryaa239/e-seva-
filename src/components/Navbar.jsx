@@ -6,12 +6,14 @@ import {
   Car, Briefcase, Zap, Grid, ChevronDown, Bell, HelpCircle, FileCheck, Layers, ExternalLink
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 import NotificationBell from './NotificationBell';
 
 export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, admin, logoutUser } = useAuth();
+  const { lang, toggleLanguage, t } = useLanguage();
   
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [servicesMenuOpen, setServicesMenuOpen] = useState(false);
@@ -112,7 +114,7 @@ export default function Navbar() {
                 </span>
               </div>
               <p className="text-[10px] sm:text-[11px] text-slate-500 font-medium tracking-wide">
-                Digital Services Made Easy
+                {t.tagline}
               </p>
             </div>
           </Link>
@@ -131,7 +133,7 @@ export default function Navbar() {
                   : 'hover:text-slate-900 hover:bg-slate-50'
               }`}
             >
-              HOME
+              {t.home}
             </Link>
 
             {/* 2. E-SERVICES ▼ DROPDOWN / MEGA-MENU */}
@@ -147,7 +149,7 @@ export default function Navbar() {
                     : 'hover:text-slate-900 hover:bg-slate-50'
                 }`}
               >
-                <span>E-SERVICES</span>
+                <span>{t.eServices}</span>
                 <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${servicesMenuOpen ? 'rotate-180 text-orange-500' : 'text-slate-400'}`} />
               </button>
 
@@ -160,7 +162,7 @@ export default function Navbar() {
                         <Layers className="w-4 h-4" />
                       </div>
                       <div>
-                        <span className="font-heading font-extrabold text-sm text-slate-900">E-Service Categories Catalog</span>
+                        <span className="font-heading font-extrabold text-sm text-slate-900">{t.allCategories}</span>
                         <p className="text-[11px] text-slate-500 font-normal">Select a category to explore & apply for official digital services</p>
                       </div>
                     </div>
@@ -169,7 +171,7 @@ export default function Navbar() {
                       onClick={() => setServicesMenuOpen(false)}
                       className="text-xs font-bold text-slate-900 hover:text-orange-600 flex items-center gap-1 bg-slate-50 hover:bg-orange-50 px-3 py-1.5 rounded-lg border border-slate-200 transition-colors"
                     >
-                      View All Directory →
+                      {t.viewAllServices}
                     </Link>
                   </div>
 
@@ -227,7 +229,7 @@ export default function Navbar() {
                   moreMenuOpen ? 'text-slate-900 bg-slate-100 font-extrabold' : 'hover:text-slate-900 hover:bg-slate-50'
                 }`}
               >
-                <span>MORE</span>
+                <span>{t.more}</span>
                 <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${moreMenuOpen ? 'rotate-180 text-orange-500' : 'text-slate-400'}`} />
               </button>
 
@@ -275,7 +277,7 @@ export default function Navbar() {
                   : 'hover:text-slate-900 hover:bg-slate-50'
               }`}
             >
-              ABOUT
+              {t.about}
             </Link>
 
             {/* 5. CONTACT */}
@@ -287,7 +289,7 @@ export default function Navbar() {
                   : 'hover:text-slate-900 hover:bg-slate-50'
               }`}
             >
-              CONTACT
+              {t.contact}
             </Link>
           </nav>
 
@@ -304,7 +306,7 @@ export default function Navbar() {
               }`}
             >
               <FileSearch className="w-3.5 h-3.5 text-slate-600" />
-              <span>CHECK APPLICATION STATUS</span>
+              <span>{t.checkStatus}</span>
             </Link>
 
             {/* SIGN IN & REGISTER / USER PROFILE LOGIC */}

@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
+import { LanguageProvider } from './context/LanguageContext';
 
 // Layout Components
 import TopBar from './components/TopBar';
@@ -161,12 +162,14 @@ function AppContent() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <ToastProvider>
-        <Router>
-          <AppContent />
-        </Router>
-      </ToastProvider>
-    </AuthProvider>
+    <LanguageProvider>
+      <AuthProvider>
+        <ToastProvider>
+          <Router>
+            <AppContent />
+          </Router>
+        </ToastProvider>
+      </AuthProvider>
+    </LanguageProvider>
   );
 }

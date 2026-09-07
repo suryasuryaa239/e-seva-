@@ -3,8 +3,11 @@ import { Link } from 'react-router-dom';
 import {
   MapPin, Phone, Mail, Clock, Facebook, Instagram, Youtube, MessageCircle, ShieldCheck, ArrowRight
 } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Footer() {
+  const { lang, t } = useLanguage();
+
   return (
     <footer className="bg-[#0b192c] text-slate-300 pt-16 pb-8 text-xs border-t border-slate-800 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
@@ -20,16 +23,16 @@ export default function Footer() {
               </div>
               <div>
                 <span className="font-heading font-extrabold text-xl text-white tracking-tight block">
-                  E-SEVA
+                  {t.portalName}
                 </span>
                 <span className="text-[10px] text-orange-400 font-semibold uppercase tracking-wider block">
-                  Digital Services Portal
+                  {t.tagline}
                 </span>
               </div>
             </div>
 
             <p className="text-slate-400 text-xs font-normal leading-relaxed">
-              A convenient platform for accessing digital service assistance from anywhere, anytime.
+              {t.footerDesc}
             </p>
 
             <div className="pt-1 space-y-2">

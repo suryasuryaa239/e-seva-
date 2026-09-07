@@ -1,0 +1,213 @@
+import React, { createContext, useContext, useState, useEffect } from 'react';
+
+const LanguageContext = createContext();
+
+export const translations = {
+  en: {
+    // Brand & Header
+    portalName: "E-SEVA PORTAL",
+    tagline: "Digital Services Made Easy",
+    govTag: "GOVERNMENT OF TAMIL NADU E-SEVA SERVICES",
+    
+    // Nav Items
+    home: "HOME",
+    eServices: "E-SERVICES",
+    more: "MORE",
+    about: "ABOUT",
+    contact: "CONTACT",
+    checkStatus: "CHECK APPLICATION STATUS",
+    signIn: "SIGN IN",
+    register: "REGISTER",
+    myDashboard: "My Dashboard",
+    myApplications: "My Applications",
+    paymentHistory: "Payment History",
+    notifications: "Notifications",
+    profileSettings: "Profile Settings",
+    logout: "Logout",
+
+    // Hero & Search
+    heroTitle: "One Portal for All Digital Government Services",
+    heroSubtitle: "Apply for Community, Income, Aadhaar, Patta, PAN, Voter ID and Utility services online with instant verification and SMS tracking.",
+    searchPlaceholder: "Search services (Aadhaar, PAN, Patta, Income Certificate)...",
+    searchBtn: "Search Services",
+    trackApp: "Track Application",
+    
+    // Quick Stats / Badges
+    activeServicesCount: "100+ Active Services",
+    digitalProcessing: "100% Paperless & Secure",
+    fastDelivery: "2-3 Days Fast Processing",
+
+    // Categories
+    allCategories: "All Service Categories",
+    aadhaarServices: "Aadhaar Services",
+    aadhaarDesc: "Enrollment, Address, Mobile & Photo Updates",
+    panServices: "PAN Card Services",
+    panDesc: "New PAN, Corrections, Reprint & Aadhaar Link",
+    voterServices: "Voter ID Services",
+    voterDesc: "New Registration, Address Change & EPIC Download",
+    certificates: "Certificates",
+    certificatesDesc: "Income, Community, Native, Birth & Death",
+    landServices: "Land & Patta Services",
+    landDesc: "Patta Transfer, Chitta, FMB Sketch & EC",
+    passportServices: "Passport Services",
+    passportDesc: "Fresh Passport, Re-issue & Tatkaal",
+    drivingLicence: "Driving Licence",
+    drivingDesc: "Learner License, DL Renewal & Address Updates",
+    vehicleServices: "Vehicle Services",
+    vehicleDesc: "RC Transfer, NOC, Fitness & Tax Payment",
+    businessServices: "Business Services",
+    businessDesc: "MSME/Udyam, GST & FSSAI Licenses",
+    utilityServices: "Utility Services",
+    utilityDesc: "Electricity, Water & Property Tax Payments",
+    otherServices: "Other Services",
+    otherDesc: "Ration Card, Pension & Employment Reg.",
+
+    // Section Titles
+    popularServices: "Popular E-Seva Digital Services",
+    viewAllServices: "View All Directory →",
+    howItWorks: "How E-Seva Portal Works",
+    step1Title: "Select Service",
+    step1Desc: "Choose from 100+ government and digital services",
+    step2Title: "Fill & Upload",
+    step2Desc: "Enter details and attach required proof documents",
+    step3Title: "Pay & Track",
+    step3Desc: "Pay official fee online and get instant SMS status updates",
+
+    // Actions & Buttons
+    applyNow: "Apply Now",
+    viewDetails: "View Details",
+    backToHome: "Back to Home",
+    submitApplication: "Submit Application",
+    downloadReceipt: "Download Receipt",
+    contactSupport: "Contact Helpline Support",
+
+    // Footer
+    footerDesc: "Official Digital E-Seva Services Gateway empowering citizens with transparent, fast, and accessible digital governance.",
+    quickLinks: "Quick Links",
+    helpDesk: "Helpline & Support",
+    tollFree: "Toll Free Helpline: 1800-425-1337",
+    workingHours: "Mon - Sat: 9:00 AM - 6:00 PM",
+    copyright: "© 2026 E-Seva Portal. Government of Tamil Nadu Digital Governance Project."
+  },
+  ta: {
+    // Brand & Header
+    portalName: "இ-சேவை போர்ட்டல்",
+    tagline: "மின்னணு சேவைகள் எளிதாக",
+    govTag: "தமிழ்நாடு அரசு மின்னணு இ-சேவை மையம்",
+    
+    // Nav Items
+    home: "முகப்பு",
+    eServices: "மின்னணு சேவைகள்",
+    more: "மேலும்",
+    about: "எங்களைப் பற்றி",
+    contact: "தொடர்பு கொள்ள",
+    checkStatus: "விண்ணப்ப நிலையை அறிய",
+    signIn: "உள்நுழைவு",
+    register: "பதிவு செய்ய",
+    myDashboard: "என் டாஷ்போர்டு",
+    myApplications: "என் விண்ணப்பங்கள்",
+    paymentHistory: "கட்டண வரலாறு",
+    notifications: "அறிவிப்புகள்",
+    profileSettings: "சுயவிவர அமைப்புகள்",
+    logout: "வெளியேறு",
+
+    // Hero & Search
+    heroTitle: "அனைத்து அரசு சேவைகளுக்கும் ஒரே இணையதளம்",
+    heroSubtitle: "வருமானம், சாதி, ஆதார், பட்டா, பான், வாக்காளர் அட்டை மற்றும் பிற மின் சேவைகளுக்கு ஆன்லைனில் விண்ணப்பித்து உடனடி நிலை அறியலாம்.",
+    searchPlaceholder: "சேவைகளைத் தேடவும் (ஆதார், பான், பட்டா, வருமானச் சான்றிதழ்)...",
+    searchBtn: "சேவையைத் தேடு",
+    trackApp: "விண்ணப்பத்தை ஆராய்",
+
+    // Quick Stats / Badges
+    activeServicesCount: "100+ நேரலை சேவைகள்",
+    digitalProcessing: "100% பாதுகாப்பான மின்னணு முறை",
+    fastDelivery: "2-3 நாட்களில் விரைவு சேவை",
+
+    // Categories
+    allCategories: "அனைத்து சேவைப் பிரிவுகள்",
+    aadhaarServices: "ஆதார் சேவைகள்",
+    aadhaarDesc: "புதிய ஆதார், முகவரி, போன் எண் மாற்றம்",
+    panServices: "பான் கார்டு சேவைகள்",
+    panDesc: "புதிய பான் கார்டு, திருத்தங்கள், ஆதார் இணைப்பு",
+    voterServices: "வாக்காளர் அட்டை",
+    voterDesc: "புதிய வாக்காளர் பதிவு, முகவரி மாற்றம்",
+    certificates: "அரசு சான்றிதழ்கள்",
+    certificatesDesc: "வருமானம், சாதி, இருப்பிடம், பிறப்பு/இறப்பு",
+    landServices: "நிலம் & பட்டா சிட்டா",
+    landDesc: "பட்டா மாறுதல், சிட்டா நகல், வில்லங்கச் சான்று",
+    passportServices: "பாஸ்போர்ட் சேவைகள்",
+    passportDesc: "புதிய பாஸ்போர்ட், புதுப்பித்தல், தட்கல்",
+    drivingLicence: "ஓட்டுநர் உரிமம் (DL)",
+    drivingDesc: "எல்.எல்.ஆர் (LLR), புதுப்பித்தல், முகவரி மாற்றம்",
+    vehicleServices: "வாகன சேவைகள்",
+    vehicleDesc: "ஆர்.சி (RC) பெயர் மாற்றம், என்.ஓ.சி, வரி செலுத்துதல்",
+    businessServices: "வணிக சேவைகள்",
+    businessDesc: "எம்.எஸ்.எம்.இ (MSME), ஜி.எஸ்.டி, உணவு உரிமம் (FSSAI)",
+    utilityServices: "பயன்பாட்டுக் கட்டணங்கள்",
+    utilityDesc: "மின்சாரக் கட்டணம், குடிநீர் & சொத்து வரி",
+    otherServices: "இதர சேவைகள்",
+    otherDesc: "ரேஷன் கார்டு, ஓய்வூதியம், வேலைவாய்ப்புப் பதிவு",
+
+    // Section Titles
+    popularServices: "முக்கியமான இ-சேவைகள்",
+    viewAllServices: "அனைத்து சேவைகளையும் பார்க்க →",
+    howItWorks: "இ-சேவை போர்ட்டல் எவ்வாறு செயல்படுகிறது?",
+    step1Title: "சேவையைத் தேர்ந்தெடுக்கவும்",
+    step1Desc: "100-க்கும் மேற்பட்ட அரசு சேவைகளில் தேவையானதைத் தேர்வு செய்யவும்",
+    step2Title: "விவரங்களை நிரப்பி பதிவேற்றவும்",
+    step2Desc: "விவரங்களை பூர்த்தி செய்து தேவையான சான்றுகளை பதிவேற்றவும்",
+    step3Title: "கட்டணம் செலுத்தி கண்காணிக்கவும்",
+    step3Desc: "ஆன்லைன் மூலம் கட்டணம் செலுத்தி குறுஞ்செய்தி மூலம் நிலை அறியலாம்",
+
+    // Actions & Buttons
+    applyNow: "விண்ணப்பிக்க",
+    viewDetails: "விவரங்களை பார்க்க",
+    backToHome: "முகப்பிற்குச் செல்ல",
+    submitApplication: "விண்ணப்பத்தைச் சமர்ப்பி",
+    downloadReceipt: "ரசீது பதிவிறக்கம்",
+    contactSupport: "உதவி மையத்தைத் தொடர்புகொள்ள",
+
+    // Footer
+    footerDesc: "பொதுமக்களுக்கு வேகமான, வெளிப்படையான டிஜிட்டல் அரசு சேவைகளை வழங்கும் அதிகாரப்பூர்வ இ-சேவை போர்ட்டல்.",
+    quickLinks: "முக்கிய இணைப்புகள்",
+    helpDesk: "உதவி மையம் & ஆதரவு",
+    tollFree: "கட்டணமில்லா உதவி எண்: 1800-425-1337",
+    workingHours: "திங்கள் - சனி: காலை 9:00 - மாலை 6:00",
+    copyright: "© 2026 இ-சேவை போர்ட்டல். தமிழ்நாடு அரசு டிஜிட்டல் ஆளுகைத் திட்டம்."
+  }
+};
+
+export function LanguageProvider({ children }) {
+  const [lang, setLang] = useState(() => {
+    return localStorage.getItem('eseva_lang') || 'en';
+  });
+
+  const toggleLanguage = () => {
+    const nextLang = lang === 'en' ? 'ta' : 'en';
+    setLang(nextLang);
+    localStorage.setItem('eseva_lang', nextLang);
+  };
+
+  const setLanguage = (newLang) => {
+    if (newLang === 'en' || newLang === 'ta') {
+      setLang(newLang);
+      localStorage.setItem('eseva_lang', newLang);
+    }
+  };
+
+  const t = translations[lang] || translations.en;
+
+  return (
+    <LanguageContext.Provider value={{ lang, toggleLanguage, setLanguage, t }}>
+      {children}
+    </LanguageContext.Provider>
+  );
+}
+
+export function useLanguage() {
+  const context = useContext(LanguageContext);
+  if (!context) {
+    throw new Error('useLanguage must be used within a LanguageProvider');
+  }
+  return context;
+}

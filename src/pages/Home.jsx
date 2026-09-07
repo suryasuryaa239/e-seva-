@@ -7,11 +7,13 @@ import {
   Mail, Send, AlertCircle, Sparkles, Building2, ExternalLink, ShieldAlert, Award, Lock, Landmark
 } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Home() {
   const navigate = useNavigate();
   const toast = useToast();
   const addToast = toast?.addToast || (() => {});
+  const { lang, t } = useLanguage();
 
   const [categories, setCategories] = useState([]);
   const [popularServices, setPopularServices] = useState([]);
@@ -138,18 +140,18 @@ export default function Home() {
               {/* SMALL UPPERCASE LABEL */}
               <div>
                 <span className="inline-block text-xs font-extrabold text-orange-600 uppercase tracking-widest bg-orange-50 border border-orange-200/80 px-3.5 py-1 rounded-full">
-                  DIGITAL SERVICES
+                  {t.portalName}
                 </span>
               </div>
 
               {/* HEADING */}
               <h1 className="font-heading font-extrabold text-4xl sm:text-5xl lg:text-6xl tracking-tight leading-tight text-slate-900">
-                Your Trusted <span className="text-orange-500 font-extrabold">Digital Service Partner</span>
+                {t.heroTitle}
               </h1>
 
               {/* SUPPORTING TEXT */}
               <p className="text-slate-600 text-base sm:text-lg max-w-xl font-normal leading-relaxed">
-                Conveniently access and apply for a wide range of official digital services through our secure single-window portal.
+                {t.heroSubtitle}
               </p>
 
               {/* ACTION BUTTONS */}
@@ -159,7 +161,7 @@ export default function Home() {
                   to="/services"
                   className="w-full sm:w-auto bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold text-xs sm:text-sm px-8 py-3.5 rounded-xl shadow-md hover:shadow-lg transition-all text-center flex items-center justify-center gap-2 group"
                 >
-                  <span>Explore Services</span>
+                  <span>{t.viewAllServices.replace(' →', '')}</span>
                   <ArrowRight className="w-4 h-4 text-orange-400 group-hover:translate-x-1 transition-transform" />
                 </Link>
 
@@ -168,7 +170,7 @@ export default function Home() {
                   to="/track"
                   className="w-full sm:w-auto bg-white hover:bg-slate-50 text-slate-800 font-bold text-xs sm:text-sm px-8 py-3.5 rounded-xl border border-slate-300 hover:border-slate-800 shadow-xs transition-all text-center"
                 >
-                  Track Application
+                  {t.trackApp}
                 </Link>
               </div>
 
