@@ -4,9 +4,12 @@ import {
   Vote, FileText, UserCheck, ShieldCheck, MapPin, Smartphone, 
   Download, Search, CheckCircle2, RefreshCw, AlertCircle, ArrowRight, HelpCircle, UserPlus, FileSearch
 } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
+import { getLocalizedService } from '../data/servicesCatalogData';
 
 export default function VoterServicesCatalog() {
   const navigate = useNavigate();
+  const { lang, t } = useLanguage();
   const [searchTerm, setSearchTerm] = useState('');
 
   const voterServices = [
@@ -89,7 +92,16 @@ export default function VoterServicesCatalog() {
     }
   ];
 
-  const filtered = voterServices.filter(s =>
+  const localizedVoterServices = voterServices.map(s => {
+    const loc = getLocalizedService({ slug: s.id, name: s.title, description: s.description }, lang);
+    return {
+      ...s,
+      title: loc.name || s.title,
+      description: loc.description || s.description
+    };
+  });
+
+  const filtered = localizedVoterServices.filter(s =>
     s.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     s.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -101,23 +113,23 @@ export default function VoterServicesCatalog() {
         <div className="max-w-7xl mx-auto space-y-4">
           <div className="inline-flex items-center space-x-2 bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-3.5 py-1 rounded-full text-xs font-extrabold">
             <Vote className="w-4 h-4 text-emerald-400" />
-            <span>ELECTION COMMISSION FACILITATION DESK</span>
+            <span>{lang === 'ta' ? 'தேர்தல் ஆணைய பயன்பாட்டு உதவி மையம்' : 'ELECTION COMMISSION FACILITATION DESK'}</span>
           </div>
 
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
               <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-                Voter ID Services & Electoral Facilitation Portal
+                {lang === 'ta' ? 'வாக்காளர் அடையாள அட்டை சேவைகள்' : 'Voter ID Services & Electoral Facilitation Portal'}
               </h1>
               <p className="text-slate-300 text-xs sm:text-sm mt-1 max-w-2xl">
-                Online registration for new EPIC card (Form 6), Address Transfer (Form 8), Aadhaar Linkage (Form 6B), e-EPIC download, and Polling Booth lookup.
+                {lang === 'ta' ? 'புதிய வாக்காளர் பதிவு (படிவம் 6), முகவரி மாற்றம் (படிவம் 8), ஆதார் இணைப்பு மற்றும் e-EPIC பதிவிறக்கம்.' : 'Online registration for new EPIC card (Form 6), Address Transfer (Form 8), Aadhaar Linkage (Form 6B), e-EPIC download, and Polling Booth lookup.'}
               </p>
             </div>
 
             <div className="bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/15 min-w-[240px]">
-              <div className="text-[11px] text-emerald-200 uppercase font-bold tracking-wider">Voter Helpline</div>
+              <div className="text-[11px] text-emerald-200 uppercase font-bold tracking-wider">{lang === 'ta' ? 'வாக்காளர் உதவி எண்' : 'Voter Helpline'}</div>
               <div className="text-xl font-extrabold text-white mt-0.5">1950 (Toll Free)</div>
-              <div className="text-[11px] text-slate-300">Mon - Sat: 10:00 AM to 5:00 PM</div>
+              <div className="text-[11px] text-slate-300">{lang === 'ta' ? 'திங்கள் - சனி: காலை 10:00 - மாலை 5:00' : 'Mon - Sat: 10:00 AM to 5:00 PM'}</div>
             </div>
           </div>
 
@@ -127,7 +139,7 @@ export default function VoterServicesCatalog() {
               <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
               <input
                 type="text"
-                placeholder="Search Voter services (Form 6, Form 8, e-EPIC download, Booth search)..."
+                placeholder={lang === 'ta' ? 'வாக்காளர் சேவைகளைத் தேடுங்கள் (படிவம் 6, படிவம் 8, e-EPIC PDF)...' : 'Search Voter services (Form 6, Form 8, e-EPIC download, Booth search)...'}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-2.5 bg-white text-slate-800 placeholder-slate-400 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm font-medium"
@@ -144,21 +156,21 @@ export default function VoterServicesCatalog() {
         <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex items-start space-x-3 text-xs text-emerald-900 shadow-sm">
           <AlertCircle className="w-4 h-4 text-emerald-700 mt-0.5 flex-shrink-0" />
           <div>
-            <span className="font-bold text-emerald-950">Electoral Notice:</span> Any Indian citizen who completes 18 years of age on or before qualifying dates is eligible to enroll as a voter. Ensure your mobile number is linked to download digital e-EPIC.
+            <span className="font-bold text-emerald-950">{lang === 'ta' ? 'தேர்தல் அறிவிப்பு:' : 'Electoral Notice:'}</span> {lang === 'ta' ? '18 வயது பூர்த்தியடைந்த ஒவ்வொரு இந்தியக் குடிமகனும் வாக்காளராகப் பதிவு செய்யத் தகுதியானவர்.' : 'Any Indian citizen who completes 18 years of age on or before qualifying dates is eligible to enroll as a voter.'}
           </div>
         </div>
 
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-bold text-slate-900">Available Voter Services ({filtered.length})</h2>
-            <p className="text-xs text-slate-500">Select a Voter service to begin online application assistance.</p>
+            <h2 className="text-lg font-bold text-slate-900">{lang === 'ta' ? `கிடைக்கும் வாக்காளர் சேவைகள் (${filtered.length})` : `Available Voter Services (${filtered.length})`}</h2>
+            <p className="text-xs text-slate-500">{lang === 'ta' ? 'விண்ணப்பத்தைத் தொடங்க சேவை கார்டைத் தேர்வு செய்க.' : 'Select a Voter service to begin online application assistance.'}</p>
           </div>
           <Link
             to="/tracker"
             className="text-xs font-bold text-emerald-700 hover:text-emerald-900 hover:underline flex items-center space-x-1"
           >
-            <span>Track Application Status</span>
+            <span>{lang === 'ta' ? 'விண்ணப்ப நிலை அறிய' : 'Track Application Status'}</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
@@ -199,18 +211,18 @@ export default function VoterServicesCatalog() {
 
                   <div className="space-y-2 pt-2 border-t border-slate-100 text-xs">
                     <div className="flex justify-between items-center text-slate-600">
-                      <span>Service Fee:</span>
+                      <span>{lang === 'ta' ? 'சேவை கட்டணம்:' : 'Service Fee:'}</span>
                       <span className="font-bold text-slate-900">{service.fee}</span>
                     </div>
                     <div className="flex justify-between items-center text-slate-600">
-                      <span>Processing Time:</span>
+                      <span>{lang === 'ta' ? 'செயலாக்க காலம்:' : 'Processing Time:'}</span>
                       <span className="font-semibold text-slate-700">{service.sla}</span>
                     </div>
                   </div>
 
                   {/* Documents Section */}
                   <div className="bg-slate-50 p-3 rounded-lg border border-slate-100 space-y-1.5">
-                    <div className="text-[11px] font-bold text-slate-700">Required Documents:</div>
+                    <div className="text-[11px] font-bold text-slate-700">{lang === 'ta' ? 'தேவையான சான்றுகள்:' : 'Required Documents:'}</div>
                     <ul className="space-y-1">
                       {service.docs.map((doc, idx) => (
                         <li key={idx} className="text-[11px] text-slate-600 flex items-center space-x-1.5">
@@ -228,14 +240,14 @@ export default function VoterServicesCatalog() {
                     to={`/service/${service.id}`}
                     className="text-xs font-bold text-slate-700 hover:text-emerald-700 hover:underline"
                   >
-                    View Details
+                    {lang === 'ta' ? 'விவரங்கள்' : 'View Details'}
                   </Link>
 
                   <button
                     onClick={() => navigate(`/apply/${service.id}`)}
                     className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shadow-sm transition-colors flex items-center space-x-1.5"
                   >
-                    <span>Apply Now</span>
+                    <span>{t.applyNow || (lang === 'ta' ? 'விண்ணப்பிக்க' : 'Apply Now')}</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </button>
                 </div>

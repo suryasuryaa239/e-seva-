@@ -3,9 +3,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import { 
   Grid, FileText, CheckCircle2, Search, ArrowRight, UserPlus, UserMinus, RefreshCw, AlertCircle
 } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
+import { getLocalizedService } from '../data/servicesCatalogData';
 
 export default function RationCardServicesCatalog() {
   const navigate = useNavigate();
+  const { lang, t } = useLanguage();
   const [searchTerm, setSearchTerm] = useState('');
 
   const services = [
@@ -49,7 +52,16 @@ export default function RationCardServicesCatalog() {
     }
   ];
 
-  const filtered = services.filter(s =>
+  const localizedServices = services.map(s => {
+    const loc = getLocalizedService({ slug: s.id, name: s.title, description: s.description }, lang);
+    return {
+      ...s,
+      title: loc.name || s.title,
+      description: loc.description || s.description
+    };
+  });
+
+  const filtered = localizedServices.filter(s =>
     s.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     s.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -60,23 +72,23 @@ export default function RationCardServicesCatalog() {
         <div className="max-w-7xl mx-auto space-y-4">
           <div className="inline-flex items-center space-x-2 bg-teal-500/20 text-teal-300 border border-teal-400/30 px-3.5 py-1 rounded-full text-xs font-extrabold">
             <Grid className="w-4 h-4 text-teal-400" />
-            <span>CIVIL SUPPLIES & SMART RATION CARD DESK</span>
+            <span>{lang === 'ta' ? 'உணவுப் பொருள் வழங்கல் & ஸ்மார்ட் ரேஷன் கார்டு' : 'CIVIL SUPPLIES & SMART RATION CARD DESK'}</span>
           </div>
 
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
               <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-                Smart Ration Card Services (TNEPDS)
+                {lang === 'ta' ? 'ஸ்மார்ட் ரேஷன் கார்டு சேவைகள் (TNEPDS)' : 'Smart Ration Card Services (TNEPDS)'}
               </h1>
               <p className="text-slate-300 text-xs sm:text-sm mt-1 max-w-2xl">
-                Online assistance for Smart Ration Card member additions, new family card applications, family head changes, and address transfers.
+                {lang === 'ta' ? 'ஸ்மார்ட் ரேஷன் கார்டில் குடும்ப உறுப்பினர் சேர்க்கை/நீக்கம், புதிய குடும்ப அட்டை மற்றும் முகவரி மாற்றம்.' : 'Online assistance for Smart Ration Card member additions, new family card applications, family head changes, and address transfers.'}
               </p>
             </div>
 
             <div className="bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/15 min-w-[240px]">
-              <div className="text-[11px] text-teal-200 uppercase font-bold tracking-wider">Civil Supplies Helpline</div>
-              <div className="text-xl font-extrabold text-white mt-0.5">1967 (Toll Free)</div>
-              <div className="text-[11px] text-slate-300">Mon - Sat: 9:00 AM to 6:00 PM</div>
+              <div className="text-[11px] text-teal-200 uppercase font-bold tracking-wider">{lang === 'ta' ? 'உணவுப் பொருள் வழங்கல் உதவி எண்' : 'Civil Supplies Helpline'}</div>
+              <div className="text-xl font-extrabold text-white mt-0.5">1967 ({lang === 'ta' ? 'இலவசம்' : 'Toll Free'})</div>
+              <div className="text-[11px] text-slate-300">{lang === 'ta' ? 'திங்கள் - சனி: காலை 9:00 - மாலை 6:00' : 'Mon - Sat: 9:00 AM to 6:00 PM'}</div>
             </div>
           </div>
 
@@ -85,7 +97,7 @@ export default function RationCardServicesCatalog() {
               <Search className="w-4 h-4 text-slate-400 absolute left-3.5" />
               <input
                 type="text"
-                placeholder="Search Ration services (Add member, new family card, head change)..."
+                placeholder={lang === 'ta' ? 'ரேஷன் சேவைகளைத் தேடுங்கள் (உறுப்பினர் சேர்க்கை, புதிய குடும்ப அட்டை)...' : 'Search Ration services (Add member, new family card, head change)...'}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-2.5 bg-white text-slate-800 placeholder-slate-400 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 shadow-sm font-medium"
@@ -99,17 +111,17 @@ export default function RationCardServicesCatalog() {
         <div className="bg-teal-50 border border-teal-200 rounded-xl p-4 flex items-start space-x-3 text-xs text-teal-950 shadow-sm">
           <AlertCircle className="w-4 h-4 text-teal-700 mt-0.5 flex-shrink-0" />
           <div>
-            <span className="font-bold text-teal-950">Aadhaar Linkage Note:</span> All family members registered on Smart Ration Card must have their 12-digit Aadhaar number seeded into TNEPDS database.
+            <span className="font-bold text-teal-950">{lang === 'ta' ? 'ஆதார் இணைப்பு குறிப்பு:' : 'Aadhaar Linkage Note:'}</span> {lang === 'ta' ? 'ரேஷன் கார்டில் பதிவாகியுள்ள அனைத்து குடும்ப உறுப்பினர்களின் ஆதார் எண் TNEPDS தரவுத்தளத்தில் இணைக்கப்பட்டிருக்க வேண்டும்.' : 'All family members registered on Smart Ration Card must have their 12-digit Aadhaar number seeded into TNEPDS database.'}
           </div>
         </div>
 
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-bold text-slate-900">Available Ration Services ({filtered.length})</h2>
-            <p className="text-xs text-slate-500">Select a ration card service to begin guided filing.</p>
+            <h2 className="text-lg font-bold text-slate-900">{lang === 'ta' ? `கிடைக்கும் ரேஷன் சேவைகள் (${filtered.length})` : `Available Ration Services (${filtered.length})`}</h2>
+            <p className="text-xs text-slate-500">{lang === 'ta' ? 'விண்ணப்பத்தைத் தொடங்க ரேஷன் கார்டு சேவையைத் தேர்ந்தெடுக்கவும்.' : 'Select a ration card service to begin guided filing.'}</p>
           </div>
           <Link to="/tracker" className="text-xs font-bold text-teal-800 hover:underline flex items-center space-x-1">
-            <span>Track Application Status</span>
+            <span>{lang === 'ta' ? 'விண்ணப்ப நிலை அறிய' : 'Track Application Status'}</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
@@ -140,17 +152,17 @@ export default function RationCardServicesCatalog() {
 
                   <div className="space-y-2 pt-2 border-t border-slate-100 text-xs">
                     <div className="flex justify-between items-center text-slate-600">
-                      <span>Service Fee:</span>
+                      <span>{lang === 'ta' ? 'சேவை கட்டணம்:' : 'Service Fee:'}</span>
                       <span className="font-bold text-slate-900">{service.fee}</span>
                     </div>
                     <div className="flex justify-between items-center text-slate-600">
-                      <span>Processing Time:</span>
+                      <span>{lang === 'ta' ? 'செயலாக்க காலம்:' : 'Processing Time:'}</span>
                       <span className="font-semibold text-slate-700">{service.sla}</span>
                     </div>
                   </div>
 
                   <div className="bg-slate-50 p-3 rounded-lg border border-slate-100 space-y-1.5">
-                    <div className="text-[11px] font-bold text-slate-700">Required Documents:</div>
+                    <div className="text-[11px] font-bold text-slate-700">{lang === 'ta' ? 'தேவையான சான்றுகள்:' : 'Required Documents:'}</div>
                     <ul className="space-y-1">
                       {service.docs.map((doc, idx) => (
                         <li key={idx} className="text-[11px] text-slate-600 flex items-center space-x-1.5">
@@ -164,10 +176,10 @@ export default function RationCardServicesCatalog() {
 
                 <div className="p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
                   <Link to={`/service/${service.id}`} className="text-xs font-bold text-slate-700 hover:text-teal-800 hover:underline">
-                    View Details
+                    {lang === 'ta' ? 'விவரங்கள்' : 'View Details'}
                   </Link>
                   <button onClick={() => navigate(`/apply/${service.id}`)} className="px-4 py-2 bg-teal-800 hover:bg-teal-900 text-white text-xs font-bold rounded-lg shadow-sm transition-colors flex items-center space-x-1.5">
-                    <span>Apply Now</span>
+                    <span>{t.applyNow || (lang === 'ta' ? 'விண்ணப்பிக்க' : 'Apply Now')}</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </button>
                 </div>

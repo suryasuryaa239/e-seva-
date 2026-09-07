@@ -4,9 +4,12 @@ import {
   FileText, Award, UserCheck, ShieldCheck, MapPin, Building, 
   Download, Search, CheckCircle2, AlertCircle, ArrowRight, HelpCircle, Briefcase, Landmark, BookOpen
 } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
+import { getLocalizedService } from '../data/servicesCatalogData';
 
 export default function CertificateServicesCatalog() {
   const navigate = useNavigate();
+  const { lang, t } = useLanguage();
   const [searchTerm, setSearchTerm] = useState('');
 
   const certificateServices = [
@@ -89,7 +92,16 @@ export default function CertificateServicesCatalog() {
     }
   ];
 
-  const filtered = certificateServices.filter(s =>
+  const localizedCertificateServices = certificateServices.map(s => {
+    const loc = getLocalizedService({ slug: s.id, name: s.title, description: s.description }, lang);
+    return {
+      ...s,
+      title: loc.name || s.title,
+      description: loc.description || s.description
+    };
+  });
+
+  const filtered = localizedCertificateServices.filter(s =>
     s.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     s.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -101,23 +113,23 @@ export default function CertificateServicesCatalog() {
         <div className="max-w-7xl mx-auto space-y-4">
           <div className="inline-flex items-center space-x-2 bg-blue-500/20 text-blue-300 border border-blue-400/30 px-3.5 py-1 rounded-full text-xs font-extrabold">
             <FileText className="w-4 h-4 text-blue-400" />
-            <span>REVENUE & E-DISTRICT CERTIFICATE FACILITATION</span>
+            <span>{lang === 'ta' ? 'வருவாய் மற்றும் இ-மாவட்ட சான்றிதழ் உதவி' : 'REVENUE & E-DISTRICT CERTIFICATE FACILITATION'}</span>
           </div>
 
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
               <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-                Government Certificate Services Catalog
+                {lang === 'ta' ? 'அரசு சான்றிதழ் சேவைகள் பட்டியல்' : 'Government Certificate Services Catalog'}
               </h1>
               <p className="text-slate-300 text-xs sm:text-sm mt-1 max-w-2xl">
-                Apply online for Revenue Department Certificates: Income, Community/Caste, Native Domicile, First Graduate, Legal Heir, and Solvency certificates with digital tracking.
+                {lang === 'ta' ? 'வருமானச் சான்றிதழ், சாதிச் சான்றிதழ், இருப்பிடச் சான்றிதழ், முதல் பட்டதாரி மற்றும் வாரிசுச் சான்றிதழ்கள் ஆன்லைனில் விண்ணப்பிக்க.' : 'Apply online for Revenue Department Certificates: Income, Community/Caste, Native Domicile, First Graduate, Legal Heir, and Solvency certificates with digital tracking.'}
               </p>
             </div>
 
             <div className="bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/15 min-w-[240px]">
-              <div className="text-[11px] text-blue-200 uppercase font-bold tracking-wider">Revenue Desk Line</div>
+              <div className="text-[11px] text-blue-200 uppercase font-bold tracking-wider">{lang === 'ta' ? 'வருவாய்த்துறை உதவி எண்' : 'Revenue Desk Line'}</div>
               <div className="text-xl font-extrabold text-white mt-0.5">1800-425-1333</div>
-              <div className="text-[11px] text-slate-300">Mon - Sat: 9:30 AM to 6:00 PM</div>
+              <div className="text-[11px] text-slate-300">{lang === 'ta' ? 'திங்கள் - சனி: காலை 9:30 - மாலை 6:00' : 'Mon - Sat: 9:30 AM to 6:00 PM'}</div>
             </div>
           </div>
 
@@ -127,7 +139,7 @@ export default function CertificateServicesCatalog() {
               <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
               <input
                 type="text"
-                placeholder="Search certificates (Income, Community, Native, First Graduate, Legal Heir)..."
+                placeholder={lang === 'ta' ? 'சான்றிதழ்களைத் தேடுங்கள் (வருமானம், சாதி, இருப்பிடம், முதல் பட்டதாரி)...' : 'Search certificates (Income, Community, Native, First Graduate, Legal Heir)...'}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-2.5 bg-white text-slate-800 placeholder-slate-400 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm font-medium"
@@ -144,21 +156,21 @@ export default function CertificateServicesCatalog() {
         <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-start space-x-3 text-xs text-blue-950 shadow-sm">
           <AlertCircle className="w-4 h-4 text-blue-700 mt-0.5 flex-shrink-0" />
           <div>
-            <span className="font-bold text-blue-950">Mandatory Verification:</span> Revenue certificates are verified by Village Administrative Officer (VAO) and Revenue Inspector (RI) prior to Tahsildar approval. Ensure all uploaded supporting documents match your Smart Ration Card.
+            <span className="font-bold text-blue-950">{lang === 'ta' ? 'கட்டாய சரிபார்ப்பு:' : 'Mandatory Verification:'}</span> {lang === 'ta' ? 'வருவாய்த்துறை சான்றிதழ்கள் கிராம நிர்வாக அலுவலர் (VAO) மற்றும் வருவாய் ஆய்வாளரால் (RI) சரிபார்க்கப்படும்.' : 'Revenue certificates are verified by Village Administrative Officer (VAO) and Revenue Inspector (RI) prior to Tahsildar approval.'}
           </div>
         </div>
 
         {/* Services Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-bold text-slate-900">Available Revenue Certificates ({filtered.length})</h2>
-            <p className="text-xs text-slate-500">Select a certificate type to open guided application wizard.</p>
+            <h2 className="text-lg font-bold text-slate-900">{lang === 'ta' ? `கிடைக்கும் வருவாய்த்துறை சான்றிதழ்கள் (${filtered.length})` : `Available Revenue Certificates (${filtered.length})`}</h2>
+            <p className="text-xs text-slate-500">{lang === 'ta' ? 'விண்ணப்பத்தைத் தொடங்க சான்றிதழ் வகையைத் தேர்ந்தெடுக்கவும்.' : 'Select a certificate type to open guided application wizard.'}</p>
           </div>
           <Link
             to="/tracker"
             className="text-xs font-bold text-blue-700 hover:text-blue-900 hover:underline flex items-center space-x-1"
           >
-            <span>Track Existing Certificate Application</span>
+            <span>{lang === 'ta' ? 'சான்றிதழ் விண்ணப்ப நிலை அறிய' : 'Track Existing Certificate Application'}</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
@@ -199,18 +211,18 @@ export default function CertificateServicesCatalog() {
 
                   <div className="space-y-2 pt-2 border-t border-slate-100 text-xs">
                     <div className="flex justify-between items-center text-slate-600">
-                      <span>Service Fee:</span>
+                      <span>{lang === 'ta' ? 'சேவை கட்டணம்:' : 'Service Fee:'}</span>
                       <span className="font-bold text-slate-900">{service.fee}</span>
                     </div>
                     <div className="flex justify-between items-center text-slate-600">
-                      <span>Estimated Processing SLA:</span>
+                      <span>{lang === 'ta' ? 'செயலாக்க காலம்:' : 'Estimated Processing SLA:'}</span>
                       <span className="font-semibold text-slate-700">{service.sla}</span>
                     </div>
                   </div>
 
                   {/* Documents Checklist */}
                   <div className="bg-slate-50 p-3 rounded-lg border border-slate-100 space-y-1.5">
-                    <div className="text-[11px] font-bold text-slate-700">Mandatory Attachments:</div>
+                    <div className="text-[11px] font-bold text-slate-700">{lang === 'ta' ? 'தேவையான சான்றுகள்:' : 'Mandatory Attachments:'}</div>
                     <ul className="space-y-1">
                       {service.docs.map((doc, idx) => (
                         <li key={idx} className="text-[11px] text-slate-600 flex items-center space-x-1.5">
@@ -228,14 +240,14 @@ export default function CertificateServicesCatalog() {
                     to={`/service/${service.id}`}
                     className="text-xs font-bold text-slate-700 hover:text-blue-800 hover:underline"
                   >
-                    View Details
+                    {lang === 'ta' ? 'விவரங்கள்' : 'View Details'}
                   </Link>
 
                   <button
                     onClick={() => navigate(`/apply/${service.id}`)}
                     className="px-4 py-2 bg-blue-900 hover:bg-blue-950 text-white text-xs font-bold rounded-lg shadow-sm transition-colors flex items-center space-x-1.5"
                   >
-                    <span>Apply Now</span>
+                    <span>{t.applyNow || (lang === 'ta' ? 'விண்ணப்பிக்க' : 'Apply Now')}</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </button>
                 </div>

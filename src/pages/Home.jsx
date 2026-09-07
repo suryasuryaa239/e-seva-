@@ -201,13 +201,13 @@ export default function Home() {
         {/* CENTERED SECTION HEADER */}
         <div className="text-center max-w-2xl mx-auto space-y-2">
           <span className="inline-block text-xs font-extrabold text-orange-600 uppercase tracking-widest bg-orange-50 border border-orange-200/80 px-3.5 py-1 rounded-full">
-            OUR SERVICES CATEGORIES
+            {lang === 'ta' ? 'எங்கள் சேவை பிரிவுகள்' : 'OUR SERVICES CATEGORIES'}
           </span>
           <h2 className="font-heading font-extrabold text-3xl sm:text-4xl text-slate-900 tracking-tight">
-            Explore Our Digital Services
+            {lang === 'ta' ? 'எங்கள் டிஜிட்டல் சேவைகளைக் கண்டறியவும்' : 'Explore Our Digital Services'}
           </h2>
           <p className="text-xs sm:text-sm text-slate-500 font-normal leading-relaxed">
-            Access a wide range of digital services from one convenient portal.
+            {lang === 'ta' ? 'ஒரே இணையதளத்தில் அனைத்து அரசு டிஜிட்டல் சேவைகளையும் எளிதாகப் பெறுங்கள்.' : 'Access a wide range of digital services from one convenient portal.'}
           </p>
         </div>
 
@@ -215,17 +215,17 @@ export default function Home() {
         {/* Desktop: 4 per row, Tablet: 2 or 3 per row, Mobile: 1 per row */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
           {[
-            { name: 'Aadhaar Services', slug: 'aadhaar', desc: 'Aadhaar enrollment, name, address & mobile updates', icon: <Fingerprint className="w-6 h-6 text-orange-500" />, image: '/cat_aadhaar.png' },
-            { name: 'PAN Services', slug: 'pan-services', desc: 'New PAN card application, correction & reprint', icon: <CreditCard className="w-6 h-6 text-orange-500" />, image: '/cat_pan.png' },
-            { name: 'Voter ID Services', slug: 'voter', desc: 'New voter registration & address correction', icon: <Vote className="w-6 h-6 text-orange-500" />, image: '/cat_voter.png' },
-            { name: 'Certificates', slug: 'certificates', desc: 'Income, community, native, birth & death certificates', icon: <FileText className="w-6 h-6 text-orange-500" />, image: '/cat_certificates.png' },
-            { name: 'Land & Patta', slug: 'land', desc: 'Patta transfer, Chitta, FMB sketch & encumbrance', icon: <MapPin className="w-6 h-6 text-orange-500" />, image: '/cat_land.png' },
-            { name: 'Passport Services', slug: 'passport', desc: 'Fresh passport application, re-issue & Tatkaal', icon: <Globe className="w-6 h-6 text-orange-500" />, image: '/cat_passport.png' },
-            { name: 'Driving Licence', slug: 'driving-licence', desc: 'Learner license, DL renewal & address change', icon: <Car className="w-6 h-6 text-orange-500" />, image: '/cat_driving.png' },
-            { name: 'Vehicle Services', slug: 'vehicle', desc: 'RC transfer, NOC & fitness certificate', icon: <Car className="w-6 h-6 text-orange-500" />, image: '/cat_driving.png' },
-            { name: 'Business Services', slug: 'business', desc: 'MSME/Udyam registration, GST & FSSAI license', icon: <Briefcase className="w-6 h-6 text-orange-500" />, image: '/cat_business.png' },
-            { name: 'Utility Services', slug: 'utility', desc: 'Electricity connection, water tax & property tax', icon: <Zap className="w-6 h-6 text-orange-500" />, image: '/cat_utility.png' },
-            { name: 'Other Digital Services', slug: 'other', desc: 'Ration card, pension schemes & digital services', icon: <Grid className="w-6 h-6 text-orange-500" />, image: '/cat_ration.png' }
+            { name: 'Aadhaar Services', name_ta: 'ஆதார் சேவைகள்', slug: 'aadhaar', desc: 'Aadhaar enrollment, name, address & mobile updates', desc_ta: 'ஆதார் பதிவு, பெயர், முகவரி மற்றும் மொபைல் எண் புதுப்பித்தல்', icon: <Fingerprint className="w-6 h-6 text-orange-500" />, image: '/cat_aadhaar.png' },
+            { name: 'PAN Services', name_ta: 'PAN சேவைகள்', slug: 'pan-services', desc: 'New PAN card application, correction & reprint', desc_ta: 'புதிய PAN கார்டு விண்ணப்பம், திருத்தம் மற்றும் மறுபதிப்பு', icon: <CreditCard className="w-6 h-6 text-orange-500" />, image: '/cat_pan.png' },
+            { name: 'Voter ID Services', name_ta: 'வாக்காளர் அட்டை சேவைகள்', slug: 'voter', desc: 'New voter registration & address correction', desc_ta: 'புதிய வாக்காளர் பதிவு மற்றும் முகவரி திருத்தம்', icon: <Vote className="w-6 h-6 text-orange-500" />, image: '/cat_voter.png' },
+            { name: 'Certificates', name_ta: 'அரசு சான்றிதழ்கள்', slug: 'certificates', desc: 'Income, community, native, birth & death certificates', desc_ta: 'வருமானம், சாதி, இருப்பிடம், பிறப்பு மற்றும் இறப்பு சான்றிதழ்கள்', icon: <FileText className="w-6 h-6 text-orange-500" />, image: '/cat_certificates.png' },
+            { name: 'Land & Patta', name_ta: 'நிலம் & பட்டா சேவைகள்', slug: 'land', desc: 'Patta transfer, Chitta, FMB sketch & encumbrance', desc_ta: 'பட்டா மாற்றம், சிட்டா, FMB வரைபடம் மற்றும் வில்லங்கச் சான்றிதழ்', icon: <MapPin className="w-6 h-6 text-orange-500" />, image: '/cat_land.png' },
+            { name: 'Passport Services', name_ta: 'பாஸ்போர்ட் சேவைகள்', slug: 'passport', desc: 'Fresh passport application, re-issue & Tatkaal', desc_ta: 'புதிய பாஸ்போர்ட் விண்ணப்பம், புதுப்பித்தல் மற்றும் தட்கல்', icon: <Globe className="w-6 h-6 text-orange-500" />, image: '/cat_passport.png' },
+            { name: 'Driving Licence', name_ta: 'ஓட்டுநர் உரிமம்', slug: 'driving-licence', desc: 'Learner license, DL renewal & address change', desc_ta: 'பழகுநர் உரிமம், DL புதுப்பித்தல் மற்றும் முகவரி மாற்றம்', icon: <Car className="w-6 h-6 text-orange-500" />, image: '/cat_driving.png' },
+            { name: 'Vehicle Services', name_ta: 'வாகன சேவைகள்', slug: 'vehicle', desc: 'RC transfer, NOC & fitness certificate', desc_ta: 'RC பெயர் மாற்றம், NOC மற்றும் தகுதிச் சான்றிதழ்', icon: <Car className="w-6 h-6 text-orange-500" />, image: '/cat_driving.png' },
+            { name: 'Business Services', name_ta: 'வணிக சேவைகள்', slug: 'business', desc: 'MSME/Udyam registration, GST & FSSAI license', desc_ta: 'MSME/உத்யம் பதிவு, GST மற்றும் FSSAI உரிமம்', icon: <Briefcase className="w-6 h-6 text-orange-500" />, image: '/cat_business.png' },
+            { name: 'Utility Services', name_ta: 'பயன்பாட்டுச் சேவைகள்', slug: 'utility', desc: 'Electricity connection, water tax & property tax', desc_ta: 'மின்சார இணைப்பு, குடிநீர் வரி மற்றும் சொத்து வரி', icon: <Zap className="w-6 h-6 text-orange-500" />, image: '/cat_utility.png' },
+            { name: 'Other Digital Services', name_ta: 'பிற டிஜிட்டல் சேவைகள்', slug: 'other', desc: 'Ration card, pension schemes & digital services', desc_ta: 'ரேஷன் கார்டு, ஓய்வூதியத் திட்டங்கள் மற்றும் டிஜிட்டல் சேவைகள்', icon: <Grid className="w-6 h-6 text-orange-500" />, image: '/cat_ration.png' }
           ].map((cat, idx) => (
             <Link
               key={idx}
@@ -241,7 +241,7 @@ export default function Home() {
                   <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-slate-50 to-orange-50/30 border border-slate-200/90 p-2 flex items-center justify-center shadow-sm group-hover:scale-110 group-hover:border-orange-300 transition-all duration-300">
                     <img
                       src={cat.image}
-                      alt={cat.name}
+                      alt={lang === 'ta' ? cat.name_ta : cat.name}
                       className="w-full h-full object-contain drop-shadow-lg"
                       onError={(e) => {
                         e.target.style.display = 'none';
@@ -253,24 +253,24 @@ export default function Home() {
                     </div>
                   </div>
                   <span className="text-[10px] font-extrabold text-orange-600 bg-orange-50 border border-orange-200/80 px-2.5 py-1 rounded-full uppercase tracking-wider">
-                    E-SERVICE
+                    {lang === 'ta' ? 'ஈ-சேவை' : 'E-SERVICE'}
                   </span>
                 </div>
 
                 {/* CATEGORY NAME & DESCRIPTION */}
                 <div>
                   <h3 className="font-heading font-extrabold text-base text-slate-900 group-hover:text-orange-600 transition-colors">
-                    {cat.name}
+                    {lang === 'ta' ? cat.name_ta : cat.name}
                   </h3>
                   <p className="text-xs text-slate-500 mt-1 font-normal leading-relaxed">
-                    {cat.desc}
+                    {lang === 'ta' ? cat.desc_ta : cat.desc}
                   </p>
                 </div>
               </div>
 
               {/* VIEW SERVICES ACTION & ARROW */}
               <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-extrabold text-slate-800 group-hover:text-orange-600 transition-colors relative z-10">
-                <span>View Services</span>
+                <span>{lang === 'ta' ? 'சேவைகளைப் பார்க்க' : 'View Services'}</span>
                 <ArrowRight className="w-4 h-4 text-orange-500 group-hover:translate-x-1.5 transition-transform" />
               </div>
             </Link>
@@ -283,7 +283,7 @@ export default function Home() {
             to="/services"
             className="bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold text-xs sm:text-sm px-8 py-3.5 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2 group"
           >
-            <span>View All Services</span>
+            <span>{t.viewAllServices ? t.viewAllServices.replace(' →', '') : (lang === 'ta' ? 'அனைத்து சேவைகளையும் பார்க்க' : 'View All Services')}</span>
             <ArrowRight className="w-4 h-4 text-orange-400 group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
@@ -298,13 +298,13 @@ export default function Home() {
         {/* CENTERED SECTION HEADER */}
         <div className="text-center max-w-2xl mx-auto space-y-2">
           <span className="inline-block text-xs font-extrabold text-orange-600 uppercase tracking-widest bg-orange-50 border border-orange-200/80 px-3.5 py-1 rounded-full">
-            POPULAR SERVICES
+            {lang === 'ta' ? 'பிரபலமான சேவைகள்' : 'POPULAR SERVICES'}
           </span>
           <h2 className="font-heading font-extrabold text-3xl sm:text-4xl text-slate-900 tracking-tight">
-            Most Requested Services
+            {lang === 'ta' ? 'அதிகம் கேட்கப்படும் சேவைகள்' : 'Most Requested Services'}
           </h2>
           <p className="text-xs sm:text-sm text-slate-500 font-normal leading-relaxed">
-            Quickly access the digital services our customers use most often.
+            {lang === 'ta' ? 'எங்கள் பயனர்கள் அதிகம் பயன்படுத்தும் டிஜிட்டல் சேவைகளை எளிதாகப் பெறுங்கள்.' : 'Quickly access the digital services our customers use most often.'}
           </p>
         </div>
 
@@ -332,7 +332,7 @@ export default function Home() {
                     {getCategoryIcon(srv.category_slug)}
                   </div>
                   <span className="text-[11px] font-extrabold text-orange-700 bg-orange-50 border border-orange-200/80 px-2.5 py-0.5 rounded-full">
-                    {srv.fee > 0 ? `₹${srv.fee}` : 'FREE'}
+                    {srv.fee > 0 ? `₹${srv.fee}` : (lang === 'ta' ? 'இலவசம்' : 'FREE')}
                   </span>
                 </div>
 
@@ -353,7 +353,7 @@ export default function Home() {
                   to={srv.slug === 'aadhaar' ? '/services/aadhaar' : `/service/${srv.slug}`}
                   className="w-full bg-[#0b192c] hover:bg-orange-600 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-xs transition-colors flex items-center justify-center gap-1.5 group/btn"
                 >
-                  <span>Apply Now</span>
+                  <span>{t.applyNow || (lang === 'ta' ? 'விண்ணப்பிக்க' : 'Apply Now')}</span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform" />
                 </Link>
               </div>
@@ -367,7 +367,7 @@ export default function Home() {
             to="/services"
             className="text-xs sm:text-sm font-extrabold text-slate-800 hover:text-orange-600 flex items-center gap-1.5 group transition-colors"
           >
-            <span>View All Services</span>
+            <span>{t.viewAllServices || (lang === 'ta' ? 'அனைத்து சேவைகளையும் பார்க்க' : 'View All Services')}</span>
             <ArrowRight className="w-4 h-4 text-orange-500 group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>

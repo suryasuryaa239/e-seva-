@@ -4,9 +4,12 @@ import {
   Fingerprint, CreditCard, UserCheck, ShieldCheck, MapPin, Smartphone, 
   Mail, Calendar, Image as ImageIcon, FileCheck, ArrowRight, Download, Search, CheckCircle2, Landmark 
 } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
+import { getLocalizedService } from '../data/servicesCatalogData';
 
 export default function AadhaarServicesCatalog() {
   const navigate = useNavigate();
+  const { lang, t } = useLanguage();
   const [searchTerm, setSearchTerm] = useState('');
 
   const aadhaarServices = [
@@ -123,7 +126,16 @@ export default function AadhaarServicesCatalog() {
     }
   ];
 
-  const filtered = aadhaarServices.filter(s =>
+  const localizedAadhaarServices = aadhaarServices.map(s => {
+    const loc = getLocalizedService({ slug: s.id, name: s.title, description: s.description }, lang);
+    return {
+      ...s,
+      title: loc.name || s.title,
+      description: loc.description || s.description
+    };
+  });
+
+  const filtered = localizedAadhaarServices.filter(s =>
     s.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     s.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -152,15 +164,15 @@ export default function AadhaarServicesCatalog() {
           <div className="relative z-10 max-w-3xl space-y-3">
             <div className="inline-flex items-center space-x-2 px-3.5 py-1 bg-orange-500/10 text-orange-400 text-xs font-extrabold rounded-full border border-orange-500/20">
               <Fingerprint className="w-4 h-4 text-orange-400" />
-              <span>AADHAAR DIGITAL ASSISTANCE DESK</span>
+              <span>{lang === 'ta' ? 'ஆதார் டிஜிட்டல் உதவி மையம்' : 'AADHAAR DIGITAL ASSISTANCE DESK'}</span>
             </div>
             
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-heading font-extrabold tracking-tight text-white">
-              Aadhaar Services Catalog
+              {lang === 'ta' ? 'ஆதார் சேவைகள் பட்டியல்' : 'Aadhaar Services Catalog'}
             </h1>
             
             <p className="text-slate-300 text-xs sm:text-sm leading-relaxed font-normal max-w-2xl">
-              Professional application assistance for address updates, mobile linking, PVC smart card orders, mandatory 10-year document re-validations, and instant e-Aadhaar downloads.
+              {lang === 'ta' ? 'முகவரி மாற்றம், மொபைல் எண் இணைப்பு, PVC ஸ்மார்ட் கார்டு ஆர்டர் மற்றும் ஆதாரைப் புதுப்பித்தல் ஆகியவற்றிற்கான ஆன்லைன் உதவி மையம்.' : 'Professional application assistance for address updates, mobile linking, PVC smart card orders, mandatory 10-year document re-validations, and instant e-Aadhaar downloads.'}
             </p>
           </div>
 
@@ -170,7 +182,7 @@ export default function AadhaarServicesCatalog() {
               <Search className="w-4 h-4 text-orange-400 absolute left-4 pointer-events-none" />
               <input
                 type="text"
-                placeholder="Search Aadhaar services (e.g. Address, Mobile, PVC, Name)..."
+                placeholder={lang === 'ta' ? 'ஆதார் சேவைகளைத் தேடுங்கள் (முகவரி, மொபைல், PVC கார்டு, பெயர்)...' : 'Search Aadhaar services (e.g. Address, Mobile, PVC, Name)...'}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full bg-slate-900/80 text-white placeholder-slate-400 text-xs sm:text-sm rounded-2xl pl-11 pr-4 py-3.5 border border-slate-700 focus:border-orange-500 focus:bg-slate-900 outline-none transition-all shadow-xs font-medium"
@@ -185,9 +197,9 @@ export default function AadhaarServicesCatalog() {
           <div className="flex justify-between items-center border-b border-slate-200 pb-3">
             <h2 className="text-lg font-extrabold text-slate-900 flex items-center gap-2">
               <Fingerprint className="w-5 h-5 text-blue-900" />
-              <span>Aadhaar Service Options ({filtered.length})</span>
+              <span>{lang === 'ta' ? `ஆதார் சேவை பிரிவுகள் (${filtered.length})` : `Aadhaar Service Options (${filtered.length})`}</span>
             </h2>
-            <span className="text-xs text-slate-500 font-medium">Private Application Assistance Desk</span>
+            <span className="text-xs text-slate-500 font-medium">{lang === 'ta' ? 'இ-சேவை விண்ணப்ப உதவி மையம்' : 'Private Application Assistance Desk'}</span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -222,7 +234,7 @@ export default function AadhaarServicesCatalog() {
                     {/* Docs Required */}
                     <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 space-y-1">
                       <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
-                        Required Documents:
+                        {lang === 'ta' ? 'தேவையான சான்றுகள்:' : 'Required Documents:'}
                       </span>
                       <ul className="text-[11px] text-slate-600 space-y-0.5">
                         {service.docs.map((doc, idx) => (
@@ -238,7 +250,7 @@ export default function AadhaarServicesCatalog() {
                   {/* Fee & Action Bar */}
                   <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
                     <div>
-                      <span className="text-[10px] text-slate-400 block uppercase font-bold">Service Fee</span>
+                      <span className="text-[10px] text-slate-400 block uppercase font-bold">{lang === 'ta' ? 'சேவை கட்டணம்' : 'Service Fee'}</span>
                       <span className="text-sm font-black text-slate-900">{service.fee}</span>
                     </div>
 
@@ -246,7 +258,7 @@ export default function AadhaarServicesCatalog() {
                       onClick={() => navigate(`/apply/${service.id}`)}
                       className="px-4 py-2 bg-blue-900 hover:bg-blue-950 text-white font-bold text-xs rounded-xl shadow-sm flex items-center space-x-1.5 transition-all"
                     >
-                      <span>Apply Now</span>
+                      <span>{t.applyNow || (lang === 'ta' ? 'விண்ணப்பிக்க' : 'Apply Now')}</span>
                       <ArrowRight className="w-3.5 h-3.5" />
                     </button>
                   </div>

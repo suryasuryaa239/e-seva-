@@ -4,9 +4,12 @@ import {
   CreditCard, FileText, UserCheck, ShieldCheck, MapPin, Smartphone, 
   Mail, Calendar, Download, Search, CheckCircle2, RefreshCw, AlertCircle, FileCheck, ArrowRight, HelpCircle
 } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
+import { getLocalizedService } from '../data/servicesCatalogData';
 
 export default function PanServicesCatalog() {
   const navigate = useNavigate();
+  const { lang, t } = useLanguage();
   const [searchTerm, setSearchTerm] = useState('');
 
   const panServices = [
@@ -89,7 +92,16 @@ export default function PanServicesCatalog() {
     }
   ];
 
-  const filteredServices = panServices.filter(s => 
+  const localizedPanServices = panServices.map(s => {
+    const loc = getLocalizedService({ slug: s.id, name: s.title, description: s.description }, lang);
+    return {
+      ...s,
+      title: loc.name || s.title,
+      description: loc.description || s.description
+    };
+  });
+
+  const filteredServices = localizedPanServices.filter(s => 
     s.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
     s.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -101,23 +113,23 @@ export default function PanServicesCatalog() {
         <div className="max-w-7xl mx-auto space-y-4">
           <div className="inline-flex items-center space-x-2 bg-indigo-500/20 text-indigo-200 border border-indigo-400/30 px-3 py-1 rounded-full text-xs font-semibold">
             <CreditCard className="w-3.5 h-3.5" />
-            <span>Official Facilitation & Application Assistance Portal</span>
+            <span>{lang === 'ta' ? 'PAN சேவை மைய பயன்பாட்டு போர்ட்டல்' : 'Official Facilitation & Application Assistance Portal'}</span>
           </div>
 
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
               <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-                PAN Services Portal & Application Facilitation
+                {lang === 'ta' ? 'PAN கார்டு சேவைகள் பட்டியல்' : 'PAN Services Portal & Application Facilitation'}
               </h1>
               <p className="text-slate-300 text-sm mt-1 max-w-2xl">
-                Apply for New PAN Card (Form 49A/49AA), Name & DOB Correction, PAN-Aadhaar Linking, Physical Card Reprint, and e-PAN Download with doorstep processing support.
+                {lang === 'ta' ? 'புதிய PAN கார்டு (படிவம் 49A/49AA), பெயர் & பிறந்த தேதி திருத்தம், PAN-ஆதார் இணைப்பு மற்றும் e-PAN பதிவிறக்கம்.' : 'Apply for New PAN Card (Form 49A/49AA), Name & DOB Correction, PAN-Aadhaar Linking, Physical Card Reprint, and e-PAN Download with doorstep processing support.'}
               </p>
             </div>
 
             <div className="bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/15 min-w-[240px]">
-              <div className="text-xs text-indigo-200 uppercase font-bold tracking-wider">Helpdesk Helpline</div>
+              <div className="text-xs text-indigo-200 uppercase font-bold tracking-wider">{lang === 'ta' ? 'உதவி எண்' : 'Helpdesk Helpline'}</div>
               <div className="text-lg font-extrabold text-white mt-0.5">1800-180-1961</div>
-              <div className="text-[11px] text-slate-300">Mon - Sat: 9:00 AM to 7:00 PM</div>
+              <div className="text-[11px] text-slate-300">{lang === 'ta' ? 'திங்கள் - சனி: காலை 9:00 - மாலை 7:00' : 'Mon - Sat: 9:00 AM to 7:00 PM'}</div>
             </div>
           </div>
 
@@ -127,7 +139,7 @@ export default function PanServicesCatalog() {
               <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
               <input
                 type="text"
-                placeholder="Search PAN services (e.g. Form 49A, Name Correction, Linking, e-PAN PDF)..."
+                placeholder={lang === 'ta' ? 'PAN சேவைகளைத் தேடுங்கள் (படிவம் 49A, பெயர் திருத்தம், இணைப்பு)...' : 'Search PAN services (e.g. Form 49A, Name Correction, Linking, e-PAN PDF)...'}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-2.5 bg-white text-slate-800 placeholder-slate-400 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 shadow-sm"
@@ -144,21 +156,21 @@ export default function PanServicesCatalog() {
         <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-start space-x-3 text-xs text-blue-900 shadow-sm">
           <AlertCircle className="w-4 h-4 text-blue-700 mt-0.5 flex-shrink-0" />
           <div>
-            <span className="font-bold text-blue-950">Important Notice:</span> Holding more than one PAN card is illegal under Section 272B of Income Tax Act 1961 and attracts ₹10,000 penalty. If you have an existing PAN card, apply for <strong>PAN Correction or Duplicate Reprint</strong> rather than a new PAN.
+            <span className="font-bold text-blue-950">{lang === 'ta' ? 'முக்கிய அறிவிப்பு:' : 'Important Notice:'}</span> {lang === 'ta' ? 'வருமான வரி சட்டம் பிரிவு 272B-ன் படி ஒன்றுக்கும் மேற்பட்ட PAN அட்டை வைத்திருப்பது சட்டவிரோதமானது. ஏற்கனவே PAN இருந்தால் திருத்தம் அல்லது மறுபதிப்பிற்கு விண்ணப்பிக்கவும்.' : 'Holding more than one PAN card is illegal under Section 272B of Income Tax Act 1961 and attracts ₹10,000 penalty.'}
           </div>
         </div>
 
         {/* Services Grid Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-bold text-slate-900">Available PAN Services ({filteredServices.length})</h2>
-            <p className="text-xs text-slate-500">Select a PAN service below to start your online application wizard.</p>
+            <h2 className="text-lg font-bold text-slate-900">{lang === 'ta' ? `கிடைக்கும் PAN சேவைகள் (${filteredServices.length})` : `Available PAN Services (${filteredServices.length})`}</h2>
+            <p className="text-xs text-slate-500">{lang === 'ta' ? 'ஆன்லைன் விண்ணப்பத்தைத் தொடங்க கீழே உள்ள சேவையைத் தேர்ந்தெடுக்கவும்.' : 'Select a PAN service below to start your online application wizard.'}</p>
           </div>
           <Link
             to="/tracker"
             className="text-xs font-bold text-indigo-600 hover:text-indigo-800 hover:underline flex items-center space-x-1"
           >
-            <span>Already Applied? Track Application</span>
+            <span>{lang === 'ta' ? 'ஏற்கனவே விண்ணப்பித்தீர்களா? நிலை அறிய' : 'Already Applied? Track Application'}</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
@@ -199,18 +211,18 @@ export default function PanServicesCatalog() {
 
                   <div className="space-y-2 pt-2 border-t border-slate-100 text-xs">
                     <div className="flex justify-between items-center text-slate-600">
-                      <span>Service Fee:</span>
+                      <span>{lang === 'ta' ? 'சேவை கட்டணம்:' : 'Service Fee:'}</span>
                       <span className="font-bold text-slate-900">{service.fee}</span>
                     </div>
                     <div className="flex justify-between items-center text-slate-600">
-                      <span>Processing Time:</span>
+                      <span>{lang === 'ta' ? 'செயலாக்க காலம்:' : 'Processing Time:'}</span>
                       <span className="font-semibold text-slate-700">{service.sla}</span>
                     </div>
                   </div>
 
                   {/* Required Documents Section */}
                   <div className="bg-slate-50 p-3 rounded-lg border border-slate-100 space-y-1.5">
-                    <div className="text-[11px] font-bold text-slate-700">Required Documents:</div>
+                    <div className="text-[11px] font-bold text-slate-700">{lang === 'ta' ? 'தேவையான சான்றுகள்:' : 'Required Documents:'}</div>
                     <ul className="space-y-1">
                       {service.docs.map((doc, idx) => (
                         <li key={idx} className="text-[11px] text-slate-600 flex items-center space-x-1.5">
@@ -228,14 +240,14 @@ export default function PanServicesCatalog() {
                     to={`/service/${service.id}`}
                     className="text-xs font-bold text-slate-700 hover:text-indigo-600 hover:underline"
                   >
-                    View Details
+                    {lang === 'ta' ? 'விவரங்கள்' : 'View Details'}
                   </Link>
 
                   <button
                     onClick={() => navigate(`/apply/${service.id}`)}
                     className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg shadow-sm transition-colors flex items-center space-x-1.5"
                   >
-                    <span>Apply Now</span>
+                    <span>{t.applyNow || (lang === 'ta' ? 'விண்ணப்பிக்க' : 'Apply Now')}</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </button>
                 </div>

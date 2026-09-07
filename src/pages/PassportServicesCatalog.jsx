@@ -3,9 +3,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import { 
   Globe, FileText, CheckCircle2, Search, ArrowRight, ShieldCheck, Clock, AlertCircle, HelpCircle
 } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
+import { getLocalizedService } from '../data/servicesCatalogData';
 
 export default function PassportServicesCatalog() {
   const navigate = useNavigate();
+  const { lang, t } = useLanguage();
   const [searchTerm, setSearchTerm] = useState('');
 
   const services = [
@@ -23,7 +26,7 @@ export default function PassportServicesCatalog() {
       id: 'tatkaal-passport-urgent',
       title: 'Tatkaal Urgent Passport Issuance',
       description: 'Expedited passport processing scheme for urgent travel requirements with 3-day dispatch post PSK interview.',
-      fee: '₹3,500',
+      fee: '₹3500',
       sla: '3–5 Working Days',
       docs: ['3 Annexure Verification Proofs (Aadhaar, PAN, Voter ID)', 'Address Proof'],
       icon: ShieldCheck,
@@ -50,7 +53,16 @@ export default function PassportServicesCatalog() {
     }
   ];
 
-  const filtered = services.filter(s =>
+  const localizedServices = services.map(s => {
+    const loc = getLocalizedService({ slug: s.id, name: s.title, description: s.description }, lang);
+    return {
+      ...s,
+      title: loc.name || s.title,
+      description: loc.description || s.description
+    };
+  });
+
+  const filtered = localizedServices.filter(s =>
     s.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     s.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -61,23 +73,23 @@ export default function PassportServicesCatalog() {
         <div className="max-w-7xl mx-auto space-y-4">
           <div className="inline-flex items-center space-x-2 bg-sky-500/20 text-sky-300 border border-sky-400/30 px-3.5 py-1 rounded-full text-xs font-extrabold">
             <Globe className="w-4 h-4 text-sky-400" />
-            <span>PASSPORT SEVA FACILITATION DESK</span>
+            <span>{lang === 'ta' ? 'பாஸ்போர்ட் சேவா உதவி மையம்' : 'PASSPORT SEVA FACILITATION DESK'}</span>
           </div>
 
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
               <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-                Passport Seva & Visa Facilitation Portal
+                {lang === 'ta' ? 'பாஸ்போர்ட் சேவைகள் போர்ட்டல்' : 'Passport Seva & Visa Facilitation Portal'}
               </h1>
               <p className="text-slate-300 text-xs sm:text-sm mt-1 max-w-2xl">
-                Appointment booking for Fresh Passports, Tatkaal schemes, Expired Passport Renewals, and Police Clearance Certificates (PCC).
+                {lang === 'ta' ? 'புதிய பாஸ்போர்ட் விண்ணப்பம், தட்கல் பாஸ்போர்ட், புதுப்பித்தல் மற்றும் PCC சான்றிதழ் ஆன்லைன் முன்பதிவு.' : 'Appointment booking for Fresh Passports, Tatkaal schemes, Expired Passport Renewals, and Police Clearance Certificates (PCC).'}
               </p>
             </div>
 
             <div className="bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/15 min-w-[240px]">
-              <div className="text-[11px] text-sky-200 uppercase font-bold tracking-wider">Passport Seva Call Center</div>
+              <div className="text-[11px] text-sky-200 uppercase font-bold tracking-wider">{lang === 'ta' ? 'பாஸ்போர்ட் உதவி மையம்' : 'Passport Seva Call Center'}</div>
               <div className="text-xl font-extrabold text-white mt-0.5">1800-258-1800</div>
-              <div className="text-[11px] text-slate-300">Toll Free 24x7 Support</div>
+              <div className="text-[11px] text-slate-300">{lang === 'ta' ? '24/7 இலவச உதவி சேவை' : 'Toll Free 24x7 Support'}</div>
             </div>
           </div>
 
@@ -86,7 +98,7 @@ export default function PassportServicesCatalog() {
               <Search className="w-4 h-4 text-slate-400 absolute left-3.5" />
               <input
                 type="text"
-                placeholder="Search Passport services (Fresh Passport, Tatkaal, Renewal, PCC)..."
+                placeholder={lang === 'ta' ? 'பாஸ்போர்ட் சேவைகளைத் தேடுங்கள் (புதிய பாஸ்போர்ட், தட்கல், PCC)...' : 'Search Passport services (Fresh Passport, Tatkaal, Renewal, PCC)...'}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-2.5 bg-white text-slate-800 placeholder-slate-400 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 shadow-sm font-medium"
@@ -100,17 +112,17 @@ export default function PassportServicesCatalog() {
         <div className="bg-sky-50 border border-sky-200 rounded-xl p-4 flex items-start space-x-3 text-xs text-sky-950 shadow-sm">
           <AlertCircle className="w-4 h-4 text-sky-700 mt-0.5 flex-shrink-0" />
           <div>
-            <span className="font-bold text-sky-950">Original Document Note:</span> Applicants must carry original documents along with self-attested photocopies to Passport Seva Kendra (PSK) on appointment date.
+            <span className="font-bold text-sky-950">{lang === 'ta' ? 'அசல் சான்றிதழ் குறிப்பு:' : 'Original Document Note:'}</span> {lang === 'ta' ? 'நேர்காணல் நாளில் PSK மையத்திற்கு அசல் சான்றிதழ்கள் மற்றும் நகல்களை நேரில் கொண்டு வர வேண்டும்.' : 'Applicants must carry original documents along with self-attested photocopies to Passport Seva Kendra (PSK) on appointment date.'}
           </div>
         </div>
 
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-bold text-slate-900">Available Passport Services ({filtered.length})</h2>
-            <p className="text-xs text-slate-500">Select a Passport service to start application slot booking.</p>
+            <h2 className="text-lg font-bold text-slate-900">{lang === 'ta' ? `கிடைக்கும் பாஸ்போர்ட் சேவைகள் (${filtered.length})` : `Available Passport Services (${filtered.length})`}</h2>
+            <p className="text-xs text-slate-500">{lang === 'ta' ? 'ஆன்லைன் முன்பதிவைத் தொடங்க சேவையைத் தேர்ந்தெடுக்கவும்.' : 'Select a Passport service to start application slot booking.'}</p>
           </div>
           <Link to="/tracker" className="text-xs font-bold text-sky-800 hover:underline flex items-center space-x-1">
-            <span>Track Application Status</span>
+            <span>{lang === 'ta' ? 'விண்ணப்ப நிலை அறிய' : 'Track Application Status'}</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
@@ -141,17 +153,17 @@ export default function PassportServicesCatalog() {
 
                   <div className="space-y-2 pt-2 border-t border-slate-100 text-xs">
                     <div className="flex justify-between items-center text-slate-600">
-                      <span>Service Fee:</span>
+                      <span>{lang === 'ta' ? 'சேவை கட்டணம்:' : 'Service Fee:'}</span>
                       <span className="font-bold text-slate-900">{service.fee}</span>
                     </div>
                     <div className="flex justify-between items-center text-slate-600">
-                      <span>Processing Time:</span>
+                      <span>{lang === 'ta' ? 'செயலாக்க காலம்:' : 'Processing Time:'}</span>
                       <span className="font-semibold text-slate-700">{service.sla}</span>
                     </div>
                   </div>
 
                   <div className="bg-slate-50 p-3 rounded-lg border border-slate-100 space-y-1.5">
-                    <div className="text-[11px] font-bold text-slate-700">Required Documents:</div>
+                    <div className="text-[11px] font-bold text-slate-700">{lang === 'ta' ? 'தேவையான சான்றுகள்:' : 'Required Documents:'}</div>
                     <ul className="space-y-1">
                       {service.docs.map((doc, idx) => (
                         <li key={idx} className="text-[11px] text-slate-600 flex items-center space-x-1.5">
@@ -165,10 +177,10 @@ export default function PassportServicesCatalog() {
 
                 <div className="p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
                   <Link to={`/service/${service.id}`} className="text-xs font-bold text-slate-700 hover:text-sky-800 hover:underline">
-                    View Details
+                    {lang === 'ta' ? 'விவரங்கள்' : 'View Details'}
                   </Link>
                   <button onClick={() => navigate(`/apply/${service.id}`)} className="px-4 py-2 bg-sky-800 hover:bg-sky-900 text-white text-xs font-bold rounded-lg shadow-sm transition-colors flex items-center space-x-1.5">
-                    <span>Apply Now</span>
+                    <span>{t.applyNow || (lang === 'ta' ? 'விண்ணப்பிக்க' : 'Apply Now')}</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </button>
                 </div>
