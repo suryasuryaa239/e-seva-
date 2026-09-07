@@ -98,15 +98,6 @@ export default function AadhaarServicesCatalog() {
       icon: FileCheck
     },
     {
-      id: 'aadhaar-pan-linking',
-      title: 'Aadhaar-PAN Linking Assistance',
-      description: 'Verify and link Aadhaar number with PAN card to ensure active income tax compliance.',
-      fee: '₹50',
-      sla: '24 Hours',
-      docs: ['PAN Card Copy', 'Aadhaar Copy'],
-      icon: ShieldCheck
-    },
-    {
       id: 'aadhaar-new-enrollment',
       title: 'New Aadhaar Enrollment Desk Slot',
       description: 'Assistance for first-time Aadhaar enrollment appointment for newborns, children, and adults.',
@@ -177,11 +168,11 @@ export default function AadhaarServicesCatalog() {
               </p>
             </div>
 
-            <div className="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/10 shrink-0 shadow-lg hidden sm:block">
+            <div className="bg-white rounded-3xl p-4 sm:p-6 border border-orange-200/50 shrink-0 shadow-2xl flex items-center justify-center w-full md:w-80 h-40 sm:h-48 overflow-hidden group">
               <img 
                 src="/aadhaar_logo.png" 
                 alt="Aadhaar Official Logo" 
-                className="h-20 sm:h-24 w-auto object-contain drop-shadow-md"
+                className="w-full h-full object-contain drop-shadow-xl group-hover:scale-105 transition-transform duration-300"
               />
             </div>
           </div>

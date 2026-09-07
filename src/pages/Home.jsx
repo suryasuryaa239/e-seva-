@@ -238,11 +238,11 @@ export default function Home() {
               <div className="space-y-3 relative z-10">
                 {/* 3D IMAGE & BADGE HEADER */}
                 <div className="flex items-center justify-between">
-                  <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-slate-50 to-orange-50/30 border border-slate-200/90 p-2 flex items-center justify-center shadow-sm group-hover:scale-110 group-hover:border-orange-300 transition-all duration-300">
+                  <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-gradient-to-br from-slate-50 to-orange-50/40 border border-slate-200/90 p-2.5 flex items-center justify-center shadow-sm group-hover:scale-105 group-hover:border-orange-400 transition-all duration-300">
                     <img
                       src={cat.image}
                       alt={lang === 'ta' ? cat.name_ta : cat.name}
-                      className="w-full h-full object-contain drop-shadow-lg"
+                      className="w-full h-full object-contain drop-shadow-xl"
                       onError={(e) => {
                         e.target.style.display = 'none';
                         e.target.nextSibling.style.display = 'flex';
