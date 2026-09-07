@@ -161,19 +161,29 @@ export default function AadhaarServicesCatalog() {
             </svg>
           </div>
 
-          <div className="relative z-10 max-w-3xl space-y-3">
-            <div className="inline-flex items-center space-x-2 px-3.5 py-1 bg-orange-500/10 text-orange-400 text-xs font-extrabold rounded-full border border-orange-500/20">
-              <Fingerprint className="w-4 h-4 text-orange-400" />
-              <span>{lang === 'ta' ? 'ஆதார் டிஜிட்டல் உதவி மையம்' : 'AADHAAR DIGITAL ASSISTANCE DESK'}</span>
+          <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div className="max-w-3xl space-y-3">
+              <div className="inline-flex items-center space-x-2 px-3.5 py-1 bg-orange-500/10 text-orange-400 text-xs font-extrabold rounded-full border border-orange-500/20">
+                <Fingerprint className="w-4 h-4 text-orange-400" />
+                <span>{lang === 'ta' ? 'ஆதார் டிஜிட்டல் உதவி மையம்' : 'AADHAAR DIGITAL ASSISTANCE DESK'}</span>
+              </div>
+              
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-heading font-extrabold tracking-tight text-white">
+                {lang === 'ta' ? 'ஆதார் சேவைகள் பட்டியல்' : 'Aadhaar Services Catalog'}
+              </h1>
+              
+              <p className="text-slate-300 text-xs sm:text-sm leading-relaxed font-normal max-w-2xl">
+                {lang === 'ta' ? 'முகவரி மாற்றம், மொபைல் எண் இணைப்பு, PVC ஸ்மார்ட் கார்டு ஆர்டர் மற்றும் ஆதாரைப் புதுப்பித்தல் ஆகியவற்றிற்கான ஆன்லைன் உதவி மையம்.' : 'Professional application assistance for address updates, mobile linking, PVC smart card orders, mandatory 10-year document re-validations, and instant e-Aadhaar downloads.'}
+              </p>
             </div>
-            
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-heading font-extrabold tracking-tight text-white">
-              {lang === 'ta' ? 'ஆதார் சேவைகள் பட்டியல்' : 'Aadhaar Services Catalog'}
-            </h1>
-            
-            <p className="text-slate-300 text-xs sm:text-sm leading-relaxed font-normal max-w-2xl">
-              {lang === 'ta' ? 'முகவரி மாற்றம், மொபைல் எண் இணைப்பு, PVC ஸ்மார்ட் கார்டு ஆர்டர் மற்றும் ஆதாரைப் புதுப்பித்தல் ஆகியவற்றிற்கான ஆன்லைன் உதவி மையம்.' : 'Professional application assistance for address updates, mobile linking, PVC smart card orders, mandatory 10-year document re-validations, and instant e-Aadhaar downloads.'}
-            </p>
+
+            <div className="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/10 shrink-0 shadow-lg hidden sm:block">
+              <img 
+                src="/aadhaar_logo.png" 
+                alt="Aadhaar Official Logo" 
+                className="h-20 sm:h-24 w-auto object-contain drop-shadow-md"
+              />
+            </div>
           </div>
 
           {/* Search Input Box */}
