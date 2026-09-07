@@ -260,9 +260,6 @@ export default function Home() {
                   <h3 className="font-heading font-extrabold text-base sm:text-lg text-slate-900 group-hover:text-orange-600 transition-colors">
                     {lang === 'ta' ? cat.name_ta : cat.name}
                   </h3>
-                  <p className="text-xs text-slate-500 mt-1 font-normal leading-relaxed">
-                    {lang === 'ta' ? cat.desc_ta : cat.desc}
-                  </p>
                 </div>
 
                 {/* VIEW SERVICES ACTION & ARROW */}

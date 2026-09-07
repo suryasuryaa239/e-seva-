@@ -82,9 +82,6 @@ export default function Categories() {
                     <h3 className="font-heading font-bold text-xl text-slate-900 group-hover:text-indigo-600 transition-colors">
                       {cat.name}
                     </h3>
-                    <p className="text-xs text-slate-500 mt-2 leading-relaxed">
-                      {cat.description}
-                    </p>
                   </div>
 
                   {/* Sample sub-services pills */}
