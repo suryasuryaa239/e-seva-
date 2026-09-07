@@ -506,8 +506,8 @@ export default function ApplyService() {
                   <span className="text-xs text-slate-400 font-bold">* {t.requiredFieldsNotice}</span>
                 </div>
 
-                {/* PRIMARY APPLICANT INFORMATION */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* PRIMARY APPLICANT CONTACT & IDENTIFICATION (FOR TRACKING & NOTIFICATIONS) */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div>
                     <label className="block text-xs font-extrabold text-slate-700 mb-1.5">{t.fullName} *</label>
                     <input
@@ -545,79 +545,6 @@ export default function ApplyService() {
                       className={`w-full px-4 py-3 bg-slate-50 border ${errors.user_email ? 'border-rose-500 bg-rose-50/50' : 'border-slate-200'} rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-[#0b192c] focus:bg-white transition-all`}
                     />
                     {errors.user_email && <p className="text-[11px] text-rose-600 font-bold mt-1">{errors.user_email}</p>}
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-extrabold text-slate-700 mb-1.5">{t.dobLabel}</label>
-                    <input
-                      type="date"
-                      name="dob"
-                      value={applicantInfo.dob}
-                      onChange={handleApplicantChange}
-                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-[#0b192c] focus:bg-white transition-all"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-extrabold text-slate-700 mb-1.5">{t.genderLabel}</label>
-                    <select
-                      name="gender"
-                      value={applicantInfo.gender}
-                      onChange={handleApplicantChange}
-                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-[#0b192c] focus:bg-white transition-all"
-                    >
-                      <option value="Male">{t.maleGender}</option>
-                      <option value="Female">{t.femaleGender}</option>
-                      <option value="Transgender">{t.transgenderGender}</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-extrabold text-slate-700 mb-1.5">{t.stateLabel}</label>
-                    <input
-                      type="text"
-                      name="state"
-                      value={applicantInfo.state}
-                      onChange={handleApplicantChange}
-                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-[#0b192c] focus:bg-white transition-all"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-extrabold text-slate-700 mb-1.5">{t.districtLabel}</label>
-                    <input
-                      type="text"
-                      name="district"
-                      placeholder="e.g. Chennai"
-                      value={applicantInfo.district}
-                      onChange={handleApplicantChange}
-                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-[#0b192c] focus:bg-white transition-all"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-extrabold text-slate-700 mb-1.5">{t.pincodeLabel}</label>
-                    <input
-                      type="text"
-                      name="pincode"
-                      placeholder="600001"
-                      value={applicantInfo.pincode}
-                      onChange={handleApplicantChange}
-                      className={`w-full px-4 py-3 bg-slate-50 border ${errors.pincode ? 'border-rose-500 bg-rose-50/50' : 'border-slate-200'} rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-[#0b192c] focus:bg-white transition-all`}
-                    />
-                    {errors.pincode && <p className="text-[11px] text-rose-600 font-bold mt-1">{errors.pincode}</p>}
-                  </div>
-
-                  <div className="sm:col-span-2">
-                    <label className="block text-xs font-extrabold text-slate-700 mb-1.5">{t.addressLabel}</label>
-                    <textarea
-                      rows={2}
-                      name="address"
-                      placeholder={lang === 'ta' ? 'கதவு எண், தெரு பெயர், பகுதி...' : 'Door No, Street Name, Area...'}
-                      value={applicantInfo.address}
-                      onChange={handleApplicantChange}
-                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-[#0b192c] focus:bg-white transition-all"
-                    />
                   </div>
                 </div>
 
@@ -853,10 +780,10 @@ export default function ApplyService() {
 
                           {!currentFile ? (
                             <div className="space-y-2 pt-1">
-                              <label className="block w-full py-3.5 px-3 bg-white border border-slate-200 rounded-xl text-center cursor-pointer hover:bg-orange-50 hover:border-orange-300 transition-colors shadow-xs">
-                                <span className="text-xs font-extrabold text-orange-600 flex items-center justify-center gap-1.5">
-                                  <Upload className="w-4 h-4" />
-                                  <span>{t.chooseFileOrDrag}</span>
+                              <label className="block w-full py-3.5 px-4 bg-orange-50 hover:bg-orange-100/80 border-2 border-dashed border-orange-300 rounded-xl text-center cursor-pointer transition-colors shadow-xs group/up">
+                                <span className="text-xs font-black text-orange-600 flex items-center justify-center gap-2 group-hover/up:scale-105 transition-transform">
+                                  <Upload className="w-4 h-4 text-orange-600" />
+                                  <span>{lang === 'ta' ? 'கோப்பைத் தேர்ந்தெடுத்து பதிவேற்றவும் (Upload File)' : 'Select & Upload File'}</span>
                                 </span>
                                 <input
                                   type="file"

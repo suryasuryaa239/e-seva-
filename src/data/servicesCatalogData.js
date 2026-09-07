@@ -5,6 +5,64 @@ export const DEFAULT_SERVICES_MAP = {
   // -------------------------------------------------------------
   // 1. AADHAAR SERVICES
   // -------------------------------------------------------------
+  'new-aadhaar-enrollment': {
+    id: 101,
+    category_name: 'Aadhaar Services',
+    category_slug: 'aadhaar-services',
+    name: 'New Aadhaar Enrollment Assistance',
+    slug: 'new-aadhaar-enrollment',
+    description: 'Appointment slot booking and documentation assistance for fresh UIDAI Aadhaar Enrollment.',
+    eligibility: 'All resident citizens and newborns without existing Aadhaar enrolment.',
+    processing_time: '15-30 Working Days',
+    fee: 0,
+    fields: [
+      { name: 'full_name', label: 'Full Name of Applicant', type: 'text', placeholder: 'Karthik Subramanian', required: true },
+      { name: 'dob', label: 'Date of Birth', type: 'date', required: true },
+      { name: 'gender', label: 'Gender', type: 'select', options: ['Male', 'Female', 'Transgender'], required: true },
+      { name: 'guardian_name', label: 'Father / Mother / Guardian Name', type: 'text', placeholder: 'Subramanian S', required: true },
+      { name: 'mobile_number', label: 'Mobile Number', type: 'phone', placeholder: '9876543210', required: true },
+      { name: 'email', label: 'Email Address', type: 'email', placeholder: 'user@example.com', required: false },
+      { name: 'address', label: 'Residential Address', type: 'textarea', placeholder: 'Door No, Street Name, Village/City', required: true },
+      { name: 'district', label: 'District', type: 'text', placeholder: 'Chennai', required: true },
+      { name: 'state', label: 'State', type: 'text', placeholder: 'Tamil Nadu', required: true },
+      { name: 'pincode', label: '6-Digit Pincode', type: 'text', placeholder: '600001', required: true }
+    ],
+    documents: [
+      { name: 'Identity Proof', description: 'Voter ID, Passport, PAN Card, or Birth Certificate', required: true },
+      { name: 'Address Proof', description: 'Ration Card, Electricity Bill, or Bank Passbook', required: true },
+      { name: 'Date of Birth Proof', description: 'Birth Certificate or School Leaving Marksheet', required: true },
+      { name: 'Passport Photograph', description: 'Recent color photograph of applicant', required: true }
+    ]
+  },
+  'new-aadhaar-enrollment-booking': {
+    id: 101,
+    category_name: 'Aadhaar Services',
+    category_slug: 'aadhaar-services',
+    name: 'New Aadhaar Enrollment Assistance',
+    slug: 'new-aadhaar-enrollment-booking',
+    description: 'Appointment slot booking and documentation assistance for fresh UIDAI Aadhaar Enrollment.',
+    eligibility: 'All resident citizens and newborns without existing Aadhaar enrolment.',
+    processing_time: '15-30 Working Days',
+    fee: 0,
+    fields: [
+      { name: 'full_name', label: 'Full Name of Applicant', type: 'text', placeholder: 'Karthik Subramanian', required: true },
+      { name: 'dob', label: 'Date of Birth', type: 'date', required: true },
+      { name: 'gender', label: 'Gender', type: 'select', options: ['Male', 'Female', 'Transgender'], required: true },
+      { name: 'guardian_name', label: 'Father / Mother / Guardian Name', type: 'text', placeholder: 'Subramanian S', required: true },
+      { name: 'mobile_number', label: 'Mobile Number', type: 'phone', placeholder: '9876543210', required: true },
+      { name: 'email', label: 'Email Address', type: 'email', placeholder: 'user@example.com', required: false },
+      { name: 'address', label: 'Residential Address', type: 'textarea', placeholder: 'Door No, Street Name, Village/City', required: true },
+      { name: 'district', label: 'District', type: 'text', placeholder: 'Chennai', required: true },
+      { name: 'state', label: 'State', type: 'text', placeholder: 'Tamil Nadu', required: true },
+      { name: 'pincode', label: '6-Digit Pincode', type: 'text', placeholder: '600001', required: true }
+    ],
+    documents: [
+      { name: 'Identity Proof', description: 'Voter ID, Passport, PAN Card, or Birth Certificate', required: true },
+      { name: 'Address Proof', description: 'Ration Card, Electricity Bill, or Bank Passbook', required: true },
+      { name: 'Date of Birth Proof', description: 'Birth Certificate or School Leaving Marksheet', required: true },
+      { name: 'Passport Photograph', description: 'Recent color photograph of applicant', required: true }
+    ]
+  },
   'aadhaar-address-update': {
     id: 1,
     category_name: 'Aadhaar Services',
@@ -17,6 +75,7 @@ export const DEFAULT_SERVICES_MAP = {
     fee: 50,
     fields: [
       { name: 'aadhaar_number', label: '12-Digit Aadhaar Number', type: 'text', placeholder: '1234 5678 9012', required: true },
+      { name: 'current_address', label: 'Current Address in Aadhaar', type: 'textarea', placeholder: 'Old address details', required: true },
       { name: 'new_house_no', label: 'New House / Door / Flat No', type: 'text', placeholder: 'Flat 3B, Sunshine Apartments', required: true },
       { name: 'new_street', label: 'Street / Road Name', type: 'text', placeholder: 'Gandhi Road', required: true },
       { name: 'new_area', label: 'Area / Locality', type: 'text', placeholder: 'Adyar', required: true },
@@ -27,8 +86,8 @@ export const DEFAULT_SERVICES_MAP = {
       { name: 'mobile_number', label: 'Linked Mobile Number', type: 'phone', placeholder: '9876543210', required: true }
     ],
     documents: [
-      { name: 'Proof of Address (PoA)', description: 'Electricity Bill, Bank Passbook, Passport, or Rent Agreement', required: true },
-      { name: 'Aadhaar Card Copy', description: 'Copy of existing Aadhaar Card', required: true }
+      { name: 'Aadhaar Card Copy', description: 'Copy of existing Aadhaar Card', required: true },
+      { name: 'Valid Address Proof', description: 'Electricity Bill, Bank Passbook, Passport, or Rent Agreement', required: true }
     ]
   },
   'aadhaar-name-update': {
@@ -45,12 +104,12 @@ export const DEFAULT_SERVICES_MAP = {
       { name: 'aadhaar_number', label: '12-Digit Aadhaar Number', type: 'text', placeholder: '1234 5678 9012', required: true },
       { name: 'current_name', label: 'Current Name in Aadhaar', type: 'text', placeholder: 'Karthik S', required: true },
       { name: 'correct_name', label: 'Correct New Name', type: 'text', placeholder: 'Karthik Subramanian', required: true },
-      { name: 'reason', label: 'Reason for Name Correction', type: 'select', options: ['Spelling Error', 'Post Marriage Name Change', 'Gazette Name Change'], required: true },
+      { name: 'reason', label: 'Reason for Name Change', type: 'select', options: ['Spelling Error Correction', 'Post Marriage Name Change', 'Gazette Name Change'], required: true },
       { name: 'mobile_number', label: 'Linked Mobile Number', type: 'phone', placeholder: '9876543210', required: true }
     ],
     documents: [
-      { name: 'Supporting Identity Proof', description: 'Voter ID, Passport, PAN Card, or Gazette Notification', required: true },
-      { name: 'Aadhaar Copy', description: 'Existing Aadhaar Card copy', required: true }
+      { name: 'Aadhaar Card Copy', description: 'Copy of existing Aadhaar Card', required: true },
+      { name: 'Name Change / Supporting Name Proof', description: 'Voter ID, Passport, PAN Card, or Gazette Notification', required: true }
     ]
   },
   'aadhaar-mobile-update': {
@@ -65,10 +124,205 @@ export const DEFAULT_SERVICES_MAP = {
     fee: 50,
     fields: [
       { name: 'aadhaar_number', label: '12-Digit Aadhaar Number', type: 'text', placeholder: '1234 5678 9012', required: true },
+      { name: 'current_mobile', label: 'Current Mobile Number (if any)', type: 'phone', placeholder: '9876543210', required: false },
       { name: 'new_mobile', label: 'New Mobile Number to Link', type: 'phone', placeholder: '9876543210', required: true }
     ],
     documents: [
       { name: 'Aadhaar Card Copy', description: 'Copy of existing Aadhaar Card', required: true }
+    ]
+  },
+  'aadhaar-email-update': {
+    id: 102,
+    category_name: 'Aadhaar Services',
+    category_slug: 'aadhaar-services',
+    name: 'Aadhaar Email ID Update',
+    slug: 'aadhaar-email-update',
+    description: 'Link or update official email address in your UIDAI Aadhaar record.',
+    eligibility: 'Aadhaar cardholders updating contact information.',
+    processing_time: '24-48 Hours',
+    fee: 50,
+    fields: [
+      { name: 'aadhaar_number', label: '12-Digit Aadhaar Number', type: 'text', placeholder: '1234 5678 9012', required: true },
+      { name: 'new_email', label: 'New Email Address', type: 'email', placeholder: 'user@example.com', required: true },
+      { name: 'mobile_number', label: 'Linked Mobile Number', type: 'phone', placeholder: '9876543210', required: true }
+    ],
+    documents: [
+      { name: 'Aadhaar Card Copy', description: 'Copy of existing Aadhaar Card', required: true }
+    ]
+  },
+  'aadhaar-dob-update': {
+    id: 103,
+    category_name: 'Aadhaar Services',
+    category_slug: 'aadhaar-services',
+    name: 'Aadhaar Date of Birth Update',
+    slug: 'aadhaar-dob-update',
+    description: 'Correction or update of Date of Birth in official UIDAI database.',
+    eligibility: 'Aadhaar cardholders with official DOB proof.',
+    processing_time: '5-7 Working Days',
+    fee: 50,
+    fields: [
+      { name: 'aadhaar_number', label: '12-Digit Aadhaar Number', type: 'text', placeholder: '1234 5678 9012', required: true },
+      { name: 'current_dob', label: 'Current Date of Birth in Aadhaar', type: 'date', required: true },
+      { name: 'correct_dob', label: 'Correct Date of Birth', type: 'date', required: true },
+      { name: 'reason', label: 'Reason for Correction', type: 'text', placeholder: 'Typographical error in original card', required: true }
+    ],
+    documents: [
+      { name: 'Aadhaar Card Copy', description: 'Copy of existing Aadhaar Card', required: true },
+      { name: 'Date of Birth Proof', description: 'Birth Certificate, SSLC Marksheet, or Passport', required: true }
+    ]
+  },
+  'aadhaar-gender-update': {
+    id: 104,
+    category_name: 'Aadhaar Services',
+    category_slug: 'aadhaar-services',
+    name: 'Aadhaar Gender Update',
+    slug: 'aadhaar-gender-update',
+    description: 'Correction of gender classification in UIDAI Aadhaar database.',
+    eligibility: 'Aadhaar holders updating gender records.',
+    processing_time: '3-5 Working Days',
+    fee: 50,
+    fields: [
+      { name: 'aadhaar_number', label: '12-Digit Aadhaar Number', type: 'text', placeholder: '1234 5678 9012', required: true },
+      { name: 'current_gender', label: 'Current Gender in Card', type: 'select', options: ['Male', 'Female', 'Transgender'], required: true },
+      { name: 'correct_gender', label: 'Correct Gender', type: 'select', options: ['Male', 'Female', 'Transgender'], required: true }
+    ],
+    documents: [
+      { name: 'Aadhaar Card Copy', description: 'Copy of existing Aadhaar Card', required: true }
+    ]
+  },
+  'aadhaar-photo-update': {
+    id: 105,
+    category_name: 'Aadhaar Services',
+    category_slug: 'aadhaar-services',
+    name: 'Aadhaar Photo Update Assistance',
+    slug: 'aadhaar-photo-update',
+    description: 'Facilitation for updating your photograph in UIDAI biometric records.',
+    eligibility: 'All Aadhaar cardholders.',
+    processing_time: '3-5 Working Days',
+    fee: 50,
+    fields: [
+      { name: 'aadhaar_number', label: '12-Digit Aadhaar Number', type: 'text', placeholder: '1234 5678 9012', required: true },
+      { name: 'applicant_name', label: 'Applicant Name', type: 'text', placeholder: 'Karthik Subramanian', required: true },
+      { name: 'mobile_number', label: 'Mobile Number', type: 'phone', placeholder: '9876543210', required: true }
+    ],
+    documents: [
+      { name: 'Aadhaar Card Copy', description: 'Copy of existing Aadhaar Card', required: true },
+      { name: 'Required Passport Photo', description: 'Recent clear passport color photograph', required: true }
+    ]
+  },
+  'aadhaar-biometric-update': {
+    id: 106,
+    category_name: 'Aadhaar Services',
+    category_slug: 'aadhaar-services',
+    name: 'Aadhaar Biometric Update Assistance',
+    slug: 'aadhaar-biometric-update',
+    description: 'Update fingerprints and iris scan biometrics (mandatory for children turning 5 and 15).',
+    eligibility: 'Aadhaar holders requiring biometric updates.',
+    processing_time: '3-5 Working Days',
+    fee: 100,
+    fields: [
+      { name: 'aadhaar_number', label: '12-Digit Aadhaar Number', type: 'text', placeholder: '1234 5678 9012', required: true },
+      { name: 'applicant_name', label: 'Applicant Full Name', type: 'text', placeholder: 'Karthik Subramanian', required: true },
+      { name: 'dob', label: 'Date of Birth', type: 'date', required: true },
+      { name: 'mobile_number', label: 'Mobile Number', type: 'phone', placeholder: '9876543210', required: true }
+    ],
+    documents: [
+      { name: 'Aadhaar Card Copy', description: 'Copy of existing Aadhaar Card', required: true }
+    ]
+  },
+  'aadhaar-document-update': {
+    id: 107,
+    category_name: 'Aadhaar Services',
+    category_slug: 'aadhaar-services',
+    name: 'Aadhaar Mandatory Document Update',
+    slug: 'aadhaar-document-update',
+    description: 'Mandatory re-validation of Identity and Address documents for 10+ year old Aadhaar cards.',
+    eligibility: 'Cardholders whose Aadhaar was issued over 10 years ago without recent updates.',
+    processing_time: '3-5 Working Days',
+    fee: 50,
+    fields: [
+      { name: 'aadhaar_number', label: '12-Digit Aadhaar Number', type: 'text', placeholder: '1234 5678 9012', required: true },
+      { name: 'applicant_name', label: 'Applicant Name', type: 'text', placeholder: 'Karthik Subramanian', required: true },
+      { name: 'mobile_number', label: 'Linked Mobile Number', type: 'phone', placeholder: '9876543210', required: true }
+    ],
+    documents: [
+      { name: 'Identity Proof', description: 'Voter ID, PAN Card, Passport, or Driving Licence', required: true },
+      { name: 'Address Proof', description: 'Ration Card, Electricity Bill, or Bank Passbook', required: true }
+    ]
+  },
+  'aadhaar-download': {
+    id: 108,
+    category_name: 'Aadhaar Services',
+    category_slug: 'aadhaar-services',
+    name: 'Aadhaar Digital Download Assistance',
+    slug: 'aadhaar-download',
+    description: 'Instant assistance for downloading official password-protected e-Aadhaar PDF copy.',
+    eligibility: 'All Aadhaar cardholders with linked mobile number for OTP.',
+    processing_time: 'Instant / 1 Hour',
+    fee: 30,
+    fields: [
+      { name: 'aadhaar_number', label: '12-Digit Aadhaar / Enrolment ID (EID)', type: 'text', placeholder: '1234 5678 9012', required: true },
+      { name: 'applicant_name', label: 'Full Name as in Aadhaar', type: 'text', placeholder: 'Karthik Subramanian', required: true },
+      { name: 'mobile_number', label: 'Linked Mobile Number for OTP', type: 'phone', placeholder: '9876543210', required: true },
+      { name: 'email', label: 'Email for Sending PDF', type: 'email', placeholder: 'user@example.com', required: true }
+    ],
+    documents: []
+  },
+  'aadhaar-status-check': {
+    id: 109,
+    category_name: 'Aadhaar Services',
+    category_slug: 'aadhaar-services',
+    name: 'Aadhaar Status Check',
+    slug: 'aadhaar-status-check',
+    description: 'Check status of your new enrolment or update request.',
+    eligibility: 'All applicants with EID or URN reference number.',
+    processing_time: 'Instant',
+    fee: 0,
+    fields: [
+      { name: 'aadhaar_eid', label: 'Aadhaar / Application Reference Number (URN/EID)', type: 'text', placeholder: '1234/56789/01234', required: true },
+      { name: 'mobile_number', label: 'Registered Mobile Number', type: 'phone', placeholder: '9876543210', required: true }
+    ],
+    documents: []
+  },
+  'aadhaar-correction-assistance': {
+    id: 110,
+    category_name: 'Aadhaar Services',
+    category_slug: 'aadhaar-services',
+    name: 'Aadhaar Dynamic Correction Assistance',
+    slug: 'aadhaar-correction-assistance',
+    description: 'Customized correction assistant for any demographic detail update in Aadhaar.',
+    eligibility: 'Aadhaar holders seeking targeted data corrections.',
+    processing_time: '3-7 Working Days',
+    fee: 50,
+    fields: [
+      { name: 'aadhaar_number', label: '12-Digit Aadhaar Number', type: 'text', placeholder: '1234 5678 9012', required: true },
+      { name: 'correction_type', label: 'Correction Type', type: 'select', options: ['Name', 'Date of Birth', 'Gender', 'Address', 'Mobile Number', 'Email', 'Other'], required: true },
+      
+      // Conditional Fields
+      { name: 'current_name', label: 'Current Name in Aadhaar', type: 'text', placeholder: 'Current Name', depends_on_field: 'correction_type', depends_on_value: 'Name', required: true },
+      { name: 'new_name', label: 'New Correct Name', type: 'text', placeholder: 'New Name', depends_on_field: 'correction_type', depends_on_value: 'Name', required: true },
+
+      { name: 'current_dob', label: 'Current Date of Birth', type: 'date', depends_on_field: 'correction_type', depends_on_value: 'Date of Birth', required: true },
+      { name: 'correct_dob', label: 'Correct Date of Birth', type: 'date', depends_on_field: 'correction_type', depends_on_value: 'Date of Birth', required: true },
+
+      { name: 'current_gender', label: 'Current Gender', type: 'select', options: ['Male', 'Female', 'Transgender'], depends_on_field: 'correction_type', depends_on_value: 'Gender', required: true },
+      { name: 'correct_gender', label: 'Correct Gender', type: 'select', options: ['Male', 'Female', 'Transgender'], depends_on_field: 'correction_type', depends_on_value: 'Gender', required: true },
+
+      { name: 'current_address', label: 'Current Address', type: 'textarea', placeholder: 'Current Address', depends_on_field: 'correction_type', depends_on_value: 'Address', required: true },
+      { name: 'new_address', label: 'New Complete Address', type: 'textarea', placeholder: 'New Address', depends_on_field: 'correction_type', depends_on_value: 'Address', required: true },
+
+      { name: 'current_mobile', label: 'Current Mobile', type: 'phone', placeholder: 'Old Mobile Number', depends_on_field: 'correction_type', depends_on_value: 'Mobile Number', required: false },
+      { name: 'new_mobile', label: 'New Mobile Number', type: 'phone', placeholder: 'New Mobile Number', depends_on_field: 'correction_type', depends_on_value: 'Mobile Number', required: true },
+
+      { name: 'new_email', label: 'New Email ID', type: 'email', placeholder: 'New Email Address', depends_on_field: 'correction_type', depends_on_value: 'Email', required: true },
+
+      { name: 'other_details', label: 'Correction Details & Explanation', type: 'textarea', placeholder: 'Explain what needs correction', depends_on_field: 'correction_type', depends_on_value: 'Other', required: true },
+
+      { name: 'mobile_number', label: 'Mobile Number for Communication', type: 'phone', placeholder: '9876543210', required: true }
+    ],
+    documents: [
+      { name: 'Aadhaar Card Copy', description: 'Copy of existing Aadhaar Card', required: true },
+      { name: 'Supporting Correction Proof', description: 'Relevant legal or government proof supporting the requested change', required: true }
     ]
   },
   'pvc-aadhaar-card-order': {
@@ -83,7 +337,11 @@ export const DEFAULT_SERVICES_MAP = {
     fee: 50,
     fields: [
       { name: 'aadhaar_number', label: '12-Digit Aadhaar Number', type: 'text', placeholder: '1234 5678 9012', required: true },
+      { name: 'applicant_name', label: 'Applicant Name', type: 'text', placeholder: 'Karthik Subramanian', required: true },
       { name: 'delivery_address', label: 'Complete Delivery Address', type: 'textarea', placeholder: 'Door No, Street Name, City, Pincode', required: true },
+      { name: 'district', label: 'District', type: 'text', placeholder: 'Chennai', required: true },
+      { name: 'state', label: 'State', type: 'text', placeholder: 'Tamil Nadu', required: true },
+      { name: 'pincode', label: 'Pincode', type: 'text', placeholder: '600001', required: true },
       { name: 'mobile_number', label: 'Mobile Number for Tracking', type: 'phone', placeholder: '9876543210', required: true }
     ],
     documents: [
@@ -102,7 +360,11 @@ export const DEFAULT_SERVICES_MAP = {
     fee: 50,
     fields: [
       { name: 'aadhaar_number', label: '12-Digit Aadhaar Number', type: 'text', placeholder: '1234 5678 9012', required: true },
+      { name: 'applicant_name', label: 'Applicant Name', type: 'text', placeholder: 'Karthik Subramanian', required: true },
       { name: 'delivery_address', label: 'Complete Delivery Address', type: 'textarea', placeholder: 'Door No, Street Name, City, Pincode', required: true },
+      { name: 'district', label: 'District', type: 'text', placeholder: 'Chennai', required: true },
+      { name: 'state', label: 'State', type: 'text', placeholder: 'Tamil Nadu', required: true },
+      { name: 'pincode', label: 'Pincode', type: 'text', placeholder: '600001', required: true },
       { name: 'mobile_number', label: 'Mobile Number for Tracking', type: 'phone', placeholder: '9876543210', required: true }
     ],
     documents: [
@@ -173,14 +435,50 @@ export const DEFAULT_SERVICES_MAP = {
     fee: 107,
     fields: [
       { name: 'existing_pan', label: 'Existing 10-Digit PAN Number', type: 'text', placeholder: 'ABCDE1234F', required: true },
-      { name: 'correct_name', label: 'Correct Applicant Full Name', type: 'text', placeholder: 'Karthik Subramanian', required: true },
-      { name: 'correct_father_name', label: 'Correct Father Full Name', type: 'text', placeholder: 'Subramanian S', required: true },
-      { name: 'correct_dob', label: 'Correct Date of Birth', type: 'date', placeholder: '', required: true },
+      { name: 'correction_type', label: 'Field to Correct', type: 'select', options: ['Name', 'Date of Birth', "Father's Name", 'Address', 'Signature', 'Photograph', 'Other'], required: true },
+      
+      // Conditional Fields
+      { name: 'correct_name', label: 'Correct Applicant Full Name', type: 'text', placeholder: 'Karthik Subramanian', depends_on_field: 'correction_type', depends_on_value: 'Name', required: true },
+      { name: 'correct_dob', label: 'Correct Date of Birth', type: 'date', depends_on_field: 'correction_type', depends_on_value: 'Date of Birth', required: true },
+      { name: 'correct_father_name', label: 'Correct Father Full Name', type: 'text', placeholder: 'Subramanian S', depends_on_field: 'correction_type', depends_on_value: "Father's Name", required: true },
+      { name: 'new_address', label: 'New Communication Address', type: 'textarea', placeholder: 'Door No, Street Name, Pincode', depends_on_field: 'correction_type', depends_on_value: 'Address', required: true },
+      { name: 'other_details', label: 'Explanation for Correction', type: 'textarea', placeholder: 'Provide details regarding signature/photo or other corrections', depends_on_field: 'correction_type', depends_on_value: 'Other', required: true },
+
+      { name: 'aadhaar_number', label: '12-Digit Aadhaar Number', type: 'text', placeholder: '1234 5678 9012', required: true },
       { name: 'mobile_number', label: 'Mobile Number', type: 'phone', placeholder: '9876543210', required: true }
     ],
     documents: [
-      { name: 'Existing PAN Copy', description: 'Copy of existing PAN Card', required: true },
-      { name: 'Proof for Correction', description: 'Aadhaar Card / Passport / Gazette Certificate', required: true }
+      { name: 'Existing PAN Card Copy', description: 'Copy of existing PAN Card', required: true },
+      { name: 'Supporting Correction Proof', description: 'Aadhaar Card, Passport, or Gazette Certificate supporting the correction', required: true }
+    ]
+  },
+  'pan-correction': {
+    id: 6,
+    category_name: 'PAN Services',
+    category_slug: 'pan-services',
+    name: 'PAN Card Correction / Update',
+    slug: 'pan-correction',
+    description: 'Correct name, father name, date of birth, or signature in existing PAN record.',
+    eligibility: 'Existing PAN cardholders requiring demographic or photo corrections.',
+    processing_time: '7-10 Working Days',
+    fee: 107,
+    fields: [
+      { name: 'existing_pan', label: 'Existing 10-Digit PAN Number', type: 'text', placeholder: 'ABCDE1234F', required: true },
+      { name: 'correction_type', label: 'Field to Correct', type: 'select', options: ['Name', 'Date of Birth', "Father's Name", 'Address', 'Signature', 'Photograph', 'Other'], required: true },
+      
+      // Conditional Fields
+      { name: 'correct_name', label: 'Correct Applicant Full Name', type: 'text', placeholder: 'Karthik Subramanian', depends_on_field: 'correction_type', depends_on_value: 'Name', required: true },
+      { name: 'correct_dob', label: 'Correct Date of Birth', type: 'date', depends_on_field: 'correction_type', depends_on_value: 'Date of Birth', required: true },
+      { name: 'correct_father_name', label: 'Correct Father Full Name', type: 'text', placeholder: 'Subramanian S', depends_on_field: 'correction_type', depends_on_value: "Father's Name", required: true },
+      { name: 'new_address', label: 'New Communication Address', type: 'textarea', placeholder: 'Door No, Street Name, Pincode', depends_on_field: 'correction_type', depends_on_value: 'Address', required: true },
+      { name: 'other_details', label: 'Explanation for Correction', type: 'textarea', placeholder: 'Provide details regarding signature/photo or other corrections', depends_on_field: 'correction_type', depends_on_value: 'Other', required: true },
+
+      { name: 'aadhaar_number', label: '12-Digit Aadhaar Number', type: 'text', placeholder: '1234 5678 9012', required: true },
+      { name: 'mobile_number', label: 'Mobile Number', type: 'phone', placeholder: '9876543210', required: true }
+    ],
+    documents: [
+      { name: 'Existing PAN Card Copy', description: 'Copy of existing PAN Card', required: true },
+      { name: 'Supporting Correction Proof', description: 'Aadhaar Card, Passport, or Gazette Certificate supporting the correction', required: true }
     ]
   },
   'pan-aadhaar-link': {
@@ -203,6 +501,23 @@ export const DEFAULT_SERVICES_MAP = {
       { name: 'PAN Copy', description: 'Copy of PAN Card', required: true },
       { name: 'Aadhaar Copy', description: 'Copy of Aadhaar Card', required: true }
     ]
+  },
+  'pan-download-status': {
+    id: 111,
+    category_name: 'PAN Services',
+    category_slug: 'pan-services',
+    name: 'e-PAN Download & Status Check',
+    slug: 'pan-download-status',
+    description: 'Instant download of official e-PAN PDF document or status inquiry.',
+    eligibility: 'All PAN applicants.',
+    processing_time: 'Instant / 1 Hour',
+    fee: 30,
+    fields: [
+      { name: 'pan_number', label: '10-Digit PAN Number / Acknowledgement No', type: 'text', placeholder: 'ABCDE1234F or Ack No', required: true },
+      { name: 'aadhaar_number', label: '12-Digit Aadhaar Number', type: 'text', placeholder: '1234 5678 9012', required: true },
+      { name: 'mobile_number', label: 'Registered Mobile Number', type: 'phone', placeholder: '9876543210', required: true }
+    ],
+    documents: []
   },
 
   // -------------------------------------------------------------
@@ -705,6 +1020,416 @@ export const DEFAULT_SERVICES_MAP = {
       { name: 'New Member Aadhaar / Birth Certificate', description: 'Aadhaar copy or Birth Certificate for child', required: true },
       { name: 'Smart Ration Card Copy', description: 'Front & back of existing Smart Card', required: true }
     ]
+  },
+
+  // -------------------------------------------------------------
+  // SHORT SLUG ALIASES FOR DIRECT ROUTING MAPPING
+  // -------------------------------------------------------------
+  'aadhaar-correction': {
+    id: 110,
+    category_name: 'Aadhaar Services',
+    category_slug: 'aadhaar-services',
+    name: 'Aadhaar Dynamic Correction Assistance',
+    slug: 'aadhaar-correction',
+    description: 'Customized correction assistant for any demographic detail update in Aadhaar.',
+    eligibility: 'Aadhaar holders seeking targeted data corrections.',
+    processing_time: '3-7 Working Days',
+    fee: 50,
+    fields: [
+      { name: 'aadhaar_number', label: '12-Digit Aadhaar Number', type: 'text', placeholder: '1234 5678 9012', required: true },
+      { name: 'correction_type', label: 'Correction Type', type: 'select', options: ['Name', 'Date of Birth', 'Gender', 'Address', 'Mobile Number', 'Email', 'Other'], required: true },
+      { name: 'current_name', label: 'Current Name in Aadhaar', type: 'text', placeholder: 'Current Name', depends_on_field: 'correction_type', depends_on_value: 'Name', required: true },
+      { name: 'new_name', label: 'New Correct Name', type: 'text', placeholder: 'New Name', depends_on_field: 'correction_type', depends_on_value: 'Name', required: true },
+      { name: 'current_dob', label: 'Current Date of Birth', type: 'date', depends_on_field: 'correction_type', depends_on_value: 'Date of Birth', required: true },
+      { name: 'correct_dob', label: 'Correct Date of Birth', type: 'date', depends_on_field: 'correction_type', depends_on_value: 'Date of Birth', required: true },
+      { name: 'current_gender', label: 'Current Gender', type: 'select', options: ['Male', 'Female', 'Transgender'], depends_on_field: 'correction_type', depends_on_value: 'Gender', required: true },
+      { name: 'correct_gender', label: 'Correct Gender', type: 'select', options: ['Male', 'Female', 'Transgender'], depends_on_field: 'correction_type', depends_on_value: 'Gender', required: true },
+      { name: 'current_address', label: 'Current Address', type: 'textarea', placeholder: 'Current Address', depends_on_field: 'correction_type', depends_on_value: 'Address', required: true },
+      { name: 'new_address', label: 'New Complete Address', type: 'textarea', placeholder: 'New Address', depends_on_field: 'correction_type', depends_on_value: 'Address', required: true },
+      { name: 'current_mobile', label: 'Current Mobile', type: 'phone', placeholder: 'Old Mobile Number', depends_on_field: 'correction_type', depends_on_value: 'Mobile Number', required: false },
+      { name: 'new_mobile', label: 'New Mobile Number', type: 'phone', placeholder: 'New Mobile Number', depends_on_field: 'correction_type', depends_on_value: 'Mobile Number', required: true },
+      { name: 'new_email', label: 'New Email ID', type: 'email', placeholder: 'New Email Address', depends_on_field: 'correction_type', depends_on_value: 'Email', required: true },
+      { name: 'other_details', label: 'Correction Details & Explanation', type: 'textarea', placeholder: 'Explain what needs correction', depends_on_field: 'correction_type', depends_on_value: 'Other', required: true },
+      { name: 'mobile_number', label: 'Mobile Number for Communication', type: 'phone', placeholder: '9876543210', required: true }
+    ],
+    documents: [
+      { name: 'Aadhaar Card Copy', description: 'Copy of existing Aadhaar Card', required: true },
+      { name: 'Supporting Correction Proof', description: 'Relevant legal or government proof supporting requested change', required: true }
+    ]
+  },
+  'pan-new': {
+    id: 5,
+    category_name: 'PAN Services',
+    category_slug: 'pan-services',
+    name: 'New PAN Card Application (Form 49A)',
+    slug: 'pan-new',
+    description: 'Apply for fresh Permanent Account Number (PAN) card.',
+    eligibility: 'Indian citizens and entities requiring PAN.',
+    processing_time: '7-10 Working Days',
+    fee: 107,
+    fields: [
+      { name: 'full_name', label: 'Applicant Full Name', type: 'text', placeholder: 'Karthik Subramanian', required: true },
+      { name: 'father_name', label: 'Father Full Name', type: 'text', placeholder: 'Subramanian S', required: true },
+      { name: 'mother_name', label: 'Mother Full Name', type: 'text', placeholder: 'Lakshmi S', required: false },
+      { name: 'dob', label: 'Date of Birth', type: 'date', placeholder: '', required: true },
+      { name: 'gender', label: 'Gender', type: 'select', options: ['Male', 'Female', 'Transgender'], required: true },
+      { name: 'aadhaar_number', label: '12-Digit Aadhaar Number', type: 'text', placeholder: '1234 5678 9012', required: true },
+      { name: 'address', label: 'Residential Address', type: 'textarea', placeholder: 'Door No, Street, City, District, State, Pincode', required: true },
+      { name: 'mobile_number', label: 'Mobile Number', type: 'phone', placeholder: '9876543210', required: true },
+      { name: 'email', label: 'Email Address', type: 'email', placeholder: 'user@example.com', required: true }
+    ],
+    documents: [
+      { name: 'Identity Proof', description: 'Aadhaar Card / Voter ID / Passport', required: true },
+      { name: 'Address Proof', description: 'Aadhaar Card / Electricity Bill / Bank Passbook', required: true },
+      { name: 'DOB Proof', description: 'Birth Certificate / SSLC Marksheet / Aadhaar Card', required: true },
+      { name: 'Photograph', description: 'Recent passport size photo', required: true },
+      { name: 'Signature', description: 'Scanned signature copy', required: true }
+    ]
+  },
+  'pan-download': {
+    id: 111,
+    category_name: 'PAN Services',
+    category_slug: 'pan-services',
+    name: 'e-PAN Download Assistance',
+    slug: 'pan-download',
+    description: 'Instant download of official e-PAN PDF document.',
+    eligibility: 'All PAN applicants.',
+    processing_time: 'Instant / 1 Hour',
+    fee: 30,
+    fields: [
+      { name: 'pan_number', label: '10-Digit PAN Number / Acknowledgement No', type: 'text', placeholder: 'ABCDE1234F or Ack No', required: true },
+      { name: 'aadhaar_number', label: '12-Digit Aadhaar Number', type: 'text', placeholder: '1234 5678 9012', required: true },
+      { name: 'mobile_number', label: 'Registered Mobile Number', type: 'phone', placeholder: '9876543210', required: true }
+    ],
+    documents: []
+  },
+  'pan-status': {
+    id: 111,
+    category_name: 'PAN Services',
+    category_slug: 'pan-services',
+    name: 'PAN Application Status Check',
+    slug: 'pan-status',
+    description: 'Check status of your new PAN or correction application.',
+    eligibility: 'All PAN applicants.',
+    processing_time: 'Instant',
+    fee: 0,
+    fields: [
+      { name: 'pan_ack_no', label: '15-Digit Acknowledgement Number', type: 'text', placeholder: '881020304050607', required: true },
+      { name: 'mobile_number', label: 'Registered Mobile Number', type: 'phone', placeholder: '9876543210', required: true }
+    ],
+    documents: []
+  },
+  'residence-certificate': {
+    id: 12,
+    category_name: 'Certificate Services',
+    category_slug: 'certificates',
+    name: 'Residence Certificate Application',
+    slug: 'residence-certificate',
+    description: 'Official revenue certificate proving residence address.',
+    eligibility: 'State residents.',
+    processing_time: '7 Working Days',
+    fee: 60,
+    fields: [
+      { name: 'applicant_name', label: 'Applicant Name', type: 'text', placeholder: 'Karthik Subramanian', required: true },
+      { name: 'father_name', label: 'Father / Husband Name', type: 'text', placeholder: 'Subramanian S', required: true },
+      { name: 'current_address', label: 'Current Residential Address', type: 'textarea', placeholder: 'Door No, Street, City, District, State, Pincode', required: true },
+      { name: 'duration_residence', label: 'Duration of Residence (in Years)', type: 'number', placeholder: '10', required: true },
+      { name: 'mobile_number', label: 'Mobile Number', type: 'phone', placeholder: '9876543210', required: true }
+    ],
+    documents: [
+      { name: 'Identity Proof', description: 'Aadhaar Card / Voter ID', required: true },
+      { name: 'Address Proof', description: 'Ration Card / Utility Bill / Rent Agreement', required: true },
+      { name: 'Residence Proof', description: 'Property Tax Receipt / School Certificate', required: true }
+    ]
+  },
+  'nativity-certificate': {
+    id: 12,
+    category_name: 'Certificate Services',
+    category_slug: 'certificates',
+    name: 'Nativity Certificate Application',
+    slug: 'nativity-certificate',
+    description: 'Official revenue certificate proving birth and native state status.',
+    eligibility: 'Native state residents.',
+    processing_time: '7 Working Days',
+    fee: 60,
+    fields: [
+      { name: 'applicant_name', label: 'Applicant Name', type: 'text', placeholder: 'Karthik Subramanian', required: true },
+      { name: 'dob', label: 'Date of Birth', type: 'date', placeholder: '', required: true },
+      { name: 'place_of_birth', label: 'Place of Birth (Village/Town)', type: 'text', placeholder: 'Chennai', required: true },
+      { name: 'father_name', label: 'Father / Guardian Name', type: 'text', placeholder: 'Subramanian S', required: true },
+      { name: 'address', label: 'Native Residential Address', type: 'textarea', placeholder: 'Complete native address', required: true },
+      { name: 'mobile_number', label: 'Mobile Number', type: 'phone', placeholder: '9876543210', required: true }
+    ],
+    documents: [
+      { name: 'Identity Proof', description: 'Aadhaar Card / Passport', required: true },
+      { name: 'Address Proof', description: 'Ration Card / Voter ID', required: true },
+      { name: 'Nativity Proof', description: 'Birth Certificate / Parent Nativity Proof / SSLC Marksheet', required: true }
+    ]
+  },
+  'patta-transfer': {
+    id: 15,
+    category_name: 'Land & Patta Services',
+    category_slug: 'land-patta-services',
+    name: 'Patta Transfer Application',
+    slug: 'patta-transfer',
+    description: 'Apply for official Patta transfer in revenue land records.',
+    eligibility: 'Registered property buyers.',
+    processing_time: '15-30 Working Days',
+    fee: 100,
+    fields: [
+      { name: 'buyer_name', label: 'New Owner / Buyer Name', type: 'text', placeholder: 'Karthik Subramanian', required: true },
+      { name: 'seller_name', label: 'Current / Previous Owner Name', type: 'text', placeholder: 'Ramesh Kumar', required: true },
+      { name: 'survey_number', label: 'Survey Number', type: 'text', placeholder: '123/4', required: true },
+      { name: 'sub_division', label: 'Sub-Division Number', type: 'text', placeholder: '4A', required: true },
+      { name: 'village', label: 'Village Name', type: 'text', placeholder: 'Mylapore', required: true },
+      { name: 'taluk', label: 'Taluk Name', type: 'text', placeholder: 'Mylapore Taluk', required: true },
+      { name: 'district', label: 'District', type: 'text', placeholder: 'Chennai', required: true },
+      { name: 'property_details', label: 'Property Extent / Sq Ft Details', type: 'textarea', placeholder: '1200 Sq Ft land with residential building', required: true },
+      { name: 'mobile_number', label: 'Applicant Mobile Number', type: 'phone', placeholder: '9876543210', required: true }
+    ],
+    documents: [
+      { name: 'Sale Deed / Ownership Proof', description: 'Registered land sale deed copy', required: true },
+      { name: 'Identity Proof', description: 'Aadhaar Card of buyer', required: true },
+      { name: 'Existing Patta Copy', description: 'Copy of existing Patta', required: true }
+    ]
+  },
+  'patta-sub-division': {
+    id: 151,
+    category_name: 'Land & Patta Services',
+    category_slug: 'land-patta-services',
+    name: 'Patta Sub-Division Application',
+    slug: 'patta-sub-division',
+    description: 'Application for sub-division of survey land and separate Patta issue.',
+    eligibility: 'Landowners partitioning or sub-dividing survey plots.',
+    processing_time: '20-30 Working Days',
+    fee: 150,
+    fields: [
+      { name: 'applicant_name', label: 'Landowner Name', type: 'text', placeholder: 'Karthik Subramanian', required: true },
+      { name: 'survey_number', label: 'Parent Survey Number', type: 'text', placeholder: '123/4', required: true },
+      { name: 'existing_sub_division', label: 'Existing Sub-Division', type: 'text', placeholder: '4A', required: true },
+      { name: 'village', label: 'Village Name', type: 'text', placeholder: 'Mylapore', required: true },
+      { name: 'taluk', label: 'Taluk Name', type: 'text', placeholder: 'Mylapore Taluk', required: true },
+      { name: 'district', label: 'District', type: 'text', placeholder: 'Chennai', required: true },
+      { name: 'property_details', label: 'Area to Sub-divide (in Sq Ft / Cents)', type: 'textarea', placeholder: '600 Sq Ft portion of plot', required: true },
+      { name: 'mobile_number', label: 'Mobile Number', type: 'phone', placeholder: '9876543210', required: true }
+    ],
+    documents: [
+      { name: 'Ownership Proof', description: 'Registered Sale Deed copy', required: true },
+      { name: 'Existing Patta Copy', description: 'Current Patta document', required: true },
+      { name: 'Field Survey Map / Partition Deed', description: 'Partition Deed or proposed sub-division sketch', required: true }
+    ]
+  },
+  'patta-chitta': {
+    id: 16,
+    category_name: 'Land & Patta Services',
+    category_slug: 'land-patta-services',
+    name: 'Patta Chitta Record Search',
+    slug: 'patta-chitta',
+    description: 'Search and download verified Patta / Chitta revenue records.',
+    eligibility: 'Public land record verification.',
+    processing_time: 'Instant / 1 Day',
+    fee: 50,
+    fields: [
+      { name: 'survey_number', label: 'Survey Number / Patta Number', type: 'text', placeholder: '123/4A or Patta No 567', required: true },
+      { name: 'village_taluk', label: 'Village & Taluk Name', type: 'text', placeholder: 'Village & Taluk Name', required: true },
+      { name: 'district', label: 'District', type: 'text', placeholder: 'Chennai', required: true },
+      { name: 'mobile_number', label: 'Mobile Number', type: 'phone', placeholder: '9876543210', required: true }
+    ],
+    documents: []
+  },
+  'llr': {
+    id: 21,
+    category_name: 'Vehicle & DL Services',
+    category_slug: 'driving-vehicle-services',
+    name: 'Learner Licence (LLR) Slot Booking',
+    slug: 'llr',
+    description: 'Slot booking and application filing for Learner Driving Licence.',
+    eligibility: 'Citizens aged 16+ or 18+.',
+    processing_time: '3-5 Working Days',
+    fee: 250,
+    fields: [
+      { name: 'applicant_name', label: 'Applicant Name as per ID', type: 'text', placeholder: 'Karthik Subramanian', required: true },
+      { name: 'dob', label: 'Date of Birth', type: 'date', placeholder: '', required: true },
+      { name: 'gender', label: 'Gender', type: 'select', options: ['Male', 'Female', 'Transgender'], required: true },
+      { name: 'vehicle_class', label: 'Vehicle Class', type: 'select', options: ['Motorcycle With Gear (MCWG)', 'Light Motor Vehicle (LMV Car)', 'MCWG + LMV (Both)'], required: true },
+      { name: 'address', label: 'Residential Address', type: 'textarea', placeholder: 'Door No, Street, Pincode', required: true },
+      { name: 'district', label: 'District', type: 'text', placeholder: 'Chennai', required: true },
+      { name: 'state', label: 'State', type: 'text', placeholder: 'Tamil Nadu', required: true },
+      { name: 'pincode', label: 'Pincode', type: 'text', placeholder: '600001', required: true },
+      { name: 'mobile_number', label: 'Mobile Number', type: 'phone', placeholder: '9876543210', required: true },
+      { name: 'email', label: 'Email Address', type: 'email', placeholder: 'karthik@example.com', required: true }
+    ],
+    documents: [
+      { name: 'Identity Proof', description: 'Aadhaar Card / Voter ID / Passport', required: true },
+      { name: 'Address Proof', description: 'Aadhaar Card / Electricity Bill / Ration Card', required: true },
+      { name: 'Date of Birth Proof', description: 'Birth Certificate / SSLC Marksheet / Aadhaar Card', required: true },
+      { name: 'Photograph', description: 'Recent passport photo', required: true }
+    ]
+  },
+  'passport': {
+    id: 19,
+    category_name: 'Passport & Travel',
+    category_slug: 'passport-services',
+    name: 'New Passport Application',
+    slug: 'passport',
+    description: 'Online application filing for fresh Indian Passport.',
+    eligibility: 'Indian citizens.',
+    processing_time: '15-20 Working Days',
+    fee: 1500,
+    fields: [
+      { name: 'full_name', label: 'Full Name as per ID', type: 'text', placeholder: 'Karthik Subramanian', required: true },
+      { name: 'dob', label: 'Date of Birth', type: 'date', placeholder: '', required: true },
+      { name: 'gender', label: 'Gender', type: 'select', options: ['Male', 'Female', 'Transgender'], required: true },
+      { name: 'father_name', label: 'Father Name', type: 'text', placeholder: 'Subramanian S', required: true },
+      { name: 'mother_name', label: 'Mother Name', type: 'text', placeholder: 'Lakshmi S', required: true },
+      { name: 'marital_status', label: 'Marital Status', type: 'select', options: ['Single', 'Married', 'Divorced', 'Widowed'], required: true },
+      { name: 'address', label: 'Current Address', type: 'textarea', placeholder: 'Door No, Street, City, District, State, Pincode', required: true },
+      { name: 'district', label: 'District', type: 'text', placeholder: 'Chennai', required: true },
+      { name: 'state', label: 'State', type: 'text', placeholder: 'Tamil Nadu', required: true },
+      { name: 'pincode', label: 'Pincode', type: 'text', placeholder: '600001', required: true },
+      { name: 'prev_passport', label: 'Previous Passport Details (if applicable)', type: 'text', placeholder: 'Old Passport No or N/A', required: false },
+      { name: 'mobile_number', label: 'Mobile Number', type: 'phone', placeholder: '9876543210', required: true },
+      { name: 'email', label: 'Email Address', type: 'email', placeholder: 'karthik@example.com', required: true }
+    ],
+    documents: [
+      { name: 'Proof of Date of Birth', description: 'Aadhaar Card / Birth Certificate / Marksheet', required: true },
+      { name: 'Proof of Present Address', description: 'Aadhaar Card / Bank Passbook / Utility Bill', required: true },
+      { name: 'Non-ECR Educational Proof', description: '10th SSLC Marksheet or Degree Certificate', required: true }
+    ]
+  },
+  'udyam-registration': {
+    id: 23,
+    category_name: 'Business Services',
+    category_slug: 'business-services',
+    name: 'Udyam MSME Registration',
+    slug: 'udyam-registration',
+    description: 'Government MSME Registration for Businesses.',
+    eligibility: 'Business enterprises.',
+    processing_time: '1-2 Working Days',
+    fee: 100,
+    fields: [
+      { name: 'owner_name', label: 'Applicant / Owner Name', type: 'text', placeholder: 'Karthik Subramanian', required: true },
+      { name: 'aadhaar_number', label: 'Aadhaar Number', type: 'text', placeholder: '1234 5678 9012', required: true },
+      { name: 'pan_number', label: 'PAN Number', type: 'text', placeholder: 'ABCDE1234F', required: true },
+      { name: 'business_name', label: 'Business Name', type: 'text', placeholder: 'Apex Digital Solutions', required: true },
+      { name: 'business_type', label: 'Business Type', type: 'select', options: ['Proprietorship', 'Partnership', 'Private Limited', 'LLP'], required: true },
+      { name: 'business_activity', label: 'Major Business Activity', type: 'select', options: ['Services', 'Manufacturing', 'Trading'], required: true },
+      { name: 'address', label: 'Business Address', type: 'textarea', placeholder: 'Door No, Street, City, District, State, Pincode', required: true },
+      { name: 'district', label: 'District', type: 'text', placeholder: 'Chennai', required: true },
+      { name: 'state', label: 'State', type: 'text', placeholder: 'Tamil Nadu', required: true },
+      { name: 'pincode', label: 'Pincode', type: 'text', placeholder: '600001', required: true },
+      { name: 'mobile_number', label: 'Mobile Number', type: 'phone', placeholder: '9876543210', required: true },
+      { name: 'email', label: 'Email Address', type: 'email', placeholder: 'karthik@example.com', required: true }
+    ],
+    documents: [
+      { name: 'Aadhaar & PAN Copy', description: 'Proprietor Aadhaar and PAN copy', required: true },
+      { name: 'Bank Passbook / Cheque', description: 'Bank account statement or passbook', required: true }
+    ]
+  },
+  'fssai': {
+    id: 231,
+    category_name: 'Business Services',
+    category_slug: 'business-services',
+    name: 'FSSAI Food License Registration',
+    slug: 'fssai',
+    description: 'Food Safety and Standards Authority of India (FSSAI) License application.',
+    eligibility: 'All food business operators (restaurants, bakeries, caterers, food manufacturers).',
+    processing_time: '5-10 Working Days',
+    fee: 300,
+    fields: [
+      { name: 'establishment_name', label: 'Food Business / Establishment Name', type: 'text', placeholder: 'Tasty Foods & Bakery', required: true },
+      { name: 'owner_name', label: 'Owner Full Name', type: 'text', placeholder: 'Karthik Subramanian', required: true },
+      { name: 'business_type', label: 'FSSAI Business Category', type: 'select', options: ['Basic Registration (Small Shop / Home Chef)', 'State License (Medium Restaurant / Manufacturer)', 'Central License (Large Scale Supply)'], required: true },
+      { name: 'food_items', label: 'Food Product Items Category', type: 'textarea', placeholder: 'Bakery items, cooked meals, beverages', required: true },
+      { name: 'address', label: 'Business Premises Address', type: 'textarea', placeholder: 'Door No, Street, City, District, State, Pincode', required: true },
+      { name: 'district', label: 'District', type: 'text', placeholder: 'Chennai', required: true },
+      { name: 'state', label: 'State', type: 'text', placeholder: 'Tamil Nadu', required: true },
+      { name: 'pincode', label: 'Pincode', type: 'text', placeholder: '600001', required: true },
+      { name: 'mobile_number', label: 'Mobile Number', type: 'phone', placeholder: '9876543210', required: true },
+      { name: 'email', label: 'Email Address', type: 'email', placeholder: 'karthik@example.com', required: true }
+    ],
+    documents: [
+      { name: 'Identity Proof', description: 'Aadhaar Card / PAN Card of proprietor', required: true },
+      { name: 'Business Premises Address Proof', description: 'Rental Agreement / Utility Bill / Property Tax Receipt', required: true },
+      { name: 'FSSAI Self Declaration Form', description: 'Signed self-declaration for hygiene standards', required: true }
+    ]
+  },
+  'eb-connection': {
+    id: 26,
+    category_name: 'Utility Services',
+    category_slug: 'utility-services',
+    name: 'New Electricity EB Connection',
+    slug: 'eb-connection',
+    description: 'Application for new TANGEDCO power supply connection.',
+    eligibility: 'New building owners.',
+    processing_time: '10-15 Working Days',
+    fee: 350,
+    fields: [
+      { name: 'applicant_name', label: 'Applicant Name', type: 'text', placeholder: 'Karthik Subramanian', required: true },
+      { name: 'connection_type', label: 'Connection Type', type: 'select', options: ['Domestic (Home)', 'Commercial (Shop/Office)', 'Industrial'], required: true },
+      { name: 'address', label: 'Property / Building Address', type: 'textarea', placeholder: 'Door No, Street, City, District, State, Pincode', required: true },
+      { name: 'district', label: 'District', type: 'text', placeholder: 'Chennai', required: true },
+      { name: 'state', label: 'State', type: 'text', placeholder: 'Tamil Nadu', required: true },
+      { name: 'pincode', label: 'Pincode', type: 'text', placeholder: '600001', required: true },
+      { name: 'mobile_number', label: 'Mobile Number', type: 'phone', placeholder: '9876543210', required: true },
+      { name: 'email', label: 'Email Address', type: 'email', placeholder: 'karthik@example.com', required: true }
+    ],
+    documents: [
+      { name: 'Property Tax Receipt / Ownership Proof', description: 'Sale deed copy or tax receipt', required: true },
+      { name: 'Aadhaar Card Copy', description: 'Aadhaar Card copy', required: true }
+    ]
+  },
+  'fastag': {
+    id: 261,
+    category_name: 'Utility Services',
+    category_slug: 'utility-services',
+    name: 'FASTag Issuance & Recharge',
+    slug: 'fastag',
+    description: 'Apply for new NETC FASTag toll sticker delivery for your vehicle.',
+    eligibility: 'Vehicle owners.',
+    processing_time: '2-4 Working Days',
+    fee: 200,
+    fields: [
+      { name: 'rc_owner_name', label: 'Vehicle RC Owner Name', type: 'text', placeholder: 'Karthik Subramanian', required: true },
+      { name: 'vehicle_reg_number', label: 'Vehicle Registration Number', type: 'text', placeholder: 'TN07AB1234', required: true },
+      { name: 'vehicle_class', label: 'Vehicle Type / Class', type: 'select', options: ['Car / Jeep / Van (Class 4)', 'Light Commercial Vehicle (Class 5)', 'Bus / Truck (Class 6/7)'], required: true },
+      { name: 'chassis_number', label: 'Chassis Number / VIN', type: 'text', placeholder: 'MBH1234567890', required: true },
+      { name: 'delivery_address', label: 'FASTag Delivery Address', type: 'textarea', placeholder: 'Door No, Street, City, Pincode', required: true },
+      { name: 'mobile_number', label: 'Mobile Number', type: 'phone', placeholder: '9876543210', required: true },
+      { name: 'email', label: 'Email Address', type: 'email', placeholder: 'karthik@example.com', required: true }
+    ],
+    documents: [
+      { name: 'Vehicle RC Copy', description: 'Front and back scan copy of RC smart card', required: true },
+      { name: 'Owner Identity Proof', description: 'Aadhaar Card / Driving Licence', required: true }
+    ]
+  },
+  'voter-id': {
+    id: 8,
+    category_name: 'Voter ID Services',
+    category_slug: 'voter-id-services',
+    name: 'New Voter Registration (Form 6)',
+    slug: 'voter-id',
+    description: 'Apply for inclusion in Electoral Roll and new Voter EPIC card.',
+    eligibility: 'Indian citizens aged 18+.',
+    processing_time: '15-25 Working Days',
+    fee: 0,
+    fields: [
+      { name: 'full_name', label: 'Applicant Name', type: 'text', placeholder: 'Karthik Subramanian', required: true },
+      { name: 'relative_name', label: 'Father / Husband Name', type: 'text', placeholder: 'Subramanian S', required: true },
+      { name: 'dob', label: 'Date of Birth', type: 'date', placeholder: '', required: true },
+      { name: 'gender', label: 'Gender', type: 'select', options: ['Male', 'Female', 'Transgender'], required: true },
+      { name: 'assembly_constituency', label: 'Assembly Constituency Name', type: 'text', placeholder: 'Mylapore / Velachery', required: true },
+      { name: 'address', label: 'Residential Address', type: 'textarea', placeholder: 'Door No, Street, City, District, State, Pincode', required: true },
+      { name: 'district', label: 'District', type: 'text', placeholder: 'Chennai', required: true },
+      { name: 'state', label: 'State', type: 'text', placeholder: 'Tamil Nadu', required: true },
+      { name: 'pincode', label: 'Pincode', type: 'text', placeholder: '600001', required: true },
+      { name: 'mobile_number', label: 'Mobile Number', type: 'phone', placeholder: '9876543210', required: true }
+    ],
+    documents: [
+      { name: 'Age Proof', description: 'Birth Certificate / SSLC Marksheet / Aadhaar Card', required: true },
+      { name: 'Residence Proof', description: 'Ration Card / Electricity Bill / Bank Passbook', required: true },
+      { name: 'Passport Photograph', description: 'Recent color photograph', required: true }
+    ]
   }
 };
 
@@ -1165,6 +1890,104 @@ export const TAMIL_SERVICES_TRANSLATIONS = {
       { name: 'புதிய உறுப்பினரின் ஆதார் / பிறப்புச் சான்றிதழ்', description: 'குழந்தையின் பிறப்புச் சான்றிதழ் அல்லது ஆதார் நகல்', required: true },
       { name: 'ஸ்மார்ட் ரேஷன் கார்டு நகல்', description: 'தற்போதுள்ள ஸ்மார்ட் கார்டின் நகல்', required: true }
     ]
+  },
+  'aadhaar-email-update': {
+    name: 'ஆதார் மின்னஞ்சல் முகவரி புதுப்பித்தல்',
+    description: 'உங்கள் அதிகாரப்பூர்வ மின்னஞ்சல் முகவரியை ஆதார் கணக்கில் இணைத்தல் அல்லது புதுப்பித்தல்.',
+    category_name: 'ஆதார் சேவைகள்',
+    processing_time: '24-48 மணி நேரம்',
+    eligibility: 'ஆதார் கார்டு வைத்திருப்பவர்கள்.',
+    documents: [
+      { name: 'ஆதார் கார்டு நகல்', description: 'தற்போதுள்ள ஆதார் கார்டின் நகல்', required: true }
+    ]
+  },
+  'aadhaar-dob-update': {
+    name: 'ஆதார் பிறந்த தேதி திருத்தம்',
+    description: 'அதிகாரப்பூர்வ பிறந்த தேதி ஆதாரத்தின்படி ஆதாரில் உள்ள பிறந்த தேதியை திருத்துதல்.',
+    category_name: 'ஆதார் சேவைகள்',
+    processing_time: '5-7 வேலை நாட்கள்',
+    eligibility: 'பிறந்த தேதி ஆதார ஆவணம் வைத்துள்ள ஆதார் பயனாளர்கள்.',
+    documents: [
+      { name: 'ஆதார் கார்டு நகல்', description: 'தற்போதுள்ள ஆதார் கார்டின் நகல்', required: true },
+      { name: 'பிறந்த தேதி சான்று', description: 'பிறப்புச் சான்றிதழ், 10ஆம் வகுப்பு மதிப்பெண் அட்டை, அல்லது பாஸ்போர்ட்', required: true }
+    ]
+  },
+  'aadhaar-gender-update': {
+    name: 'ஆதார் பாலின மாற்றம்',
+    description: 'ஆதார் தரவுத்தளத்தில் பாலின வகைப்பாட்டை திருத்துதல்.',
+    category_name: 'ஆதார் சேவைகள்',
+    processing_time: '3-5 வேலை நாட்கள்',
+    eligibility: 'ஆதார் கார்டு வைத்திருப்பவர்கள்.',
+    documents: [
+      { name: 'ஆதார் கார்டு நகல்', description: 'தற்போதுள்ள ஆதார் கார்டின் நகல்', required: true }
+    ]
+  },
+  'aadhaar-photo-update': {
+    name: 'ஆதார் புகைப்படம் புதுப்பித்தல் உதவி',
+    description: 'ஆதார் கார்டில் புகைப்படத்தைப் புதுப்பிப்பதற்கான பதிவு உதவி.',
+    category_name: 'ஆதார் சேவைகள்',
+    processing_time: '3-5 வேலை நாட்கள்',
+    eligibility: 'அனைத்து ஆதார் பயனாளர்கள்.',
+    documents: [
+      { name: 'ஆதார் கார்டு நகல்', description: 'தற்போதுள்ள ஆதார் கார்டின் நகல்', required: true },
+      { name: 'பாஸ்போர்ட் புகைப்படம்', description: 'சமீபத்திய தெளிவான வண்ண புகைப்படம்', required: true }
+    ]
+  },
+  'aadhaar-biometric-update': {
+    name: 'ஆதார் பயோமெட்ரிக் புதுப்பித்தல் உதவி',
+    description: 'கைரேகை மற்றும் விழித்திரை (Iris) பயோமெட்ரிக் விவரங்களைப் புதுப்பித்தல் (5 மற்றும் 15 வயது குழந்தைகளுக்குக் கட்டாயம்).',
+    category_name: 'ஆதார் சேவைகள்',
+    processing_time: '3-5 வேலை நாட்கள்',
+    eligibility: 'பயோமெட்ரிக் புதுப்பித்தல் தேவைப்படும் நபர்கள்.',
+    documents: [
+      { name: 'ஆதார் கார்டு நகல்', description: 'தற்போதுள்ள ஆதார் கார்டின் நகல்', required: true }
+    ]
+  },
+  'aadhaar-document-update': {
+    name: 'ஆதார் கட்டாய ஆவண புதுப்பித்தல்',
+    description: '10 ஆண்டுகளுக்கு மேல் பழைய ஆதார் கார்டுகளுக்கான அடையாள மற்றும் முகவரி ஆவணங்களை மீண்டும் புதுப்பித்தல்.',
+    category_name: 'ஆதார் சேவைகள்',
+    processing_time: '3-5 வேலை நாட்கள்',
+    eligibility: '10 ஆண்டுகளுக்கு மேல் ஆதார் புதுப்பிக்காத பயனாளர்கள்.',
+    documents: [
+      { name: 'அடையாளச் சான்று', description: 'வாக்காளர் அட்டை, PAN கார்டு, பாஸ்போர்ட், அல்லது ஓட்டுநர் உரிமம்', required: true },
+      { name: 'முகவரிச் சான்று', description: 'ரேஷன் கார்டு, மின்சாரக் கட்டணம், அல்லது வங்கி கணக்கு புத்தகம்', required: true }
+    ]
+  },
+  'aadhaar-download': {
+    name: 'ஆதார் டிஜிட்டல் பதிவிறக்கம் உதவி',
+    description: 'பாதுகாக்கப்பட்ட அதிகாரப்பூர்வ e-Aadhaar PDF நகலைப் பதிவிறக்க உடனடி உதவி.',
+    category_name: 'ஆதார் சேவைகள்',
+    processing_time: 'உடனடி / 1 மணி நேரம்',
+    eligibility: 'மொபைல் எண் இணைக்கப்பட்டுள்ள ஆதார் பயனாளர்கள்.',
+    documents: []
+  },
+  'aadhaar-status-check': {
+    name: 'ஆதார் நிலை சரிபார்ப்பு',
+    description: 'உங்கள் புதிய பதிவு அல்லது புதுப்பித்தல் விண்ணப்பத்தின் நிலையைச் சரிபார்க்கவும்.',
+    category_name: 'ஆதார் சேவைகள்',
+    processing_time: 'உடனடி',
+    eligibility: 'EID அல்லது URN எண் வைத்துள்ள அனைவரும்.',
+    documents: []
+  },
+  'aadhaar-correction-assistance': {
+    name: 'ஆதார் டைனமிக் திருத்த உதவி',
+    description: 'ஆதாரில் உள்ள எந்தவொரு விவரத்தையும் மாற்றுவதற்கான தனிப்பயனாக்கப்பட்ட திருத்த உதவி.',
+    category_name: 'ஆதார் சேவைகள்',
+    processing_time: '3-7 வேலை நாட்கள்',
+    eligibility: 'ஆதார் திருத்தம் தேவைப்படும் கார்டு வைத்திருப்பவர்கள்.',
+    documents: [
+      { name: 'ஆதார் கார்டு நகல்', description: 'தற்போதுள்ள ஆதார் கார்டின் நகல்', required: true },
+      { name: 'திருத்தத்திற்கான ஆதார ஆவணம்', description: 'கோரப்பட்ட மாற்றத்தை உறுதிப்படுத்தும் அரசு சான்றிதழ்', required: true }
+    ]
+  },
+  'pan-download-status': {
+    name: 'e-PAN பதிவிறக்கம் & நிலை சரிபார்ப்பு',
+    description: 'அதிகாரப்பூர்வ e-PAN PDF நகலைப் பதிவிறக்குதல் அல்லது விண்ணப்ப நிலை அறிதல்.',
+    category_name: 'PAN சேவைகள்',
+    processing_time: 'உடனடி / 1 மணி நேரம்',
+    eligibility: 'PAN விண்ணப்பதாரர்கள்.',
+    documents: []
   }
 };
 
