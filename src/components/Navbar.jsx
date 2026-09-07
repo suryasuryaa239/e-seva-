@@ -296,13 +296,13 @@ export default function Navbar() {
           {/* ========================================================================= */}
           {/* RIGHT: BUTTONS & AUTH ACTIONS */}
           {/* ========================================================================= */}
-          <div className="hidden lg:flex items-center gap-2 xl:gap-2.5">
+          <div className="hidden lg:flex items-center gap-1.5 xl:gap-2.5 shrink-0 whitespace-nowrap">
             
             {/* LANGUAGE SWITCHER BUTTON (ENGLISH ↔ தமிழ்) */}
-            <div className="h-9 inline-flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200 text-xs font-bold shadow-inner">
+            <div className="h-9 inline-flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200 text-xs font-bold shadow-inner shrink-0">
               <button
                 onClick={() => setLanguage('en')}
-                className={`h-8 px-2.5 inline-flex items-center justify-center rounded-md transition-all cursor-pointer ${
+                className={`h-8 px-2.5 inline-flex items-center justify-center rounded-md transition-all cursor-pointer whitespace-nowrap ${
                   lang === 'en'
                     ? 'bg-slate-900 text-white font-extrabold shadow-xs'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
@@ -312,7 +312,7 @@ export default function Navbar() {
               </button>
               <button
                 onClick={() => setLanguage('ta')}
-                className={`h-8 px-2.5 inline-flex items-center justify-center rounded-md transition-all cursor-pointer ${
+                className={`h-8 px-2.5 inline-flex items-center justify-center rounded-md transition-all cursor-pointer whitespace-nowrap ${
                   lang === 'ta'
                     ? 'bg-orange-600 text-white font-extrabold shadow-xs'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
@@ -325,35 +325,35 @@ export default function Navbar() {
             {/* CHECK APPLICATION STATUS - Outlined Button */}
             <Link
               to="/track"
-              className={`h-9 inline-flex items-center gap-1.5 text-xs font-bold px-3 rounded-lg border border-slate-300 hover:border-slate-800 text-slate-800 hover:bg-slate-50 transition-all ${
+              className={`h-9 inline-flex items-center gap-1.5 text-xs font-bold px-3 rounded-lg border border-slate-300 hover:border-slate-800 text-slate-800 hover:bg-slate-50 transition-all shrink-0 whitespace-nowrap ${
                 isActive('/track') ? 'border-slate-900 bg-slate-50 ring-1 ring-slate-900' : ''
               }`}
             >
-              <FileSearch className="w-3.5 h-3.5 text-slate-600" />
-              <span>{t.checkStatus || t.trackAppNav || (lang === 'ta' ? 'விண்ணப்பத்தைக் கண்காணிக்க' : 'Track Application')}</span>
+              <FileSearch className="w-3.5 h-3.5 text-slate-600 shrink-0" />
+              <span className="whitespace-nowrap">{lang === 'ta' ? 'விண்ணப்ப நிலை' : 'Track Status'}</span>
             </Link>
 
             {/* SIGN IN & REGISTER / USER PROFILE LOGIC */}
             {admin ? (
               <Link
                 to="/admin"
-                className="h-9 inline-flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs px-3.5 rounded-lg shadow-sm transition-colors"
+                className="h-9 inline-flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs px-3.5 rounded-lg shadow-sm transition-colors shrink-0 whitespace-nowrap"
               >
-                <ShieldCheck className="w-4 h-4 text-orange-400" /> Admin Cockpit
+                <ShieldCheck className="w-4 h-4 text-orange-400 shrink-0" /> Admin Cockpit
               </Link>
             ) : user ? (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 shrink-0">
                 <NotificationBell />
                 
                 {/* User Profile Menu */}
                 <div className="relative" ref={userDropdownRef}>
                   <button
                     onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                    className="h-9 inline-flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-900 font-bold text-xs px-3.5 rounded-lg border border-slate-300 transition-colors"
+                    className="h-9 inline-flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-900 font-bold text-xs px-3.5 rounded-lg border border-slate-300 transition-colors shrink-0 whitespace-nowrap"
                   >
-                    <User className="w-3.5 h-3.5 text-slate-700" />
+                    <User className="w-3.5 h-3.5 text-slate-700 shrink-0" />
                     <span>{user.name ? user.name.split(' ')[0] : 'User'}</span>
-                    <ChevronDown className="w-3.5 h-3.5 text-slate-500" />
+                    <ChevronDown className="w-3.5 h-3.5 text-slate-500 shrink-0" />
                   </button>
 
                   {userDropdownOpen && (
@@ -420,11 +420,11 @@ export default function Navbar() {
                 </div>
               </div>
             ) : (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 shrink-0 whitespace-nowrap">
                 {/* SIGN IN */}
                 <Link
                   to="/login"
-                  className="h-9 inline-flex items-center px-3 text-xs font-bold text-slate-700 hover:text-slate-950 hover:bg-slate-50 rounded-lg transition-colors uppercase"
+                  className="h-9 inline-flex items-center px-3 text-xs font-bold text-slate-700 hover:text-slate-950 hover:bg-slate-50 rounded-lg transition-colors uppercase shrink-0 whitespace-nowrap"
                 >
                   {t.login || 'SIGN IN'}
                 </Link>
@@ -432,9 +432,9 @@ export default function Navbar() {
                 {/* REGISTER - Primary Dark Blue Button */}
                 <Link
                   to="/register"
-                  className="h-9 inline-flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs px-4 rounded-lg shadow-sm transition-all border border-slate-800 uppercase"
+                  className="h-9 inline-flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs px-4 rounded-lg shadow-sm transition-all border border-slate-800 uppercase shrink-0 whitespace-nowrap"
                 >
-                  {t.registerNav || 'REGISTER'} <ArrowRight className="w-3.5 h-3.5 text-orange-400" />
+                  {t.registerNav || 'REGISTER'} <ArrowRight className="w-3.5 h-3.5 text-orange-400 shrink-0" />
                 </Link>
               </div>
             )}
