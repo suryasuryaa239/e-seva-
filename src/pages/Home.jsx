@@ -230,32 +230,32 @@ export default function Home() {
             <Link
               key={idx}
               to={cat.slug === 'aadhaar' ? '/services/aadhaar' : `/services/${cat.slug}`}
-              className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs hover:shadow-xl hover:border-orange-500/50 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between space-y-4 group overflow-hidden relative"
+              className="bg-white rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-xl hover:border-orange-500/50 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between group overflow-hidden relative"
             >
               {/* Subtle top accent background glow */}
               <div className="absolute top-0 right-0 w-24 h-24 bg-orange-500/5 rounded-full blur-xl pointer-events-none group-hover:bg-orange-500/10 transition-all"></div>
 
-              <div className="space-y-4 relative z-10">
-                {/* FULL-WIDTH TOP IMAGE BANNER CONTAINER */}
-                <div className="relative w-full h-36 sm:h-40 bg-gradient-to-br from-amber-500/10 via-orange-500/5 to-slate-100 rounded-2xl p-3 flex items-center justify-center border border-slate-200/90 overflow-hidden shadow-inner group-hover:border-orange-400/80 transition-all">
-                  <img
-                    src={cat.image}
-                    alt={lang === 'ta' ? cat.name_ta : cat.name}
-                    className="w-full h-full object-contain drop-shadow-2xl group-hover:scale-105 transition-transform duration-300"
-                    onError={(e) => {
-                      e.target.style.display = 'none';
-                      e.target.nextSibling.style.display = 'flex';
-                    }}
-                  />
-                  <div className="hidden w-full h-full items-center justify-center">
-                    {cat.icon}
-                  </div>
-                  <span className="absolute top-3 right-3 text-[10px] font-extrabold text-orange-700 bg-white/90 backdrop-blur-xs border border-orange-200 px-2.5 py-1 rounded-full uppercase tracking-wider shadow-xs">
-                    {lang === 'ta' ? 'ஈ-சேவை' : 'E-SERVICE'}
-                  </span>
+              {/* FLUSH 100% EDGE-TO-EDGE TOP IMAGE BANNER */}
+              <div className="relative w-full h-44 bg-gradient-to-br from-slate-50 via-orange-50/20 to-white border-b border-slate-100 p-4 flex items-center justify-center overflow-hidden">
+                <img
+                  src={cat.image}
+                  alt={lang === 'ta' ? cat.name_ta : cat.name}
+                  className="w-full h-full object-contain drop-shadow-xl group-hover:scale-105 transition-transform duration-300"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    e.target.nextSibling.style.display = 'flex';
+                  }}
+                />
+                <div className="hidden w-full h-full items-center justify-center">
+                  {cat.icon}
                 </div>
+                <span className="absolute top-3 right-3 text-[10px] font-extrabold text-orange-700 bg-white/95 backdrop-blur-xs border border-orange-200 px-2.5 py-1 rounded-full uppercase tracking-wider shadow-xs">
+                  {lang === 'ta' ? 'ஈ-சேவை' : 'E-SERVICE'}
+                </span>
+              </div>
 
-                {/* CATEGORY NAME & DESCRIPTION */}
+              {/* CARD CONTENT BODY WITH PADDING */}
+              <div className="p-5 space-y-3 flex-1 flex flex-col justify-between">
                 <div>
                   <h3 className="font-heading font-extrabold text-base sm:text-lg text-slate-900 group-hover:text-orange-600 transition-colors">
                     {lang === 'ta' ? cat.name_ta : cat.name}
@@ -264,12 +264,12 @@ export default function Home() {
                     {lang === 'ta' ? cat.desc_ta : cat.desc}
                   </p>
                 </div>
-              </div>
 
-              {/* VIEW SERVICES ACTION & ARROW */}
-              <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-extrabold text-slate-800 group-hover:text-orange-600 transition-colors relative z-10">
-                <span>{lang === 'ta' ? 'சேவைகளைப் பார்க்க' : 'View Services'}</span>
-                <ArrowRight className="w-4 h-4 text-orange-500 group-hover:translate-x-1.5 transition-transform" />
+                {/* VIEW SERVICES ACTION & ARROW */}
+                <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-extrabold text-slate-800 group-hover:text-orange-600 transition-colors">
+                  <span>{lang === 'ta' ? 'சேவைகளைப் பார்க்க' : 'View Services'}</span>
+                  <ArrowRight className="w-4 h-4 text-orange-500 group-hover:translate-x-1.5 transition-transform" />
+                </div>
               </div>
             </Link>
           ))}
