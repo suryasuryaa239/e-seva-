@@ -6,9 +6,11 @@ import {
 } from 'lucide-react';
 import Breadcrumbs from '../components/Breadcrumbs';
 import StatusBadge from '../components/StatusBadge';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function MyApplications() {
   const navigate = useNavigate();
+  const { lang, t } = useLanguage();
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -177,12 +179,12 @@ export default function MyApplications() {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-[#0b192c] text-[11px] font-black text-slate-300 uppercase tracking-wider border-b border-slate-800">
-                    <th className="py-4 px-4 sm:px-6 text-orange-400">Application Reference ID</th>
-                    <th className="py-4 px-4 sm:px-6">Service Name</th>
-                    <th className="py-4 px-4 sm:px-6">Date Logged</th>
-                    <th className="py-4 px-4 sm:px-6">Current Status</th>
-                    <th className="py-4 px-4 sm:px-6">Total Fee</th>
-                    <th className="py-4 px-4 sm:px-6 text-right">Actions</th>
+                    <th className="py-4 px-4 sm:px-6 text-orange-400">{t.appId}</th>
+                    <th className="py-4 px-4 sm:px-6">{t.serviceName}</th>
+                    <th className="py-4 px-4 sm:px-6">{t.appliedDate}</th>
+                    <th className="py-4 px-4 sm:px-6">{t.status}</th>
+                    <th className="py-4 px-4 sm:px-6">{lang === 'ta' ? 'மொத்தக் கட்டணம்' : 'Total Fee'}</th>
+                    <th className="py-4 px-4 sm:px-6 text-right">{t.action}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-xs font-medium">
@@ -197,7 +199,7 @@ export default function MyApplications() {
                           </span>
                         </td>
                         <td className="py-4.5 px-4 sm:px-6 font-bold text-slate-800 max-w-xs truncate">
-                          {app.service_name || 'Digital Service'}
+                          {app.service_name || (lang === 'ta' ? 'மின்னணு சேவை' : 'Digital Service')}
                         </td>
                         <td className="py-4.5 px-4 sm:px-6 text-slate-600 whitespace-nowrap font-mono text-[11px]">
                           {new Date(app.created_at || app.submitted_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
@@ -215,7 +217,7 @@ export default function MyApplications() {
                               className="inline-flex items-center space-x-1 px-3.5 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs rounded-xl shadow-xs transition-colors"
                             >
                               <Edit3 className="w-3.5 h-3.5" />
-                              <span>Resume Draft</span>
+                              <span>{lang === 'ta' ? 'வரைவைத் தொடரவும்' : 'Resume Draft'}</span>
                             </Link>
                           ) : (
                             <Link
@@ -223,7 +225,7 @@ export default function MyApplications() {
                               className="inline-flex items-center space-x-1 px-3.5 py-2 bg-[#0b192c] hover:bg-orange-600 text-white font-extrabold text-xs rounded-xl transition-all shadow-xs"
                             >
                               <Eye className="w-3.5 h-3.5 text-orange-400" />
-                              <span>View Details</span>
+                              <span>{t.viewDetails}</span>
                             </Link>
                           )}
                         </td>
@@ -251,7 +253,7 @@ export default function MyApplications() {
                     <div className="space-y-1">
                       <h4 className="font-black text-slate-900 text-sm">{app.service_name || 'Digital Service'}</h4>
                       <div className="flex items-center justify-between text-[11px] text-slate-500">
-                        <span className="font-mono">Logged: {new Date(app.created_at || app.submitted_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
+                        <span className="font-mono">{lang === 'ta' ? 'நாள்:' : 'Logged:'} {new Date(app.created_at || app.submitted_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
                         <span className="font-black text-emerald-700">₹{app.total_fee || 0}</span>
                       </div>
                     </div>
@@ -262,14 +264,14 @@ export default function MyApplications() {
                           to={`/apply/${app.service_id}?draftId=${app.id}`}
                           className="w-full block text-center py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs rounded-xl shadow-xs"
                         >
-                          Resume Draft
+                          {lang === 'ta' ? 'வரைவைத் தொடரவும்' : 'Resume Draft'}
                         </Link>
                       ) : (
                         <Link
                           to={`/my-applications/${app.id}`}
                           className="w-full block text-center py-2.5 bg-[#0b192c] hover:bg-orange-600 text-white font-extrabold text-xs rounded-xl shadow-xs"
                         >
-                          View Details
+                          {t.viewDetails}
                         </Link>
                       )}
                     </div>

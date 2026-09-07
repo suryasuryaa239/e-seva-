@@ -3,12 +3,14 @@ import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { User, Lock, Mail, Phone, ShieldCheck, ArrowRight, Eye, EyeOff, RefreshCw, Sparkles, CheckCircle2, FileText, Clock } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Login() {
   const location = useLocation();
   const navigate = useNavigate();
   const { loginUser } = useAuth();
   const { addToast } = useToast();
+  const { t, lang } = useLanguage();
 
   const [isRegister, setIsRegister] = useState(location.pathname === '/register');
   const [showPassword, setShowPassword] = useState(false);
@@ -132,17 +134,17 @@ export default function Login() {
 
           <div className="space-y-2">
             <span className="inline-block text-[10px] font-black text-orange-500 uppercase tracking-widest bg-orange-50 border border-orange-200/80 px-3 py-1 rounded-full">
-              {isRegister ? 'CREATE ACCOUNT' : 'WELCOME BACK'}
+              {isRegister ? (t.authCreateAccount || 'CREATE ACCOUNT') : (t.authWelcomeBack || 'WELCOME BACK')}
             </span>
 
             <h2 className="font-heading font-black text-2xl sm:text-3xl text-slate-900 tracking-tight">
-              {isRegister ? 'Create your E-Seva account' : 'Sign in to your account'}
+              {isRegister ? (t.registerTitle || 'Create your E-Seva account') : (t.loginTitle || 'Sign in to your account')}
             </h2>
 
             <p className="text-xs sm:text-sm text-slate-500 font-normal">
               {isRegister
-                ? 'Register to apply for digital services, submit verification documents, and track your applications.'
-                : 'Access your applications, view payment records, and manage your digital services.'}
+                ? (t.registerSubtitle || 'Register to apply for digital services, submit verification documents, and track your applications.')
+                : (t.loginSubtitle || 'Access your applications, view payment records, and manage your digital services.')}
             </p>
           </div>
 
@@ -152,7 +154,7 @@ export default function Login() {
               <>
                 <div>
                   <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider block mb-1.5">
-                    Full Name <span className="text-orange-500">*</span>
+                    {t.fullNameLabel || 'Full Name'} <span className="text-orange-500">*</span>
                   </label>
                   <div className="relative">
                     <User className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -169,7 +171,7 @@ export default function Login() {
 
                 <div>
                   <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider block mb-1.5">
-                    Mobile Number <span className="text-orange-500">*</span>
+                    {t.mobileLabel || 'Mobile Number'} <span className="text-orange-500">*</span>
                   </label>
                   <div className="relative">
                     <Phone className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -186,7 +188,7 @@ export default function Login() {
 
                 <div>
                   <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider block mb-1.5">
-                    Aadhaar Number (Optional)
+                    Aadhaar Number ({lang === 'ta' ? 'விருப்பத்திற்குரியது' : 'Optional'})
                   </label>
                   <div className="relative">
                     <ShieldCheck className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -204,7 +206,7 @@ export default function Login() {
 
             <div>
               <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider block mb-1.5">
-                Email Address <span className="text-orange-500">*</span>
+                {t.emailLabel || t.authEmail || 'Email Address'} <span className="text-orange-500">*</span>
               </label>
               <div className="relative">
                 <Mail className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -222,11 +224,11 @@ export default function Login() {
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider block">
-                  Password <span className="text-orange-500">*</span>
+                  {t.passwordLabel || t.authPassword || 'Password'} <span className="text-orange-500">*</span>
                 </label>
                 {!isRegister && (
                   <Link to="/forgot-password" className="text-xs font-bold text-orange-600 hover:text-orange-700 transition-colors">
-                    Forgot Password?
+                    {t.authForgotPass || 'Forgot Password?'}
                   </Link>
                 )}
               </div>
@@ -274,11 +276,11 @@ export default function Login() {
               {loading ? (
                 <>
                   <RefreshCw className="w-4 h-4 animate-spin text-orange-400" />
-                  <span>Authenticating...</span>
+                  <span>{t.msgPleaseWait || 'Please wait'}...</span>
                 </>
               ) : (
                 <>
-                  <span>{isRegister ? 'Create Account' : 'Sign In'}</span>
+                  <span>{isRegister ? (t.authCreateAccount || t.registerBtn || 'Create Account') : (t.loginBtn || 'Sign In')}</span>
                   <ArrowRight className="w-4 h-4 text-orange-400 group-hover:translate-x-0.5 transition-transform" />
                 </>
               )}
@@ -289,24 +291,24 @@ export default function Login() {
           <div className="text-center text-xs text-slate-600 pt-3 border-t border-slate-100">
             {isRegister ? (
               <span>
-                Already have an account?{' '}
+                {t.authAlreadyHaveAccount || 'Already have an account?'}{' '}
                 <button
                   type="button"
                   onClick={() => setIsRegister(false)}
                   className="text-[#0b192c] font-black hover:text-orange-600 underline cursor-pointer ml-1"
                 >
-                  Sign In
+                  {t.loginBtn || 'Sign In'}
                 </button>
               </span>
             ) : (
               <span>
-                Don't have an account?{' '}
+                {t.authDontHaveAccount || "Don't have an account?"}{' '}
                 <button
                   type="button"
                   onClick={() => setIsRegister(true)}
                   className="text-[#0b192c] font-black hover:text-orange-600 underline cursor-pointer ml-1"
                 >
-                  Create Account
+                  {t.authCreateAccount || 'Create Account'}
                 </button>
               </span>
             )}

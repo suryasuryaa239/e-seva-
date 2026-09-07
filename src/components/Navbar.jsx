@@ -368,7 +368,7 @@ export default function Navbar() {
                         onClick={() => setUserDropdownOpen(false)}
                         className="flex items-center gap-2 px-4 py-2 hover:bg-slate-50 text-slate-700 hover:text-slate-900 font-medium"
                       >
-                        <User className="w-3.5 h-3.5 text-slate-600" /> My Dashboard
+                        <User className="w-3.5 h-3.5 text-slate-600" /> {t.dashboardNav || 'My Dashboard'}
                       </Link>
 
                       <Link
@@ -376,7 +376,7 @@ export default function Navbar() {
                         onClick={() => setUserDropdownOpen(false)}
                         className="flex items-center gap-2 px-4 py-2 hover:bg-slate-50 text-slate-700 hover:text-slate-900 font-medium"
                       >
-                        <FileCheck className="w-3.5 h-3.5 text-emerald-600" /> My Applications
+                        <FileCheck className="w-3.5 h-3.5 text-emerald-600" /> {t.myApplicationsNav || 'My Applications'}
                       </Link>
 
                       <Link
@@ -384,7 +384,7 @@ export default function Navbar() {
                         onClick={() => setUserDropdownOpen(false)}
                         className="flex items-center gap-2 px-4 py-2 hover:bg-slate-50 text-slate-700 hover:text-slate-900 font-medium"
                       >
-                        <CreditCard className="w-3.5 h-3.5 text-orange-500" /> Payment History
+                        <CreditCard className="w-3.5 h-3.5 text-orange-500" /> {t.paymentLedgerTitle || 'Payment History'}
                       </Link>
 
                       <Link
@@ -392,7 +392,7 @@ export default function Navbar() {
                         onClick={() => setUserDropdownOpen(false)}
                         className="flex items-center gap-2 px-4 py-2 hover:bg-slate-50 text-slate-700 hover:text-slate-900 font-medium"
                       >
-                        <Bell className="w-3.5 h-3.5 text-blue-600" /> Notifications
+                        <Bell className="w-3.5 h-3.5 text-blue-600" /> {t.dashNotifications || 'Notifications'}
                       </Link>
 
                       <Link
@@ -400,7 +400,7 @@ export default function Navbar() {
                         onClick={() => setUserDropdownOpen(false)}
                         className="flex items-center gap-2 px-4 py-2 hover:bg-slate-50 text-slate-700 hover:text-slate-900 font-medium"
                       >
-                        <ShieldCheck className="w-3.5 h-3.5 text-slate-600" /> Profile Settings
+                        <ShieldCheck className="w-3.5 h-3.5 text-slate-600" /> {t.profileNav || 'Profile Settings'}
                       </Link>
 
                       <div className="pt-1 border-t border-slate-100 mt-1">
@@ -412,7 +412,7 @@ export default function Navbar() {
                           }}
                           className="flex items-center gap-2 w-full px-4 py-2 text-rose-600 hover:bg-rose-50 transition-colors font-bold"
                         >
-                          <LogOut className="w-3.5 h-3.5" /> Logout
+                          <LogOut className="w-3.5 h-3.5" /> {t.logoutNav || 'Logout'}
                         </button>
                       </div>
                     </div>
@@ -424,17 +424,17 @@ export default function Navbar() {
                 {/* SIGN IN */}
                 <Link
                   to="/login"
-                  className="text-xs font-bold text-slate-700 hover:text-slate-950 px-3 py-2 hover:bg-slate-50 rounded-lg transition-colors"
+                  className="text-xs font-bold text-slate-700 hover:text-slate-950 px-3 py-2 hover:bg-slate-50 rounded-lg transition-colors uppercase"
                 >
-                  SIGN IN
+                  {t.login || 'SIGN IN'}
                 </Link>
 
                 {/* REGISTER - Primary Dark Blue Button */}
                 <Link
                   to="/register"
-                  className="bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs px-4 py-2.5 rounded-lg shadow-sm transition-all flex items-center gap-1.5 border border-slate-800"
+                  className="bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs px-4 py-2.5 rounded-lg shadow-sm transition-all flex items-center gap-1.5 border border-slate-800 uppercase"
                 >
-                  REGISTER <ArrowRight className="w-3.5 h-3.5 text-orange-400" />
+                  {t.registerNav || 'REGISTER'} <ArrowRight className="w-3.5 h-3.5 text-orange-400" />
                 </Link>
               </div>
             )}
