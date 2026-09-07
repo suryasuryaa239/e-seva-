@@ -41,7 +41,11 @@ export default function ServiceDetails() {
         setService({
           ...sData,
           name: localized.name || sData.name,
-          description: localized.description || sData.description
+          description: localized.description || sData.description,
+          category_name: localized.category_name || sData.category_name,
+          processing_time: localized.processing_time || sData.processing_time,
+          eligibility: localized.eligibility || sData.eligibility,
+          documents: localized.documents || sData.documents
         });
       } else {
         throw new Error('Service not found');
@@ -53,7 +57,11 @@ export default function ServiceDetails() {
         setService({
           ...fallback,
           name: localized.name || fallback.name,
-          description: localized.description || fallback.description
+          description: localized.description || fallback.description,
+          category_name: localized.category_name || fallback.category_name,
+          processing_time: localized.processing_time || fallback.processing_time,
+          eligibility: localized.eligibility || fallback.eligibility,
+          documents: localized.documents || fallback.documents
         });
       } else {
         setError(err.message);
@@ -93,7 +101,7 @@ export default function ServiceDetails() {
       <div className="min-h-screen bg-slate-50 py-16 px-4 flex items-center justify-center font-sans">
         <div className="bg-white rounded-3xl shadow-sm p-8 text-center max-w-sm w-full space-y-4 border border-slate-200">
           <div className="w-12 h-12 border-4 border-[#0b192c] border-t-orange-500 rounded-full animate-spin mx-auto"></div>
-          <p className="text-slate-600 font-bold text-xs">{lang === 'ta' ? 'சேவை விவரங்கள் ஏற்றப்படுகின்றன...' : 'Loading service details...'}</p>
+          <p className="text-slate-600 font-bold text-xs">{t.loadingText || (lang === 'ta' ? 'ஏற்றப்படுகிறது...' : 'Loading...')}</p>
         </div>
       </div>
     );
@@ -106,12 +114,17 @@ export default function ServiceDetails() {
           <div className="w-16 h-16 bg-orange-50 text-orange-500 rounded-2xl flex items-center justify-center mx-auto border border-orange-100">
             <AlertCircle className="w-8 h-8" />
           </div>
-          <h3 className="text-xl font-heading font-extrabold text-slate-900">{lang === 'ta' ? 'சேவை கிடைக்கவில்லை' : 'Service Not Found'}</h3>
-          <p className="text-slate-500 text-xs leading-relaxed">{lang === 'ta' ? 'கேட்கப்பட்ட டிஜிட்டல் சேவையின் விவரங்களை பெற முடியவில்லை.' : 'The requested digital service details could not be retrieved from the directory.'}</p>
-          <Link to="/services" className="inline-flex items-center space-x-2 px-6 py-3 bg-[#0b192c] hover:bg-orange-600 text-white font-extrabold text-xs rounded-xl transition-all shadow-xs">
-            <ArrowLeft className="w-4 h-4" />
-            <span>{lang === 'ta' ? 'அனைத்து சேவைகளுக்கும் திரும்புக' : 'Back to All Services'}</span>
-          </Link>
+          <h3 className="text-xl font-heading font-extrabold text-slate-900">{t.serviceNotFoundTitle || (lang === 'ta' ? 'சேவை கிடைக்கவில்லை' : 'Service Not Found')}</h3>
+          <p className="text-slate-500 text-xs leading-relaxed">{t.tryChangingSearch || (lang === 'ta' ? 'கேட்கப்பட்ட டிஜிட்டல் சேவையின் விவரங்களை பெற முடியவில்லை.' : 'The requested digital service details could not be retrieved from the directory.')}</p>
+          <div className="flex justify-center gap-3 pt-2">
+            <button onClick={() => window.history.back()} className="inline-flex items-center space-x-2 px-5 py-2.5 bg-slate-100 text-slate-700 hover:bg-slate-200 font-bold text-xs rounded-xl transition-all">
+              <span>{t.goBackBtn || (lang === 'ta' ? 'பின்செல்லவும்' : 'Go Back')}</span>
+            </button>
+            <Link to="/services" className="inline-flex items-center space-x-2 px-5 py-2.5 bg-[#0b192c] hover:bg-orange-600 text-white font-extrabold text-xs rounded-xl transition-all shadow-xs">
+              <ArrowLeft className="w-4 h-4" />
+              <span>{t.backToServicesBtn || (lang === 'ta' ? 'சேவைகளுக்குத் திரும்பவும்' : 'Back to Services')}</span>
+            </Link>
+          </div>
         </div>
       </div>
     );
@@ -180,7 +193,7 @@ export default function ServiceDetails() {
 
             {/* DESCRIPTION */}
             <div className="space-y-2">
-              <h3 className="text-xs font-extrabold text-slate-400 uppercase tracking-wider">{lang === 'ta' ? 'சேவை மேலோட்டம்' : 'Service Overview'}</h3>
+              <h3 className="text-xs font-extrabold text-slate-400 uppercase tracking-wider">{t.aboutThisService || (lang === 'ta' ? 'இந்த சேவையைப் பற்றி' : 'About this service')}</h3>
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
                 {service.description || (lang === 'ta' ? 'அதிகாரப்பூர்வ டிஜிட்டல் சேவை உதவிக்கு ஆன்லைனில் விண்ணப்பிக்கவும்.' : 'Apply for official digital service facilitation online with verified document review and status tracking.')}
               </p>
@@ -189,7 +202,7 @@ export default function ServiceDetails() {
             {/* PRICE & SLA BADGES */}
             <div className="flex flex-wrap items-center gap-4 pt-2">
               <div className="bg-slate-50 border border-slate-200/80 rounded-2xl px-5 py-3.5 flex items-center space-x-3">
-                <div className="text-xs text-slate-500 font-medium">{lang === 'ta' ? 'சேவை கட்டணம்:' : 'Service Fee:'}</div>
+                <div className="text-xs text-slate-500 font-medium">{t.serviceFeeLabel || (lang === 'ta' ? 'சேவை கட்டணம்' : 'Service Fee')}:</div>
                 <div className="text-2xl font-black text-orange-600">
                   {service.fee === 0 ? (lang === 'ta' ? 'இலவசம்' : 'FREE') : `₹${service.fee}`}
                 </div>
@@ -198,7 +211,7 @@ export default function ServiceDetails() {
               <div className="bg-slate-50 border border-slate-200/80 rounded-2xl px-5 py-3.5 flex items-center space-x-3">
                 <Clock className="w-5 h-5 text-amber-500 shrink-0" />
                 <div>
-                  <div className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">{lang === 'ta' ? 'செயலாக்க காலம் (SLA)' : 'Estimated Processing (SLA)'}</div>
+                  <div className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">{t.processingTimeLabel || (lang === 'ta' ? 'செயலாக்க நேரம்' : 'Processing Time')}</div>
                   <div className="text-xs font-extrabold text-slate-900">{service.processing_time || (lang === 'ta' ? '3-5 வேலை நாட்கள்' : '3-5 Working Days')}</div>
                 </div>
               </div>
@@ -233,16 +246,16 @@ export default function ServiceDetails() {
                 to={`/apply/${service.slug || service.id}`}
                 className="w-full py-4 px-6 bg-[#0b192c] hover:bg-orange-600 text-white font-extrabold text-xs sm:text-sm rounded-xl shadow-xs transition-colors flex items-center justify-center gap-2 group/btn"
               >
-                <span>{t.applyNow || (lang === 'ta' ? 'இப்போதே விண்ணப்பிக்க' : 'Apply Now')}</span>
+                <span>{t.applyNowBtn || (lang === 'ta' ? 'இப்போது விண்ணப்பிக்கவும்' : 'Apply Now')}</span>
                 <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
               </Link>
 
               <Link
-                to="/tracker"
+                to="/services"
                 className="w-full py-3 px-6 bg-slate-100 hover:bg-slate-200/80 text-slate-700 font-bold text-xs rounded-xl transition-colors flex items-center justify-center gap-2 border border-slate-200/60"
               >
-                <Search className="w-3.5 h-3.5 text-slate-500" />
-                <span>{lang === 'ta' ? 'விண்ணப்ப நிலை அறிய' : 'Check Application Status'}</span>
+                <ArrowLeft className="w-3.5 h-3.5 text-slate-500" />
+                <span>{t.backToServicesBtn || (lang === 'ta' ? 'சேவைகளுக்குத் திரும்பவும்' : 'Back to Services')}</span>
               </Link>
             </div>
 
@@ -270,15 +283,18 @@ export default function ServiceDetails() {
             <div className="bg-white rounded-3xl p-8 border border-slate-200/90 shadow-sm space-y-4">
               <h2 className="font-heading font-extrabold text-xl text-slate-900 flex items-center gap-2 border-b pb-4 border-slate-100">
                 <Info className="w-5 h-5 text-orange-500" />
-                <span>{lang === 'ta' ? 'இந்த சேவை பற்றி' : 'About This Service'}</span>
+                <span>{t.aboutThisService || (lang === 'ta' ? 'இந்த சேவையைப் பற்றி' : 'About this service')}</span>
               </h2>
               <div className="space-y-3 text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
                 <p>
                   {service.description || (lang === 'ta' ? 'இந்த சேவை தகுதியான விண்ணப்பதாரர்களுக்கு அரசு ஆவணங்கள் மற்றும் சான்றிதழ்களை ஆன்லைனில் விண்ணப்பிக்க உதவுகிறது.' : 'This service allows eligible applicants to apply for official digital updates, certificates, and government document facilitation online.')}
                 </p>
-                <p>
-                  {service.eligibility || (lang === 'ta' ? 'சட்டப்பூர்வ விதிகளின்படி செல்லுபடியாகும் அடையாள மற்றும் முகவரிச் சான்றுகளைக் கொண்ட இந்திய குடிமக்களுக்குத் தகுதியானது.' : 'Eligible for resident Indian citizens holding valid identification and address proof documents as prescribed by statutory regulations.')}
-                </p>
+                <div className="pt-2">
+                  <h4 className="font-bold text-slate-900 text-xs uppercase tracking-wider mb-1">{t.eligibilityTitle || (lang === 'ta' ? 'தகுதி' : 'Eligibility')}:</h4>
+                  <p className="text-xs text-slate-500">
+                    {service.eligibility || (lang === 'ta' ? 'சட்டப்பூர்வ விதிகளின்படி செல்லுபடியாகும் அடையாள மற்றும் முகவரிச் சான்றுகளைக் கொண்ட இந்திய குடிமக்களுக்குத் தகுதியானது.' : 'Eligible for resident Indian citizens holding valid identification and address proof documents as prescribed by statutory regulations.')}
+                  </p>
+                </div>
               </div>
             </div>
 
@@ -287,7 +303,7 @@ export default function ServiceDetails() {
               <div className="flex items-center justify-between border-b pb-4 border-slate-100">
                 <h2 className="font-heading font-extrabold text-xl text-slate-900 flex items-center gap-2">
                   <FileCheck className="w-5 h-5 text-emerald-600" />
-                  <span>{lang === 'ta' ? 'தேவையான ஆவணங்களின் பட்டியல்' : 'Required Documents Checklist'}</span>
+                  <span>{t.requiredDocumentsTitle || (lang === 'ta' ? 'தேவையான ஆவணங்கள்' : 'Required Documents')}</span>
                 </h2>
                 <span className="text-xs text-slate-400 font-bold uppercase tracking-wider">
                   {documentsList.length} {lang === 'ta' ? 'ஆவணங்கள்' : 'Items'}
@@ -312,20 +328,24 @@ export default function ServiceDetails() {
               </div>
             </div>
 
-            {/* REQUIRED INFORMATION FIELDS */}
+            {/* IMPORTANT INFORMATION / DISCLAIMER */}
             <div className="bg-white rounded-3xl p-8 border border-slate-200/90 shadow-sm space-y-4">
               <h2 className="font-heading font-extrabold text-xl text-slate-900 flex items-center gap-2 border-b pb-4 border-slate-100">
-                <FileSpreadsheet className="w-5 h-5 text-orange-500" />
-                <span>{lang === 'ta' ? 'விண்ணப்பிக்கும் முன் தேவையான தகவல்கள்' : 'Required Information Before Applying'}</span>
+                <ShieldAlert className="w-5 h-5 text-amber-500" />
+                <span>{t.importantInformationTitle || (lang === 'ta' ? 'முக்கிய தகவல்' : 'Important Information')}</span>
               </h2>
               
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {defaultFieldsList.map((field, i) => (
-                  <div key={i} className="flex items-start space-x-2.5 bg-slate-50 p-3.5 rounded-xl border border-slate-200/70 text-xs text-slate-700 font-medium">
-                    <CheckCircle2 className="w-4 h-4 text-orange-500 shrink-0 mt-0.5" />
-                    <span>{field}</span>
-                  </div>
-                ))}
+              <div className="bg-amber-50/70 border border-amber-200/80 rounded-2xl p-4 text-xs text-amber-900 space-y-2 font-medium">
+                <p>
+                  {lang === 'ta'
+                    ? '1. விண்ணப்பிக்கும் முன் அனைத்து அடையாள மற்றும் முகவரி ஆவணங்கள் தெளிவாக ஸ்கேன் செய்யப்பட்டுள்ளதை உறுதிப்படுத்திக் கொள்ளவும்.'
+                    : '1. Ensure all identity and address proof documents are clearly scanned prior to uploading.'}
+                </p>
+                <p>
+                  {lang === 'ta'
+                    ? '2. இ-சேவை தளம் ஒரு தனியார் உதவி மையமாகும். இறுதி ஒப்புதல் மற்றும் சான்றிதழ் வழங்கல் சம்பந்தப்பட்ட அரசுத் துறையின் அதிகாரத்திற்கு உட்பட்டது.'
+                    : '2. E-Seva Portal is an independent digital facilitation desk. Final approval and issuance remain subject to official verification by government authorities.'}
+                </p>
               </div>
             </div>
 
@@ -335,7 +355,7 @@ export default function ServiceDetails() {
           <div className="space-y-8">
             <div className="bg-white rounded-3xl p-8 border border-slate-200/90 shadow-sm space-y-6">
               <h2 className="font-heading font-extrabold text-xl text-slate-900 border-b pb-4 border-slate-100">
-                {lang === 'ta' ? 'விண்ணப்பிக்கும் முறை' : 'Application Process'}
+                {t.howItWorksTitle || (lang === 'ta' ? 'எப்படி செயல்படுகிறது' : 'How It Works')}
               </h2>
 
               <div className="space-y-6 relative before:absolute before:left-4 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200">
@@ -391,13 +411,46 @@ export default function ServiceDetails() {
                   to={`/apply/${service.slug || service.id}`}
                   className="w-full py-3.5 px-6 bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-xs rounded-xl transition-colors shadow-xs inline-flex items-center justify-center gap-2"
                 >
-                  <span>{lang === 'ta' ? 'விண்ணப்பத்தைத் தொடங்கு' : 'Start Application'}</span>
+                  <span>{t.applyNowBtn || (lang === 'ta' ? 'இப்போது விண்ணப்பிக்கவும்' : 'Apply Now')}</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
               </div>
             </div>
           </div>
 
+        </div>
+
+        {/* RELATED SERVICES SECTION */}
+        <div className="bg-white rounded-3xl p-8 border border-slate-200/90 shadow-sm space-y-6">
+          <div className="flex items-center justify-between border-b pb-4 border-slate-100">
+            <h2 className="font-heading font-extrabold text-xl text-slate-900">
+              {t.relatedServicesTitle || (lang === 'ta' ? 'தொடர்புடைய சேவைகள்' : 'Related Services')}
+            </h2>
+            <Link to="/services" className="text-xs font-bold text-orange-600 hover:underline">
+              {t.allServices || (lang === 'ta' ? 'அனைத்து சேவைகள்' : 'All Services')} →
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+            {DEFAULT_SERVICES.filter(s => s.id !== service.id && s.category_slug === service.category_slug).slice(0, 3).map((relSrv) => {
+              const localizedRel = getLocalizedService(relSrv, lang);
+              return (
+                <div key={relSrv.id} className="p-5 rounded-2xl border border-slate-200/80 hover:border-orange-400/50 bg-slate-50/50 hover:bg-white transition-all space-y-3 flex flex-col justify-between">
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-extrabold text-orange-600 uppercase">{localizedRel.category_name}</span>
+                    <h4 className="font-heading font-extrabold text-sm text-slate-900 line-clamp-1">{localizedRel.name}</h4>
+                    <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">{localizedRel.description}</p>
+                  </div>
+                  <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
+                    <span className="font-extrabold text-slate-900">{relSrv.fee === 0 ? (lang === 'ta' ? 'இலவசம்' : 'FREE') : `₹${relSrv.fee}`}</span>
+                    <Link to={`/service/${relSrv.slug}`} className="font-bold text-orange-600 hover:text-orange-700 flex items-center gap-1">
+                      <span>{t.viewDetailsBtn || (lang === 'ta' ? 'விவரங்களைப் பார்க்கவும்' : 'View Details')}</span> →
+                    </Link>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
 
       </div>

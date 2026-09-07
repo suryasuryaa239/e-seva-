@@ -713,181 +713,458 @@ export const TAMIL_SERVICES_TRANSLATIONS = {
     name: 'ஆதார் முகவரி மாற்றம்',
     description: 'அதிகாரப்பூர்வ UIDAI தரவுத்தளத்தில் புதிய முகவரி ஆதாரத்துடன் உங்கள் முகவரியைப் புதுப்பிக்கவும்.',
     category_name: 'ஆதார் சேவைகள்',
-    processing_time: '3-5 வேலை நாட்கள்'
+    processing_time: '3-5 வேலை நாட்கள்',
+    eligibility: 'புதிய முகவரிக்கு மாறிய அல்லது முகவரி திருத்தம் தேவைப்படும் அனைத்து ஆதார் கார்டு வைத்திருப்பவர்கள்.',
+    documents: [
+      { name: 'முகவரிச் சான்று (PoA)', description: 'மின்சாரக் கட்டணம், வங்கி கணக்கு புத்தகம், பாஸ்போர்ட் அல்லது வாடகை ஒப்பந்தம்', required: true },
+      { name: 'ஆதார் கார்டு நகல்', description: 'தற்போதுள்ள ஆதார் கார்டின் நகல்', required: true }
+    ]
   },
   'aadhaar-name-update': {
     name: 'ஆதார் பெயர் திருத்தம்',
     description: 'சட்டப்பூர்வ ஆதாரப் ஆவணத்தின்படி ஆதாரில் உள்ள பெயர் பிழைகளைத் திருத்துதல்.',
     category_name: 'ஆதார் சேவைகள்',
-    processing_time: '5-7 வேலை நாட்கள்'
+    processing_time: '5-7 வேலை நாட்கள்',
+    eligibility: 'செல்லுபடியாகும் பெயர் மாற்ற ஆவணம் வைத்துள்ள ஆதார் கார்டு வைத்திருப்பவர்கள்.',
+    documents: [
+      { name: 'அடையாளச் சான்று', description: 'வாக்காளர் அடையாள அட்டை, பாஸ்போர்ட், PAN கார்டு அல்லது கெஜட் சான்றிதழ்', required: true },
+      { name: 'ஆதார் நகல்', description: 'தற்போதுள்ள ஆதார் கார்டு நகல்', required: true }
+    ]
+  },
+  'aadhaar-name-dob-correction': {
+    name: 'ஆதார் பெயர் மற்றும் பிறந்த தேதி திருத்தம்',
+    description: 'சட்டப்பூர்வ ஆதாரப் ஆவணத்தின்படி ஆதாரில் உள்ள பெயர் மற்றும் பிறந்த தேதி பிழைகளைத் திருத்துதல்.',
+    category_name: 'ஆதார் சேவைகள்',
+    processing_time: '5-7 வேலை நாட்கள்',
+    eligibility: 'பிறந்த தேதி சான்று வைத்துள்ள ஆதார் பயனாளர்கள்.',
+    documents: [
+      { name: 'பிறந்த தேதி சான்று', description: 'பிறப்புச் சான்றிதழ் / 10 ஆம் வகுப்பு மதிப்பெண் சான்றிதழ் / பாஸ்போர்ட்', required: true },
+      { name: 'ஆதார் நகல்', description: 'தற்போதுள்ள ஆதார் கார்டு நகல்', required: true }
+    ]
   },
   'aadhaar-mobile-update': {
     name: 'ஆதார் மொபைல் எண் இணைப்பு',
     description: 'OTP சரிபார்ப்பிற்காக உங்கள் மொபைல் எண்ணை ஆதாரத்துடன் இணைக்கவும் அல்லது புதுப்பிக்கவும்.',
     category_name: 'ஆதார் சேவைகள்',
-    processing_time: '24-48 மணி நேரம்'
+    processing_time: '24-48 மணி நேரம்',
+    eligibility: 'மொபைல் எண் இணைப்பு தேவைப்படும் அனைத்து ஆதார் பயனாளர்கள்.',
+    documents: [
+      { name: 'ஆதார் கார்டு நகல்', description: 'தற்போதுள்ள ஆதார் கார்டின் நகல்', required: true }
+    ]
   },
   'pvc-aadhaar-card-order': {
     name: 'PVC ஆதார் கார்டு ஆர்டர்',
     description: 'நீடித்து உழைக்கும், நீர்ப்புகா பிளாஸ்டிக் PVC ஆதார் கார்டை உங்கள் வீட்டிற்கே பெற விண்ணப்பிக்கவும்.',
     category_name: 'ஆதார் சேவைகள்',
-    processing_time: '7-10 வேலை நாட்கள்'
+    processing_time: '7-10 வேலை நாட்கள்',
+    eligibility: 'பதிவுசெய்த அனைத்து ஆதார் அட்டைதாரர்கள்.',
+    documents: [
+      { name: 'ஆதார் கார்டு நகல்', description: 'தற்போதுள்ள ஆதார் கார்டின் நகல்', required: true }
+    ]
   },
   'pvc-aadhaar-card': {
     name: 'PVC ஆதார் கார்டு ஆர்டர்',
     description: 'நீடித்து உழைக்கும், நீர்ப்புகா பிளாஸ்டிக் PVC ஆதார் கார்டை உங்கள் வீட்டிற்கே பெற விண்ணப்பிக்கவும்.',
     category_name: 'ஆதார் சேவைகள்',
-    processing_time: '7-10 வேலை நாட்கள்'
+    processing_time: '7-10 வேலை நாட்கள்',
+    eligibility: 'பதிவுசெய்த அனைத்து ஆதார் அட்டைதாரர்கள்.',
+    documents: [
+      { name: 'ஆதார் கார்டு நகல்', description: 'தற்போதுள்ள ஆதார் கார்டின் நகல்', required: true }
+    ]
+  },
+  'new-aadhaar-enrollment-booking': {
+    name: 'புதிய ஆதார் பதிவு முன்பதிவு',
+    description: 'புதிய ஆதார் அட்டை பெறுவதற்கான முன்பதிவு மற்றும் விண்ணப்ப பதிவு உதவி.',
+    category_name: 'ஆதார் சேவைகள்',
+    processing_time: '15-30 வேலை நாட்கள்',
+    eligibility: 'இன்னும் ஆதார் அட்டை பெறாத அனைத்து இந்திய குடிமக்கள்.',
+    documents: [
+      { name: 'பிறப்புச் சான்றிதழ் / அடையாளச் சான்று', description: 'பிறப்புச் சான்றிதழ் அல்லது அரசு அடையாளச் சான்று', required: true },
+      { name: 'பெற்றோர் ஆதார் (குழந்தைகளுக்கு)', description: 'பெற்றோரின் ஆதார் நகல்', required: true }
+    ]
   },
   'pan-new-application': {
     name: 'புதிய PAN கார்டு விண்ணப்பம் (படிவம் 49A)',
     description: 'தனிநபர்கள் மற்றும் நிறுவனங்களுக்கான புதிய நிரந்தர கணக்கு எண் (PAN) கார்டுக்கு விண்ணப்பிக்கவும்.',
     category_name: 'PAN சேவைகள்',
-    processing_time: '7-10 வேலை நாட்கள்'
+    processing_time: '7-10 வேலை நாட்கள்',
+    eligibility: 'நிதி மற்றும் வரி நோக்கங்களுக்காக PAN தேவைப்படும் இந்திய குடிமக்கள்.',
+    documents: [
+      { name: 'அடையாளச் சான்று', description: 'ஆதார் கார்டு / வாக்காளர் அட்டை / பாஸ்போர்ட்', required: true },
+      { name: 'முகவரிச் சான்று', description: 'ஆதார் கார்டு / மின்சாரக் கட்டணம் / வங்கி கணக்கு புத்தகம்', required: true },
+      { name: 'பிறந்த தேதி சான்று', description: 'பிறப்புச் சான்றிதழ் / 10வது மதிப்பெண் சான்றிதழ் / ஆதார் கார்டு', required: true }
+    ]
   },
   'new-pan-card': {
     name: 'புதிய PAN கார்டு விண்ணப்பம் (படிவம் 49A)',
     description: 'தனிநபர்கள் மற்றும் நிறுவனங்களுக்கான புதிய நிரந்தர கணக்கு எண் (PAN) கார்டுக்கு விண்ணப்பிக்கவும்.',
     category_name: 'PAN சேவைகள்',
-    processing_time: '7-10 வேலை நாட்கள்'
+    processing_time: '7-10 வேலை நாட்கள்',
+    eligibility: 'நிதி மற்றும் வரி நோக்கங்களுக்காக PAN தேவைப்படும் இந்திய குடிமக்கள்.',
+    documents: [
+      { name: 'அடையாளச் சான்று', description: 'ஆதார் கார்டு / வாக்காளர் அட்டை / பாஸ்போர்ட்', required: true },
+      { name: 'முகவரிச் சான்று', description: 'ஆதார் கார்டு / மின்சாரக் கட்டணம் / வங்கி கணக்கு புத்தகம்', required: true },
+      { name: 'பிறந்த தேதி சான்று', description: 'பிறப்புச் சான்றிதழ் / 10வது மதிப்பெண் சான்றிதழ் / ஆதார் கார்டு', required: true }
+    ]
+  },
+  'new-pan-card-application': {
+    name: 'புதிய PAN கார்டு விண்ணப்பம் (படிவம் 49A)',
+    description: 'தனிநபர்கள் மற்றும் நிறுவனங்களுக்கான புதிய நிரந்தர கணக்கு எண் (PAN) கார்டுக்கு விண்ணப்பிக்கவும்.',
+    category_name: 'PAN சேவைகள்',
+    processing_time: '7-10 வேலை நாட்கள்',
+    eligibility: 'நிதி மற்றும் வரி நோக்கங்களுக்காக PAN தேவைப்படும் இந்திய குடிமக்கள்.',
+    documents: [
+      { name: 'அடையாளச் சான்று', description: 'ஆதார் கார்டு / வாக்காளர் அட்டை / பாஸ்போர்ட்', required: true },
+      { name: 'முகவரிச் சான்று', description: 'ஆதார் கார்டு / மின்சாரக் கட்டணம் / வங்கி கணக்கு புத்தகம்', required: true },
+      { name: 'பிறந்த தேதி சான்று', description: 'பிறப்புச் சான்றிதழ் / 10வது மதிப்பெண் சான்றிதழ் / ஆதார் கார்டு', required: true }
+    ]
   },
   'pan-correction-update': {
     name: 'PAN கார்டு திருத்தம் / புதுப்பித்தல்',
     description: 'PAN அட்டையில் பெயர், தந்தை பெயர், பிறந்த தேதி அல்லது புகைப்படப் பிழைகளைத் திருத்துதல்.',
     category_name: 'PAN சேவைகள்',
-    processing_time: '7-10 வேலை நாட்கள்'
+    processing_time: '7-10 வேலை நாட்கள்',
+    eligibility: 'PAN விவரங்களில் திருத்தம் செய்ய விரும்பும் கார்டு வைத்திருப்பவர்கள்.',
+    documents: [
+      { name: 'தற்போதுள்ள PAN நகல்', description: 'தற்போதுள்ள PAN அட்டையின் நகல்', required: true },
+      { name: 'திருத்தத்திற்கான ஆதார ஆவணம்', description: 'ஆதார் கார்டு / பாஸ்போர்ட் / கெஜட் சான்றிதழ்', required: true }
+    ]
+  },
+  'pan-card-correction-update': {
+    name: 'PAN கார்டு திருத்தம் / புதுப்பித்தல்',
+    description: 'PAN அட்டையில் பெயர், தந்தை பெயர், பிறந்த தேதி அல்லது புகைப்படப் பிழைகளைத் திருத்துதல்.',
+    category_name: 'PAN சேவைகள்',
+    processing_time: '7-10 வேலை நாட்கள்',
+    eligibility: 'PAN விவரங்களில் திருத்தம் செய்ய விரும்பும் கார்டு வைத்திருப்பவர்கள்.',
+    documents: [
+      { name: 'தற்போதுள்ள PAN நகல்', description: 'தற்போதுள்ள PAN அட்டையின் நகல்', required: true },
+      { name: 'திருத்தத்திற்கான ஆதார ஆவணம்', description: 'ஆதார் கார்டு / பாஸ்போர்ட் / கெஜட் சான்றிதழ்', required: true }
+    ]
   },
   'pan-aadhaar-link': {
     name: 'PAN - ஆதார் எண் இணைப்பு',
     description: 'வருமான வரி விதிமுறைகளின்படி உங்கள் PAN எண்ணை 12 இலக்க ஆதார் எண்ணுடன் இணைத்தல்.',
     category_name: 'PAN சேவைகள்',
-    processing_time: '24-48 மணி நேரம்'
+    processing_time: '24-48 மணி நேரம்',
+    eligibility: 'இன்னும் ஆதாரை PAN-டன் இணைக்காத கார்டு வைத்திருப்பவர்கள்.',
+    documents: [
+      { name: 'PAN நகல்', description: 'PAN கார்டின் நகல்', required: true },
+      { name: 'ஆதார் நகல்', description: 'ஆதார் கார்டின் நகல்', required: true }
+    ]
   },
   'voter-form-6': {
     name: 'புதிய வாக்காளர் பதிவு (படிவம் 6)',
     description: 'வாக்காளர் பட்டியலில் பெயர் சேர்த்தல் மற்றும் புதிய EPIC வாக்காளர் அடையாள அட்டை பெற விண்ணப்பித்தல்.',
     category_name: 'வாக்காளர் அடையாள அட்டை சேவைகள்',
-    processing_time: '15-25 வேலை நாட்கள்'
+    processing_time: '15-25 வேலை நாட்கள்',
+    eligibility: '18 வயது பூர்த்தியடைந்த இந்திய குடிமக்கள்.',
+    documents: [
+      { name: 'வயதுச் சான்று', description: 'பிறப்புச் சான்றிதழ் / 10ஆம் வகுப்பு சான்றிதழ் / ஆதார் கார்டு', required: true },
+      { name: 'இருப்பிடச் சான்று', description: 'ரேஷன் கார்டு / மின்சாரக் கட்டணம் / வங்கி கணக்கு புத்தகம்', required: true },
+      { name: 'பாஸ்போர்ட் புகைப்படம்', description: 'சமீபத்திய வண்ண புகைப்படம்', required: true }
+    ]
+  },
+  'new-voter-registration-form-6': {
+    name: 'புதிய வாக்காளர் பதிவு (படிவம் 6)',
+    description: 'வாக்காளர் பட்டியலில் பெயர் சேர்த்தல் மற்றும் புதிய EPIC வாக்காளர் அடையாள அட்டை பெற விண்ணப்பித்தல்.',
+    category_name: 'வாக்காளர் அடையாள அட்டை சேவைகள்',
+    processing_time: '15-25 வேலை நாட்கள்',
+    eligibility: '18 வயது பூர்த்தியடைந்த இந்திய குடிமக்கள்.',
+    documents: [
+      { name: 'வயதுச் சான்று', description: 'பிறப்புச் சான்றிதழ் / 10ஆம் வகுப்பு சான்றிதழ் / ஆதார் கார்டு', required: true },
+      { name: 'இருப்பிடச் சான்று', description: 'ரேஷன் கார்டு / மின்சாரக் கட்டணம் / வங்கி கணக்கு புத்தகம்', required: true },
+      { name: 'பாஸ்போர்ட் புகைப்படம்', description: 'சமீபத்திய வண்ண புகைப்படம்', required: true }
+    ]
   },
   'voter-form-8': {
     name: 'வாக்காளர் அட்டையில் முகவரி மாற்றம் / திருத்தம் (படிவம் 8)',
     description: 'வாக்காளர் அட்டையில் முகவரி மாற்றம் மற்றும் பிற விவரங்களைத் திருத்துதல்.',
     category_name: 'வாக்காளர் அடையாள அட்டை சேவைகள்',
-    processing_time: '10-15 வேலை நாட்கள்'
+    processing_time: '10-15 வேலை நாட்கள்',
+    eligibility: 'பதிவுசெய்த வாக்காளர்கள்.',
+    documents: [
+      { name: 'வாக்காளர் அட்டை நகல்', description: 'தற்போதுள்ள EPIC வாக்காளர் அட்டையின் நகல்', required: true },
+      { name: 'முகவரி / திருத்தச் சான்று', description: 'ஆதார் கார்டு / வாடகை ஒப்பந்தம் / மின்சாரக் கட்டணம்', required: true }
+    ]
+  },
+  'voter-address-transfer-form-8': {
+    name: 'வாக்காளர் அட்டையில் முகவரி மாற்றம் / திருத்தம் (படிவம் 8)',
+    description: 'வாக்காளர் அட்டையில் முகவரி மாற்றம் மற்றும் பிற விவரங்களைத் திருத்துதல்.',
+    category_name: 'வாக்காளர் அடையாள அட்டை சேவைகள்',
+    processing_time: '10-15 வேலை நாட்கள்',
+    eligibility: 'பதிவுசெய்த வாக்காளர்கள்.',
+    documents: [
+      { name: 'வாக்காளர் அட்டை நகல்', description: 'தற்போதுள்ள EPIC வாக்காளர் அட்டையின் நகல்', required: true },
+      { name: 'முகவரி / திருத்தச் சான்று', description: 'ஆதார் கார்டு / வாடகை ஒப்பந்தம் / மின்சாரக் கட்டணம்', required: true }
+    ]
   },
   'income-certificate': {
     name: 'வருமானச் சான்றிதழ் விண்ணப்பம்',
     description: 'கல்வி மற்றும் அரசு நலத்திட்டங்களுக்கான குடும்பத்தின் ஆண்டின் மொத்த வருமானச் சான்றிதழ்.',
     category_name: 'சான்றிதழ் சேவைகள்',
-    processing_time: '7 வேலை நாட்கள்'
+    processing_time: '7 வேலை நாட்கள்',
+    eligibility: 'அரசுத் திட்டங்களுக்கு வருமானச் சான்று தேவைப்படும் நிரந்தர மாநில வாசிகள்.',
+    documents: [
+      { name: 'புகைப்படம்', description: 'பாஸ்போர்ட் அளவு புகைப்படம்', required: true },
+      { name: 'முகவரிச் சான்று', description: 'ஸ்மார்ட் ரேஷன் கார்டு / ஆதார் கார்டு', required: true },
+      { name: 'வருமானச் சான்று', description: 'சம்பளச் சீட்டு / வருமான வரி ரிட்டர்ன் / சுய அறிவிப்பு படிவம்', required: true }
+    ]
   },
   'community-certificate': {
     name: 'சாதிச் சான்றிதழ் / சமூகச் சான்றிதழ்',
     description: 'சமூகப் பிரிவு (BC / MBC / SC / ST) சரிபார்ப்புக்கான அதிகாரப்பூர்வ வருவாய்த்துறை சான்றிதழ்.',
     category_name: 'சான்றிதழ் சேவைகள்',
-    processing_time: '15 வேலை நாட்கள்'
+    processing_time: '15 வேலை நாட்கள்',
+    eligibility: 'கல்வி மற்றும் வேலைவாய்ப்பு இடஒதுக்கீடு பெற விரும்புவோர்.',
+    documents: [
+      { name: 'விண்ணப்பதாரர் புகைப்படம்', description: 'பாஸ்போர்ட் அளவு புகைப்படம்', required: true },
+      { name: 'முகவரிச் சான்று', description: 'ரேஷன் கார்டு / ஆதார் கார்டு', required: true },
+      { name: 'பெற்றோர் சாதிச் சான்றிதழ்', description: 'தந்தை அல்லது உடன்பிறந்தாரின் சாதிச் சான்றிதழ்', required: true }
+    ]
+  },
+  'community-caste-certificate': {
+    name: 'சாதிச் சான்றிதழ் / சமூகச் சான்றிதழ்',
+    description: 'சமூகப் பிரிவு (BC / MBC / SC / ST) சரிபார்ப்புக்கான அதிகாரப்பூர்வ வருவாய்த்துறை சான்றிதழ்.',
+    category_name: 'சான்றிதழ் சேவைகள்',
+    processing_time: '15 வேலை நாட்கள்',
+    eligibility: 'கல்வி மற்றும் வேலைவாய்ப்பு இடஒதுக்கீடு பெற விரும்புவோர்.',
+    documents: [
+      { name: 'விண்ணப்பதாரர் புகைப்படம்', description: 'பாஸ்போர்ட் அளவு புகைப்படம்', required: true },
+      { name: 'முகவரிச் சான்று', description: 'ரேஷன் கார்டு / ஆதார் கார்டு', required: true },
+      { name: 'பெற்றோர் சாதிச் சான்றிதழ்', description: 'தந்தை அல்லது உடன்பிறந்தாரின் சாதிச் சான்றிதழ்', required: true }
+    ]
   },
   'nativity-residence-certificate': {
     name: 'இருப்பிடச் சான்றிதழ் / இருப்பிடச் சான்று',
     description: 'மாநில நிரந்தர இருப்பிடச் சான்று மற்றும் சலுகைகளுக்கான அதிகாரப்பூர்வ சான்றிதழ்.',
     category_name: 'சான்றிதழ் சேவைகள்',
-    processing_time: '7 வேலை நாட்கள்'
+    processing_time: '7 வேலை நாட்கள்',
+    eligibility: '5 ஆண்டுகளுக்கும் மேலாக மாநிலத்தில் வசிக்கும் குடிமக்கள்.',
+    documents: [
+      { name: 'புகைப்படம் & ஆதார் கார்டு', description: 'விண்ணப்பதாரர் புகைப்படம் மற்றும் ஆதார் நகல்', required: true },
+      { name: 'தொடர் இருப்பிடச் சான்று', description: 'ரேஷன் கார்டு / வாக்காளர் அட்டை / 5 வருட சொத்துவரி ரசீது', required: true }
+    ]
+  },
+  'native-domicile-certificate': {
+    name: 'இருப்பிடச் சான்றிதழ் / இருப்பிடச் சான்று',
+    description: 'மாநில நிரந்தர இருப்பிடச் சான்று மற்றும் சலுகைகளுக்கான அதிகாரப்பூர்வ சான்றிதழ்.',
+    category_name: 'சான்றிதழ் சேவைகள்',
+    processing_time: '7 வேலை நாட்கள்',
+    eligibility: '5 ஆண்டுகளுக்கும் மேலாக மாநிலத்தில் வசிக்கும் குடிமக்கள்.',
+    documents: [
+      { name: 'புகைப்படம் & ஆதார் கார்டு', description: 'விண்ணப்பதாரர் புகைப்படம் மற்றும் ஆதார் நகல்', required: true },
+      { name: 'தொடர் இருப்பிடச் சான்று', description: 'ரேஷன் கார்டு / வாக்காளர் அட்டை / 5 வருட சொத்துவரி ரசீது', required: true }
+    ]
   },
   'first-graduate-certificate': {
     name: 'முதல் பட்டதாரி சான்றிதழ்',
     description: 'குடும்பத்தில் முதல்முறையாக பட்டம் பயிலும் மாணவர்களுக்கான கட்டணச் சலுகை சான்றிதழ்.',
     category_name: 'சான்றிதழ் சேவைகள்',
-    processing_time: '10 வேலை நாட்கள்'
+    processing_time: '10 வேலை நாட்கள்',
+    eligibility: 'குடும்பத்தில் பட்டதாரி இல்லாத கல்லூரி சேர்க்கை மாணவர்கள்.',
+    documents: [
+      { name: 'குடும்ப ஸ்மார்ட் ரேஷன் கார்டு', description: 'குடும்ப உறுப்பினர்கள் அடங்கிய ரேஷன் கார்டு நகல்', required: true },
+      { name: 'குடும்ப உறுப்பினர்களின் கல்விச் சான்றிதழ்கள்', description: 'உடன்பிறந்தோர்/பெற்றோரின் 10/12ஆவது மதிப்பெண் சான்றிதழ்', required: true },
+      { name: 'கூட்டு சுய அறிவிப்பு படிவம்', description: 'கையொப்பமிட்ட சுய அறிவிப்பு படிவம்', required: true }
+    ]
   },
   'legal-heir-certificate': {
     name: 'வாரிசுச் சான்றிதழ் விண்ணப்பம்',
     description: 'இறந்த நபரின் சட்டப்பூர்வ வாரிசுகளை உறுதிப்படுத்தும் அதிகாரப்பூர்வ வருவாய்த்துறை சான்றிதழ்.',
     category_name: 'சான்றிதழ் சேவைகள்',
-    processing_time: '15-30 வேலை நாட்கள்'
+    processing_time: '15-30 வேலை நாட்கள்',
+    eligibility: 'இறந்த நபரின் நேரடி குடும்ப உறுப்பினர்கள் (மனைவி, குழந்தைகள், பெற்றோர்).',
+    documents: [
+      { name: 'இறப்புச் சான்றிதழ்', description: 'அதிகாரப்பூர்வ இறப்புச் சான்றிதழ்', required: true },
+      { name: 'அனைத்து வாரிசுகளின் ஆதார்', description: 'அனைத்து சட்டப்பூர்வ வாரிசுகளின் ஆதார் நகல்கள்', required: true },
+      { name: 'இறந்தவரின் ரேஷன் கார்டு', description: 'ஸ்மார்ட் ரேஷன் கார்டு நகல்', required: true }
+    ]
   },
   'patta-transfer-application': {
     name: 'பட்டா / சிட்டா பெயர் மாற்றம்',
     description: 'நிலம் வாங்கிய பின் அல்லது வாரிசு அடிப்படையில் பட்டாவில் பெயர் மாற்றம் செய்ய விண்ணப்பித்தல்.',
     category_name: 'நிலம் & பட்டா சேவைகள்',
-    processing_time: '15-30 வேலை நாட்கள்'
+    processing_time: '15-30 வேலை நாட்கள்',
+    eligibility: 'பத்திரப் பதிவு முடிந்த நிலக் கிரையதாரர்கள் அல்லது வாரிசுகள்.',
+    documents: [
+      { name: 'பதிவு செய்யப்பட்ட கிரையப் பத்திரம்', description: 'நிலக் கிரையப் பத்திர நகல்', required: true },
+      { name: 'தற்போதுள்ள பட்டா / சிட்டா', description: 'முந்தைய உரிமையாளரின் பட்டா நகல்', required: true },
+      { name: 'வில்லங்கச் சான்றிதழ் (EC)', description: '13+ ஆண்டுகளுக்கான வில்லங்கச் சான்றிதழ்', required: true }
+    ]
   },
   'chitta-extract-download': {
     name: 'A-பதிவேடு & சிட்டா நகல் பதிவிறக்கம்',
     description: 'நில உரிமையின் அதிகாரப்பூர்வ டிஜிட்டல் சிட்டா மற்றும் A-பதிவேடு நகல் பெறுதல்.',
     category_name: 'நிலம் & பட்டா சேவைகள்',
-    processing_time: '1-2 வேலை நாட்கள்'
+    processing_time: '1-2 வேலை நாட்கள்',
+    eligibility: 'நில உரிமையாளர்கள்.',
+    documents: [
+      { name: 'பட்டா நகல் / சொத்துவரி ரசீது', description: 'நில உரிமைச் சான்று நகல்', required: true }
+    ]
+  },
+  'chitta-extract-fmb-download': {
+    name: 'A-பதிவேடு & சிட்டா நகல் பதிவிறக்கம்',
+    description: 'நில உரிமையின் அதிகாரப்பூர்வ டிஜிட்டல் சிட்டா மற்றும் A-பதிவேடு நகல் பெறுதல்.',
+    category_name: 'நிலம் & பட்டா சேவைகள்',
+    processing_time: '1-2 வேலை நாட்கள்',
+    eligibility: 'நில உரிமையாளர்கள்.',
+    documents: [
+      { name: 'பட்டா நகல் / சொத்துவரி ரசீது', description: 'நில உரிமைச் சான்று நகல்', required: true }
+    ]
   },
   'fmb-sketch-map': {
     name: 'FMB வரைபடம் பதிவிறக்கம்',
     description: 'நில எல்லை அளவீடுகளைக் காட்டும் Field Measurement Book (FMB) வரைபட நகல் பெற விண்ணப்பித்தல்.',
     category_name: 'நிலம் & பட்டா சேவைகள்',
-    processing_time: '2-3 வேலை நாட்கள்'
+    processing_time: '2-3 வேலை நாட்கள்',
+    eligibility: 'நில எல்லை அளவீடு தேவைப்படும் உரிமையாளர்கள்.',
+    documents: [
+      { name: 'பட்டா நகல்', description: 'பட்டா ஆவணத்தின் நகல்', required: true }
+    ]
   },
   'encumbrance-certificate-ec': {
     name: 'வில்லங்கச் சான்றிதழ் (EC) விண்ணப்பம்',
     description: 'சொத்தின் பரிவர்த்தனை மற்றும் உரிமை வரலாற்றை உறுதிப்படுத்தும் வில்லங்கச் சான்றிதழ் பெறுதல்.',
     category_name: 'நிலம் & பட்டா சேவைகள்',
-    processing_time: '3-5 வேலை நாட்கள்'
+    processing_time: '3-5 வேலை நாட்கள்',
+    eligibility: 'சொத்து வாங்குபவர்கள் மற்றும் வங்கி கடன் விண்ணப்பதாரர்கள்.',
+    documents: [
+      { name: 'முந்தைய கிரையப் பத்திர நகல்', description: 'பதிவுசெய்யப்பட்ட பத்திர நகல்', required: true }
+    ]
   },
   'fresh-passport-application': {
     name: 'புதிய பாஸ்போர்ட் விண்ணப்பம்',
     description: 'புதிய இந்திய பாஸ்போர்ட் விண்ணப்பப் பதிவு மற்றும் நேர்காணல் நேரம் முன்பதிவு செய்தல்.',
     category_name: 'பாஸ்போர்ட் சேவைகள்',
-    processing_time: '15-20 வேலை நாட்கள்'
+    processing_time: '15-20 வேலை நாட்கள்',
+    eligibility: 'வெளிநாடு செல்ல விரும்பும் இந்திய குடிமக்கள்.',
+    documents: [
+      { name: 'பிறந்த தேதி சான்று', description: 'ஆதார் கார்டு / பிறப்புச் சான்றிதழ் / 10ஆவது மதிப்பெண் சான்றிதழ்', required: true },
+      { name: 'முகவரிச் சான்று', description: 'ஆதார் கார்டு / வாக்காளர் அட்டை / வங்கி கணக்கு புத்தகம்', required: true },
+      { name: 'Non-ECR சான்று', description: '10ஆம் வகுப்பு சான்றிதழ் அல்லது பட்டப் படிப்புச் சான்றிதழ்', required: true }
+    ]
   },
   'passport-reissue-application': {
     name: 'பாஸ்போர்ட் புதுப்பித்தல் (Re-Issue)',
     description: 'காலாவதியான அல்லது பக்கங்கள் முடிந்த பாஸ்போர்ட்டை புதுப்பிக்க விண்ணப்பித்தல்.',
     category_name: 'பாஸ்போர்ட் சேவைகள்',
-    processing_time: '10-15 வேலை நாட்கள்'
+    processing_time: '10-15 வேலை நாட்கள்',
+    eligibility: 'காலாவதியாகும் நிலையில் பாஸ்போர்ட் வைத்துள்ள உரிமையாளர்கள்.',
+    documents: [
+      { name: 'பழைய பாஸ்போர்ட் அசல் & நகல்', description: 'முதல் மற்றும் கடைசி 2 பக்கங்களின் நகல்', required: true },
+      { name: 'தற்போதைய முகவரிச் சான்று', description: 'ஆதார் / வங்கி புத்தகம் / மின்சாரக் கட்டணம்', required: true }
+    ]
   },
   'learner-licence-llr-booking': {
     name: 'ஓட்டுநர் பழகுநர் உரிமம் (LLR) முன்பதிவு',
     description: 'இருசக்கர மற்றும் நான்கு சக்கர வாகனங்களுக்கான LLR பழகுநர் உரிமம் விண்ணப்பம்.',
     category_name: 'வாகனம் & ஓட்டுநர் உரிம சேவைகள்',
-    processing_time: '3-5 வேலை நாட்கள்'
+    processing_time: '3-5 வேலை நாட்கள்',
+    eligibility: '16+ வயது (50cc கியர் இல்லாத வாகனம்) அல்லது 18+ வயது (நான்கு சக்கர வாகனம்).',
+    documents: [
+      { name: 'வயதுச் சான்று', description: 'ஆதார் / பிறப்புச் சான்றிதழ் / பாஸ்போர்ட்', required: true },
+      { name: 'முகவரிச் சான்று', description: 'ஆதார் கார்டு / ரேஷன் கார்டு', required: true }
+    ]
   },
   'driving-licence-renewal': {
     name: 'ஓட்டுநர் உரிமம் (DL) புதுப்பித்தல்',
     description: 'காலாவதியான ஓட்டுநர் உரிமத்தை RTO மூலம் புதுப்பிக்க விண்ணப்பித்தல்.',
     category_name: 'வாகனம் & ஓட்டுநர் உரிம சேவைகள்',
-    processing_time: '7-10 வேலை நாட்கள்'
+    processing_time: '7-10 வேலை நாட்கள்',
+    eligibility: 'காலாவதியான ஓட்டுநர் உரிமம் வைத்திருப்பவர்கள்.',
+    documents: [
+      { name: 'அசல் DL நகல்', description: 'தற்போதுள்ள DL-ன் முன் மற்றும் பின் பக்க நகல்', required: true },
+      { name: 'முகவரிச் சான்று', description: 'ஆதார் கார்டு நகல்', required: true }
+    ]
   },
   'udyam-msme-registration': {
     name: 'உத்யம் MSME அரசு பதிவு',
     description: 'சிறு, குறு மற்றும் நடுத்தர தொழில்களுக்கான மத்திய அரசின் அதிகாரப்பூர்வ பதிவுச் சான்றிதழ்.',
     category_name: 'வணிகச் சேவைகள்',
-    processing_time: '1-2 வேலை நாட்கள்'
+    processing_time: '1-2 வேலை நாட்கள்',
+    eligibility: 'தொழில் தொடங்கும் அனைத்து நிறுவன உரிமையாளர்கள்.',
+    documents: [
+      { name: 'ஆதார் & PAN நகல்', description: 'உரிமையாளரின் அடையாளச் சான்றுகள்', required: true },
+      { name: 'வங்கி கணக்கு புத்தகம்', description: 'வணிக வங்கி கணக்கு சான்று', required: true }
+    ]
   },
   'gst-registration-application': {
     name: 'GST பதிவு விண்ணப்பம்',
     description: 'வணிக நிறுவனங்களுக்கான 15 இலக்க சரக்கு மற்றும் சேவை வரி (GSTIN) பதிவு.',
     category_name: 'வணிகச் சேவைகள்',
-    processing_time: '3-7 வேலை நாட்கள்'
+    processing_time: '3-7 வேலை நாட்கள்',
+    eligibility: 'வர்த்தக வரம்பு தாண்டிய வணிக நிறுவனங்கள்.',
+    documents: [
+      { name: 'PAN & ஆதார் நகல்', description: 'உரிமையாளர் அடையாளச் சான்றுகள்', required: true },
+      { name: 'வணிக முகவரிச் சான்று', description: 'மின்சாரக் கட்டணம் / வாடகை ஒப்பந்தம்', required: true }
+    ]
   },
   'tnegedco-eb-name-transfer': {
     name: 'மின்சார இணைப்பு (EB) பெயர் மாற்றம்',
     description: 'வீடு அல்லது சொத்து வாங்கிய பின் மின்சார வாரிய (TANGEDCO) இணைப்பில் பெயர் மாற்றம் செய்தல்.',
     category_name: 'பயன்பாட்டுச் சேவைகள்',
-    processing_time: '7-10 வேலை நாட்கள்'
+    processing_time: '7-10 வேலை நாட்கள்',
+    eligibility: 'புதிய சொத்து உரிமையாளர்கள்.',
+    documents: [
+      { name: 'கிரையப் பத்திர நகல்', description: 'சொத்து உரிமைப் பத்திரம்', required: true },
+      { name: 'கடைசி EB கட்டண ரசீது', description: 'கட்டணம் செலுத்திய ரசீது', required: true }
+    ]
+  },
+  'electricity-eb-name-transfer': {
+    name: 'மின்சார இணைப்பு (EB) பெயர் மாற்றம்',
+    description: 'வீடு அல்லது சொத்து வாங்கிய பின் மின்சார வாரிய (TANGEDCO) இணைப்பில் பெயர் மாற்றம் செய்தல்.',
+    category_name: 'பயன்பாட்டுச் சேவைகள்',
+    processing_time: '7-10 வேலை நாட்கள்',
+    eligibility: 'புதிய சொத்து உரிமையாளர்கள்.',
+    documents: [
+      { name: 'கிரையப் பத்திர நகல்', description: 'சொத்து உரிமைப் பத்திரம்', required: true },
+      { name: 'கடைசி EB கட்டண ரசீது', description: 'கட்டணம் செலுத்திய ரசீது', required: true }
+    ]
   },
   'new-electricity-eb-connection': {
     name: 'புதிய மின்சார இணைப்பு (EB) விண்ணப்பம்',
     description: 'புதிய கட்டிடங்கள் மற்றும் வீடுகளுக்கான புதிய மின்சார இணைப்பு பெறுதல்.',
     category_name: 'பயன்பாட்டுச் சேவைகள்',
-    processing_time: '10-15 வேலை நாட்கள்'
+    processing_time: '10-15 வேலை நாட்கள்',
+    eligibility: 'புதிய கட்டிட உரிமையாளர்கள்.',
+    documents: [
+      { name: 'சொத்துவரி ரசீது / உரிமைச் சான்று', description: 'சொத்து ஆவண நகல்', required: true },
+      { name: 'ஆதார் கார்டு நகல்', description: 'விண்ணப்பதாரர் ஆதார் நகல்', required: true }
+    ]
   },
   'smart-ration-card-application': {
     name: 'புதிய ஸ்மார்ட் ரேஷன் கார்டு விண்ணப்பம்',
     description: 'புதிதாக திருமணமான குடும்பங்களுக்கான புதிய ஸ்மார்ட் ரேஷன் கார்டு விண்ணப்பம்.',
     category_name: 'ரேஷன் கார்டு சேவைகள்',
-    processing_time: '15-30 வேலை நாட்கள்'
+    processing_time: '15-30 வேலை நாட்கள்',
+    eligibility: 'புதிதாகத் திருமணமான தம்பதிகள் அல்லது தனி குடும்பங்கள்.',
+    documents: [
+      { name: 'அனைத்து உறுப்பினர்களின் ஆதார்', description: 'குடும்ப உறுப்பினர்கள் அனைவரின் ஆதார் நகல்கள்', required: true },
+      { name: 'திருமணச் சான்றிதழ் / ரேஷன் கார்டு நீக்கல் சான்று', description: 'பெற்றோர் ரேஷன் கார்டிலிருந்து பெயர் நீக்கப்பட்ட சான்று', required: true },
+      { name: 'கேஸ் இணைப்பு ரசீது / வாடகை ஒப்பந்தம்', description: 'சமையல் எரிவாயு இணைப்பு சான்று', required: true }
+    ]
   },
   'ration-family-member-add': {
     name: 'ரேஷன் கார்டில் குடும்ப உறுப்பினர் சேர்த்தல்',
     description: 'தற்போதுள்ள ஸ்மார்ட் ரேஷன் கார்டில் புதிதாக பிறந்த குழந்தை அல்லது மனைவியின் பெயரைச் சேர்த்தல்.',
     category_name: 'ரேஷன் கார்டு சேவைகள்',
-    processing_time: '7-10 வேலை நாட்கள்'
+    processing_time: '7-10 வேலை நாட்கள்',
+    eligibility: 'தற்போதுள்ள ஸ்மார்ட் ரேஷன் கார்டு வைத்திருப்பவர்கள்.',
+    documents: [
+      { name: 'புதிய உறுப்பினரின் ஆதார் / பிறப்புச் சான்றிதழ்', description: 'குழந்தையின் பிறப்புச் சான்றிதழ் அல்லது ஆதார் நகல்', required: true },
+      { name: 'ஸ்மார்ட் ரேஷன் கார்டு நகல்', description: 'தற்போதுள்ள ஸ்மார்ட் கார்டின் நகல்', required: true }
+    ]
+  },
+  'ration-smart-card-member-update': {
+    name: 'ரேஷன் கார்டில் குடும்ப உறுப்பினர் சேர்த்தல்',
+    description: 'தற்போதுள்ள ஸ்மார்ட் ரேஷன் கார்டில் புதிதாக பிறந்த குழந்தை அல்லது மனைவியின் பெயரைச் சேர்த்தல்.',
+    category_name: 'ரேஷன் கார்டு சேவைகள்',
+    processing_time: '7-10 வேலை நாட்கள்',
+    eligibility: 'தற்போதுள்ள ஸ்மார்ட் ரேஷன் கார்டு வைத்திருப்பவர்கள்.',
+    documents: [
+      { name: 'புதிய உறுப்பினரின் ஆதார் / பிறப்புச் சான்றிதழ்', description: 'குழந்தையின் பிறப்புச் சான்றிதழ் அல்லது ஆதார் நகல்', required: true },
+      { name: 'ஸ்மார்ட் ரேஷன் கார்டு நகல்', description: 'தற்போதுள்ள ஸ்மார்ட் கார்டின் நகல்', required: true }
+    ]
   }
 };
 
@@ -899,7 +1176,7 @@ export function getLocalizedService(srv, lang = 'en') {
   if (lang !== 'ta') return srv;
 
   const key = srv.slug || '';
-  const taData = TAMIL_SERVICES_TRANSLATIONS[key];
+  const taData = TAMIL_SERVICES_TRANSLATIONS[key] || Object.values(TAMIL_SERVICES_TRANSLATIONS).find(item => item.name === srv.name);
 
   if (taData) {
     return {
@@ -907,7 +1184,9 @@ export function getLocalizedService(srv, lang = 'en') {
       name: taData.name || srv.name,
       description: taData.description || srv.description,
       category_name: taData.category_name || srv.category_name,
-      processing_time: taData.processing_time || srv.processing_time
+      processing_time: taData.processing_time || srv.processing_time,
+      eligibility: taData.eligibility || srv.eligibility,
+      documents: taData.documents || srv.documents
     };
   }
 
@@ -949,4 +1228,5 @@ export function getServiceDefinition(param, lang = 'en') {
 
   return getLocalizedService(srv, lang);
 }
+
 

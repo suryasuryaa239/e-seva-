@@ -147,12 +147,12 @@ export default function Home() {
 
               {/* HEADING */}
               <h1 className="font-heading font-extrabold text-4xl sm:text-5xl lg:text-6xl tracking-tight leading-tight text-slate-900">
-                {t.heroTitle}
+                {t.trustedPartner || t.heroTitle}
               </h1>
 
               {/* SUPPORTING TEXT */}
               <p className="text-slate-600 text-base sm:text-lg max-w-xl font-normal leading-relaxed">
-                {t.heroSubtitle}
+                {t.heroDesc || t.heroSubtitle}
               </p>
 
               {/* ACTION BUTTONS */}
@@ -162,7 +162,7 @@ export default function Home() {
                   to="/services"
                   className="w-full sm:w-auto bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold text-xs sm:text-sm px-8 py-3.5 rounded-xl shadow-md hover:shadow-lg transition-all text-center flex items-center justify-center gap-2 group"
                 >
-                  <span>{t.viewAllServices.replace(' →', '')}</span>
+                  <span>{t.exploreServices || (lang === 'ta' ? 'சேவைகளைப் பார்க்கவும்' : 'Explore Services')}</span>
                   <ArrowRight className="w-4 h-4 text-orange-400 group-hover:translate-x-1 transition-transform" />
                 </Link>
 
@@ -171,7 +171,7 @@ export default function Home() {
                   to="/track"
                   className="w-full sm:w-auto bg-white hover:bg-slate-50 text-slate-800 font-bold text-xs sm:text-sm px-8 py-3.5 rounded-xl border border-slate-300 hover:border-slate-800 shadow-xs transition-all text-center"
                 >
-                  {t.trackApp}
+                  {t.trackAppHero || t.trackApp || (lang === 'ta' ? 'விண்ணப்பத்தை கண்காணிக்கவும்' : 'Track Application')}
                 </Link>
               </div>
 
@@ -201,10 +201,10 @@ export default function Home() {
         {/* CENTERED SECTION HEADER */}
         <div className="text-center max-w-2xl mx-auto space-y-2">
           <span className="inline-block text-xs font-extrabold text-orange-600 uppercase tracking-widest bg-orange-50 border border-orange-200/80 px-3.5 py-1 rounded-full">
-            {lang === 'ta' ? 'எங்கள் சேவை பிரிவுகள்' : 'OUR SERVICES CATEGORIES'}
+            {t.servicesCategories || (lang === 'ta' ? 'சேவை வகைகள்' : 'Services Categories')}
           </span>
           <h2 className="font-heading font-extrabold text-3xl sm:text-4xl text-slate-900 tracking-tight">
-            {lang === 'ta' ? 'எங்கள் டிஜிட்டல் சேவைகளைக் கண்டறியவும்' : 'Explore Our Digital Services'}
+            {t.exploreDigitalServices || (lang === 'ta' ? 'எங்கள் டிஜிட்டல் சேவைகளைப் பாருங்கள்' : 'Explore Our Digital Services')}
           </h2>
           <p className="text-xs sm:text-sm text-slate-500 font-normal leading-relaxed">
             {lang === 'ta' ? 'ஒரே இணையதளத்தில் அனைத்து அரசு டிஜிட்டல் சேவைகளையும் எளிதாகப் பெறுங்கள்.' : 'Access a wide range of digital services from one convenient portal.'}
@@ -298,10 +298,10 @@ export default function Home() {
         {/* CENTERED SECTION HEADER */}
         <div className="text-center max-w-2xl mx-auto space-y-2">
           <span className="inline-block text-xs font-extrabold text-orange-600 uppercase tracking-widest bg-orange-50 border border-orange-200/80 px-3.5 py-1 rounded-full">
-            {lang === 'ta' ? 'பிரபலமான சேவைகள்' : 'POPULAR SERVICES'}
+            {t.popularServicesTitle || (lang === 'ta' ? 'பிரபலமான சேவைகள்' : 'Popular Services')}
           </span>
           <h2 className="font-heading font-extrabold text-3xl sm:text-4xl text-slate-900 tracking-tight">
-            {lang === 'ta' ? 'அதிகம் கேட்கப்படும் சேவைகள்' : 'Most Requested Services'}
+            {t.mostRequestedServices || (lang === 'ta' ? 'அதிகம் கேட்கப்படும் சேவைகள்' : 'Most Requested Services')}
           </h2>
           <p className="text-xs sm:text-sm text-slate-500 font-normal leading-relaxed">
             {lang === 'ta' ? 'எங்கள் பயனர்கள் அதிகம் பயன்படுத்தும் டிஜிட்டல் சேவைகளை எளிதாகப் பெறுங்கள்.' : 'Quickly access the digital services our customers use most often.'}
@@ -353,7 +353,7 @@ export default function Home() {
                   to={srv.slug === 'aadhaar' ? '/services/aadhaar' : `/service/${srv.slug}`}
                   className="w-full bg-[#0b192c] hover:bg-orange-600 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-xs transition-colors flex items-center justify-center gap-1.5 group/btn"
                 >
-                  <span>{t.applyNow || (lang === 'ta' ? 'விண்ணப்பிக்க' : 'Apply Now')}</span>
+                  <span>{t.applyNow || (lang === 'ta' ? 'இப்போது விண்ணப்பிக்கவும்' : 'Apply Now')}</span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform" />
                 </Link>
               </div>
@@ -382,13 +382,13 @@ export default function Home() {
         {/* CENTERED SECTION HEADER */}
         <div className="text-center max-w-2xl mx-auto space-y-2">
           <span className="inline-block text-xs font-extrabold text-orange-600 uppercase tracking-widest bg-orange-50 border border-orange-200/80 px-3.5 py-1 rounded-full">
-            HOW IT WORKS
+            {t.howItWorksTitle || (lang === 'ta' ? 'எப்படி செயல்படுகிறது' : 'How It Works')}
           </span>
           <h2 className="font-heading font-extrabold text-3xl sm:text-4xl text-slate-900 tracking-tight">
-            Simple & Easy Process
+            {t.howItWorksTitle || (lang === 'ta' ? 'எப்படி செயல்படுகிறது' : 'How It Works')}
           </h2>
           <p className="text-xs sm:text-sm text-slate-500 font-normal leading-relaxed">
-            Complete your digital service application in just a few simple steps.
+            {lang === 'ta' ? 'சில எளிய படிகளில் உங்கள் டிஜிட்டல் சேவை விண்ணப்பத்தை நிறைவு செய்யுங்கள்.' : 'Complete your digital service application in just a few simple steps.'}
           </p>
         </div>
 
@@ -401,26 +401,26 @@ export default function Home() {
             {[
               {
                 step: '01',
-                title: 'Choose a Service',
-                desc: 'Find and select the service you need.',
+                title: t.stepChooseService || (lang === 'ta' ? 'ஒரு சேவையைத் தேர்ந்தெடுக்கவும்' : 'Choose a Service'),
+                desc: lang === 'ta' ? 'உங்களுக்குத் தேவையான சேவையைத் தேடித் தேர்ந்தெடுக்கவும்.' : 'Find and select the service you need.',
                 icon: <Search className="w-6 h-6 text-orange-600" />
               },
               {
                 step: '02',
-                title: 'Submit Details',
-                desc: 'Fill in the required information and upload documents.',
+                title: t.stepFillApp || (lang === 'ta' ? 'விண்ணப்பத்தைப் பூர்த்தி செய்யவும்' : 'Fill Application'),
+                desc: lang === 'ta' ? 'தேவையான விவரங்களைப் பூர்த்தி செய்து ஆவணங்களைப் பதிவேற்றவும்.' : 'Fill in the required information and upload documents.',
                 icon: <FileText className="w-6 h-6 text-orange-600" />
               },
               {
                 step: '03',
-                title: 'Make Payment',
-                desc: 'Review your application and complete the payment.',
+                title: t.stepMakePayment || (lang === 'ta' ? 'கட்டணத்தைச் செலுத்தவும்' : 'Make Payment'),
+                desc: lang === 'ta' ? 'உங்கள் விண்ணப்பத்தைச் சரிபார்த்து கட்டணத்தை நிறைவு செய்யவும்.' : 'Review your application and complete the payment.',
                 icon: <CreditCard className="w-6 h-6 text-orange-600" />
               },
               {
                 step: '04',
-                title: 'Track Application',
-                desc: 'Receive your application ID and track the progress.',
+                title: t.stepTrackApp || (lang === 'ta' ? 'விண்ணப்பத்தை கண்காணிக்கவும்' : 'Track Application'),
+                desc: lang === 'ta' ? 'விண்ணப்ப எண்ணைப் பெற்று அதன் நிலையை உடனுக்குடன் அறியவும்.' : 'Receive your application ID and track the progress.',
                 icon: <FileCheck className="w-6 h-6 text-orange-600" />
               }
             ].map((item, idx) => (
@@ -461,13 +461,13 @@ export default function Home() {
           {/* CENTERED SECTION HEADER */}
           <div className="text-center max-w-2xl mx-auto space-y-2">
             <span className="inline-block text-xs font-extrabold text-orange-600 uppercase tracking-widest bg-orange-50 border border-orange-200/80 px-3.5 py-1 rounded-full">
-              APPLICATION STATUS
+              {lang === 'ta' ? 'விண்ணப்ப நிலை' : 'APPLICATION STATUS'}
             </span>
             <h2 className="font-heading font-extrabold text-3xl sm:text-4xl text-slate-900 tracking-tight">
-              Track Your Application
+              {lang === 'ta' ? 'உங்கள் விண்ணப்பத்தை கண்காணிக்கவும்' : 'Track Your Application'}
             </h2>
             <p className="text-xs sm:text-sm text-slate-500 font-normal leading-relaxed">
-              Enter your application details to quickly check the current status of your application.
+              {lang === 'ta' ? 'உங்கள் விண்ணப்பத்தின் தற்போதைய நிலையை உடனடியாக அறிந்துகொள்ள உங்கள் விண்ணப்ப எண்ணை உள்ளிடவும்.' : 'Enter your application details to quickly check the current status of your application.'}
             </p>
           </div>
 
@@ -476,14 +476,14 @@ export default function Home() {
             <form onSubmit={handleTrackSubmit} className="space-y-4">
               <div className="space-y-2">
                 <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider block">
-                  Application ID <span className="text-orange-500">*</span>
+                  {lang === 'ta' ? 'விண்ணப்ப எண்' : 'Application ID'} <span className="text-orange-500">*</span>
                 </label>
 
                 <div className="flex flex-col sm:flex-row gap-3">
                   <div className="relative flex-1">
                     <input
                       type="text"
-                      placeholder="Enter Application ID (e.g. ESV-2026-000001)"
+                      placeholder={lang === 'ta' ? 'விண்ணப்ப எண்ணை உள்ளிடவும் (எ.கா. ESV-2026-000001)' : 'Enter Application ID (e.g. ESV-2026-000001)'}
                       value={trackingIdInput}
                       onChange={(e) => {
                         setTrackingIdInput(e.target.value);
@@ -500,7 +500,7 @@ export default function Home() {
                     type="submit"
                     className="bg-[#0b192c] hover:bg-orange-600 text-white font-extrabold text-xs sm:text-sm px-8 py-3.5 rounded-xl shadow-md hover:shadow-lg transition-all shrink-0 flex items-center justify-center gap-2 group"
                   >
-                    <span>Check Status</span>
+                    <span>{lang === 'ta' ? 'நிலையை சரிபார்க்க' : 'Check Status'}</span>
                     <ArrowRight className="w-4 h-4 text-orange-400 group-hover:translate-x-1 transition-transform" />
                   </button>
                 </div>
@@ -517,10 +517,10 @@ export default function Home() {
 
             <div className="pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between text-xs text-slate-500 gap-2">
               <span className="flex items-center gap-1.5 font-medium">
-                <ShieldCheck className="w-4 h-4 text-emerald-600" /> Instant Real-Time Application Tracking
+                <ShieldCheck className="w-4 h-4 text-emerald-600" /> {lang === 'ta' ? 'உடனடி நேரடி விண்ணப்ப கண்காணிப்பு' : 'Instant Real-Time Application Tracking'}
               </span>
               <Link to="/track" className="font-bold text-slate-800 hover:text-orange-600 transition-colors">
-                Advanced Tracking Page →
+                {lang === 'ta' ? 'விரிவான கண்காணிப்பு பக்கம் →' : 'Advanced Tracking Page →'}
               </Link>
             </div>
           </div>
@@ -535,13 +535,13 @@ export default function Home() {
           {/* CENTERED SECTION HEADER */}
           <div className="text-center max-w-2xl mx-auto space-y-2">
             <span className="inline-block text-xs font-extrabold text-orange-600 uppercase tracking-widest bg-orange-50 border border-orange-200/80 px-3.5 py-1 rounded-full">
-              WHY CHOOSE US
+              {t.whyChooseUsTitle || (lang === 'ta' ? 'ஏன் எங்களை தேர்ந்தெடுக்க வேண்டும்' : 'WHY CHOOSE US')}
             </span>
             <h2 className="font-heading font-extrabold text-3xl sm:text-4xl text-slate-900 tracking-tight">
-              Why Choose Our Services?
+              {t.whyChooseUsTitle || (lang === 'ta' ? 'ஏன் எங்களைத் தேர்வு செய்ய வேண்டும்?' : 'Why Choose Our Services?')}
             </h2>
             <p className="text-xs sm:text-sm text-slate-500 font-normal leading-relaxed">
-              A simple, convenient and reliable way to access digital services.
+              {lang === 'ta' ? 'டிஜிட்டல் சேவைகளைப் பெறுவதற்கான எளிய, வசதியான மற்றும் நம்பகமான வழி.' : 'A simple, convenient and reliable way to access digital services.'}
             </p>
           </div>
 
@@ -555,10 +555,10 @@ export default function Home() {
               </div>
               <div className="space-y-1.5">
                 <h3 className="font-heading font-extrabold text-base text-slate-900 group-hover:text-orange-600 transition-colors">
-                  Easy to Use
+                  {t.easyProcess || (lang === 'ta' ? 'எளிதான பயன்பாடு' : 'Easy to Use')}
                 </h3>
                 <p className="text-xs text-slate-500 font-normal leading-relaxed">
-                  Simple and user-friendly process for accessing digital services.
+                  {lang === 'ta' ? 'டிஜிட்டல் சேவைகளைப் பெறுவதற்கான எளிமையான மற்றும் பயனர் நட்பு முறை.' : 'Simple and user-friendly process for accessing digital services.'}
                 </p>
               </div>
             </div>
@@ -570,10 +570,10 @@ export default function Home() {
               </div>
               <div className="space-y-1.5">
                 <h3 className="font-heading font-extrabold text-base text-slate-900 group-hover:text-orange-600 transition-colors">
-                  Secure & Reliable
+                  {t.secureService || (lang === 'ta' ? 'பாதுகாப்பான மற்றும் நம்பகமான' : 'Secure & Reliable')}
                 </h3>
                 <p className="text-xs text-slate-500 font-normal leading-relaxed">
-                  Your application information is handled through a secure service process.
+                  {lang === 'ta' ? 'உங்கள் விண்ணப்பத் தகவல்கள் பாதுகாப்பாகக் கையாளப்படுகின்றன.' : 'Your application information is handled through a secure service process.'}
                 </p>
               </div>
             </div>
@@ -585,10 +585,10 @@ export default function Home() {
               </div>
               <div className="space-y-1.5">
                 <h3 className="font-heading font-extrabold text-base text-slate-900 group-hover:text-orange-600 transition-colors">
-                  Quick Processing
+                  {t.fastSupport || (lang === 'ta' ? 'வேகமான செயல்முறை' : 'Quick Processing')}
                 </h3>
                 <p className="text-xs text-slate-500 font-normal leading-relaxed">
-                  Submit your application conveniently and follow its progress.
+                  {lang === 'ta' ? 'உங்கள் விண்ணப்பத்தை எளிதாகச் சமர்ப்பித்து அதன் நிலையைப் பின்பற்றுங்கள்.' : 'Submit your application conveniently and follow its progress.'}
                 </p>
               </div>
             </div>
@@ -600,10 +600,10 @@ export default function Home() {
               </div>
               <div className="space-y-1.5">
                 <h3 className="font-heading font-extrabold text-base text-slate-900 group-hover:text-orange-600 transition-colors">
-                  Customer Support
+                  {t.transparentProcess || (lang === 'ta' ? 'வெளிப்படையான செயல்முறை' : 'Transparent Process')}
                 </h3>
                 <p className="text-xs text-slate-500 font-normal leading-relaxed">
-                  Get assistance whenever you need help with your application.
+                  {lang === 'ta' ? 'உங்கள் விண்ணப்பத்திற்கு உதவி தேவைப்படும்போது எப்போது வேண்டுமானாலும் உதவி பெறுங்கள்.' : 'Get assistance whenever you need help with your application.'}
                 </p>
               </div>
             </div>
@@ -627,16 +627,17 @@ export default function Home() {
               <div className="lg:col-span-7 space-y-4 text-center lg:text-left">
                 <div>
                   <span className="inline-block text-xs font-extrabold text-orange-400 uppercase tracking-widest bg-orange-950/60 border border-orange-500/30 px-3.5 py-1 rounded-full">
-                    NEED HELP WITH YOUR APPLICATION?
+                    {t.needHelpApp || (lang === 'ta' ? 'உங்கள் விண்ணப்பத்திற்கு உதவி தேவையா?' : 'NEED HELP WITH YOUR APPLICATION?')}
                   </span>
                 </div>
 
                 <h2 className="font-heading font-extrabold text-3xl sm:text-4xl lg:text-5xl text-white tracking-tight leading-tight">
-                  Apply Easily. <span className="text-orange-400">Track Anytime.</span>
+                  {lang === 'ta' ? 'எளிதாக விண்ணப்பிக்கவும். ' : 'Apply Easily. '}
+                  <span className="text-orange-400">{lang === 'ta' ? 'எப்போதும் கண்காணிக்கவும்.' : 'Track Anytime.'}</span>
                 </h2>
 
                 <p className="text-slate-300 text-xs sm:text-sm max-w-xl font-normal leading-relaxed">
-                  Submit your application online and keep track of its progress using your Application ID from any device.
+                  {t.trackAnytime || (lang === 'ta' ? 'உங்கள் விண்ணப்பத்தை ஆன்லைனில் சமர்ப்பித்து எந்த சாதனத்திலிருந்தும் விண்ணப்ப எண்ணைக் கொண்டு கண்காணிக்கவும்.' : 'Submit your application online and keep track of its progress using your Application ID from any device.')}
                 </p>
               </div>
 
@@ -646,7 +647,7 @@ export default function Home() {
                   to="/services"
                   className="w-full sm:w-auto bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-xs sm:text-sm px-7 py-3.5 rounded-xl shadow-md hover:shadow-lg transition-all text-center flex items-center justify-center gap-2 group"
                 >
-                  <span>Explore Services</span>
+                  <span>{t.exploreServices || (lang === 'ta' ? 'சேவைகளைக் கண்டறிய' : 'Explore Services')}</span>
                   <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform" />
                 </Link>
 
@@ -654,7 +655,7 @@ export default function Home() {
                   to="/track"
                   className="w-full sm:w-auto bg-white/10 hover:bg-white/20 text-white border border-white/20 font-bold text-xs sm:text-sm px-7 py-3.5 rounded-xl transition-all text-center flex items-center justify-center gap-2 group"
                 >
-                  <span>Track Application</span>
+                  <span>{t.trackAppHero || t.trackApp || (lang === 'ta' ? 'விண்ணப்ப நிலை அறிய' : 'Track Application')}</span>
                   <ArrowRight className="w-4 h-4 text-orange-400 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </div>
@@ -688,18 +689,19 @@ export default function Home() {
             {/* SMALL UPPERCASE LABEL */}
             <div>
               <span className="inline-block text-xs font-extrabold text-orange-600 uppercase tracking-widest bg-orange-50 border border-orange-200/80 px-3.5 py-1 rounded-full">
-                ABOUT E-SEVA
+                {lang === 'ta' ? 'இ-சேவை பற்றி' : 'ABOUT E-SEVA'}
               </span>
             </div>
 
             {/* HEADING */}
             <h2 className="font-heading font-extrabold text-3xl sm:text-4xl text-slate-900 tracking-tight leading-tight">
-              Making Digital Services <span className="text-orange-500 font-extrabold">Simple for Everyone</span>
+              {lang === 'ta' ? 'அனைவருக்கும் டிஜிட்டல் சேவைகள் ' : 'Making Digital Services '}
+              <span className="text-orange-500 font-extrabold">{lang === 'ta' ? 'எளிதானதாக மாற்றுகிறோம்' : 'Simple for Everyone'}</span>
             </h2>
 
             {/* SUPPORTING PARAGRAPH */}
             <p className="text-slate-600 text-xs sm:text-sm font-normal leading-relaxed">
-              E-Seva provides a convenient platform to access and manage a wide range of digital service assistance from one place.
+              {t.simpleSecureConvenient || (lang === 'ta' ? 'இ-சேவை ஒரே இடத்திலிருந்து பல்வேறு டிஜிட்டல் அரசுச் சேவைகளைப் பெற வசதியான தளத்தை வழங்குகிறது.' : 'E-Seva provides a convenient platform to access and manage a wide range of digital service assistance from one place.')}
             </p>
 
             {/* 3 TRUST / HIGHLIGHT ITEMS */}
@@ -712,10 +714,10 @@ export default function Home() {
                 </div>
                 <div className="space-y-0.5">
                   <h4 className="font-heading font-extrabold text-xs sm:text-sm text-slate-900">
-                    Easy Service Access
+                    {lang === 'ta' ? 'எளிதான சேவை அணுகல்' : 'Easy Service Access'}
                   </h4>
                   <p className="text-xs text-slate-500 font-normal">
-                    Access multiple services from one platform.
+                    {lang === 'ta' ? 'ஒரே தளத்திலிருந்து பல சேவைகளை அணுகலாம்.' : 'Access multiple services from one platform.'}
                   </p>
                 </div>
               </div>
@@ -727,10 +729,10 @@ export default function Home() {
                 </div>
                 <div className="space-y-0.5">
                   <h4 className="font-heading font-extrabold text-xs sm:text-sm text-slate-900">
-                    Simple Application Process
+                    {lang === 'ta' ? 'எளிமையான விண்ணப்ப முறை' : 'Simple Application Process'}
                   </h4>
                   <p className="text-xs text-slate-500 font-normal">
-                    Complete your application through an easy-to-follow process.
+                    {lang === 'ta' ? 'எளிதான வழிகாட்டுதல்களுடன் உங்கள் விண்ணப்பத்தைப் பூர்த்தி செய்யுங்கள்.' : 'Complete your application through an easy-to-follow process.'}
                   </p>
                 </div>
               </div>
@@ -742,10 +744,10 @@ export default function Home() {
                 </div>
                 <div className="space-y-0.5">
                   <h4 className="font-heading font-extrabold text-xs sm:text-sm text-slate-900">
-                    Application Tracking
+                    {lang === 'ta' ? 'விண்ணப்பக் கண்காணிப்பு' : 'Application Tracking'}
                   </h4>
                   <p className="text-xs text-slate-500 font-normal">
-                    Track your submitted application using your Application ID.
+                    {lang === 'ta' ? 'விண்ணப்ப எண்ணைப் பயன்படுத்தி உங்கள் நிலையை அறியலாம்.' : 'Track your submitted application using your Application ID.'}
                   </p>
                 </div>
               </div>
@@ -758,7 +760,7 @@ export default function Home() {
                 to="/about"
                 className="inline-flex items-center gap-2 bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold text-xs sm:text-sm px-7 py-3.5 rounded-xl shadow-md hover:shadow-lg transition-all text-center group"
               >
-                <span>Learn More</span>
+                <span>{t.learnMore || (lang === 'ta' ? 'மேலும் அறிய' : 'Learn More')}</span>
                 <ArrowRight className="w-4 h-4 text-orange-400 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
@@ -776,13 +778,13 @@ export default function Home() {
           {/* CENTERED SECTION HEADER */}
           <div className="text-center max-w-2xl mx-auto space-y-2">
             <span className="inline-block text-xs font-extrabold text-orange-600 uppercase tracking-widest bg-orange-50 border border-orange-200/80 px-3.5 py-1 rounded-full">
-              CONTACT US
+              {t.contactUs || (lang === 'ta' ? 'தொடர்புகொள்ள' : 'CONTACT US')}
             </span>
             <h2 className="font-heading font-extrabold text-3xl sm:text-4xl text-slate-900 tracking-tight">
-              We're Here to Help
+              {t.needAssistance || (lang === 'ta' ? 'உதவி தேவையா?' : "We're Here to Help")}
             </h2>
             <p className="text-xs sm:text-sm text-slate-500 font-normal leading-relaxed">
-              Have a question or need assistance? Get in touch with our support team.
+              {t.supportTeamHere || (lang === 'ta' ? 'எங்கள் ஆதரவுக் குழு உங்களுக்கு உதவ தயாராக உள்ளது.' : 'Have a question or need assistance? Get in touch with our support team.')}
             </p>
           </div>
 
@@ -799,10 +801,10 @@ export default function Home() {
                 </div>
                 <div className="space-y-1">
                   <h4 className="font-heading font-extrabold text-sm text-slate-900 group-hover:text-orange-600 transition-colors">
-                    Phone Support
+                    {t.phoneSupport || (lang === 'ta' ? 'தொலைபேசி ஆதரவு' : 'Phone Support')}
                   </h4>
                   <p className="text-xs text-slate-600 font-mono font-medium">1800-425-3738 / +91 44 2859 0000</p>
-                  <p className="text-[11px] text-slate-400 font-normal">Toll-Free Helpline (Mon - Sat)</p>
+                  <p className="text-[11px] text-slate-400 font-normal">{lang === 'ta' ? 'கட்டணமில்லா உதவி எண் (திங்கள் - சனி)' : 'Toll-Free Helpline (Mon - Sat)'}</p>
                 </div>
               </div>
 
@@ -813,10 +815,10 @@ export default function Home() {
                 </div>
                 <div className="space-y-1">
                   <h4 className="font-heading font-extrabold text-sm text-slate-900 group-hover:text-orange-600 transition-colors">
-                    Email Support
+                    {t.emailSupport || (lang === 'ta' ? 'மின்னஞ்சல் ஆதரவு' : 'Email Support')}
                   </h4>
                   <p className="text-xs text-slate-600 font-medium">support@eseva.gov.in / help@eseva.org</p>
-                  <p className="text-[11px] text-slate-400 font-normal">24-hour response SLA</p>
+                  <p className="text-[11px] text-slate-400 font-normal">{lang === 'ta' ? '24 மணிநேர பதில் சேவை' : '24-hour response SLA'}</p>
                 </div>
               </div>
 
@@ -827,7 +829,7 @@ export default function Home() {
                 </div>
                 <div className="space-y-1">
                   <h4 className="font-heading font-extrabold text-sm text-slate-900 group-hover:text-orange-600 transition-colors">
-                    Service Location
+                    {t.serviceLocation || (lang === 'ta' ? 'சேவை மையம்' : 'Service Location')}
                   </h4>
                   <p className="text-xs text-slate-600 font-normal leading-relaxed">
                     Digital Seva Bhavan, 123 Service Street, Digital City - 600001
@@ -842,11 +844,11 @@ export default function Home() {
                 </div>
                 <div className="space-y-1">
                   <h4 className="font-heading font-extrabold text-sm text-slate-900 group-hover:text-orange-600 transition-colors">
-                    Support Hours
+                    {t.supportHours || (lang === 'ta' ? 'ஆதரவு நேரம்' : 'Support Hours')}
                   </h4>
-                  <p className="text-xs text-slate-600 font-normal">Mon - Sat: 08:00 AM - 08:00 PM</p>
+                  <p className="text-xs text-slate-600 font-normal">{lang === 'ta' ? 'திங்கள் - சனி: காலை 08:00 - மாலை 08:00' : 'Mon - Sat: 08:00 AM - 08:00 PM'}</p>
                   <p className="text-[11px] text-emerald-600 font-bold flex items-center gap-1">
-                    <ShieldCheck className="w-3.5 h-3.5" /> 24/7 Portal Service Access
+                    <ShieldCheck className="w-3.5 h-3.5" /> {lang === 'ta' ? '24/7 போர்ட்டல் சேவை வசதி' : '24/7 Portal Service Access'}
                   </p>
                 </div>
               </div>
@@ -856,8 +858,8 @@ export default function Home() {
             {/* RIGHT SIDE: MODERN CONTACT FORM CARD */}
             <div className="lg:col-span-7 bg-white rounded-2xl border border-slate-200/90 p-6 sm:p-8 shadow-sm space-y-5">
               <div className="border-b border-slate-100 pb-3">
-                <h3 className="font-heading font-extrabold text-xl text-slate-900">Send Us a Message</h3>
-                <p className="text-xs text-slate-500 mt-0.5 font-normal">Fill in the details below and our team will get in touch with you.</p>
+                <h3 className="font-heading font-extrabold text-xl text-slate-900">{t.sendUsMessage || (lang === 'ta' ? 'செய்தி அனுப்பவும்' : 'Send Us a Message')}</h3>
+                <p className="text-xs text-slate-500 mt-0.5 font-normal">{t.fillDetailsBelow || (lang === 'ta' ? 'கீழேயுள்ள விவரங்களைப் பூர்த்தி செய்து அனுப்பவும், எங்கள் குழு தொடர்பு கொள்ளும்.' : 'Fill in the details below and our team will get in touch with you.')}</p>
               </div>
 
               <form onSubmit={handleContactSubmit} className="space-y-4">
@@ -865,12 +867,12 @@ export default function Home() {
                   {/* FULL NAME */}
                   <div className="space-y-1.5">
                     <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider block">
-                      Full Name <span className="text-orange-500">*</span>
+                      {lang === 'ta' ? 'முழு பெயர்' : 'Full Name'} <span className="text-orange-500">*</span>
                     </label>
                     <input
                       type="text"
                       required
-                      placeholder="Enter your full name"
+                      placeholder={lang === 'ta' ? 'உங்கள் முழு பெயரை உள்ளிடவும்' : 'Enter your full name'}
                       value={contactForm.fullName}
                       onChange={(e) => setContactForm({ ...contactForm, fullName: e.target.value })}
                       className="w-full bg-slate-50 text-slate-900 placeholder-slate-400 text-xs sm:text-sm rounded-xl px-4 py-3 border border-slate-300 focus:border-slate-900 focus:bg-white outline-none transition-all"
@@ -880,12 +882,12 @@ export default function Home() {
                   {/* MOBILE NUMBER */}
                   <div className="space-y-1.5">
                     <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider block">
-                      Mobile Number <span className="text-orange-500">*</span>
+                      {lang === 'ta' ? 'மொபைல் எண்' : 'Mobile Number'} <span className="text-orange-500">*</span>
                     </label>
                     <input
                       type="tel"
                       required
-                      placeholder="Enter 10-digit mobile number"
+                      placeholder={lang === 'ta' ? '10-இலக்க மொபைல் எண்ணை உள்ளிடவும்' : 'Enter 10-digit mobile number'}
                       value={contactForm.mobile}
                       onChange={(e) => setContactForm({ ...contactForm, mobile: e.target.value })}
                       className="w-full bg-slate-50 text-slate-900 placeholder-slate-400 text-xs sm:text-sm rounded-xl px-4 py-3 border border-slate-300 focus:border-slate-900 focus:bg-white outline-none transition-all font-mono"
@@ -897,7 +899,7 @@ export default function Home() {
                   {/* EMAIL ADDRESS */}
                   <div className="space-y-1.5">
                     <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider block">
-                      Email Address
+                      {lang === 'ta' ? 'மின்னஞ்சல் முகவரி' : 'Email Address'}
                     </label>
                     <input
                       type="email"
@@ -911,11 +913,11 @@ export default function Home() {
                   {/* SUBJECT */}
                   <div className="space-y-1.5">
                     <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider block">
-                      Subject
+                      {lang === 'ta' ? 'தலைப்பு' : 'Subject'}
                     </label>
                     <input
                       type="text"
-                      placeholder="e.g. Aadhaar Update Query"
+                      placeholder={lang === 'ta' ? 'எ.கா. ஆதார் புதுப்பித்தல் கேள்வி' : 'e.g. Aadhaar Update Query'}
                       value={contactForm.subject}
                       onChange={(e) => setContactForm({ ...contactForm, subject: e.target.value })}
                       className="w-full bg-slate-50 text-slate-900 placeholder-slate-400 text-xs sm:text-sm rounded-xl px-4 py-3 border border-slate-300 focus:border-slate-900 focus:bg-white outline-none transition-all"
@@ -926,12 +928,12 @@ export default function Home() {
                 {/* MESSAGE TEXTAREA */}
                 <div className="space-y-1.5">
                   <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider block">
-                    Message <span className="text-orange-500">*</span>
+                    {lang === 'ta' ? 'செய்தி' : 'Message'} <span className="text-orange-500">*</span>
                   </label>
                   <textarea
                     rows={4}
                     required
-                    placeholder="Type your message or inquiry details here..."
+                    placeholder={lang === 'ta' ? 'உங்கள் செய்தி அல்லது சந்தேகங்களை இங்கே தட்டச்சு செய்யவும்...' : 'Type your message or inquiry details here...'}
                     value={contactForm.message}
                     onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
                     className="w-full bg-slate-50 text-slate-900 placeholder-slate-400 text-xs sm:text-sm rounded-xl px-4 py-3 border border-slate-300 focus:border-slate-900 focus:bg-white outline-none transition-all resize-none"
@@ -945,7 +947,7 @@ export default function Home() {
                     disabled={isSubmittingContact}
                     className="w-full sm:w-auto bg-[#0b192c] hover:bg-orange-600 text-white font-extrabold text-xs sm:text-sm px-8 py-3.5 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 group disabled:opacity-50"
                   >
-                    <span>{isSubmittingContact ? 'Sending Message...' : 'Send Message'}</span>
+                    <span>{isSubmittingContact ? (lang === 'ta' ? 'அனுப்பப்படுகிறது...' : 'Sending Message...') : (t.sendEnquiry || (lang === 'ta' ? 'விசாரணையை அனுப்பவும்' : 'Send Message'))}</span>
                     <Send className="w-4 h-4 text-orange-400 group-hover:translate-x-1 transition-transform" />
                   </button>
                 </div>

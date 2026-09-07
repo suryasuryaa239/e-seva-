@@ -178,19 +178,21 @@ export default function ApplyService() {
   // Step 1 Validation (Applicant Details + Custom Fields)
   const validateStep1 = () => {
     const errs = {};
-    if (!applicantInfo.user_name.trim()) errs.user_name = 'Please enter your full name.';
+    if (!applicantInfo.user_name.trim()) {
+      errs.user_name = lang === 'ta' ? 'உங்கள் முழுப் பெயரை உள்ளிடவும்.' : 'Please enter your full name.';
+    }
     if (!applicantInfo.user_phone.trim()) {
-      errs.user_phone = 'Please enter your mobile number.';
+      errs.user_phone = lang === 'ta' ? 'உங்கள் மொபைல் எண்ணை உள்ளிடவும்.' : 'Please enter your mobile number.';
     } else if (!/^\d{10}$/.test(applicantInfo.user_phone.trim())) {
-      errs.user_phone = 'Please enter a valid 10-digit mobile number.';
+      errs.user_phone = lang === 'ta' ? 'செல்லுபடியாகும் 10-இலக்க மொபைல் எண்ணை உள்ளிடவும்.' : 'Please enter a valid 10-digit mobile number.';
     }
     if (!applicantInfo.user_email.trim()) {
-      errs.user_email = 'Please enter your email address.';
+      errs.user_email = lang === 'ta' ? 'உங்கள் மின்னஞ்சல் முகவரியை உள்ளிடவும்.' : 'Please enter your email address.';
     } else if (!/\S+@\S+\.\S+/.test(applicantInfo.user_email.trim())) {
-      errs.user_email = 'Please enter a valid email address.';
+      errs.user_email = lang === 'ta' ? 'செல்லுபடியாகும் மின்னஞ்சல் முகவரியை உள்ளிடவும்.' : 'Please enter a valid email address.';
     }
     if (applicantInfo.pincode && !/^\d{6}$/.test(applicantInfo.pincode.trim())) {
-      errs.pincode = 'Please enter a valid 6-digit pincode.';
+      errs.pincode = lang === 'ta' ? 'செல்லுபடியாகும் 6-இலக்க அஞ்சல் குறியீட்டை உள்ளிடவும்.' : 'Please enter a valid 6-digit pincode.';
     }
 
     if (service && service.fields) {
@@ -199,7 +201,8 @@ export default function ApplyService() {
           const key = f.field_name || f.name;
           const val = fieldValues[key];
           if (!val || String(val).trim() === '') {
-            errs[key] = `Please enter ${f.field_label || f.label}.`;
+            const fLabel = f.field_label || f.label;
+            errs[key] = lang === 'ta' ? `${fLabel} உள்ளிடவும்.` : `Please enter ${fLabel}.`;
           }
         }
       });
@@ -217,7 +220,7 @@ export default function ApplyService() {
         if (doc.is_required !== false && doc.required !== false) {
           const docName = doc.document_name || doc.name;
           if (!files[docName]) {
-            errs[`doc_${docName}`] = `Please upload ${docName}.`;
+            errs[`doc_${docName}`] = lang === 'ta' ? `${docName} பதிவேற்றவும்.` : `Please upload ${docName}.`;
           }
         }
       });
@@ -363,10 +366,10 @@ export default function ApplyService() {
   }
 
   const stepsList = [
-    { step: 1, title: 'Details', sub: '01 Personal & Service Info' },
-    { step: 2, title: 'Documents', sub: '02 Proof Uploads' },
-    { step: 3, title: 'Review', sub: '03 Verification & Summary' },
-    { step: 4, title: 'Payment', sub: '04 Fee Submission' }
+    { step: 1, title: lang === 'ta' ? 'விவரங்கள்' : 'Details', sub: lang === 'ta' ? '01 தனிப்பட்ட விவரங்கள்' : '01 Personal & Service Info' },
+    { step: 2, title: lang === 'ta' ? 'ஆவணங்கள்' : 'Documents', sub: lang === 'ta' ? '02 ஆவணங்கள் பதிவேற்றம்' : '02 Proof Uploads' },
+    { step: 3, title: lang === 'ta' ? 'சரிபார்ப்பு' : 'Review', sub: lang === 'ta' ? '03 சரிபார்ப்பு & சுருக்கம்' : '03 Verification & Summary' },
+    { step: 4, title: lang === 'ta' ? 'கட்டணம்' : 'Payment', sub: lang === 'ta' ? '04 சேவை கட்டணம்' : '04 Fee Submission' }
   ];
 
   return (
@@ -376,10 +379,10 @@ export default function ApplyService() {
         {/* BREADCRUMB */}
         <Breadcrumbs 
           items={[
-            { label: 'E-Services', path: '/services' },
+            { label: lang === 'ta' ? 'இ-சேவைகள்' : 'E-Services', path: '/services' },
             { label: service.name, path: `/service/${service.slug || service.id}` },
-            { label: 'Apply' },
-            ...(currentStep === 2 ? [{ label: 'Documents' }] : currentStep === 3 ? [{ label: 'Review' }] : currentStep === 4 ? [{ label: 'Payment' }] : currentStep === 5 ? [{ label: 'Confirmation' }] : [])
+            { label: lang === 'ta' ? 'விண்ணப்பிக்குக' : 'Apply' },
+            ...(currentStep === 2 ? [{ label: lang === 'ta' ? 'ஆவணங்கள்' : 'Documents' }] : currentStep === 3 ? [{ label: lang === 'ta' ? 'சரிபார்ப்பு' : 'Review' }] : currentStep === 4 ? [{ label: lang === 'ta' ? 'கட்டணம்' : 'Payment' }] : currentStep === 5 ? [{ label: lang === 'ta' ? 'உறுதிப்படுத்தல்' : 'Confirmation' }] : [])
           ]} 
         />
 
@@ -387,35 +390,35 @@ export default function ApplyService() {
         <div className="bg-white rounded-3xl p-8 sm:p-10 border border-slate-200/90 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div className="space-y-2">
             <span className="text-[11px] font-extrabold text-orange-600 uppercase tracking-widest bg-orange-50 border border-orange-200/80 px-3 py-0.5 rounded-full inline-block">
-              {currentStep === 2 ? 'DOCUMENTS' : currentStep === 3 ? 'REVIEW' : currentStep === 4 ? 'PAYMENT' : currentStep === 5 ? 'CONFIRMATION' : 'APPLICATION'}
+              {currentStep === 2 ? (lang === 'ta' ? 'ஆவணங்கள்' : 'DOCUMENTS') : currentStep === 3 ? (lang === 'ta' ? 'சரிபார்ப்பு' : 'REVIEW') : currentStep === 4 ? (lang === 'ta' ? 'கட்டணம்' : 'PAYMENT') : currentStep === 5 ? (lang === 'ta' ? 'உறுதிப்படுத்தல்' : 'CONFIRMATION') : (lang === 'ta' ? 'விண்ணப்பம்' : 'APPLICATION')}
             </span>
             <h1 className="font-heading font-extrabold text-2xl sm:text-3xl lg:text-4xl text-slate-900 tracking-tight">
               {currentStep === 2 
-                ? 'Upload Required Documents' 
+                ? (lang === 'ta' ? 'தேவையான ஆவணங்களைப் பதிவேற்றவும்' : 'Upload Required Documents')
                 : currentStep === 3 
-                ? `Review ${service.name} Application` 
+                ? (lang === 'ta' ? `${service.name} விண்ணப்பத்தைச் சரிபார்க்கவும்` : `Review ${service.name} Application`)
                 : currentStep === 4 
-                ? 'Complete Your Payment' 
+                ? (lang === 'ta' ? 'சேவைக் கட்டணத்தைச் செலுத்தவும்' : 'Complete Your Payment')
                 : currentStep === 5
-                ? 'Payment & Application Success'
-                : `Apply for ${service.name}`}
+                ? (lang === 'ta' ? 'விண்ணப்பம் வெற்றிகரமாக சமர்ப்பிக்கப்பட்டது!' : 'Payment & Application Success')
+                : (lang === 'ta' ? `${service.name} - விண்ணப்பிக்க` : `Apply for ${service.name}`)}
             </h1>
             <p className="text-xs sm:text-sm text-slate-500 font-normal leading-relaxed">
               {currentStep === 2 
-                ? 'Upload clear and valid documents required for your application.' 
+                ? (lang === 'ta' ? 'உங்கள் விண்ணப்பத்திற்குத் தேவையான தெளிவான மற்றும் செல்லுபடியாகும் ஆவணங்களைப் பதிவேற்றவும்.' : 'Upload clear and valid documents required for your application.')
                 : currentStep === 4
-                ? 'Review the payment summary and continue securely to complete your application.'
+                ? (lang === 'ta' ? 'கட்டண சுருக்கத்தைச் சரிபார்த்து பாதுகாப்பாக விண்ணப்பத்தைச் சமர்ப்பிக்கவும்.' : 'Review the payment summary and continue securely to complete your application.')
                 : currentStep === 5
-                ? 'Your payment has been logged and application submitted successfully.'
-                : 'Submit your required personal details and proof documents for fast online verification and processing.'}
+                ? (lang === 'ta' ? 'உங்கள் கட்டணம் மற்றும் விண்ணப்பம் வெற்றிகரமாக பதிவு செய்யப்பட்டது.' : 'Your payment has been logged and application submitted successfully.')
+                : (lang === 'ta' ? 'விரைவான ஆன்லைன் சரிபார்ப்பு மற்றும் செயலாக்கத்திற்குத் தேவையான விவரங்களைச் சமர்ப்பிக்கவும்.' : 'Submit your required personal details and proof documents for fast online verification and processing.')}
             </p>
           </div>
 
           <div className="flex items-center gap-4 w-full md:w-auto">
             <div className="bg-slate-50 border border-slate-200/80 rounded-2xl px-5 py-3 text-center md:text-right min-w-[130px] flex-1 md:flex-initial">
-              <div className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Service Fee</div>
+              <div className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">{lang === 'ta' ? 'சேவை கட்டணம்' : 'Service Fee'}</div>
               <div className="text-2xl font-black text-orange-600">
-                {service.fee === 0 ? 'FREE' : `₹${service.fee}`}
+                {service.fee === 0 ? (lang === 'ta' ? 'இலவசம்' : 'FREE') : `₹${service.fee}`}
               </div>
             </div>
 
@@ -428,7 +431,7 @@ export default function ApplyService() {
                 title="Save application progress as draft"
               >
                 <Save className="w-4 h-4 text-orange-500" />
-                <span className="hidden sm:inline">{savingDraft ? 'Saving...' : 'Save Draft'}</span>
+                <span className="hidden sm:inline">{savingDraft ? t.savingDraftText : t.saveDraftBtn}</span>
               </button>
             )}
           </div>
@@ -442,7 +445,7 @@ export default function ApplyService() {
               <span>{draftSavedMessage}</span>
             </div>
             <Link to="/my-applications" className="text-xs font-extrabold underline hover:text-emerald-900">
-              View Drafts
+              {lang === 'ta' ? 'வரைவுகளைப் பார்க்க' : 'View Drafts'}
             </Link>
           </div>
         )}
@@ -500,7 +503,7 @@ export default function ApplyService() {
                     <UserCheck className="w-5 h-5 text-orange-500" />
                     <span>{t.applicantInformation}</span>
                   </h3>
-                  <span className="text-xs text-slate-400 font-bold">* {lang === 'ta' ? 'கட்டாய புலங்கள்' : 'Required fields'}</span>
+                  <span className="text-xs text-slate-400 font-bold">* {t.requiredFieldsNotice}</span>
                 </div>
 
                 {/* PRIMARY APPLICANT INFORMATION */}
@@ -545,7 +548,7 @@ export default function ApplyService() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-extrabold text-slate-700 mb-1.5">{lang === 'ta' ? 'பிறந்த தேதி' : 'Date of Birth'}</label>
+                    <label className="block text-xs font-extrabold text-slate-700 mb-1.5">{t.dobLabel}</label>
                     <input
                       type="date"
                       name="dob"
@@ -556,21 +559,21 @@ export default function ApplyService() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-extrabold text-slate-700 mb-1.5">{lang === 'ta' ? 'பாலினம்' : 'Gender'}</label>
+                    <label className="block text-xs font-extrabold text-slate-700 mb-1.5">{t.genderLabel}</label>
                     <select
                       name="gender"
                       value={applicantInfo.gender}
                       onChange={handleApplicantChange}
                       className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-[#0b192c] focus:bg-white transition-all"
                     >
-                      <option value="Male">{lang === 'ta' ? 'ஆண்' : 'Male'}</option>
-                      <option value="Female">{lang === 'ta' ? 'பெண்' : 'Female'}</option>
-                      <option value="Transgender">{lang === 'ta' ? 'மூன்றாம் பாலினத்தவர்' : 'Transgender'}</option>
+                      <option value="Male">{t.maleGender}</option>
+                      <option value="Female">{t.femaleGender}</option>
+                      <option value="Transgender">{t.transgenderGender}</option>
                     </select>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-extrabold text-slate-700 mb-1.5">State</label>
+                    <label className="block text-xs font-extrabold text-slate-700 mb-1.5">{t.stateLabel}</label>
                     <input
                       type="text"
                       name="state"
@@ -581,7 +584,7 @@ export default function ApplyService() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-extrabold text-slate-700 mb-1.5">District</label>
+                    <label className="block text-xs font-extrabold text-slate-700 mb-1.5">{t.districtLabel}</label>
                     <input
                       type="text"
                       name="district"
@@ -593,7 +596,7 @@ export default function ApplyService() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-extrabold text-slate-700 mb-1.5">Pincode</label>
+                    <label className="block text-xs font-extrabold text-slate-700 mb-1.5">{t.pincodeLabel}</label>
                     <input
                       type="text"
                       name="pincode"
@@ -606,11 +609,11 @@ export default function ApplyService() {
                   </div>
 
                   <div className="sm:col-span-2">
-                    <label className="block text-xs font-extrabold text-slate-700 mb-1.5">Residential Address</label>
+                    <label className="block text-xs font-extrabold text-slate-700 mb-1.5">{t.addressLabel}</label>
                     <textarea
                       rows={2}
                       name="address"
-                      placeholder="Door No, Street Name, Area..."
+                      placeholder={lang === 'ta' ? 'கதவு எண், தெரு பெயர், பகுதி...' : 'Door No, Street Name, Area...'}
                       value={applicantInfo.address}
                       onChange={handleApplicantChange}
                       className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-[#0b192c] focus:bg-white transition-all"
@@ -623,7 +626,7 @@ export default function ApplyService() {
                   <div className="pt-6 border-t border-slate-100 space-y-6">
                     <h4 className="font-heading font-extrabold text-base text-slate-900 flex items-center gap-2">
                       <FileText className="w-4 h-4 text-orange-500" />
-                      <span>Service Specific Inputs</span>
+                      <span>{t.customInputsTitle}</span>
                     </h4>
 
                     {Object.entries(groupedFields).map(([secTitle, secFields], sIdx) => (
@@ -656,7 +659,7 @@ export default function ApplyService() {
                                     onChange={e => handleInputChange(key, e.target.value)}
                                     className={`w-full px-4 py-3 bg-white border ${hasErr ? 'border-rose-500 bg-rose-50' : 'border-slate-200'} rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-[#0b192c]`}
                                   >
-                                    <option value="">-- Select {fLabel} --</option>
+                                    <option value="">-- {lang === 'ta' ? 'தேர்ந்தெடுக்கவும்' : 'Select'} {fLabel} --</option>
                                     {optionsList.map((opt, oIdx) => (
                                       <option key={oIdx} value={opt}>{opt}</option>
                                     ))}
@@ -685,7 +688,7 @@ export default function ApplyService() {
                                       onChange={e => handleInputChange(key, e.target.checked)}
                                       className="text-orange-500 focus:ring-orange-500 rounded"
                                     />
-                                    <span>{f.helpText || 'I agree to this declaration'}</span>
+                                    <span>{f.helpText || (lang === 'ta' ? 'நான் இந்த அறிவிப்பை ஒப்புக்கொள்கிறேன்' : 'I agree to this declaration')}</span>
                                   </label>
                                 ) : isTextArea ? (
                                   <textarea
@@ -720,8 +723,8 @@ export default function ApplyService() {
                 <div className="bg-orange-50/70 border border-orange-200/80 p-4 rounded-2xl flex items-start space-x-3 text-xs text-orange-900 font-medium">
                   <Info className="w-5 h-5 text-orange-600 shrink-0 mt-0.5" />
                   <div>
-                    <span className="font-extrabold text-orange-950">Notice: </span>
-                    Please verify your details carefully before continuing to document uploads.
+                    <span className="font-extrabold text-orange-950">{t.verifyNoticeTitle} </span>
+                    {t.verifyNoticeText}
                   </div>
                 </div>
 
@@ -734,7 +737,7 @@ export default function ApplyService() {
                     className="px-5 py-3.5 bg-slate-100 hover:bg-slate-200/80 text-slate-700 font-bold text-xs rounded-xl border border-slate-200/80 flex items-center gap-2 transition-colors"
                   >
                     <Save className="w-4 h-4 text-orange-500" />
-                    <span>{savingDraft ? 'Saving...' : 'Save Draft'}</span>
+                    <span>{savingDraft ? t.savingDraftText : t.saveDraftBtn}</span>
                   </button>
 
                   <button
@@ -742,7 +745,7 @@ export default function ApplyService() {
                     onClick={handleNextStep}
                     className="px-8 py-3.5 bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-xs sm:text-sm rounded-xl shadow-xs transition-colors flex items-center gap-2 group/btn"
                   >
-                    <span>Continue to Documents</span>
+                    <span>{t.continueToDocuments}</span>
                     <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                   </button>
                 </div>
@@ -757,26 +760,26 @@ export default function ApplyService() {
                 <div className="border-b pb-4 border-slate-100 flex items-center justify-between">
                   <h3 className="font-heading font-extrabold text-lg text-slate-900 flex items-center gap-2">
                     <Upload className="w-5 h-5 text-emerald-600" />
-                    <span>Step 02: Upload Required Proof Documents</span>
+                    <span>{t.uploadDocsStepTitle}</span>
                   </h3>
-                  <span className="text-xs text-slate-400 font-bold">PDF, JPG, PNG (Max 5MB)</span>
+                  <span className="text-xs text-slate-400 font-bold">PDF, JPG, PNG ({t.maxFileSizeText})</span>
                 </div>
 
                 {/* COMPACT APPLICATION SUMMARY CARD */}
                 <div className="p-5 bg-slate-900 text-white rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm border border-slate-800">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
-                      <span>Ref ID:</span>
+                      <span>{lang === 'ta' ? 'குறிப்பு எண்:' : 'Ref ID:'}</span>
                       <span className="text-orange-400 font-mono">{draftId ? `APP-DRAFT-${draftId.toString().padStart(4, '0')}` : 'APP-REF-2026'}</span>
                     </div>
                     <h4 className="font-extrabold text-sm text-white">{service.name}</h4>
                     <p className="text-xs text-slate-300 font-normal">
-                      Applicant: <span className="font-bold text-white">{applicantInfo.user_name || 'Karthik S.'}</span>
+                      {lang === 'ta' ? 'விண்ணப்பதாரர்:' : 'Applicant:'} <span className="font-bold text-white">{applicantInfo.user_name || 'Karthik S.'}</span>
                     </p>
                   </div>
                   <div className="bg-slate-800 border border-slate-700 px-3.5 py-1.5 rounded-xl text-right">
-                    <div className="text-[10px] text-slate-400 uppercase font-extrabold">Status</div>
-                    <div className="text-xs font-bold text-orange-400">Documents Pending (Step 2 of 4)</div>
+                    <div className="text-[10px] text-slate-400 uppercase font-extrabold">{lang === 'ta' ? 'நிலை' : 'Status'}</div>
+                    <div className="text-xs font-bold text-orange-400">{lang === 'ta' ? 'ஆவணங்கள் நிலுவையில் (படி 2/4)' : 'Documents Pending (Step 2 of 4)'}</div>
                   </div>
                 </div>
 
@@ -801,12 +804,12 @@ export default function ApplyService() {
                         const ext = '.' + selectedFile.name.split('.').pop().toLowerCase();
                         
                         if (!validExts.includes(ext)) {
-                          setErrors(prev => ({ ...prev, [`doc_${dName}`]: 'File type not supported. Upload PDF, JPG, or PNG.' }));
+                          setErrors(prev => ({ ...prev, [`doc_${dName}`]: lang === 'ta' ? 'கோப்பு வகை ஆதரிக்கப்படவில்லை. PDF, JPG, அல்லது PNG பதிவேற்றவும்.' : 'File type not supported. Upload PDF, JPG, or PNG.' }));
                           return;
                         }
 
                         if (selectedFile.size > maxLimitMB * 1024 * 1024) {
-                          setErrors(prev => ({ ...prev, [`doc_${dName}`]: `File size exceeds ${maxLimitMB}MB limit.` }));
+                          setErrors(prev => ({ ...prev, [`doc_${dName}`]: lang === 'ta' ? `கோப்பு அளவு ${maxLimitMB}MB வரம்பை விட அதிகமாக உள்ளது.` : `File size exceeds ${maxLimitMB}MB limit.` }));
                           return;
                         }
 
@@ -835,17 +838,17 @@ export default function ApplyService() {
                             <span className={`text-[10px] font-extrabold px-2.5 py-0.5 rounded-md uppercase ${
                               doc.is_required !== false && doc.required !== false ? 'bg-amber-100 text-amber-800 border border-amber-200' : 'bg-slate-200 text-slate-700'
                             }`}>
-                              {doc.is_required !== false && doc.required !== false ? 'Required' : 'Optional'}
+                              {doc.is_required !== false && doc.required !== false ? t.requiredTag : t.optionalTag}
                             </span>
                           </div>
 
                           <p className="text-[11px] text-slate-500 font-normal leading-relaxed">
-                            {doc.description || 'Upload clear scanned copy or photo proof'}
+                            {doc.description || (lang === 'ta' ? 'தெளிவான ஸ்கேன் நகல் அல்லது புகைப்பட சான்றைப் பதிவேற்றவும்' : 'Upload clear scanned copy or photo proof')}
                           </p>
 
                           <div className="text-[10px] text-slate-400 font-bold flex items-center gap-2">
                             <span className="bg-slate-200/60 px-2 py-0.5 rounded text-slate-600">PDF, JPG, PNG</span>
-                            <span>Max {maxMB}MB</span>
+                            <span>{lang === 'ta' ? `அதிகபட்சம் ${maxMB}MB` : `Max ${maxMB}MB`}</span>
                           </div>
 
                           {!currentFile ? (
@@ -853,7 +856,7 @@ export default function ApplyService() {
                               <label className="block w-full py-3.5 px-3 bg-white border border-slate-200 rounded-xl text-center cursor-pointer hover:bg-orange-50 hover:border-orange-300 transition-colors shadow-xs">
                                 <span className="text-xs font-extrabold text-orange-600 flex items-center justify-center gap-1.5">
                                   <Upload className="w-4 h-4" />
-                                  <span>Choose File or Drag & Drop</span>
+                                  <span>{t.chooseFileOrDrag}</span>
                                 </span>
                                 <input
                                   type="file"
@@ -878,11 +881,11 @@ export default function ApplyService() {
                               <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
                                 <span className="text-[10px] font-bold text-emerald-700 flex items-center gap-1">
                                   <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                                  <span>Successfully Uploaded</span>
+                                  <span>{t.uploadedSuccessfully}</span>
                                 </span>
                                 <div className="flex items-center space-x-2">
                                   <label className="text-[11px] font-bold text-orange-600 hover:underline cursor-pointer">
-                                    Replace
+                                    {t.replaceBtn}
                                     <input
                                       type="file"
                                       accept=".pdf,.jpg,.jpeg,.png"
@@ -896,7 +899,7 @@ export default function ApplyService() {
                                     onClick={() => setFiles(prev => ({ ...prev, [docName]: null }))}
                                     className="text-[11px] font-bold text-rose-600 hover:underline"
                                   >
-                                    Remove
+                                    {t.removeBtn}
                                   </button>
                                 </div>
                               </div>
@@ -915,7 +918,7 @@ export default function ApplyService() {
                   </div>
                 ) : (
                   <div className="p-6 bg-slate-50 text-center rounded-2xl text-slate-600 text-xs font-medium">
-                    No document uploads required for this service. Click continue to review.
+                    {lang === 'ta' ? 'இந்த சேவைக்கு ஆவணங்கள் பதிவேற்ற வேண்டிய அவசியமில்லை.' : 'No document uploads required for this service. Click continue to review.'}
                   </div>
                 )}
 
@@ -923,8 +926,8 @@ export default function ApplyService() {
                 <div className="bg-orange-50/70 border border-orange-200/80 p-4 rounded-2xl flex items-start space-x-3 text-xs text-orange-900 font-medium">
                   <Info className="w-5 h-5 text-orange-600 shrink-0 mt-0.5" />
                   <div>
-                    <span className="font-extrabold text-orange-950">Document Notice: </span>
-                    Please upload clear and readable documents. Make sure the details match your application.
+                    <span className="font-extrabold text-orange-950">{t.docNoticeTitle} </span>
+                    {t.docNoticeText}
                   </div>
                 </div>
 
@@ -936,7 +939,7 @@ export default function ApplyService() {
                     className="px-5 py-3.5 bg-slate-100 hover:bg-slate-200/80 text-slate-700 font-bold text-xs rounded-xl flex items-center gap-2 border border-slate-200/80"
                   >
                     <ArrowLeft className="w-4 h-4" />
-                    <span>Back to Details</span>
+                    <span>{t.backToDetails}</span>
                   </button>
 
                   <div className="flex items-center gap-3">
@@ -947,7 +950,7 @@ export default function ApplyService() {
                       className="px-4 py-3.5 bg-slate-100 hover:bg-slate-200/80 text-slate-700 font-bold text-xs rounded-xl border border-slate-200/80 flex items-center gap-2 transition-colors"
                     >
                       <Save className="w-4 h-4 text-orange-500" />
-                      <span>{savingDraft ? 'Saving...' : 'Save Draft'}</span>
+                      <span>{savingDraft ? t.savingDraftText : t.saveDraftBtn}</span>
                     </button>
 
                     <button
@@ -955,7 +958,7 @@ export default function ApplyService() {
                       onClick={handleNextStep}
                       className="px-8 py-3.5 bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-xs sm:text-sm rounded-xl shadow-xs transition-colors flex items-center gap-2 group/btn"
                     >
-                      <span>Continue to Review</span>
+                      <span>{t.continueToReview}</span>
                       <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                     </button>
                   </div>
@@ -971,38 +974,38 @@ export default function ApplyService() {
                 <div className="border-b pb-4 border-slate-100 flex items-center justify-between">
                   <h3 className="font-heading font-extrabold text-lg text-slate-900 flex items-center gap-2">
                     <FileCheck className="w-5 h-5 text-orange-500" />
-                    <span>Step 03: Review Application Details</span>
+                    <span>{t.reviewStepTitle}</span>
                   </h3>
-                  <span className="text-xs text-slate-400 font-bold">Final Verification</span>
+                  <span className="text-xs text-slate-400 font-bold">{t.finalVerificationTag}</span>
                 </div>
 
                 {/* APPLICANT SUMMARY */}
                 <div className="p-6 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-3">
                   <div className="flex items-center justify-between border-b pb-3 border-slate-200/80">
-                    <h4 className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">Applicant Details</h4>
+                    <h4 className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">{t.applicantDetailsTitle}</h4>
                     <button
                       onClick={() => setCurrentStep(1)}
                       className="text-xs font-bold text-orange-600 hover:underline flex items-center gap-1"
                     >
                       <Edit3 className="w-3.5 h-3.5" />
-                      <span>Edit</span>
+                      <span>{lang === 'ta' ? 'திருத்த' : 'Edit'}</span>
                     </button>
                   </div>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-medium">
                     <div>
-                      <span className="text-slate-400 block text-[10px] font-extrabold uppercase">Full Name</span>
+                      <span className="text-slate-400 block text-[10px] font-extrabold uppercase">{t.fullName}</span>
                       <span className="font-bold text-slate-900">{applicantInfo.user_name || 'N/A'}</span>
                     </div>
                     <div>
-                      <span className="text-slate-400 block text-[10px] font-extrabold uppercase">Mobile</span>
+                      <span className="text-slate-400 block text-[10px] font-extrabold uppercase">{t.mobileNumber}</span>
                       <span className="font-bold text-slate-900">{applicantInfo.user_phone || 'N/A'}</span>
                     </div>
                     <div>
-                      <span className="text-slate-400 block text-[10px] font-extrabold uppercase">Email</span>
+                      <span className="text-slate-400 block text-[10px] font-extrabold uppercase">{t.emailAddress}</span>
                       <span className="font-bold text-slate-900">{applicantInfo.user_email || 'N/A'}</span>
                     </div>
                     <div>
-                      <span className="text-slate-400 block text-[10px] font-extrabold uppercase">District / State</span>
+                      <span className="text-slate-400 block text-[10px] font-extrabold uppercase">{t.districtLabel} / {t.stateLabel}</span>
                       <span className="font-bold text-slate-900">{applicantInfo.district ? `${applicantInfo.district}, ${applicantInfo.state}` : applicantInfo.state}</span>
                     </div>
                   </div>
@@ -1012,13 +1015,13 @@ export default function ApplyService() {
                 {Object.keys(fieldValues).length > 0 && (
                   <div className="p-6 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-3">
                     <div className="flex items-center justify-between border-b pb-3 border-slate-200/80">
-                      <h4 className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">{service.name} Custom Inputs</h4>
+                      <h4 className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">{t.customInputsTitle}</h4>
                       <button
                         onClick={() => setCurrentStep(1)}
                         className="text-xs font-bold text-orange-600 hover:underline flex items-center gap-1"
                       >
                         <Edit3 className="w-3.5 h-3.5" />
-                        <span>Edit</span>
+                        <span>{lang === 'ta' ? 'திருத்த' : 'Edit'}</span>
                       </button>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
@@ -1028,7 +1031,7 @@ export default function ApplyService() {
                         return (
                           <div key={idx} className="bg-white p-3 rounded-xl border border-slate-200/80">
                             <span className="text-slate-400 block text-[10px] font-extrabold uppercase">{label}:</span>
-                            <span className="font-bold text-slate-900">{v ? String(v) : 'Not Provided'}</span>
+                            <span className="font-bold text-slate-900">{v ? String(v) : (lang === 'ta' ? 'வழங்கப்படவில்லை' : 'Not Provided')}</span>
                           </div>
                         );
                       })}
@@ -1039,13 +1042,13 @@ export default function ApplyService() {
                 {/* UPLOADED DOCUMENTS SUMMARY */}
                 <div className="p-6 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-3">
                   <div className="flex items-center justify-between border-b pb-3 border-slate-200/80">
-                    <h4 className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">Uploaded Documents</h4>
+                    <h4 className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">{t.uploadedDocumentsTitle}</h4>
                     <button
                       onClick={() => setCurrentStep(2)}
                       className="text-xs font-bold text-orange-600 hover:underline flex items-center gap-1"
                     >
                       <Edit3 className="w-3.5 h-3.5" />
-                      <span>Edit</span>
+                      <span>{lang === 'ta' ? 'திருத்த' : 'Edit'}</span>
                     </button>
                   </div>
                   <div className="space-y-2 text-xs">
@@ -1054,7 +1057,7 @@ export default function ApplyService() {
                         <span className="font-medium text-slate-700">{dName}</span>
                         <span className="font-bold text-emerald-600 flex items-center gap-1">
                           <CheckCircle2 className="w-4 h-4" />
-                          <span>{fObj ? fObj.name : 'Not Uploaded'}</span>
+                          <span>{fObj ? fObj.name : (lang === 'ta' ? 'பதிவேற்றப்படவில்லை' : 'Not Uploaded')}</span>
                         </span>
                       </div>
                     ))}
@@ -1064,23 +1067,23 @@ export default function ApplyService() {
                 {/* FEE BREAKDOWN CARD */}
                 <div className="p-6 bg-orange-50/60 border border-orange-200/90 rounded-2xl space-y-3">
                   <div className="flex items-center justify-between border-b border-orange-200 pb-3">
-                    <h4 className="text-xs font-extrabold text-orange-950 uppercase tracking-wider">Fee Breakdown</h4>
+                    <h4 className="text-xs font-extrabold text-orange-950 uppercase tracking-wider">{t.feeBreakdownTitle}</h4>
                     <span className="text-[10px] font-extrabold text-orange-700 bg-orange-100 px-2 py-0.5 rounded-md">
-                      {service.fee === 0 ? 'FREE Facilitation' : 'Service Fee'}
+                      {service.fee === 0 ? t.freeFacilitation : t.serviceFeeLabel}
                     </span>
                   </div>
 
                   <div className="space-y-2 text-xs text-slate-700 font-medium">
                     <div className="flex justify-between">
-                      <span>Service Fee ({service.name}):</span>
+                      <span>{t.serviceFeeLabel} ({service.name}):</span>
                       <span className="font-bold">₹{service.fee || 0}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Facilitation Desk Review:</span>
-                      <span className="font-bold text-emerald-600">₹0 (Free Facilitation)</span>
+                      <span>{lang === 'ta' ? 'சேவை மைய பரிசீலனை:' : 'Facilitation Desk Review:'}</span>
+                      <span className="font-bold text-emerald-600">₹0 ({t.freeFacilitation})</span>
                     </div>
                     <div className="flex justify-between pt-2 border-t border-orange-200 font-extrabold text-slate-900 text-sm">
-                      <span>Total Payable:</span>
+                      <span>{t.totalPayableLabel}:</span>
                       <span className="text-orange-600 text-base font-black">₹{service.fee || 0}</span>
                     </div>
                   </div>
@@ -1094,7 +1097,7 @@ export default function ApplyService() {
                     className="px-5 py-3.5 bg-slate-100 hover:bg-slate-200/80 text-slate-700 font-bold text-xs rounded-xl flex items-center gap-2 border border-slate-200/80"
                   >
                     <ArrowLeft className="w-4 h-4" />
-                    <span>Back to Documents</span>
+                    <span>{t.backToDocuments}</span>
                   </button>
 
                   <button
@@ -1105,7 +1108,7 @@ export default function ApplyService() {
                     }}
                     className="px-8 py-3.5 bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-xs sm:text-sm rounded-xl shadow-xs transition-colors flex items-center gap-2 group/btn"
                   >
-                    <span>Continue to Payment</span>
+                    <span>{t.continueToPayment}</span>
                     <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                   </button>
                 </div>
@@ -1120,16 +1123,16 @@ export default function ApplyService() {
                 <div className="border-b pb-4 border-slate-100 flex items-center justify-between">
                   <h3 className="font-heading font-extrabold text-lg text-slate-900 flex items-center gap-2">
                     <CreditCard className="w-5 h-5 text-orange-500" />
-                    <span>Step 04: Select Payment Method & Submit</span>
+                    <span>{lang === 'ta' ? 'படி 04: கட்டண முறையைத் தேர்ந்தெடுத்து சமர்ப்பிக்கவும்' : 'Step 04: Select Payment Method & Submit'}</span>
                   </h3>
-                  <span className="text-xs text-slate-400 font-bold">256-Bit Encrypted Gateway</span>
+                  <span className="text-xs text-slate-400 font-bold">{lang === 'ta' ? '256-பிட் பாதுகாப்பு நுழைவாயில்' : '256-Bit Encrypted Gateway'}</span>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   
                   {/* PAYMENT METHODS LIST */}
                   <div className="space-y-4">
-                    <h4 className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">Select Payment Option</h4>
+                    <h4 className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">{t.selectPaymentOption}</h4>
                     
                     <div className="space-y-3">
                       {/* UPI */}
@@ -1145,10 +1148,10 @@ export default function ApplyService() {
                           </div>
                           <div>
                             <div className="text-xs font-extrabold text-slate-900 flex items-center gap-2">
-                              <span>UPI / QR Instant Payment</span>
-                              <span className="text-[10px] font-extrabold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-md uppercase">Fastest</span>
+                              <span>{t.upiPaymentTitle}</span>
+                              <span className="text-[10px] font-extrabold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-md uppercase">{lang === 'ta' ? 'வேகமானது' : 'Fastest'}</span>
                             </div>
-                            <p className="text-[11px] text-slate-500 mt-0.5">Google Pay, PhonePe, Paytm, BHIM & Any UPI App</p>
+                            <p className="text-[11px] text-slate-500 mt-0.5">{t.upiPaymentSub}</p>
                           </div>
                         </div>
                         <input
@@ -1172,8 +1175,8 @@ export default function ApplyService() {
                             <CreditCard className="w-5 h-5" />
                           </div>
                           <div>
-                            <div className="text-xs font-extrabold text-slate-900">Credit / Debit Card</div>
-                            <p className="text-[11px] text-slate-500 mt-0.5">Visa, Mastercard, RuPay, Maestro Cards</p>
+                            <div className="text-xs font-extrabold text-slate-900">{t.cardPaymentTitle}</div>
+                            <p className="text-[11px] text-slate-500 mt-0.5">{t.cardPaymentSub}</p>
                           </div>
                         </div>
                         <input
@@ -1197,8 +1200,8 @@ export default function ApplyService() {
                             <Building2 className="w-5 h-5" />
                           </div>
                           <div>
-                            <div className="text-xs font-extrabold text-slate-900">Net Banking</div>
-                            <p className="text-[11px] text-slate-500 mt-0.5">SBI, HDFC, ICICI, Axis & 50+ Indian Banks</p>
+                            <div className="text-xs font-extrabold text-slate-900">{t.netbankingTitle}</div>
+                            <p className="text-[11px] text-slate-500 mt-0.5">{t.netbankingSub}</p>
                           </div>
                         </div>
                         <input
@@ -1222,8 +1225,8 @@ export default function ApplyService() {
                             <Wallet className="w-5 h-5" />
                           </div>
                           <div>
-                            <div className="text-xs font-extrabold text-slate-900">Digital Wallet</div>
-                            <p className="text-[11px] text-slate-500 mt-0.5">Paytm Wallet, Mobikwik & Amazon Pay</p>
+                            <div className="text-xs font-extrabold text-slate-900">{t.walletTitle}</div>
+                            <p className="text-[11px] text-slate-500 mt-0.5">{t.walletSub}</p>
                           </div>
                         </div>
                         <input
@@ -1240,40 +1243,40 @@ export default function ApplyService() {
                   {/* ORDER / PAYMENT SUMMARY */}
                   <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200/80 space-y-4 flex flex-col justify-between">
                     <div className="space-y-4">
-                      <h4 className="text-xs font-extrabold text-slate-500 uppercase tracking-wider border-b border-slate-200 pb-2">Order Summary</h4>
+                      <h4 className="text-xs font-extrabold text-slate-500 uppercase tracking-wider border-b border-slate-200 pb-2">{t.orderSummaryTitle}</h4>
                       
                       <div className="space-y-2.5 text-xs">
                         <div className="flex justify-between text-slate-600">
-                          <span>Service Name:</span>
+                          <span>{lang === 'ta' ? 'சேவை பெயர்:' : 'Service Name:'}</span>
                           <span className="font-bold text-slate-900">{service.name}</span>
                         </div>
                         <div className="flex justify-between text-slate-600">
-                          <span>Applicant Name:</span>
+                          <span>{t.fullName}:</span>
                           <span className="font-bold text-slate-900">{applicantInfo.user_name || 'Karthik S.'}</span>
                         </div>
                         <div className="flex justify-between text-slate-600">
-                          <span>Service Processing Fee:</span>
+                          <span>{t.serviceFeeLabel}:</span>
                           <span className="font-bold text-slate-900">₹{service.fee || 0}</span>
                         </div>
                         <div className="flex justify-between text-slate-600">
-                          <span>Desk Facilitation Review:</span>
-                          <span className="font-bold text-emerald-600">₹0 (Free)</span>
+                          <span>{lang === 'ta' ? 'சேவை மைய பரிசீலனை:' : 'Desk Facilitation Review:'}</span>
+                          <span className="font-bold text-emerald-600">₹0 ({t.freeFacilitation})</span>
                         </div>
                         <div className="flex justify-between text-slate-600">
-                          <span>Applicable Taxes & GST:</span>
-                          <span className="font-bold text-slate-900">Included</span>
+                          <span>{lang === 'ta' ? 'வரிகள் & GST:' : 'Applicable Taxes & GST:'}</span>
+                          <span className="font-bold text-slate-900">{lang === 'ta' ? 'உள்ளடக்கம்' : 'Included'}</span>
                         </div>
                       </div>
 
                       <div className="pt-3 border-t border-slate-200 flex items-center justify-between bg-white p-4 rounded-xl border border-slate-200">
                         <div>
-                          <div className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Final Amount Payable</div>
+                          <div className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">{t.finalAmountPayable}</div>
                           <div className="text-2xl font-black text-orange-600">
-                            {service.fee === 0 ? 'FREE' : `₹${service.fee}`}
+                            {service.fee === 0 ? (lang === 'ta' ? 'இலவசம்' : 'FREE') : `₹${service.fee}`}
                           </div>
                         </div>
                         <span className="text-[10px] font-extrabold bg-orange-100 text-orange-800 px-2.5 py-1 rounded-md uppercase">
-                          Payable Now
+                          {lang === 'ta' ? 'இப்போது செலுத்தவும்' : 'Payable Now'}
                         </span>
                       </div>
                     </div>
@@ -1281,7 +1284,7 @@ export default function ApplyService() {
                     {/* SECURITY NOTICE BANNER */}
                     <div className="bg-slate-200/60 p-3 rounded-xl text-[11px] text-slate-600 font-medium flex items-center gap-2 border border-slate-300/50">
                       <Lock className="w-4 h-4 text-orange-600 shrink-0" />
-                      <span>Please verify the payment amount before proceeding.</span>
+                      <span>{lang === 'ta' ? 'தொடர்வதற்கு முன் கட்டணத் தொகையை சரிபார்க்கவும்.' : 'Please verify the payment amount before proceeding.'}</span>
                     </div>
                   </div>
 
@@ -1295,7 +1298,7 @@ export default function ApplyService() {
                     className="px-5 py-3.5 bg-slate-100 hover:bg-slate-200/80 text-slate-700 font-bold text-xs rounded-xl flex items-center gap-2 border border-slate-200/80"
                   >
                     <ArrowLeft className="w-4 h-4" />
-                    <span>Back to Review</span>
+                    <span>{t.backToReview}</span>
                   </button>
 
                   <button
@@ -1307,16 +1310,16 @@ export default function ApplyService() {
                     {submitting ? (
                       <>
                         <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                        <span>Processing Payment & Application...</span>
+                        <span>{lang === 'ta' ? 'கட்டணம் மற்றும் விண்ணப்பம் செயலாக்கப்படுகிறது...' : 'Processing Payment & Application...'}</span>
                       </>
                     ) : service.fee > 0 ? (
                       <>
-                        <span>Proceed to Pay ₹{service.fee} & Submit Application</span>
+                        <span>{lang === 'ta' ? `₹${service.fee} செலுத்தி விண்ணப்பத்தை சமர்ப்பிக்கவும்` : `Proceed to Pay ₹${service.fee} & Submit Application`}</span>
                         <Lock className="w-4 h-4" />
                       </>
                     ) : (
                       <>
-                        <span>Submit Free Application</span>
+                        <span>{t.submitFreeApp}</span>
                         <CheckCircle2 className="w-4 h-4" />
                       </>
                     )}
@@ -1334,35 +1337,35 @@ export default function ApplyService() {
             {/* APPLICATION SUMMARY CARD */}
             <div className="bg-white rounded-3xl p-6 border border-slate-200/90 shadow-sm space-y-4">
               <h3 className="font-heading font-extrabold text-base text-slate-900 border-b pb-3 border-slate-100">
-                Application Summary
+                {lang === 'ta' ? 'விண்ணப்ப சுருக்கம்' : 'Application Summary'}
               </h3>
 
               <div className="space-y-3 text-xs">
                 <div>
-                  <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">Service</span>
+                  <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">{lang === 'ta' ? 'சேவை' : 'Service'}</span>
                   <span className="font-extrabold text-slate-900 text-sm">{service.name}</span>
                 </div>
 
                 <div>
-                  <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">Category</span>
+                  <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">{t.categoriesTitle}</span>
                   <span className="font-bold text-orange-600">{service.category_name}</span>
                 </div>
 
                 <div className="flex items-center justify-between pt-2 border-t border-slate-100">
-                  <span className="text-slate-500 font-medium">Service Fee:</span>
+                  <span className="text-slate-500 font-medium">{t.serviceFeeLabel}:</span>
                   <span className="font-black text-orange-600 text-base">
-                    {service.fee === 0 ? 'FREE' : `₹${service.fee}`}
+                    {service.fee === 0 ? (lang === 'ta' ? 'இலவசம்' : 'FREE') : `₹${service.fee}`}
                   </span>
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-500 font-medium">Estimated SLA:</span>
-                  <span className="font-bold text-slate-900">{service.processing_time || '3-5 Working Days'}</span>
+                  <span className="text-slate-500 font-medium">{t.processingTimeLabel}:</span>
+                  <span className="font-bold text-slate-900">{service.processing_time || (lang === 'ta' ? '3-5 வேலை நாட்கள்' : '3-5 Working Days')}</span>
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-500 font-medium">Required Proofs:</span>
-                  <span className="font-bold text-slate-900">{service.documents ? service.documents.length : 1} File(s)</span>
+                  <span className="text-slate-500 font-medium">{lang === 'ta' ? 'தேவையான சான்றுகள்:' : 'Required Proofs:'}</span>
+                  <span className="font-bold text-slate-900">{service.documents ? service.documents.length : 1} {lang === 'ta' ? 'கோப்பு(கள்)' : 'File(s)'}</span>
                 </div>
               </div>
             </div>
@@ -1371,13 +1374,13 @@ export default function ApplyService() {
             <div className="bg-[#0b192c] text-white rounded-3xl p-6 space-y-4 shadow-sm">
               <div className="flex items-center gap-2 text-orange-400 font-extrabold text-xs uppercase tracking-wider">
                 <HelpCircle className="w-4 h-4" />
-                <span>Need Assistance?</span>
+                <span>{lang === 'ta' ? 'உதவி தேவையா?' : 'Need Assistance?'}</span>
               </div>
               <h4 className="font-heading font-extrabold text-lg text-white">
-                Application Help Desk
+                {lang === 'ta' ? 'விண்ணப்ப உதவி மையம்' : 'Application Help Desk'}
               </h4>
               <p className="text-slate-300 text-xs font-normal leading-relaxed">
-                Have questions regarding required documents or application steps? Contact our support team.
+                {lang === 'ta' ? 'தேவையான ஆவணங்கள் அல்லது விண்ணப்பப் படிகள் குறித்து கேள்விகள் உள்ளதா? எங்கள் ஆதரவுக் குழுவைத் தொடர்பு கொள்ளவும்.' : 'Have questions regarding required documents or application steps? Contact our support team.'}
               </p>
               <div className="space-y-2 pt-2 border-t border-slate-800 text-xs">
                 <div className="flex items-center gap-2 text-slate-300 font-medium">
@@ -1407,13 +1410,16 @@ export default function ApplyService() {
 
               <div className="space-y-1.5">
                 <span className="text-[10px] uppercase font-extrabold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200 inline-block tracking-wider">
-                  APPLICATION SUBMITTED & PAID
+                  {lang === 'ta' ? 'விண்ணப்பம் சமர்ப்பிக்கப்பட்டு கட்டணம் செலுத்தப்பட்டது' : 'APPLICATION SUBMITTED & PAID'}
                 </span>
                 <h2 className="font-heading font-extrabold text-2xl sm:text-3xl text-slate-900 tracking-tight">
-                  Application Submitted Successfully
+                  {t.appSubmittedSuccessTitle}
                 </h2>
                 <p className="text-slate-600 text-xs sm:text-sm max-w-lg mx-auto font-normal leading-relaxed">
-                  Your application for <strong className="text-slate-900 font-bold">{service.name}</strong> has been successfully submitted and logged into the E-Seva system.
+                  {lang === 'ta' 
+                    ? <>உங்களின் <strong className="text-slate-900 font-bold">{service.name}</strong> விண்ணப்பம் வெற்றிகரமாக சமர்ப்பிக்கப்பட்டு இ-சேவை அமைப்பில் பதிவு செய்யப்பட்டுள்ளது.</>
+                    : <>Your application for <strong className="text-slate-900 font-bold">{service.name}</strong> has been successfully submitted and logged into the E-Seva system.</>
+                  }
                 </p>
               </div>
             </div>
@@ -1423,7 +1429,7 @@ export default function ApplyService() {
               <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/10 rounded-full blur-2xl pointer-events-none"></div>
               
               <div className="text-[11px] uppercase tracking-widest text-slate-400 font-extrabold">
-                YOUR APPLICATION ID
+                {t.yourAppIdLabel}
               </div>
 
               <div className="text-3xl sm:text-4xl md:text-5xl font-black text-orange-400 font-mono tracking-wider drop-shadow-sm select-all">
@@ -1449,12 +1455,12 @@ export default function ApplyService() {
                   {copiedAppId ? (
                     <>
                       <Check className="w-4 h-4 text-emerald-300" />
-                      <span>Copied to Clipboard!</span>
+                      <span>{t.copiedToClipboard}</span>
                     </>
                   ) : (
                     <>
                       <Copy className="w-4 h-4 text-orange-400" />
-                      <span>Copy Application ID</span>
+                      <span>{t.copyAppIdBtn}</span>
                     </>
                   )}
                 </button>
@@ -1466,31 +1472,31 @@ export default function ApplyService() {
               <h3 className="font-heading font-extrabold text-sm text-slate-900 flex items-center justify-between border-b pb-3 border-slate-100">
                 <span className="flex items-center gap-2">
                   <CreditCard className="w-4 h-4 text-orange-500" />
-                  <span>Payment Confirmation</span>
+                  <span>{t.paymentConfirmationTitle}</span>
                 </span>
                 <span className="text-[11px] font-extrabold bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full border border-emerald-200 flex items-center gap-1">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>PAID</span>
+                  <span>{t.paidStatusTag}</span>
                 </span>
               </h3>
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
                 <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
-                  <span className="text-slate-400 block text-[10px] font-extrabold uppercase">Paid Amount</span>
+                  <span className="text-slate-400 block text-[10px] font-extrabold uppercase">{t.paidAmountLabel}</span>
                   <span className="font-black text-slate-900 text-sm">₹{submittedApp.amount || service.fee || 50}</span>
                 </div>
                 <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
-                  <span className="text-slate-400 block text-[10px] font-extrabold uppercase">Payment Status</span>
-                  <span className="font-bold text-emerald-600">Successful</span>
+                  <span className="text-slate-400 block text-[10px] font-extrabold uppercase">{lang === 'ta' ? 'கட்டண நிலை' : 'Payment Status'}</span>
+                  <span className="font-bold text-emerald-600">{lang === 'ta' ? 'வெற்றிகரமானது' : 'Successful'}</span>
                 </div>
                 <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
-                  <span className="text-slate-400 block text-[10px] font-extrabold uppercase">Transaction Ref</span>
+                  <span className="text-slate-400 block text-[10px] font-extrabold uppercase">{t.transactionRefLabel}</span>
                   <span className="font-mono font-bold text-slate-900 truncate block">
                     {submittedApp.payment_transaction_id || `TXN-${Date.now().toString().slice(-8)}`}
                   </span>
                 </div>
                 <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
-                  <span className="text-slate-400 block text-[10px] font-extrabold uppercase">Date & Time</span>
+                  <span className="text-slate-400 block text-[10px] font-extrabold uppercase">{t.dateTimeLabel}</span>
                   <span className="font-bold text-slate-800">
                     {new Date(submittedApp.submitted_at || Date.now()).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
                   </span>
@@ -1502,26 +1508,26 @@ export default function ApplyService() {
             <div className="bg-white rounded-3xl p-6 border border-slate-200/90 shadow-sm space-y-4">
               <h3 className="font-heading font-extrabold text-sm text-slate-900 border-b pb-3 border-slate-100 flex items-center gap-2">
                 <FileText className="w-4 h-4 text-orange-500" />
-                <span>Application Summary</span>
+                <span>{lang === 'ta' ? 'விண்ணப்ப சுருக்கம்' : 'Application Summary'}</span>
               </h3>
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
                 <div>
-                  <span className="text-slate-400 block text-[10px] font-extrabold uppercase">Service Name</span>
+                  <span className="text-slate-400 block text-[10px] font-extrabold uppercase">{lang === 'ta' ? 'சேவை பெயர்' : 'Service Name'}</span>
                   <span className="font-bold text-slate-900">{service.name}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[10px] font-extrabold uppercase">Applicant Name</span>
+                  <span className="text-slate-400 block text-[10px] font-extrabold uppercase">{t.fullName}</span>
                   <span className="font-bold text-slate-900">{applicantInfo.user_name || submittedApp.user_name || 'Karthik S.'}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[10px] uppercase font-bold">Application Date</span>
+                  <span className="text-slate-400 block text-[10px] uppercase font-bold">{lang === 'ta' ? 'விண்ணப்பித்த தேதி' : 'Application Date'}</span>
                   <span className="font-bold text-slate-900">
                     {new Date(submittedApp.submitted_at || Date.now()).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
                   </span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[10px] uppercase font-bold">Current Status</span>
+                  <span className="text-slate-400 block text-[10px] uppercase font-bold">{lang === 'ta' ? 'தற்போதைய நிலை' : 'Current Status'}</span>
                   <span className="font-bold text-blue-600">{submittedApp.status || 'SUBMITTED'}</span>
                 </div>
               </div>
@@ -1531,38 +1537,38 @@ export default function ApplyService() {
             <div className="bg-white rounded-3xl p-6 border border-slate-200/90 shadow-sm space-y-4">
               <h3 className="font-heading font-extrabold text-sm text-slate-900 border-b pb-3 border-slate-100 flex items-center gap-2">
                 <Clock className="w-4 h-4 text-orange-500" />
-                <span>What's Next? Application Timeline</span>
+                <span>{t.whatsNextTitle}</span>
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 relative">
                 {/* Step 1 */}
                 <div className="bg-emerald-50/70 border border-emerald-200 p-4 rounded-2xl space-y-1">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-black text-emerald-800 uppercase tracking-wider">Step 01</span>
+                    <span className="text-[10px] font-black text-emerald-800 uppercase tracking-wider">{lang === 'ta' ? 'படி 01' : 'Step 01'}</span>
                     <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                   </div>
-                  <h4 className="font-extrabold text-xs text-slate-900">Application Received</h4>
-                  <p className="text-[11px] text-slate-600 font-normal">Logged into E-Seva portal system</p>
+                  <h4 className="font-extrabold text-xs text-slate-900">{t.timelineStep1Title}</h4>
+                  <p className="text-[11px] text-slate-600 font-normal">{t.timelineStep1Sub}</p>
                 </div>
 
                 {/* Step 2 */}
                 <div className="bg-orange-50/70 border border-orange-200 p-4 rounded-2xl space-y-1">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-black text-orange-800 uppercase tracking-wider">Step 02</span>
+                    <span className="text-[10px] font-black text-orange-800 uppercase tracking-wider">{lang === 'ta' ? 'படி 02' : 'Step 02'}</span>
                     <span className="w-2.5 h-2.5 bg-orange-500 rounded-full animate-ping"></span>
                   </div>
-                  <h4 className="font-extrabold text-xs text-slate-900">Under Review</h4>
-                  <p className="text-[11px] text-slate-600 font-normal">Facilitation desk verifying proof uploads</p>
+                  <h4 className="font-extrabold text-xs text-slate-900">{t.timelineStep2Title}</h4>
+                  <p className="text-[11px] text-slate-600 font-normal">{t.timelineStep2Sub}</p>
                 </div>
 
                 {/* Step 3 */}
                 <div className="bg-slate-50 border border-slate-200 p-4 rounded-2xl space-y-1">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Step 03</span>
+                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">{lang === 'ta' ? 'படி 03' : 'Step 03'}</span>
                     <Clock className="w-4 h-4 text-slate-400" />
                   </div>
-                  <h4 className="font-extrabold text-xs text-slate-900">Track & Receive</h4>
-                  <p className="text-[11px] text-slate-600 font-normal">Track status online for output certificate</p>
+                  <h4 className="font-extrabold text-xs text-slate-900">{t.timelineStep3Title}</h4>
+                  <p className="text-[11px] text-slate-600 font-normal">{t.timelineStep3Sub}</p>
                 </div>
               </div>
             </div>
@@ -1574,7 +1580,7 @@ export default function ApplyService() {
                 className="w-full sm:w-auto px-6 py-3.5 bg-[#0b192c] hover:bg-orange-600 text-white font-extrabold text-xs rounded-xl shadow-xs transition-colors flex items-center justify-center gap-2"
               >
                 <Clock className="w-4 h-4 text-orange-400" />
-                <span>Track Application</span>
+                <span>{t.trackApplication}</span>
               </Link>
 
               <Link
@@ -1582,7 +1588,7 @@ export default function ApplyService() {
                 className="w-full sm:w-auto px-6 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-extrabold text-xs rounded-xl transition-colors flex items-center justify-center gap-2 border border-slate-200"
               >
                 <FileText className="w-4 h-4 text-orange-500" />
-                <span>View My Applications</span>
+                <span>{lang === 'ta' ? 'எனது விண்ணப்பங்களைப் பார்க்க' : 'View My Applications'}</span>
               </Link>
 
               <button
@@ -1591,7 +1597,7 @@ export default function ApplyService() {
                 className="w-full sm:w-auto px-6 py-3.5 bg-white hover:bg-slate-50 text-slate-800 font-extrabold text-xs rounded-xl transition-colors flex items-center justify-center gap-2 border border-slate-200 shadow-xs"
               >
                 <Printer className="w-4 h-4 text-slate-600" />
-                <span>Download / Print Receipt</span>
+                <span>{t.downloadPrintReceipt}</span>
               </button>
             </div>
 
@@ -1599,8 +1605,11 @@ export default function ApplyService() {
             <div className="bg-amber-50/80 border border-amber-200/90 p-4 rounded-2xl flex items-start space-x-3 text-xs text-amber-950 font-medium">
               <Info className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
               <div>
-                <span className="font-extrabold text-amber-950">Important Notice: </span>
-                Please save your Application ID (<strong className="font-mono">{submittedApp.application_number}</strong>) for future reference and tracking.
+                <span className="font-extrabold text-amber-950">{t.importantInformationTitle}: </span>
+                {lang === 'ta' 
+                  ? <>எதிர்கால கண்காணிப்பிற்காக உங்கள் விண்ணப்ப எண்ணை (<strong className="font-mono">{submittedApp.application_number}</strong>) சேமித்து வைத்துக் கொள்ளவும்.</>
+                  : <>Please save your Application ID (<strong className="font-mono">{submittedApp.application_number}</strong>) for future reference and tracking.</>
+                }
               </div>
             </div>
 
