@@ -708,43 +708,245 @@ export const DEFAULT_SERVICES_MAP = {
   }
 };
 
-/**
- * Helper to retrieve service by ID or Slug with safe fallback
- */
-export function getServiceDefinition(param) {
-  if (!param) return DEFAULT_SERVICES_MAP['aadhaar-address-update'];
-  const p = String(param).toLowerCase().trim();
-  
-  if (DEFAULT_SERVICES_MAP[p]) {
-    return DEFAULT_SERVICES_MAP[p];
+export const TAMIL_SERVICES_TRANSLATIONS = {
+  'aadhaar-address-update': {
+    name: 'ஆதார் முகவரி மாற்றம்',
+    description: 'அதிகாரப்பூர்வ UIDAI தரவுத்தளத்தில் புதிய முகவரி ஆதாரத்துடன் உங்கள் முகவரியைப் புதுப்பிக்கவும்.',
+    category_name: 'ஆதார் சேவைகள்',
+    processing_time: '3-5 வேலை நாட்கள்'
+  },
+  'aadhaar-name-update': {
+    name: 'ஆதார் பெயர் திருத்தம்',
+    description: 'சட்டப்பூர்வ ஆதாரப் ஆவணத்தின்படி ஆதாரில் உள்ள பெயர் பிழைகளைத் திருத்துதல்.',
+    category_name: 'ஆதார் சேவைகள்',
+    processing_time: '5-7 வேலை நாட்கள்'
+  },
+  'aadhaar-mobile-update': {
+    name: 'ஆதார் மொபைல் எண் இணைப்பு',
+    description: 'OTP சரிபார்ப்பிற்காக உங்கள் மொபைல் எண்ணை ஆதாரத்துடன் இணைக்கவும் அல்லது புதுப்பிக்கவும்.',
+    category_name: 'ஆதார் சேவைகள்',
+    processing_time: '24-48 மணி நேரம்'
+  },
+  'pvc-aadhaar-card-order': {
+    name: 'PVC ஆதார் கார்டு ஆர்டர்',
+    description: 'நீடித்து உழைக்கும், நீர்ப்புகா பிளாஸ்டிக் PVC ஆதார் கார்டை உங்கள் வீட்டிற்கே பெற விண்ணப்பிக்கவும்.',
+    category_name: 'ஆதார் சேவைகள்',
+    processing_time: '7-10 வேலை நாட்கள்'
+  },
+  'pvc-aadhaar-card': {
+    name: 'PVC ஆதார் கார்டு ஆர்டர்',
+    description: 'நீடித்து உழைக்கும், நீர்ப்புகா பிளாஸ்டிக் PVC ஆதார் கார்டை உங்கள் வீட்டிற்கே பெற விண்ணப்பிக்கவும்.',
+    category_name: 'ஆதார் சேவைகள்',
+    processing_time: '7-10 வேலை நாட்கள்'
+  },
+  'pan-new-application': {
+    name: 'புதிய PAN கார்டு விண்ணப்பம் (படிவம் 49A)',
+    description: 'தனிநபர்கள் மற்றும் நிறுவனங்களுக்கான புதிய நிரந்தர கணக்கு எண் (PAN) கார்டுக்கு விண்ணப்பிக்கவும்.',
+    category_name: 'PAN சேவைகள்',
+    processing_time: '7-10 வேலை நாட்கள்'
+  },
+  'new-pan-card': {
+    name: 'புதிய PAN கார்டு விண்ணப்பம் (படிவம் 49A)',
+    description: 'தனிநபர்கள் மற்றும் நிறுவனங்களுக்கான புதிய நிரந்தர கணக்கு எண் (PAN) கார்டுக்கு விண்ணப்பிக்கவும்.',
+    category_name: 'PAN சேவைகள்',
+    processing_time: '7-10 வேலை நாட்கள்'
+  },
+  'pan-correction-update': {
+    name: 'PAN கார்டு திருத்தம் / புதுப்பித்தல்',
+    description: 'PAN அட்டையில் பெயர், தந்தை பெயர், பிறந்த தேதி அல்லது புகைப்படப் பிழைகளைத் திருத்துதல்.',
+    category_name: 'PAN சேவைகள்',
+    processing_time: '7-10 வேலை நாட்கள்'
+  },
+  'pan-aadhaar-link': {
+    name: 'PAN - ஆதார் எண் இணைப்பு',
+    description: 'வருமான வரி விதிமுறைகளின்படி உங்கள் PAN எண்ணை 12 இலக்க ஆதார் எண்ணுடன் இணைத்தல்.',
+    category_name: 'PAN சேவைகள்',
+    processing_time: '24-48 மணி நேரம்'
+  },
+  'voter-form-6': {
+    name: 'புதிய வாக்காளர் பதிவு (படிவம் 6)',
+    description: 'வாக்காளர் பட்டியலில் பெயர் சேர்த்தல் மற்றும் புதிய EPIC வாக்காளர் அடையாள அட்டை பெற விண்ணப்பித்தல்.',
+    category_name: 'வாக்காளர் அடையாள அட்டை சேவைகள்',
+    processing_time: '15-25 வேலை நாட்கள்'
+  },
+  'voter-form-8': {
+    name: 'வாக்காளர் அட்டையில் முகவரி மாற்றம் / திருத்தம் (படிவம் 8)',
+    description: 'வாக்காளர் அட்டையில் முகவரி மாற்றம் மற்றும் பிற விவரங்களைத் திருத்துதல்.',
+    category_name: 'வாக்காளர் அடையாள அட்டை சேவைகள்',
+    processing_time: '10-15 வேலை நாட்கள்'
+  },
+  'income-certificate': {
+    name: 'வருமானச் சான்றிதழ் விண்ணப்பம்',
+    description: 'கல்வி மற்றும் அரசு நலத்திட்டங்களுக்கான குடும்பத்தின் ஆண்டின் மொத்த வருமானச் சான்றிதழ்.',
+    category_name: 'சான்றிதழ் சேவைகள்',
+    processing_time: '7 வேலை நாட்கள்'
+  },
+  'community-certificate': {
+    name: 'சாதிச் சான்றிதழ் / சமூகச் சான்றிதழ்',
+    description: 'சமூகப் பிரிவு (BC / MBC / SC / ST) சரிபார்ப்புக்கான அதிகாரப்பூர்வ வருவாய்த்துறை சான்றிதழ்.',
+    category_name: 'சான்றிதழ் சேவைகள்',
+    processing_time: '15 வேலை நாட்கள்'
+  },
+  'nativity-residence-certificate': {
+    name: 'இருப்பிடச் சான்றிதழ் / இருப்பிடச் சான்று',
+    description: 'மாநில நிரந்தர இருப்பிடச் சான்று மற்றும் சலுகைகளுக்கான அதிகாரப்பூர்வ சான்றிதழ்.',
+    category_name: 'சான்றிதழ் சேவைகள்',
+    processing_time: '7 வேலை நாட்கள்'
+  },
+  'first-graduate-certificate': {
+    name: 'முதல் பட்டதாரி சான்றிதழ்',
+    description: 'குடும்பத்தில் முதல்முறையாக பட்டம் பயிலும் மாணவர்களுக்கான கட்டணச் சலுகை சான்றிதழ்.',
+    category_name: 'சான்றிதழ் சேவைகள்',
+    processing_time: '10 வேலை நாட்கள்'
+  },
+  'legal-heir-certificate': {
+    name: 'வாரிசுச் சான்றிதழ் விண்ணப்பம்',
+    description: 'இறந்த நபரின் சட்டப்பூர்வ வாரிசுகளை உறுதிப்படுத்தும் அதிகாரப்பூர்வ வருவாய்த்துறை சான்றிதழ்.',
+    category_name: 'சான்றிதழ் சேவைகள்',
+    processing_time: '15-30 வேலை நாட்கள்'
+  },
+  'patta-transfer-application': {
+    name: 'பட்டா / சிட்டா பெயர் மாற்றம்',
+    description: 'நிலம் வாங்கிய பின் அல்லது வாரிசு அடிப்படையில் பட்டாவில் பெயர் மாற்றம் செய்ய விண்ணப்பித்தல்.',
+    category_name: 'நிலம் & பட்டா சேவைகள்',
+    processing_time: '15-30 வேலை நாட்கள்'
+  },
+  'chitta-extract-download': {
+    name: 'A-பதிவேடு & சிட்டா நகல் பதிவிறக்கம்',
+    description: 'நில உரிமையின் அதிகாரப்பூர்வ டிஜிட்டல் சிட்டா மற்றும் A-பதிவேடு நகல் பெறுதல்.',
+    category_name: 'நிலம் & பட்டா சேவைகள்',
+    processing_time: '1-2 வேலை நாட்கள்'
+  },
+  'fmb-sketch-map': {
+    name: 'FMB வரைபடம் பதிவிறக்கம்',
+    description: 'நில எல்லை அளவீடுகளைக் காட்டும் Field Measurement Book (FMB) வரைபட நகல் பெற விண்ணப்பித்தல்.',
+    category_name: 'நிலம் & பட்டா சேவைகள்',
+    processing_time: '2-3 வேலை நாட்கள்'
+  },
+  'encumbrance-certificate-ec': {
+    name: 'வில்லங்கச் சான்றிதழ் (EC) விண்ணப்பம்',
+    description: 'சொத்தின் பரிவர்த்தனை மற்றும் உரிமை வரலாற்றை உறுதிப்படுத்தும் வில்லங்கச் சான்றிதழ் பெறுதல்.',
+    category_name: 'நிலம் & பட்டா சேவைகள்',
+    processing_time: '3-5 வேலை நாட்கள்'
+  },
+  'fresh-passport-application': {
+    name: 'புதிய பாஸ்போர்ட் விண்ணப்பம்',
+    description: 'புதிய இந்திய பாஸ்போர்ட் விண்ணப்பப் பதிவு மற்றும் நேர்காணல் நேரம் முன்பதிவு செய்தல்.',
+    category_name: 'பாஸ்போர்ட் சேவைகள்',
+    processing_time: '15-20 வேலை நாட்கள்'
+  },
+  'passport-reissue-application': {
+    name: 'பாஸ்போர்ட் புதுப்பித்தல் (Re-Issue)',
+    description: 'காலாவதியான அல்லது பக்கங்கள் முடிந்த பாஸ்போர்ட்டை புதுப்பிக்க விண்ணப்பித்தல்.',
+    category_name: 'பாஸ்போர்ட் சேவைகள்',
+    processing_time: '10-15 வேலை நாட்கள்'
+  },
+  'learner-licence-llr-booking': {
+    name: 'ஓட்டுநர் பழகுநர் உரிமம் (LLR) முன்பதிவு',
+    description: 'இருசக்கர மற்றும் நான்கு சக்கர வாகனங்களுக்கான LLR பழகுநர் உரிமம் விண்ணப்பம்.',
+    category_name: 'வாகனம் & ஓட்டுநர் உரிம சேவைகள்',
+    processing_time: '3-5 வேலை நாட்கள்'
+  },
+  'driving-licence-renewal': {
+    name: 'ஓட்டுநர் உரிமம் (DL) புதுப்பித்தல்',
+    description: 'காலாவதியான ஓட்டுநர் உரிமத்தை RTO மூலம் புதுப்பிக்க விண்ணப்பித்தல்.',
+    category_name: 'வாகனம் & ஓட்டுநர் உரிம சேவைகள்',
+    processing_time: '7-10 வேலை நாட்கள்'
+  },
+  'udyam-msme-registration': {
+    name: 'உத்யம் MSME அரசு பதிவு',
+    description: 'சிறு, குறு மற்றும் நடுத்தர தொழில்களுக்கான மத்திய அரசின் அதிகாரப்பூர்வ பதிவுச் சான்றிதழ்.',
+    category_name: 'வணிகச் சேவைகள்',
+    processing_time: '1-2 வேலை நாட்கள்'
+  },
+  'gst-registration-application': {
+    name: 'GST பதிவு விண்ணப்பம்',
+    description: 'வணிக நிறுவனங்களுக்கான 15 இலக்க சரக்கு மற்றும் சேவை வரி (GSTIN) பதிவு.',
+    category_name: 'வணிகச் சேவைகள்',
+    processing_time: '3-7 வேலை நாட்கள்'
+  },
+  'tnegedco-eb-name-transfer': {
+    name: 'மின்சார இணைப்பு (EB) பெயர் மாற்றம்',
+    description: 'வீடு அல்லது சொத்து வாங்கிய பின் மின்சார வாரிய (TANGEDCO) இணைப்பில் பெயர் மாற்றம் செய்தல்.',
+    category_name: 'பயன்பாட்டுச் சேவைகள்',
+    processing_time: '7-10 வேலை நாட்கள்'
+  },
+  'new-electricity-eb-connection': {
+    name: 'புதிய மின்சார இணைப்பு (EB) விண்ணப்பம்',
+    description: 'புதிய கட்டிடங்கள் மற்றும் வீடுகளுக்கான புதிய மின்சார இணைப்பு பெறுதல்.',
+    category_name: 'பயன்பாட்டுச் சேவைகள்',
+    processing_time: '10-15 வேலை நாட்கள்'
+  },
+  'smart-ration-card-application': {
+    name: 'புதிய ஸ்மார்ட் ரேஷன் கார்டு விண்ணப்பம்',
+    description: 'புதிதாக திருமணமான குடும்பங்களுக்கான புதிய ஸ்மார்ட் ரேஷன் கார்டு விண்ணப்பம்.',
+    category_name: 'ரேஷன் கார்டு சேவைகள்',
+    processing_time: '15-30 வேலை நாட்கள்'
+  },
+  'ration-family-member-add': {
+    name: 'ரேஷன் கார்டில் குடும்ப உறுப்பினர் சேர்த்தல்',
+    description: 'தற்போதுள்ள ஸ்மார்ட் ரேஷன் கார்டில் புதிதாக பிறந்த குழந்தை அல்லது மனைவியின் பெயரைச் சேர்த்தல்.',
+    category_name: 'ரேஷன் கார்டு சேவைகள்',
+    processing_time: '7-10 வேலை நாட்கள்'
   }
-  
-  // Try matching by slug without '-application' suffix if applicable
-  const altKey = Object.keys(DEFAULT_SERVICES_MAP).find(key => key.includes(p) || p.includes(key));
-  if (altKey) {
-    return DEFAULT_SERVICES_MAP[altKey];
+};
+
+/**
+ * Helper to localize a single service definition
+ */
+export function getLocalizedService(srv, lang = 'en') {
+  if (!srv) return srv;
+  if (lang !== 'ta') return srv;
+
+  const key = srv.slug || '';
+  const taData = TAMIL_SERVICES_TRANSLATIONS[key];
+
+  if (taData) {
+    return {
+      ...srv,
+      name: taData.name || srv.name,
+      description: taData.description || srv.description,
+      category_name: taData.category_name || srv.category_name,
+      processing_time: taData.processing_time || srv.processing_time
+    };
   }
 
-  // Generic fallback with populated service param info instead of hardcoded Aadhaar
-  return {
-    id: 999,
-    category_name: 'Digital E-Service',
-    category_slug: 'general-services',
-    name: p.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
-    slug: p,
-    description: 'Official digital e-governance service application facilitation desk online.',
-    eligibility: 'Resident citizens holding valid identity and address proof documents.',
-    processing_time: '3-7 Working Days',
-    fee: 60,
-    fields: [
-      { name: 'applicant_name', label: 'Applicant Full Name', type: 'text', placeholder: 'Full Name', required: true },
-      { name: 'identity_number', label: 'Aadhaar / Identity Number', type: 'text', placeholder: '1234 5678 9012', required: true },
-      { name: 'mobile_number', label: 'Active Mobile Number', type: 'phone', placeholder: '9876543210', required: true },
-      { name: 'address', label: 'Residential Address', type: 'textarea', placeholder: 'Complete address with pincode', required: true }
-    ],
-    documents: [
-      { name: 'Proof of Identity (PoI)', description: 'Aadhaar Card, Voter ID, or Passport', required: true },
-      { name: 'Proof of Address (PoA)', description: 'Electricity Bill, Bank Passbook, or Ration Card', required: true }
-    ]
-  };
+  return srv;
 }
+
+/**
+ * Helper to retrieve service by ID or Slug with safe fallback and language localization
+ */
+export function getServiceDefinition(param, lang = 'en') {
+  let srv = null;
+  if (!param) srv = DEFAULT_SERVICES_MAP['aadhaar-address-update'];
+  else {
+    const p = String(param).toLowerCase().trim();
+    
+    if (DEFAULT_SERVICES_MAP[p]) {
+      srv = DEFAULT_SERVICES_MAP[p];
+    } else {
+      const altKey = Object.keys(DEFAULT_SERVICES_MAP).find(key => key.includes(p) || p.includes(key));
+      if (altKey) {
+        srv = DEFAULT_SERVICES_MAP[altKey];
+      } else {
+        srv = {
+          id: 999,
+          category_name: 'Digital E-Service',
+          category_slug: 'general-services',
+          name: p.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
+          slug: p,
+          description: 'Official digital e-governance service application facilitation desk online.',
+          eligibility: 'Resident citizens holding valid identity and address proof documents.',
+          processing_time: '3-7 Working Days',
+          fee: 60,
+          fields: [],
+          documents: []
+        };
+      }
+    }
+  }
+
+  return getLocalizedService(srv, lang);
+}
+

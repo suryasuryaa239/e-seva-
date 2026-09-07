@@ -4,8 +4,11 @@ import {
   Search, Clock, FileCheck, ArrowRight, Filter, AlertCircle, Fingerprint, CreditCard, Vote, FileText, MapPin, Globe, Car, Briefcase, Zap, Grid, X, CheckCircle2
 } from 'lucide-react';
 import Breadcrumbs from '../components/Breadcrumbs';
+import { useLanguage } from '../context/LanguageContext';
+import { getLocalizedService } from '../data/servicesCatalogData';
 
 export default function ServicesDirectory() {
+  const { lang, t } = useLanguage();
   const [searchParams] = useSearchParams();
   const initialSearch = searchParams.get('search') || '';
   const initialCategory = searchParams.get('category') || 'All';
@@ -32,7 +35,9 @@ export default function ServicesDirectory() {
       });
   }, []);
 
-  const filteredServices = services.filter((srv) => {
+  const localizedServices = services.map(srv => getLocalizedService(srv, lang));
+
+  const filteredServices = localizedServices.filter((srv) => {
     const q = searchQuery.toLowerCase().trim();
     const matchesCategory =
       selectedCategory === 'All' ||
@@ -77,7 +82,7 @@ export default function ServicesDirectory() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         
         {/* BREADCRUMBS */}
-        <Breadcrumbs items={[{ label: 'All Services' }]} />
+        <Breadcrumbs items={[{ label: lang === 'ta' ? 'சேவைகள் பட்டியல்' : 'All Services' }]} />
 
         {/* HEADER SECTION */}
         <div className="bg-white rounded-3xl p-8 sm:p-12 border border-slate-200/90 shadow-sm text-center space-y-6 relative overflow-hidden">
@@ -89,16 +94,16 @@ export default function ServicesDirectory() {
           <div className="max-w-2xl mx-auto space-y-3 relative z-10">
             <div>
               <span className="inline-block text-xs font-extrabold text-orange-600 uppercase tracking-widest bg-orange-50 border border-orange-200/80 px-3.5 py-1 rounded-full">
-                E-SERVICES
+                {t.portalName}
               </span>
             </div>
 
             <h1 className="font-heading font-extrabold text-3xl sm:text-4xl lg:text-5xl text-slate-900 tracking-tight">
-              All Digital Services
+              {t.allCategories}
             </h1>
 
             <p className="text-xs sm:text-sm text-slate-500 font-normal leading-relaxed">
-              Find the service you need and get started quickly. Convenient access to official digital services from one central portal.
+              {t.heroSubtitle}
             </p>
           </div>
 
@@ -107,7 +112,7 @@ export default function ServicesDirectory() {
             <div className="relative flex items-center">
               <input
                 type="text"
-                placeholder="Search services (e.g. Aadhaar, PAN Card, Income Certificate)..."
+                placeholder={t.searchPlaceholder}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-slate-50 text-slate-900 placeholder-slate-400 text-xs sm:text-sm rounded-2xl pl-12 pr-10 py-4 border border-slate-300 focus:border-[#0b192c] focus:bg-white outline-none transition-all shadow-xs font-medium"
@@ -132,10 +137,10 @@ export default function ServicesDirectory() {
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-xs font-extrabold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-              <Filter className="w-4 h-4 text-orange-500" /> Filter by Category
+              <Filter className="w-4 h-4 text-orange-500" /> {lang === 'ta' ? 'பிரிவு வாரியாக தேர்வு செய்ய' : 'Filter by Category'}
             </span>
             <span className="text-xs text-slate-500 font-medium">
-              Showing <span className="font-bold text-slate-900">{filteredServices.length}</span> services
+              {lang === 'ta' ? 'காட்டப்படும் சேவைகள்:' : 'Showing'} <span className="font-bold text-slate-900">{filteredServices.length}</span>
             </span>
           </div>
 
@@ -148,7 +153,7 @@ export default function ServicesDirectory() {
                   : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200/90 shadow-xs'
               }`}
             >
-              All Services ({services.length})
+              {lang === 'ta' ? 'அனைத்து சேவைகளும்' : 'All Services'} ({services.length})
             </button>
 
             {categories.map((cat) => (
@@ -188,7 +193,7 @@ export default function ServicesDirectory() {
                       {getCategoryIcon(srv.category_slug)}
                     </div>
                     <span className="text-[11px] font-extrabold text-orange-700 bg-orange-50 border border-orange-200/80 px-2.5 py-0.5 rounded-full">
-                      {srv.fee > 0 ? `₹${srv.fee}` : 'FREE'}
+                      {srv.fee > 0 ? `₹${srv.fee}` : (lang === 'ta' ? 'இலவசம்' : 'FREE')}
                     </span>
                   </div>
 
@@ -208,10 +213,10 @@ export default function ServicesDirectory() {
                   {/* SLA & PROOF DETAILS */}
                   <div className="pt-2 flex flex-wrap gap-2 text-[11px] text-slate-500">
                     <span className="flex items-center gap-1 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-100 font-medium">
-                      <Clock className="w-3 h-3 text-amber-500 shrink-0" /> SLA: {srv.processing_time || '3-5 Days'}
+                      <Clock className="w-3 h-3 text-amber-500 shrink-0" /> {lang === 'ta' ? 'கால அவகாசம்:' : 'SLA:'} {srv.processing_time || '3-5 Days'}
                     </span>
                     <span className="flex items-center gap-1 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-100 font-medium">
-                      <CheckCircle2 className="w-3 h-3 text-emerald-600 shrink-0" /> Online Application
+                      <CheckCircle2 className="w-3 h-3 text-emerald-600 shrink-0" /> {lang === 'ta' ? 'மின்னணு முறை' : 'Online Application'}
                     </span>
                   </div>
                 </div>
@@ -222,14 +227,14 @@ export default function ServicesDirectory() {
                     to={`/service/${srv.slug}`}
                     className="text-xs font-bold text-slate-700 hover:text-orange-600 transition-colors"
                   >
-                    View Details →
+                    {t.viewDetails} →
                   </Link>
 
                   <Link
                     to={`/service/${srv.slug}`}
                     className="bg-[#0b192c] hover:bg-orange-600 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl shadow-xs transition-colors flex items-center gap-1.5 group/btn"
                   >
-                    <span>Apply Now</span>
+                    <span>{t.applyNow}</span>
                     <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform" />
                   </Link>
                 </div>

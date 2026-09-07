@@ -62,7 +62,52 @@ export const translations = {
     otherServices: "Other Services",
     otherDesc: "Ration Card, Pension & Employment Reg.",
 
-    // Section Titles
+    // Dashboard & Applications
+    welcomeUser: "Welcome,",
+    userDashboardTitle: "User Dashboard & Application Cockpit",
+    userDashboardDesc: "Manage your applications, view progress, and access 100+ digital services.",
+    totalSubmitted: "Total Submitted Applications",
+    inProcessing: "In Processing / Under Review",
+    approvedApps: "Approved & Completed",
+    rejectedApps: "Action Required / Rejected",
+    quickActions: "Quick Actions",
+    applyNewService: "Apply for New Service",
+    trackAppStatus: "Track Application Status",
+    viewPaymentLedger: "View Payment History",
+    myRecentApplications: "My Recent Applications",
+    appId: "Application ID",
+    serviceName: "Service Name",
+    appliedDate: "Applied Date",
+    status: "Status",
+    action: "Action",
+    viewDetails: "View Details",
+    noApplicationsFound: "No applications submitted yet.",
+
+    // Status Badges
+    statusPending: "Pending Review",
+    statusSubmitted: "Submitted",
+    statusInReview: "In Review / Processing",
+    statusApproved: "Approved & Ready",
+    statusRejected: "Rejected / Requires Fix",
+
+    // Application Form & Apply Service
+    applicationFormTitle: "Digital Service Application Form",
+    applicantInformation: "1. Applicant Information",
+    fullName: "Full Name (as per Aadhaar)",
+    mobileNumber: "Mobile Number",
+    emailAddress: "Email Address",
+    residentialAddress: "Residential Address",
+    aadhaarNumber: "Aadhaar Card Number",
+    requiredDocuments: "2. Required Proof Documents",
+    uploadDocNote: "Please upload clear scanned copies or clear photos (PDF, PNG, JPG - max 5MB).",
+    feeSummary: "3. Government & Processing Fee",
+    govtFee: "Government Fee",
+    portalFee: "Portal Facilitation Fee",
+    totalFee: "Total Payable Amount",
+    submitAndPay: "Submit Application & Proceed to Payment",
+    uploadingDoc: "Uploading Document...",
+
+    // Section Titles & Buttons
     popularServices: "Popular E-Seva Digital Services",
     viewAllServices: "View All Directory →",
     howItWorks: "How E-Seva Portal Works",
@@ -72,10 +117,7 @@ export const translations = {
     step2Desc: "Enter details and attach required proof documents",
     step3Title: "Pay & Track",
     step3Desc: "Pay official fee online and get instant SMS status updates",
-
-    // Actions & Buttons
     applyNow: "Apply Now",
-    viewDetails: "View Details",
     backToHome: "Back to Home",
     submitApplication: "Submit Application",
     downloadReceipt: "Download Receipt",
@@ -148,7 +190,52 @@ export const translations = {
     otherServices: "இதர சேவைகள்",
     otherDesc: "ரேஷன் கார்டு, ஓய்வூதியம், வேலைவாய்ப்புப் பதிவு",
 
-    // Section Titles
+    // Dashboard & Applications
+    welcomeUser: "வரவேற்கிறோம்,",
+    userDashboardTitle: "பயனர் டாஷ்போர்டு & விண்ணப்ப மையம்",
+    userDashboardDesc: "உங்கள் விண்ணப்பங்களைக் கண்காணிக்கலாம் மற்றும் 100+ சேவைகளுக்கு விண்ணப்பிக்கலாம்.",
+    totalSubmitted: "சமர்ப்பிக்கப்பட்ட விண்ணப்பங்கள்",
+    inProcessing: "ஆய்வில் உள்ள விண்ணப்பங்கள்",
+    approvedApps: "ஒப்புதல் அளிக்கப்பட்டவை",
+    rejectedApps: "நிராகரிக்கப்பட்ட / நடவடிக்கை தேவை",
+    quickActions: "விரைவுச் செயல்பாடுகள்",
+    applyNewService: "புதிய சேவைக்கு விண்ணப்பிக்க",
+    trackAppStatus: "விண்ணப்ப நிலையை அறிய",
+    viewPaymentLedger: "கட்டண வரலாற்றைப் பார்க்க",
+    myRecentApplications: "என் சமீபத்திய விண்ணப்பங்கள்",
+    appId: "விண்ணப்ப எண்",
+    serviceName: "சேவையின் பெயர்",
+    appliedDate: "விண்ணப்பித்த தேதி",
+    status: "தற்போதைய நிலை",
+    action: "செயல்பாடு",
+    viewDetails: "விவரங்களைப் பார்க்க",
+    noApplicationsFound: "இதுவரை எந்த விண்ணப்பமும் சமர்ப்பிக்கப்படவில்லை.",
+
+    // Status Badges
+    statusPending: "ஆய்வுக்கு நிலுவையில் உள்ளது",
+    statusSubmitted: "சமர்ப்பிக்கப்பட்டது",
+    statusInReview: "ஆய்வில் உள்ளது",
+    statusApproved: "ஒப்புதல் அளிக்கப்பட்டது",
+    statusRejected: "நிராகரிக்கப்பட்டது",
+
+    // Application Form & Apply Service
+    applicationFormTitle: "மின்னணு சேவை விண்ணப்பப் படிவம்",
+    applicantInformation: "1. விண்ணப்பதாரர் விவரங்கள்",
+    fullName: "முழு பெயர் (ஆதாரில் உள்ளபடி)",
+    mobileNumber: "கைபேசி எண்",
+    emailAddress: "மின்னஞ்சல் முகவரி",
+    residentialAddress: "வீட்டு முகவரி",
+    aadhaarNumber: "ஆதார் கார்டு எண்",
+    requiredDocuments: "2. தேவையான சான்று ஆவணங்கள்",
+    uploadDocNote: "தெளிவான நகல்கள் அல்லது புகைப்படங்களை பதிவேற்றவும் (PDF, PNG, JPG - அதிகபட்சம் 5MB).",
+    feeSummary: "3. அரசு & சேவை கட்டண விவரம்",
+    govtFee: "அரசு கட்டணம்",
+    portalFee: "இ-சேவை கட்டணம்",
+    totalFee: "மொத்த செலுத்துகைத் தொகை",
+    submitAndPay: "விண்ணப்பத்தைச் சமர்ப்பித்து கட்டணம் செலுத்தவும்",
+    uploadingDoc: "ஆவணம் பதிவேற்றப்படுகிறது...",
+
+    // Section Titles & Buttons
     popularServices: "முக்கியமான இ-சேவைகள்",
     viewAllServices: "அனைத்து சேவைகளையும் பார்க்க →",
     howItWorks: "இ-சேவை போர்ட்டல் எவ்வாறு செயல்படுகிறது?",
@@ -158,10 +245,7 @@ export const translations = {
     step2Desc: "விவரங்களை பூர்த்தி செய்து தேவையான சான்றுகளை பதிவேற்றவும்",
     step3Title: "கட்டணம் செலுத்தி கண்காணிக்கவும்",
     step3Desc: "ஆன்லைன் மூலம் கட்டணம் செலுத்தி குறுஞ்செய்தி மூலம் நிலை அறியலாம்",
-
-    // Actions & Buttons
     applyNow: "விண்ணப்பிக்க",
-    viewDetails: "விவரங்களை பார்க்க",
     backToHome: "முகப்பிற்குச் செல்ல",
     submitApplication: "விண்ணப்பத்தைச் சமர்ப்பி",
     downloadReceipt: "ரசீது பதிவிறக்கம்",

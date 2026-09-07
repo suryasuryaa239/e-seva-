@@ -6,9 +6,11 @@ import {
   FolderOpen, XCircle, CreditCard, ExternalLink, HelpCircle
 } from 'lucide-react';
 import StatusBadge from '../components/StatusBadge';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function UserDashboard() {
   const navigate = useNavigate();
+  const { lang, t } = useLanguage();
   const [user, setUser] = useState(null);
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -89,13 +91,13 @@ export default function UserDashboard() {
           <div className="space-y-2 relative z-10">
             <div className="inline-flex items-center space-x-2 px-3.5 py-1 bg-slate-800/90 text-orange-400 text-[10px] font-black rounded-full border border-slate-700 uppercase tracking-widest">
               <ShieldCheck className="w-3.5 h-3.5 text-orange-400" />
-              <span>Verified Citizen Account</span>
+              <span>{t.govTag || 'VERIFIED CITIZEN ACCOUNT'}</span>
             </div>
             <h1 className="text-2xl sm:text-4xl font-black text-white tracking-tight">
-              Welcome back, <span className="text-orange-400">{user?.name || 'Citizen'}</span>
+              {t.welcomeUser} <span className="text-orange-400">{user?.name || (lang === 'ta' ? 'குடிமகன்' : 'Citizen')}</span>
             </h1>
             <p className="text-slate-300 text-xs sm:text-sm max-w-xl font-normal leading-relaxed">
-              Manage your applications and access your digital services.
+              {t.userDashboardDesc}
             </p>
           </div>
 
@@ -105,7 +107,7 @@ export default function UserDashboard() {
               className="px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-xs sm:text-sm rounded-xl shadow-md transition-all flex items-center space-x-2 group"
             >
               <PlusCircle className="w-4 h-4 text-white group-hover:scale-110 transition-transform" />
-              <span>Apply for a Service</span>
+              <span>{t.applyNewService}</span>
             </Link>
 
             <Link
@@ -113,7 +115,7 @@ export default function UserDashboard() {
               className="px-5 py-3 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs sm:text-sm rounded-xl transition-colors border border-slate-700 flex items-center space-x-2"
             >
               <FileText className="w-4 h-4 text-orange-400" />
-              <span>My Applications</span>
+              <span>{t.myApplications}</span>
             </Link>
           </div>
         </div>
@@ -122,52 +124,52 @@ export default function UserDashboard() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-sm space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] sm:text-xs font-extrabold text-slate-500 uppercase tracking-wider">Total Applications</span>
+              <span className="text-[10px] sm:text-xs font-extrabold text-slate-500 uppercase tracking-wider">{t.totalSubmitted}</span>
               <div className="w-9 h-9 rounded-xl bg-slate-100 text-[#0b192c] flex items-center justify-center border border-slate-200">
                 <FileText className="w-4.5 h-4.5" />
               </div>
             </div>
             <div className="text-3xl font-black text-slate-900">{totalCount}</div>
-            <p className="text-[11px] text-slate-400 font-medium">Logged applications</p>
+            <p className="text-[11px] text-slate-400 font-medium">{lang === 'ta' ? 'பதிவு செய்யப்பட்டவை' : 'Logged applications'}</p>
           </div>
 
           <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-sm space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] sm:text-xs font-extrabold text-amber-700 uppercase tracking-wider">Saved Drafts</span>
+              <span className="text-[10px] sm:text-xs font-extrabold text-amber-700 uppercase tracking-wider">{lang === 'ta' ? 'சேமிக்கப்பட்டவை' : 'Saved Drafts'}</span>
               <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center border border-amber-200">
                 <FileClock className="w-4.5 h-4.5" />
               </div>
             </div>
             <div className="text-3xl font-black text-amber-700">{draftCount}</div>
-            <p className="text-[11px] text-slate-400 font-medium">Form progress saved</p>
+            <p className="text-[11px] text-slate-400 font-medium">{lang === 'ta' ? 'வரைவு வடிவில் உள்ளன' : 'Form progress saved'}</p>
           </div>
 
           <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-sm space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] sm:text-xs font-extrabold text-indigo-900 uppercase tracking-wider">Pending / Processing</span>
+              <span className="text-[10px] sm:text-xs font-extrabold text-indigo-900 uppercase tracking-wider">{t.inProcessing}</span>
               <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-900 flex items-center justify-center border border-indigo-200">
                 <Clock className="w-4.5 h-4.5" />
               </div>
             </div>
             <div className="text-3xl font-black text-indigo-900">{activeCount}</div>
-            <p className="text-[11px] text-slate-400 font-medium">Under verification</p>
+            <p className="text-[11px] text-slate-400 font-medium">{lang === 'ta' ? 'அதிகாரி ஆய்வில் உள்ளது' : 'Under verification'}</p>
           </div>
 
           <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-sm space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] sm:text-xs font-extrabold text-emerald-800 uppercase tracking-wider">Completed / Approved</span>
+              <span className="text-[10px] sm:text-xs font-extrabold text-emerald-800 uppercase tracking-wider">{t.approvedApps}</span>
               <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-800 flex items-center justify-center border border-emerald-200">
                 <CheckCircle2 className="w-4.5 h-4.5" />
               </div>
             </div>
             <div className="text-3xl font-black text-emerald-800">{completedCount}</div>
-            <p className="text-[11px] text-slate-400 font-medium">Digital certificates ready</p>
+            <p className="text-[11px] text-slate-400 font-medium">{lang === 'ta' ? 'சான்றிதழ்கள் தயார்' : 'Digital certificates ready'}</p>
           </div>
         </div>
 
         {/* 3. QUICK ACTIONS GRID */}
         <div className="space-y-3">
-          <h3 className="text-xs font-black text-slate-900 uppercase tracking-wider">Quick Actions</h3>
+          <h3 className="text-xs font-black text-slate-900 uppercase tracking-wider">{t.quickActions}</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             
             <Link
@@ -177,8 +179,8 @@ export default function UserDashboard() {
               <div className="w-10 h-10 rounded-xl bg-slate-100 text-[#0b192c] flex items-center justify-center mb-3 group-hover:bg-[#0b192c] group-hover:text-white transition-colors border border-slate-200">
                 <PlusCircle className="w-5 h-5 text-orange-500 group-hover:text-orange-400" />
               </div>
-              <h4 className="font-extrabold text-slate-900 text-sm">Apply for New Service</h4>
-              <p className="text-xs text-slate-500 mt-1 font-normal">Browse Aadhaar, Income, Community & Certificate services</p>
+              <h4 className="font-extrabold text-slate-900 text-sm">{t.applyNewService}</h4>
+              <p className="text-xs text-slate-500 mt-1 font-normal">{lang === 'ta' ? 'ஆதார், வருமானம், சாதி & பட்டா சான்றிதழ்கள்' : 'Browse Aadhaar, Income, Community & Certificate services'}</p>
             </Link>
 
             <Link
@@ -188,8 +190,8 @@ export default function UserDashboard() {
               <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center mb-3 group-hover:bg-amber-600 group-hover:text-white transition-colors border border-amber-200">
                 <Search className="w-5 h-5" />
               </div>
-              <h4 className="font-extrabold text-slate-900 text-sm">Track Application</h4>
-              <p className="text-xs text-slate-500 mt-1 font-normal">Check live desk status using Application Reference ID</p>
+              <h4 className="font-extrabold text-slate-900 text-sm">{t.trackAppStatus}</h4>
+              <p className="text-xs text-slate-500 mt-1 font-normal">{lang === 'ta' ? 'விண்ணப்ப எண்ணைப் பயன்படுத்தி நிலை அறியலாம்' : 'Check live desk status using Application Reference ID'}</p>
             </Link>
 
             <Link
@@ -199,8 +201,8 @@ export default function UserDashboard() {
               <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-800 flex items-center justify-center mb-3 group-hover:bg-emerald-700 group-hover:text-white transition-colors border border-emerald-200">
                 <FileText className="w-5 h-5" />
               </div>
-              <h4 className="font-extrabold text-slate-900 text-sm">My Applications</h4>
-              <p className="text-xs text-slate-500 mt-1 font-normal">View full application portfolio & download digital receipts</p>
+              <h4 className="font-extrabold text-slate-900 text-sm">{t.myApplications}</h4>
+              <p className="text-xs text-slate-500 mt-1 font-normal">{lang === 'ta' ? 'விண்ணப்பங்களை பார்வையிட்டு ரசீது பெறலாம்' : 'View full application portfolio & download digital receipts'}</p>
             </Link>
 
             <Link
@@ -210,8 +212,8 @@ export default function UserDashboard() {
               <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center mb-3 group-hover:bg-slate-900 group-hover:text-white transition-colors border border-slate-200">
                 <User className="w-5 h-5" />
               </div>
-              <h4 className="font-extrabold text-slate-900 text-sm">View Profile</h4>
-              <p className="text-xs text-slate-500 mt-1 font-normal">Manage contact info, notification alerts & account security</p>
+              <h4 className="font-extrabold text-slate-900 text-sm">{t.profileSettings}</h4>
+              <p className="text-xs text-slate-500 mt-1 font-normal">{lang === 'ta' ? 'தொலைபேசி எண் & கணக்கு அமைப்புகள்' : 'Manage contact info, notification alerts & account security'}</p>
             </Link>
 
           </div>
@@ -221,15 +223,15 @@ export default function UserDashboard() {
         <div className="bg-white rounded-3xl border border-slate-200/90 shadow-xl p-6 sm:p-8 space-y-5">
           <div className="flex items-center justify-between border-b pb-4 border-slate-100">
             <div>
-              <h3 className="text-base sm:text-lg font-black text-slate-900">Recent Applications</h3>
-              <p className="text-xs text-slate-500">Your latest service submissions</p>
+              <h3 className="text-base sm:text-lg font-black text-slate-900">{t.myRecentApplications}</h3>
+              <p className="text-xs text-slate-500">{lang === 'ta' ? 'உங்கள் சமீபத்திய சேவை விண்ணப்பங்கள்' : 'Your latest service submissions'}</p>
             </div>
 
             <Link
               to="/my-applications"
               className="text-xs font-extrabold text-[#0b192c] hover:text-orange-600 hover:underline flex items-center space-x-1 transition-colors"
             >
-              <span>View All Applications</span>
+              <span>{lang === 'ta' ? 'அனைத்தையும் பார்க்க' : 'View All Applications'}</span>
               <ChevronRight className="w-4 h-4 text-orange-500" />
             </Link>
           </div>
@@ -238,15 +240,15 @@ export default function UserDashboard() {
           {recentApps.length === 0 ? (
             <div className="p-10 text-center bg-slate-50/80 rounded-3xl border border-slate-200 space-y-3 max-w-lg mx-auto">
               <FolderOpen className="w-14 h-14 text-slate-300 mx-auto" />
-              <h4 className="font-black text-slate-900 text-base">No applications yet</h4>
+              <h4 className="font-black text-slate-900 text-base">{t.noApplicationsFound}</h4>
               <p className="text-xs text-slate-500 leading-relaxed">
-                Start by choosing a digital service from our catalog to submit your first application.
+                {lang === 'ta' ? 'அரசு சேவைப் பட்டியலிலிருந்து உங்களுக்குத் தேவையான சேவையைத் தேர்ந்தெடுத்து விண்ணப்பிக்கலாம்.' : 'Start by choosing a digital service from our catalog to submit your first application.'}
               </p>
               <Link
                 to="/services"
                 className="inline-flex items-center space-x-2 px-5 py-3 bg-[#0b192c] text-white font-extrabold text-xs rounded-xl hover:bg-orange-600 shadow-md transition-all"
               >
-                <span>Explore Services</span>
+                <span>{t.applyNewService}</span>
                 <ArrowRight className="w-4 h-4 text-orange-400" />
               </Link>
             </div>
@@ -257,11 +259,11 @@ export default function UserDashboard() {
                 <table className="w-full text-left text-xs text-slate-700">
                   <thead className="bg-[#0b192c] text-slate-300 font-black uppercase tracking-wider text-[10px] border-b border-slate-800">
                     <tr>
-                      <th className="py-3.5 px-4 text-orange-400">Application ID</th>
-                      <th className="py-3.5 px-4">Service Name</th>
-                      <th className="py-3.5 px-4">Date Logged</th>
-                      <th className="py-3.5 px-4">Current Status</th>
-                      <th className="py-3.5 px-4 text-right">Action</th>
+                      <th className="py-3.5 px-4 text-orange-400">{t.appId}</th>
+                      <th className="py-3.5 px-4">{t.serviceName}</th>
+                      <th className="py-3.5 px-4">{t.appliedDate}</th>
+                      <th className="py-3.5 px-4">{t.status}</th>
+                      <th className="py-3.5 px-4 text-right">{t.action}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 font-medium">
@@ -276,7 +278,7 @@ export default function UserDashboard() {
                             </span>
                           </td>
                           <td className="py-4 px-4 font-extrabold text-slate-900">
-                            {app.service_name || 'Digital Service'}
+                            {app.service_name || (lang === 'ta' ? 'மின்னணு சேவை' : 'Digital Service')}
                           </td>
                           <td className="py-4 px-4 text-slate-500 font-mono text-[11px]">
                             {new Date(app.created_at || app.submitted_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
@@ -290,14 +292,14 @@ export default function UserDashboard() {
                                 to={`/apply/${app.service_id}?draftId=${app.id}`}
                                 className="px-3.5 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black rounded-xl text-xs shadow-xs transition-colors inline-block"
                               >
-                                Resume Draft
+                                {lang === 'ta' ? 'வரைவைத் தொடரவும்' : 'Resume Draft'}
                               </Link>
                             ) : (
                               <Link
                                 to={`/my-applications/${app.id}`}
                                 className="px-3.5 py-2 bg-[#0b192c] hover:bg-orange-600 text-white font-extrabold rounded-xl text-xs transition-all shadow-xs inline-block"
                               >
-                                View Details
+                                {t.viewDetails}
                               </Link>
                             )}
                           </td>

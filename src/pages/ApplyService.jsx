@@ -7,9 +7,11 @@ import {
   Copy, Printer, ExternalLink
 } from 'lucide-react';
 import Breadcrumbs from '../components/Breadcrumbs';
-import { getServiceDefinition, DEFAULT_SERVICES_MAP } from '../data/servicesCatalogData';
+import { getServiceDefinition, DEFAULT_SERVICES_MAP, getLocalizedService } from '../data/servicesCatalogData';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function ApplyService() {
+  const { lang, t } = useLanguage();
   const { slug, serviceId } = useParams();
   const serviceParam = slug || serviceId;
   const navigate = useNavigate();
@@ -67,7 +69,7 @@ export default function ApplyService() {
 
   useEffect(() => {
     fetchService();
-  }, [serviceParam]);
+  }, [serviceParam, lang]);
 
   const fetchService = async () => {
     try {
@@ -77,7 +79,7 @@ export default function ApplyService() {
       const res = await fetch(`/api/services/${serviceParam}`);
       if (res.ok) {
         const data = await res.json();
-        setService(data);
+        setService(getLocalizedService(data, lang));
 
         // Pre-fill initial dynamic field values
         const initialFields = {};
@@ -90,7 +92,7 @@ export default function ApplyService() {
         setFieldValues(initialFields);
       } else {
         // Fallback service definition
-        const fallback = getServiceDefinition(serviceParam);
+        const fallback = getServiceDefinition(serviceParam, lang);
         setService(fallback);
         const initialFields = {};
         if (fallback.fields) {
@@ -496,19 +498,19 @@ export default function ApplyService() {
                 <div className="border-b pb-4 border-slate-100 flex items-center justify-between">
                   <h3 className="font-heading font-extrabold text-lg text-slate-900 flex items-center gap-2">
                     <UserCheck className="w-5 h-5 text-orange-500" />
-                    <span>Step 01: Applicant Details</span>
+                    <span>{t.applicantInformation}</span>
                   </h3>
-                  <span className="text-xs text-slate-400 font-bold">* Required fields</span>
+                  <span className="text-xs text-slate-400 font-bold">* {lang === 'ta' ? 'கட்டாய புலங்கள்' : 'Required fields'}</span>
                 </div>
 
                 {/* PRIMARY APPLICANT INFORMATION */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-extrabold text-slate-700 mb-1.5">Full Name *</label>
+                    <label className="block text-xs font-extrabold text-slate-700 mb-1.5">{t.fullName} *</label>
                     <input
                       type="text"
                       name="user_name"
-                      placeholder="e.g. Karthik Subramanian"
+                      placeholder={lang === 'ta' ? 'எ.கா. கார்த்திக் சுப்பிரமணியன்' : 'e.g. Karthik Subramanian'}
                       value={applicantInfo.user_name}
                       onChange={handleApplicantChange}
                       className={`w-full px-4 py-3 bg-slate-50 border ${errors.user_name ? 'border-rose-500 bg-rose-50/50' : 'border-slate-200'} rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-[#0b192c] focus:bg-white transition-all`}
@@ -517,7 +519,7 @@ export default function ApplyService() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-extrabold text-slate-700 mb-1.5">Mobile Number *</label>
+                    <label className="block text-xs font-extrabold text-slate-700 mb-1.5">{t.mobileNumber} *</label>
                     <input
                       type="tel"
                       name="user_phone"
@@ -530,7 +532,7 @@ export default function ApplyService() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-extrabold text-slate-700 mb-1.5">Email Address *</label>
+                    <label className="block text-xs font-extrabold text-slate-700 mb-1.5">{t.emailAddress} *</label>
                     <input
                       type="email"
                       name="user_email"
@@ -543,7 +545,7 @@ export default function ApplyService() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-extrabold text-slate-700 mb-1.5">Date of Birth</label>
+                    <label className="block text-xs font-extrabold text-slate-700 mb-1.5">{lang === 'ta' ? 'பிறந்த தேதி' : 'Date of Birth'}</label>
                     <input
                       type="date"
                       name="dob"
@@ -554,16 +556,16 @@ export default function ApplyService() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-extrabold text-slate-700 mb-1.5">Gender</label>
+                    <label className="block text-xs font-extrabold text-slate-700 mb-1.5">{lang === 'ta' ? 'பாலினம்' : 'Gender'}</label>
                     <select
                       name="gender"
                       value={applicantInfo.gender}
                       onChange={handleApplicantChange}
                       className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-[#0b192c] focus:bg-white transition-all"
                     >
-                      <option value="Male">Male</option>
-                      <option value="Female">Female</option>
-                      <option value="Transgender">Transgender</option>
+                      <option value="Male">{lang === 'ta' ? 'ஆண்' : 'Male'}</option>
+                      <option value="Female">{lang === 'ta' ? 'பெண்' : 'Female'}</option>
+                      <option value="Transgender">{lang === 'ta' ? 'மூன்றாம் பாலினத்தவர்' : 'Transgender'}</option>
                     </select>
                   </div>
 
