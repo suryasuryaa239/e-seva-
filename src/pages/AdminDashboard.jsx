@@ -96,6 +96,83 @@ export default function AdminDashboard() {
 
   // New Service Modal State
   const [showAddServiceModal, setShowAddServiceModal] = useState(false);
+  const [creatingService, setCreatingService] = useState(false);
+  const [newServiceForm, setNewServiceForm] = useState({
+    name: '',
+    category_name: 'Certificates & Official Documents',
+    description: '',
+    fee: 60,
+    processing_time: '2-3 Business Days',
+    documents: ['Aadhaar Card Copy', 'Passport Size Photo'],
+    newDocInput: '',
+    fields: [
+      { field_label: 'Applicant Full Name', field_type: 'text', is_required: true },
+      { field_label: 'Mobile Number', field_type: 'text', is_required: true },
+      { field_label: 'Aadhaar / ID Number', field_type: 'text', is_required: true },
+      { field_label: 'Residential Address', field_type: 'textarea', is_required: true }
+    ],
+    newFieldLabel: '',
+    newFieldType: 'text'
+  });
+
+  const handleCreateServiceSubmit = async (e) => {
+    e.preventDefault();
+    if (!newServiceForm.name.trim()) {
+      addToast('Service name is required', 'error');
+      return;
+    }
+
+    setCreatingService(true);
+    try {
+      const res = await fetch('/api/admin/services', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${adminToken}`
+        },
+        body: JSON.stringify({
+          name: newServiceForm.name.trim(),
+          category_name: newServiceForm.category_name,
+          description: newServiceForm.description,
+          fee: Number(newServiceForm.fee) || 60,
+          total_fee: Number(newServiceForm.fee) || 60,
+          processing_time: newServiceForm.processing_time,
+          documents: newServiceForm.documents,
+          fields: newServiceForm.fields
+        })
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        addToast(`New Service "${newServiceForm.name}" created and published to User Dashboard!`, 'success');
+        setShowAddServiceModal(false);
+        setNewServiceForm({
+          name: '',
+          category_name: 'Certificates & Official Documents',
+          description: '',
+          fee: 60,
+          processing_time: '2-3 Business Days',
+          documents: ['Aadhaar Card Copy', 'Passport Size Photo'],
+          newDocInput: '',
+          fields: [
+            { field_label: 'Applicant Full Name', field_type: 'text', is_required: true },
+            { field_label: 'Mobile Number', field_type: 'text', is_required: true },
+            { field_label: 'Aadhaar / ID Number', field_type: 'text', is_required: true },
+            { field_label: 'Residential Address', field_type: 'textarea', is_required: true }
+          ],
+          newFieldLabel: '',
+          newFieldType: 'text'
+        });
+        fetchServices();
+      } else {
+        addToast(data.error || 'Failed to create service', 'error');
+      }
+    } catch (err) {
+      addToast('Service creation error', 'error');
+    } finally {
+      setCreatingService(false);
+    }
+  };
 
   const fetchDashboardStats = async () => {
     if (!adminToken) return;
@@ -793,6 +870,13 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className="flex items-center space-x-2 self-start sm:self-auto">
+                  <button
+                    onClick={() => setShowAddServiceModal(true)}
+                    className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white font-extrabold text-xs rounded-xl shadow transition-all flex items-center space-x-1.5 cursor-pointer"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>Create New Service</span>
+                  </button>
                   <button
                     onClick={() => {
                       setServiceSearchQuery('');
@@ -3858,6 +3942,250 @@ export default function AdminDashboard() {
             >
               Close Alert Inspector
             </button>
+
+          </div>
+        </div>
+      )}
+
+      {/* ADD NEW SERVICE MODAL */}
+      {showAddServiceModal && (
+        <div className="fixed inset-0 bg-slate-950/75 backdrop-blur-md z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+          <div className="bg-white border border-slate-200 rounded-3xl max-w-3xl w-full max-h-[92vh] overflow-y-auto p-6 sm:p-8 space-y-6 shadow-2xl">
+            
+            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+              <div>
+                <span className="text-[11px] font-black uppercase text-orange-600 tracking-wider bg-orange-50 px-2.5 py-0.5 rounded border border-orange-200">
+                  NEW SERVICE PUBLISHER
+                </span>
+                <h3 className="font-extrabold text-xl text-slate-900 mt-1">Add New E-Seva Service</h3>
+                <p className="text-xs text-slate-500">Configure new service details to publish directly to the User Dashboard and Services Catalog.</p>
+              </div>
+
+              <button
+                onClick={() => setShowAddServiceModal(false)}
+                className="p-2 text-slate-400 hover:text-slate-600 bg-slate-100 rounded-xl transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateServiceSubmit} className="space-y-6 text-xs">
+              
+              {/* Basic Details */}
+              <div className="space-y-4">
+                <h4 className="font-black text-slate-900 uppercase text-xs tracking-wider border-b border-slate-100 pb-1">1. Basic Service Information</h4>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="font-bold text-slate-700 block">Service Name *</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Income & Assets Certificate"
+                      value={newServiceForm.name}
+                      onChange={(e) => setNewServiceForm({ ...newServiceForm, name: e.target.value })}
+                      className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3.5 py-2.5 outline-none focus:border-orange-500 font-semibold"
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="font-bold text-slate-700 block">Category *</label>
+                    <select
+                      value={newServiceForm.category_name}
+                      onChange={(e) => setNewServiceForm({ ...newServiceForm, category_name: e.target.value })}
+                      className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3.5 py-2.5 outline-none focus:border-orange-500 font-semibold"
+                    >
+                      <option value="Certificates & Official Documents">Certificates & Official Documents</option>
+                      <option value="Aadhaar & Identity Services">Aadhaar & Identity Services</option>
+                      <option value="Land & Patta Records">Land & Patta Records</option>
+                      <option value="Driving & Vehicle Services">Driving & Vehicle Services</option>
+                      <option value="Business & Trade Licenses">Business & Trade Licenses</option>
+                      <option value="Ration Card & Public Distribution">Ration Card & Public Distribution</option>
+                      <option value="Voter & Electoral Services">Voter & Electoral Services</option>
+                      <option value="PAN Card Services">PAN Card Services</option>
+                      <option value="Passport Facilitation">Passport Facilitation</option>
+                      <option value="Utility & Municipal Bills">Utility & Municipal Bills</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="font-bold text-slate-700 block">Government & Facilitation Fee (₹) *</label>
+                    <input
+                      type="number"
+                      placeholder="60"
+                      value={newServiceForm.fee}
+                      onChange={(e) => setNewServiceForm({ ...newServiceForm, fee: e.target.value })}
+                      className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3.5 py-2.5 outline-none focus:border-orange-500 font-semibold"
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="font-bold text-slate-700 block">Processing SLA / Delivery Time *</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. 2-3 Business Days"
+                      value={newServiceForm.processing_time}
+                      onChange={(e) => setNewServiceForm({ ...newServiceForm, processing_time: e.target.value })}
+                      className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3.5 py-2.5 outline-none focus:border-orange-500 font-semibold"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="font-bold text-slate-700 block">Service Description</label>
+                  <textarea
+                    rows={2}
+                    placeholder="Brief description of the service and who can apply..."
+                    value={newServiceForm.description}
+                    onChange={(e) => setNewServiceForm({ ...newServiceForm, description: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl p-3 outline-none focus:border-orange-500 font-medium"
+                  />
+                </div>
+              </div>
+
+              {/* Required Documents */}
+              <div className="space-y-3">
+                <h4 className="font-black text-slate-900 uppercase text-xs tracking-wider border-b border-slate-100 pb-1">2. Required Proof Documents</h4>
+                
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="text"
+                    placeholder="e.g. Income Slip / Ration Card"
+                    value={newServiceForm.newDocInput || ''}
+                    onChange={(e) => setNewServiceForm({ ...newServiceForm, newDocInput: e.target.value })}
+                    className="flex-1 bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3 py-2 outline-none font-medium"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (newServiceForm.newDocInput && newServiceForm.newDocInput.trim()) {
+                        setNewServiceForm({
+                          ...newServiceForm,
+                          documents: [...newServiceForm.documents, newServiceForm.newDocInput.trim()],
+                          newDocInput: ''
+                        });
+                      }
+                    }}
+                    className="px-3.5 py-2 bg-slate-800 text-white font-bold rounded-xl hover:bg-slate-900"
+                  >
+                    + Add Doc
+                  </button>
+                </div>
+
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {newServiceForm.documents.map((doc, idx) => (
+                    <span key={idx} className="bg-orange-50 border border-orange-200 text-orange-800 font-bold px-3 py-1 rounded-xl flex items-center space-x-1.5 text-xs">
+                      <span>{doc}</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setNewServiceForm({
+                            ...newServiceForm,
+                            documents: newServiceForm.documents.filter((_, i) => i !== idx)
+                          });
+                        }}
+                        className="text-orange-600 hover:text-orange-900 font-black ml-1"
+                      >
+                        ✕
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Custom Citizen Applicant Form Fields */}
+              <div className="space-y-3">
+                <h4 className="font-black text-slate-900 uppercase text-xs tracking-wider border-b border-slate-100 pb-1">3. Citizen Application Form Fields</h4>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  <input
+                    type="text"
+                    placeholder="Field Label (e.g. Father Name)"
+                    value={newServiceForm.newFieldLabel || ''}
+                    onChange={(e) => setNewServiceForm({ ...newServiceForm, newFieldLabel: e.target.value })}
+                    className="bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3 py-2 outline-none font-medium"
+                  />
+                  <select
+                    value={newServiceForm.newFieldType || 'text'}
+                    onChange={(e) => setNewServiceForm({ ...newServiceForm, newFieldType: e.target.value })}
+                    className="bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3 py-2 outline-none font-medium"
+                  >
+                    <option value="text">Text Input</option>
+                    <option value="number">Number Input</option>
+                    <option value="textarea">Textarea / Address</option>
+                    <option value="date">Date Field</option>
+                  </select>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (newServiceForm.newFieldLabel && newServiceForm.newFieldLabel.trim()) {
+                        setNewServiceForm({
+                          ...newServiceForm,
+                          fields: [
+                            ...newServiceForm.fields,
+                            { field_label: newServiceForm.newFieldLabel.trim(), field_type: newServiceForm.newFieldType || 'text', is_required: true }
+                          ],
+                          newFieldLabel: '',
+                          newFieldType: 'text'
+                        });
+                      }
+                    }}
+                    className="py-2 bg-[#0b192c] text-white font-bold rounded-xl hover:bg-slate-800"
+                  >
+                    + Add Form Field
+                  </button>
+                </div>
+
+                <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
+                  {newServiceForm.fields.map((f, idx) => (
+                    <div key={idx} className="p-2.5 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between font-medium text-xs">
+                      <div>
+                        <span className="font-bold text-slate-900">{f.field_label}</span>
+                        <span className="text-[10px] text-slate-400 font-mono ml-2">Type: {f.field_type}</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setNewServiceForm({
+                            ...newServiceForm,
+                            fields: newServiceForm.fields.filter((_, i) => i !== idx)
+                          });
+                        }}
+                        className="text-rose-600 hover:text-rose-800 font-extrabold text-xs"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex items-center justify-end space-x-3 pt-4 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setShowAddServiceModal(false)}
+                  className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold rounded-xl"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={creatingService}
+                  className="px-6 py-2.5 bg-orange-600 hover:bg-orange-700 text-white font-extrabold rounded-xl shadow transition-colors flex items-center space-x-2 disabled:opacity-50"
+                >
+                  {creatingService ? (
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <Plus className="w-4 h-4" />
+                  )}
+                  <span>{creatingService ? 'Publishing Service...' : 'Save & Publish Service'}</span>
+                </button>
+              </div>
+
+            </form>
 
           </div>
         </div>

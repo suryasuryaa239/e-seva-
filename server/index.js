@@ -1573,42 +1573,86 @@ app.get('/api/admin/customers', authenticateAdmin, (req, res) => {
 // Admin Services & Categories Management
 app.post('/api/admin/services', authenticateAdmin, (req, res) => {
   try {
-    const { category_id, name, description, eligibility, processing_info, processing_time, fee, fields, documents } = req.body;
-    if (!category_id || !name) return res.status(400).json({ error: 'Category ID and Service Name required' });
+    const { category_id, category_name, name, description, eligibility, processing_info, processing_time, fee, total_fee, govt_fee, fields, documents } = req.body;
+    if ((!category_id && !category_name) || !name) return res.status(400).json({ error: 'Category and Service Name required' });
 
+    let catId = Number(category_id);
+    let cat = catId ? db.get('categories', c => c.id === catId) : null;
+    if (!cat && category_name) {
+      cat = db.get('categories', c => c.name.toLowerCase() === category_name.toLowerCase() || c.slug === category_name.toLowerCase().replace(/[^a-z0-9]+/g, '-'));
+      if (cat) catId = cat.id;
+    }
+    if (!catId) catId = 1;
+
+    const serviceFee = Number(fee || total_fee || govt_fee || 60);
     const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
     const service = db.insert('services', {
-      category_id: Number(category_id),
-      name,
+      category_id: catId,
+      category_name: cat ? cat.name : (category_name || 'General'),
+      name: name.trim(),
       slug,
       description: description || '',
       eligibility: eligibility || '',
       processing_info: processing_info || '',
       processing_time: processing_time || '3-5 Days',
-      fee: Number(fee) || 0,
+      fee: serviceFee,
+      total_fee: serviceFee,
+      govt_fee: serviceFee,
+      is_active: true,
       status: 'Active'
     });
 
-    if (fields && Array.isArray(fields)) {
+    if (fields && Array.isArray(fields) && fields.length > 0) {
       fields.forEach((f, idx) => {
+        const label = f.field_label || f.name || f.label || `Field ${idx + 1}`;
         db.insert('service_fields', {
           service_id: service.id,
-          field_name: f.field_name || f.field_label.toLowerCase().replace(/[^a-z0-9]+/g, '_'),
-          field_label: f.field_label,
+          field_name: f.field_name || label.toLowerCase().replace(/[^a-z0-9]+/g, '_'),
+          field_label: label,
           field_type: f.field_type || 'text',
-          is_required: f.is_required ? 1 : 0,
+          is_required: f.is_required !== undefined ? (f.is_required ? 1 : 0) : 1,
           options_json: f.options_json ? JSON.stringify(f.options_json) : null,
+          sort_order: idx + 1
+        });
+      });
+    } else {
+      // Default default fields if none provided
+      const defaultFields = [
+        { label: 'Applicant Full Name', type: 'text', req: 1 },
+        { label: 'Mobile Number', type: 'text', req: 1 },
+        { label: 'Aadhaar / ID Number', type: 'text', req: 1 },
+        { label: 'Residential Address', type: 'textarea', req: 1 }
+      ];
+      defaultFields.forEach((f, idx) => {
+        db.insert('service_fields', {
+          service_id: service.id,
+          field_name: f.label.toLowerCase().replace(/[^a-z0-9]+/g, '_'),
+          field_label: f.label,
+          field_type: f.type,
+          is_required: f.req,
           sort_order: idx + 1
         });
       });
     }
 
-    if (documents && Array.isArray(documents)) {
+    if (documents && Array.isArray(documents) && documents.length > 0) {
       documents.forEach(d => {
+        const docName = typeof d === 'string' ? d : (d.document_name || d.name);
         db.insert('service_documents', {
           service_id: service.id,
-          document_name: d.document_name,
-          description: d.description || '',
+          document_name: docName,
+          description: d.description || `Upload clear copy of ${docName}`,
+          is_required: 1
+        });
+      });
+    } else {
+      // Default standard documents
+      const defaultDocs = ['Aadhaar Card Copy', 'Passport Size Photograph', 'Address Proof'];
+      defaultDocs.forEach(docName => {
+        db.insert('service_documents', {
+          service_id: service.id,
+          document_name: docName,
+          description: `Upload clear scanned copy of ${docName}`,
           is_required: 1
         });
       });
