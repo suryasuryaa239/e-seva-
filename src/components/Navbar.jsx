@@ -122,7 +122,7 @@ export default function Navbar() {
           {/* ========================================================================= */}
           {/* CENTER: DESKTOP NAVIGATION LINKS */}
           {/* ========================================================================= */}
-          <nav className="hidden lg:flex items-center gap-1 xl:gap-2 text-xs font-bold text-slate-700">
+          <nav className="hidden lg:flex items-center gap-1 xl:gap-2 text-xs font-bold text-slate-800 shrink-0">
             
             {/* 1. HOME */}
             <Link
@@ -133,7 +133,7 @@ export default function Navbar() {
                   : 'hover:text-slate-900 hover:bg-slate-50'
               }`}
             >
-              {t.home}
+              {t.home || (lang === 'ta' ? 'முகப்பு' : 'Home')}
             </Link>
 
             {/* 2. E-SERVICES ▼ DROPDOWN / MEGA-MENU */}
@@ -149,7 +149,7 @@ export default function Navbar() {
                     : 'hover:text-slate-900 hover:bg-slate-50'
                 }`}
               >
-                <span>{t.eServices}</span>
+                <span>{t.eServices || t.services || (lang === 'ta' ? 'சேவைகள்' : 'Services')}</span>
                 <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${servicesMenuOpen ? 'rotate-180 text-orange-500' : 'text-slate-400'}`} />
               </button>
 
@@ -162,7 +162,7 @@ export default function Navbar() {
                         <Layers className="w-4 h-4" />
                       </div>
                       <div>
-                        <span className="font-heading font-extrabold text-sm text-slate-900">{t.allCategories}</span>
+                        <span className="font-heading font-extrabold text-sm text-slate-900">{t.allCategories || (lang === 'ta' ? 'அனைத்து சேவைப் பிரிவுகள்' : 'All Service Categories')}</span>
                         <p className="text-[11px] text-slate-500 font-normal">Select a category to explore & apply for official digital services</p>
                       </div>
                     </div>
@@ -171,7 +171,7 @@ export default function Navbar() {
                       onClick={() => setServicesMenuOpen(false)}
                       className="text-xs font-bold text-slate-900 hover:text-orange-600 flex items-center gap-1 bg-slate-50 hover:bg-orange-50 px-3 py-1.5 rounded-lg border border-slate-200 transition-colors"
                     >
-                      {t.viewAllServices}
+                      {t.viewAllServices || (lang === 'ta' ? 'அனைத்து சேவைகள் →' : 'View All Directory →')}
                     </Link>
                   </div>
 
@@ -229,7 +229,7 @@ export default function Navbar() {
                   moreMenuOpen ? 'text-slate-900 bg-slate-100 font-extrabold' : 'hover:text-slate-900 hover:bg-slate-50'
                 }`}
               >
-                <span>{t.more}</span>
+                <span>{t.more || (lang === 'ta' ? 'மேலும்' : 'More')}</span>
                 <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${moreMenuOpen ? 'rotate-180 text-orange-500' : 'text-slate-400'}`} />
               </button>
 
@@ -277,7 +277,7 @@ export default function Navbar() {
                   : 'hover:text-slate-900 hover:bg-slate-50'
               }`}
             >
-              {t.about}
+              {t.about || t.aboutUs || (lang === 'ta' ? 'எங்களைப் பற்றி' : 'About Us')}
             </Link>
 
             {/* 5. CONTACT */}
@@ -289,7 +289,7 @@ export default function Navbar() {
                   : 'hover:text-slate-900 hover:bg-slate-50'
               }`}
             >
-              {t.contact}
+              {t.contact || t.contactUs || (lang === 'ta' ? 'தொடர்புகொள்ள' : 'Contact Us')}
             </Link>
           </nav>
 
@@ -330,7 +330,7 @@ export default function Navbar() {
               }`}
             >
               <FileSearch className="w-3.5 h-3.5 text-slate-600" />
-              <span>{t.checkStatus}</span>
+              <span>{t.checkStatus || t.trackAppNav || (lang === 'ta' ? 'விண்ணப்பத்தை கண்காணிக்க' : 'Track Application')}</span>
             </Link>
 
             {/* SIGN IN & REGISTER / USER PROFILE LOGIC */}
