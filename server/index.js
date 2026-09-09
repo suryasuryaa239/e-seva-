@@ -207,9 +207,21 @@ app.post('/api/auth/register', authRateLimiter, async (req, res) => {
       return res.status(400).json({ error: 'Password must be at least 6 characters long' });
     }
 
-    const existingUser = db.get('users', u => u.email.toLowerCase() === email.toLowerCase());
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanPhone = phone.trim();
+
+    const existingUser = db.get('users', u => 
+      (u.email && u.email.toLowerCase() === cleanEmail) ||
+      (u.phone && u.phone.trim() === cleanPhone)
+    );
+
     if (existingUser) {
-      return res.status(400).json({ error: 'User with this email already exists' });
+      if (existingUser.email && existingUser.email.toLowerCase() === cleanEmail) {
+        return res.status(400).json({ error: 'An account with this email already exists' });
+      }
+      if (existingUser.phone && existingUser.phone.trim() === cleanPhone) {
+        return res.status(400).json({ error: 'An account with this mobile number already exists' });
+      }
     }
 
     const password_hash = await bcrypt.hash(password, 10);
