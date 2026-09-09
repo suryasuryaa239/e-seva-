@@ -71,12 +71,23 @@ function RequireCitizenAuth({ children }) {
   return children;
 }
 
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  React.useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, [pathname]);
+
+  return null;
+}
+
 function AppContent() {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin') || location.pathname.startsWith('/admin-');
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-100 font-sans text-slate-900 selection:bg-indigo-500 selection:text-white">
+      <ScrollToTop />
       
       {/* Top Info Bar & Main Navbar - Hidden on Admin Pages */}
       {!isAdminRoute && <TopBar />}

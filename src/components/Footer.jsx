@@ -41,28 +41,32 @@ export default function Footer() {
               </span>
               <div className="flex items-center gap-2.5">
                 <a
-                  href="#"
+                  href="#!"
+                  onClick={(e) => e.preventDefault()}
                   aria-label="Facebook"
                   className="w-8 h-8 rounded-lg bg-slate-800/80 hover:bg-orange-500 text-slate-300 hover:text-white flex items-center justify-center transition-all border border-slate-700/50"
                 >
                   <Facebook className="w-4 h-4" />
                 </a>
                 <a
-                  href="#"
+                  href="#!"
+                  onClick={(e) => e.preventDefault()}
                   aria-label="Instagram"
                   className="w-8 h-8 rounded-lg bg-slate-800/80 hover:bg-orange-500 text-slate-300 hover:text-white flex items-center justify-center transition-all border border-slate-700/50"
                 >
                   <Instagram className="w-4 h-4" />
                 </a>
                 <a
-                  href="#"
+                  href="#!"
+                  onClick={(e) => e.preventDefault()}
                   aria-label="YouTube"
                   className="w-8 h-8 rounded-lg bg-slate-800/80 hover:bg-orange-500 text-slate-300 hover:text-white flex items-center justify-center transition-all border border-slate-700/50"
                 >
                   <Youtube className="w-4 h-4" />
                 </a>
                 <a
-                  href="#"
+                  href="#!"
+                  onClick={(e) => e.preventDefault()}
                   aria-label="WhatsApp"
                   className="w-8 h-8 rounded-lg bg-slate-800/80 hover:bg-orange-500 text-slate-300 hover:text-white flex items-center justify-center transition-all border border-slate-700/50"
                 >
