@@ -1664,6 +1664,102 @@ app.post('/api/admin/services', authenticateAdmin, (req, res) => {
   }
 });
 
+// Admin Edit Service
+app.put('/api/admin/services/:id', authenticateAdmin, (req, res) => {
+  try {
+    const sId = Number(req.params.id);
+    const existing = db.get('services', s => s.id === sId);
+    if (!existing) {
+      return res.status(404).json({ error: 'Service not found' });
+    }
+
+    const { category_id, category_name, name, description, eligibility, processing_info, processing_time, fee, total_fee, govt_fee, is_active, status, fields, documents } = req.body;
+    
+    let catId = category_id ? Number(category_id) : existing.category_id;
+    let cat = db.get('categories', c => c.id === catId);
+    if (!cat && category_name) {
+      cat = db.get('categories', c => c.name.toLowerCase() === category_name.toLowerCase() || c.slug === category_name.toLowerCase().replace(/[^a-z0-9]+/g, '-'));
+      if (cat) catId = cat.id;
+    }
+
+    const serviceFee = fee !== undefined ? Number(fee) : (total_fee !== undefined ? Number(total_fee) : existing.fee);
+    const serviceName = name ? name.trim() : existing.name;
+    const slug = serviceName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+
+    db.update('services', s => s.id === sId, {
+      category_id: catId || existing.category_id,
+      category_name: cat ? cat.name : (category_name || existing.category_name),
+      name: serviceName,
+      slug,
+      description: description !== undefined ? description : existing.description,
+      eligibility: eligibility !== undefined ? eligibility : existing.eligibility,
+      processing_info: processing_info !== undefined ? processing_info : existing.processing_info,
+      processing_time: processing_time !== undefined ? processing_time : existing.processing_time,
+      fee: serviceFee,
+      total_fee: serviceFee,
+      govt_fee: serviceFee,
+      is_active: is_active !== undefined ? is_active : (status === 'Inactive' ? false : existing.is_active),
+      status: status || (is_active === false ? 'Inactive' : 'Active')
+    });
+
+    // Update dynamic fields if provided
+    if (fields && Array.isArray(fields)) {
+      db.delete('service_fields', f => f.service_id === sId);
+      fields.forEach((f, idx) => {
+        const label = f.field_label || f.name || f.label || `Field ${idx + 1}`;
+        db.insert('service_fields', {
+          service_id: sId,
+          field_name: f.field_name || label.toLowerCase().replace(/[^a-z0-9]+/g, '_'),
+          field_label: label,
+          field_type: f.field_type || f.type || 'text',
+          is_required: f.is_required !== undefined ? (f.is_required ? 1 : 0) : (f.required ? 1 : 0),
+          options_json: f.options_json ? (typeof f.options_json === 'string' ? f.options_json : JSON.stringify(f.options_json)) : (f.options ? JSON.stringify(f.options) : null),
+          sort_order: idx + 1
+        });
+      });
+    }
+
+    // Update documents if provided
+    if (documents && Array.isArray(documents)) {
+      db.delete('service_documents', d => d.service_id === sId);
+      documents.forEach(d => {
+        const docName = typeof d === 'string' ? d : (d.document_name || d.name);
+        db.insert('service_documents', {
+          service_id: sId,
+          document_name: docName,
+          description: d.description || `Upload clear copy of ${docName}`,
+          is_required: d.is_required !== undefined ? (d.is_required ? 1 : 0) : 1
+        });
+      });
+    }
+
+    const updatedService = db.get('services', s => s.id === sId);
+    res.json({ message: 'Service updated successfully', service: updatedService });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Admin Delete Service
+app.delete('/api/admin/services/:id', authenticateAdmin, (req, res) => {
+  try {
+    const sId = Number(req.params.id);
+    const existing = db.get('services', s => s.id === sId);
+    if (!existing) {
+      return res.status(404).json({ error: 'Service not found' });
+    }
+
+    db.delete('services', s => s.id === sId);
+    db.delete('service_fields', f => f.service_id === sId);
+    db.delete('service_documents', d => d.service_id === sId);
+
+    res.json({ message: `Service '${existing.name}' deleted successfully`, service_id: sId });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
 // Admin Contact Messages & Enquiries
 app.get('/api/admin/enquiries', authenticateAdmin, (req, res) => {
   const messages = db.all('contact_messages').sort((a, b) => new Date(b.created_at) - new Date(a.created_at));

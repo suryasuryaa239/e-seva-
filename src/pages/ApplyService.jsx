@@ -4,11 +4,13 @@ import {
   ShieldAlert, FileText, Upload, CheckCircle2, ArrowRight, ArrowLeft,
   AlertCircle, Lock, Info, Save, Edit3, Check, FileCheck, UserCheck, Clock, Download,
   Phone, Mail, HelpCircle, Shield, Sparkles, Building, CreditCard, QrCode, Building2, Wallet,
-  Copy, Printer, ExternalLink
+  Copy, Printer, ExternalLink, User
 } from 'lucide-react';
 import Breadcrumbs from '../components/Breadcrumbs';
 import { getServiceDefinition, DEFAULT_SERVICES_MAP, getLocalizedService } from '../data/servicesCatalogData';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 
 export default function ApplyService() {
   const { lang, t } = useLanguage();
@@ -328,12 +330,66 @@ export default function ApplyService() {
     }
   };
 
-  if (loading) {
+  const { user, userToken, loading: authLoading } = useAuth();
+  const { addToast } = useToast();
+
+  useEffect(() => {
+    const token = userToken || localStorage.getItem('token') || localStorage.getItem('eseva_user_token');
+    if (!authLoading && !user && !token) {
+      addToast(
+        lang === 'ta'
+          ? 'சேவைகளுக்கு விண்ணப்பிக்க தயவுசெய்து முதலில் உள்நுழையவும்!'
+          : 'Please log in first to apply for services!',
+        'error'
+      );
+      navigate(`/login?redirect=${encodeURIComponent(`/apply/${serviceParam}`)}`, { replace: true });
+    }
+  }, [user, userToken, authLoading, serviceParam, lang, navigate, addToast]);
+
+  if (loading || authLoading) {
     return (
       <div className="min-h-screen bg-slate-50 py-16 px-4 flex items-center justify-center font-sans">
         <div className="bg-white rounded-3xl shadow-sm p-8 text-center max-w-sm w-full space-y-4 border border-slate-200">
           <div className="w-12 h-12 border-4 border-[#0b192c] border-t-orange-500 rounded-full animate-spin mx-auto"></div>
           <p className="text-slate-600 font-bold text-xs">Loading application form engine...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Authentication Guard: Redirecting if unauthenticated
+  const hasToken = userToken || localStorage.getItem('token') || localStorage.getItem('eseva_user_token');
+  if (!user && !hasToken) {
+    return (
+      <div className="min-h-screen bg-slate-50 py-16 px-4 flex items-center justify-center font-sans">
+        <div className="bg-white rounded-3xl shadow-xl p-8 sm:p-10 text-center max-w-md w-full space-y-6 border border-slate-200">
+          <div className="w-16 h-16 bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center mx-auto border border-orange-200 shadow-xs">
+            <Lock className="w-8 h-8" />
+          </div>
+
+          <div className="space-y-2">
+            <span className="text-[10px] font-black uppercase tracking-wider text-orange-600 bg-orange-50 px-2.5 py-1 rounded-md border border-orange-200">
+              {lang === 'ta' ? 'உள்நுழைவு தேவை' : 'Authentication Required'}
+            </span>
+            <h3 className="text-xl font-extrabold text-slate-900">
+              {lang === 'ta' ? 'உள்நுழைவு பக்கத்திற்கு மாற்றப்படுகிறது...' : 'Redirecting to Login Page...'}
+            </h3>
+            <p className="text-slate-600 text-xs leading-relaxed">
+              {lang === 'ta'
+                ? `"${service?.name || 'இ-சேவை'}" சேவைக்கு விண்ணப்பிக்க உங்கள் பயனர் கணக்கில் உள்நுழைய வேண்டும்.`
+                : `You must log in with your citizen user account to apply for "${service?.name || 'this service'}".`}
+            </p>
+          </div>
+
+          <div className="space-y-3 pt-2">
+            <Link
+              to={`/login?redirect=${encodeURIComponent(`/apply/${serviceParam}`)}`}
+              className="w-full py-3.5 bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold text-xs rounded-xl transition-all shadow-md flex items-center justify-center space-x-2"
+            >
+              <User className="w-4 h-4 text-orange-400" />
+              <span>{lang === 'ta' ? 'பயனர் உள்நுழைவு (Login)' : 'Go to Citizen Login'}</span>
+            </Link>
+          </div>
         </div>
       </div>
     );

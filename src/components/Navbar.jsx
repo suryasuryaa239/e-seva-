@@ -19,6 +19,7 @@ export default function Navbar() {
   const [servicesMenuOpen, setServicesMenuOpen] = useState(false);
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const [loginDropdownOpen, setLoginDropdownOpen] = useState(false);
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
   const [mobileMoreOpen, setMobileMoreOpen] = useState(false);
   const [navSearch, setNavSearch] = useState('');
@@ -26,12 +27,14 @@ export default function Navbar() {
   const servicesMenuRef = useRef(null);
   const moreMenuRef = useRef(null);
   const userDropdownRef = useRef(null);
+  const loginDropdownRef = useRef(null);
 
   // Close menus on route change
   useEffect(() => {
     setServicesMenuOpen(false);
     setMoreMenuOpen(false);
     setUserDropdownOpen(false);
+    setLoginDropdownOpen(false);
     setMobileMenuOpen(false);
   }, [location.pathname]);
 
@@ -46,6 +49,9 @@ export default function Navbar() {
       }
       if (userDropdownRef.current && !userDropdownRef.current.contains(event.target)) {
         setUserDropdownOpen(false);
+      }
+      if (loginDropdownRef.current && !loginDropdownRef.current.contains(event.target)) {
+        setLoginDropdownOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -421,21 +427,79 @@ export default function Navbar() {
               </div>
             ) : (
               <div className="flex items-center gap-1.5 xl:gap-2 shrink-0 whitespace-nowrap">
-                {/* SIGN IN */}
-                <Link
-                  to="/login"
-                  className="h-9 inline-flex items-center px-2 xl:px-3 text-[11px] xl:text-xs font-bold text-slate-700 hover:text-slate-950 hover:bg-slate-50 rounded-lg transition-colors uppercase shrink-0 whitespace-nowrap"
-                >
-                  {t.login || 'SIGN IN'}
-                </Link>
+                {/* LOGIN DROPDOWN BUTTON */}
+                <div className="relative" ref={loginDropdownRef}>
+                  <button
+                    onClick={() => setLoginDropdownOpen(!loginDropdownOpen)}
+                    className="h-9 inline-flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-[11px] xl:text-xs px-3 xl:px-4 rounded-lg shadow-sm transition-all border border-slate-800 uppercase shrink-0 whitespace-nowrap cursor-pointer"
+                  >
+                    <User className="w-3.5 h-3.5 text-orange-400 shrink-0" />
+                    <span>{lang === 'ta' ? 'உள்நுழைக' : 'LOGIN'}</span>
+                    <ChevronDown className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                  </button>
 
-                {/* REGISTER - Primary Dark Blue Button */}
-                <Link
-                  to="/register"
-                  className="h-9 inline-flex items-center gap-1 bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-[11px] xl:text-xs px-2.5 xl:px-4 rounded-lg shadow-sm transition-all border border-slate-800 uppercase shrink-0 whitespace-nowrap"
-                >
-                  {t.registerNav || 'REGISTER'} <ArrowRight className="w-3.5 h-3.5 text-orange-400 shrink-0" />
-                </Link>
+                  {loginDropdownOpen && (
+                    <div className="absolute right-0 mt-2 w-64 bg-white border border-slate-200 rounded-2xl shadow-xl py-2 z-50 text-xs animate-in fade-in slide-in-from-top-2 duration-150">
+                      <div className="px-4 py-2 border-b border-slate-100">
+                        <p className="text-[10px] font-black uppercase text-orange-600 tracking-wider">
+                          {lang === 'ta' ? 'போர்ட்டல் உள்நுழைவு' : 'Portal Login Options'}
+                        </p>
+                        <p className="text-[11px] text-slate-500 font-medium">
+                          {lang === 'ta' ? 'உங்கள் கணக்கு வகையைத் தேர்ந்தெடுக்கவும்' : 'Select your portal access account'}
+                        </p>
+                      </div>
+
+                      {/* Option 1: Citizen User Login */}
+                      <Link
+                        to="/login"
+                        onClick={() => setLoginDropdownOpen(false)}
+                        className="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 transition-colors group"
+                      >
+                        <div className="w-8 h-8 rounded-xl bg-orange-50 text-orange-600 font-extrabold flex items-center justify-center border border-orange-200 group-hover:bg-orange-600 group-hover:text-white transition-colors shrink-0">
+                          <User className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <span className="font-extrabold text-slate-900 block text-xs">
+                            {lang === 'ta' ? 'பயனர் உள்நுழைவு (User)' : 'User Login (Citizen)'}
+                          </span>
+                          <span className="text-[10px] text-slate-500 font-medium block">
+                            {lang === 'ta' ? 'சேவைகளுக்கு விண்ணப்பிக்க' : 'Apply for digital e-services'}
+                          </span>
+                        </div>
+                      </Link>
+
+                      {/* Option 2: Admin Cockpit Login */}
+                      <Link
+                        to="/admin/login"
+                        onClick={() => setLoginDropdownOpen(false)}
+                        className="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 transition-colors group border-t border-slate-100 mt-1 pt-2.5"
+                      >
+                        <div className="w-8 h-8 rounded-xl bg-slate-900 text-orange-400 font-extrabold flex items-center justify-center border border-slate-800 group-hover:bg-slate-800 transition-colors shrink-0">
+                          <ShieldCheck className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <span className="font-extrabold text-slate-900 block text-xs">
+                            {lang === 'ta' ? 'நிர்வாகி உள்நுழைவு (Admin)' : 'Admin Login (Cockpit)'}
+                          </span>
+                          <span className="text-[10px] text-slate-500 font-medium block">
+                            {lang === 'ta' ? 'அதிகாரப்பூர்வ மேலாண்மை' : 'Official governance desk'}
+                          </span>
+                        </div>
+                      </Link>
+
+                      <div className="pt-2 border-t border-slate-100 mt-2 px-4">
+                        <Link
+                          to="/register"
+                          onClick={() => setLoginDropdownOpen(false)}
+                          className="w-full py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-extrabold text-[11px] rounded-lg transition-colors flex items-center justify-center gap-1"
+                        >
+                          <span>{lang === 'ta' ? 'புதிய கணக்கு பதிவு' : 'New Registration'}</span>
+                          <ArrowRight className="w-3 h-3 text-orange-600" />
+                        </Link>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
 

@@ -1,6 +1,6 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
 import { LanguageProvider } from './context/LanguageContext';
 
@@ -46,6 +46,30 @@ import BusinessServicesCatalog from './pages/BusinessServicesCatalog';
 import UtilityServicesCatalog from './pages/UtilityServicesCatalog';
 import RationCardServicesCatalog from './pages/RationCardServicesCatalog';
 import NotFound from './pages/NotFound';
+
+function RequireCitizenAuth({ children }) {
+  const { user, userToken, loading } = useAuth();
+  const location = useLocation();
+
+  const token = userToken || localStorage.getItem('token') || localStorage.getItem('eseva_user_token');
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-50 py-16 px-4 flex items-center justify-center font-sans">
+        <div className="bg-white rounded-3xl shadow-sm p-8 text-center max-w-sm w-full space-y-4 border border-slate-200">
+          <div className="w-12 h-12 border-4 border-[#0b192c] border-t-orange-500 rounded-full animate-spin mx-auto"></div>
+          <p className="text-slate-600 font-bold text-xs">Verifying citizen authentication...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user && !token) {
+    return <Navigate to={`/login?redirect=${encodeURIComponent(location.pathname)}`} replace />;
+  }
+
+  return children;
+}
 
 function AppContent() {
   const location = useLocation();
@@ -123,10 +147,11 @@ function AppContent() {
           <Route path="/category/:slug" element={<CategoryView />} />
           <Route path="/service/:serviceId" element={<ServiceDetails />} />
           <Route path="/service/:slug" element={<ServiceDetails />} />
-          <Route path="/apply/:serviceId" element={<ApplyService />} />
-          <Route path="/apply/slug/:slug" element={<ApplyService />} />
-          <Route path="/my-applications" element={<MyApplications />} />
-          <Route path="/my-applications/:id" element={<ApplicationDetailView />} />
+          {/* Protected Application Routes */}
+          <Route path="/apply/:serviceId" element={<RequireCitizenAuth><ApplyService /></RequireCitizenAuth>} />
+          <Route path="/apply/slug/:slug" element={<RequireCitizenAuth><ApplyService /></RequireCitizenAuth>} />
+          <Route path="/my-applications" element={<RequireCitizenAuth><MyApplications /></RequireCitizenAuth>} />
+          <Route path="/my-applications/:id" element={<RequireCitizenAuth><ApplicationDetailView /></RequireCitizenAuth>} />
           <Route path="/track" element={<ApplicationTracker />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<ContactUs />} />
@@ -137,11 +162,11 @@ function AppContent() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Login />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/dashboard" element={<UserDashboard />} />
-          <Route path="/payments" element={<UserPayments />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/notifications" element={<UserNotifications />} />
-          <Route path="/profile/notifications" element={<UserNotificationPreferences />} />
+          <Route path="/dashboard" element={<RequireCitizenAuth><UserDashboard /></RequireCitizenAuth>} />
+          <Route path="/payments" element={<RequireCitizenAuth><UserPayments /></RequireCitizenAuth>} />
+          <Route path="/profile" element={<RequireCitizenAuth><Profile /></RequireCitizenAuth>} />
+          <Route path="/notifications" element={<RequireCitizenAuth><UserNotifications /></RequireCitizenAuth>} />
+          <Route path="/profile/notifications" element={<RequireCitizenAuth><UserNotificationPreferences /></RequireCitizenAuth>} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin-login" element={<AdminLogin />} />
           <Route path="/admin" element={<AdminDashboard />} />

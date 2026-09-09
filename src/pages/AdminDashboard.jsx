@@ -6,7 +6,7 @@ import {
   XCircle, Clock, AlertCircle, Plus, ExternalLink, LogOut, DollarSign,
   Menu, X, Award, ChevronRight, TrendingUp, ShieldCheck, Activity,
   Filter, RotateCcw, Inbox, UserCheck, FileCheck, History, MessageSquare,
-  User, Phone, Mail as MailIcon, Calendar, CheckCircle, Shield,
+  User, Phone, Mail as MailIcon, Calendar, CheckCircle, Shield, Trash2,
   Settings, Key, Lock, EyeOff, Save, CheckCheck, Bell, CreditCard, Paperclip
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -173,6 +173,112 @@ export default function AdminDashboard() {
       setCreatingService(false);
     }
   };
+
+  // Edit & Delete Service Modal State
+  const [showEditServiceModal, setShowEditServiceModal] = useState(false);
+  const [editingServiceForm, setEditingServiceForm] = useState(null);
+  const [savingEditService, setSavingEditService] = useState(false);
+
+  const openEditServiceModal = (srv) => {
+    const docs = Array.isArray(srv.documents) ? srv.documents.map(d => typeof d === 'string' ? d : d.document_name) : ['Aadhaar Card Copy', 'Passport Size Photo'];
+    const fields = Array.isArray(srv.fields) ? srv.fields.map(f => ({
+      field_label: f.field_label || f.name || f.label || 'Field',
+      field_type: f.field_type || f.type || 'text',
+      is_required: f.is_required !== undefined ? Boolean(f.is_required) : true
+    })) : [
+      { field_label: 'Applicant Full Name', field_type: 'text', is_required: true },
+      { field_label: 'Mobile Number', field_type: 'text', is_required: true },
+      { field_label: 'Aadhaar / ID Number', field_type: 'text', is_required: true },
+      { field_label: 'Residential Address', field_type: 'textarea', is_required: true }
+    ];
+
+    setEditingServiceForm({
+      id: srv.id,
+      name: srv.name || '',
+      category_name: srv.category_name || srv.category || 'Certificates & Official Documents',
+      description: srv.description || '',
+      fee: srv.total_fee || srv.govt_fee || srv.fee || 60,
+      processing_time: srv.processing_time || '2-3 Business Days',
+      status: srv.status || (srv.is_active !== false ? 'Active' : 'Inactive'),
+      documents: docs,
+      newDocInput: '',
+      fields: fields,
+      newFieldLabel: '',
+      newFieldType: 'text'
+    });
+    setShowEditServiceModal(true);
+  };
+
+  const handleEditServiceSubmit = async (e) => {
+    e.preventDefault();
+    if (!editingServiceForm || !editingServiceForm.name.trim()) {
+      addToast('Service name is required', 'error');
+      return;
+    }
+
+    setSavingEditService(true);
+    try {
+      const res = await fetch(`/api/admin/services/${editingServiceForm.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${adminToken}`
+        },
+        body: JSON.stringify({
+          name: editingServiceForm.name.trim(),
+          category_name: editingServiceForm.category_name,
+          description: editingServiceForm.description,
+          fee: Number(editingServiceForm.fee) || 60,
+          total_fee: Number(editingServiceForm.fee) || 60,
+          processing_time: editingServiceForm.processing_time,
+          status: editingServiceForm.status,
+          is_active: editingServiceForm.status === 'Active',
+          documents: editingServiceForm.documents,
+          fields: editingServiceForm.fields
+        })
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        addToast(`Service "${editingServiceForm.name}" updated successfully!`, 'success');
+        setShowEditServiceModal(false);
+        setEditingServiceForm(null);
+        fetchServices();
+      } else {
+        addToast(data.error || 'Failed to update service', 'error');
+      }
+    } catch (err) {
+      addToast('Service edit error', 'error');
+    } finally {
+      setSavingEditService(false);
+    }
+  };
+
+  const handleDeleteService = async (srv) => {
+    if (!window.confirm(`Are you sure you want to delete service "${srv.name}"? This action cannot be undone.`)) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/admin/services/${srv.id}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${adminToken}`
+        }
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        addToast(`Service "${srv.name}" deleted successfully`, 'success');
+        fetchServices();
+      } else {
+        addToast(data.error || 'Failed to delete service', 'error');
+      }
+    } catch (err) {
+      addToast('Error deleting service', 'error');
+    }
+  };
+
 
   const fetchDashboardStats = async () => {
     if (!adminToken) return;
@@ -1027,13 +1133,32 @@ export default function AdminDashboard() {
                             </span>
                           </td>
                           <td className="py-4 px-4 text-right">
-                            <button
-                              onClick={() => setSelectedService(srv)}
-                              className="bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold px-3.5 py-1.5 rounded-xl text-xs transition-colors shadow flex items-center space-x-1.5 ml-auto"
-                            >
-                              <Eye className="w-3.5 h-3.5 text-orange-400" />
-                              <span>Inspect Configuration</span>
-                            </button>
+                            <div className="flex items-center justify-end space-x-1.5">
+                              <button
+                                onClick={() => setSelectedService(srv)}
+                                className="bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold px-2.5 py-1.5 rounded-xl text-xs transition-colors shadow flex items-center space-x-1"
+                                title="Inspect Configuration"
+                              >
+                                <Eye className="w-3.5 h-3.5 text-orange-400" />
+                                <span className="hidden lg:inline">Inspect</span>
+                              </button>
+                              <button
+                                onClick={() => openEditServiceModal(srv)}
+                                className="bg-amber-50 hover:bg-amber-100 text-amber-800 font-extrabold px-2.5 py-1.5 rounded-xl text-xs transition-colors border border-amber-200 flex items-center space-x-1"
+                                title="Edit Service"
+                              >
+                                <Edit3 className="w-3.5 h-3.5 text-amber-600" />
+                                <span>Edit</span>
+                              </button>
+                              <button
+                                onClick={() => handleDeleteService(srv)}
+                                className="bg-rose-50 hover:bg-rose-100 text-rose-700 font-extrabold px-2.5 py-1.5 rounded-xl text-xs transition-colors border border-rose-200 flex items-center space-x-1"
+                                title="Delete Service"
+                              >
+                                <Trash2 className="w-3.5 h-3.5 text-rose-600" />
+                                <span>Delete</span>
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))}
@@ -1058,13 +1183,29 @@ export default function AdminDashboard() {
 
                     <p className="text-xs text-slate-500 line-clamp-2">{srv.description || 'Digital e-Seva processing service'}</p>
 
-                    <button
-                      onClick={() => setSelectedService(srv)}
-                      className="w-full py-2.5 bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold text-xs rounded-xl transition-colors flex items-center justify-center space-x-1.5"
-                    >
-                      <Eye className="w-3.5 h-3.5 text-orange-400" />
-                      <span>Inspect Service Details</span>
-                    </button>
+                    <div className="grid grid-cols-3 gap-2 pt-2 border-t border-slate-100">
+                      <button
+                        onClick={() => setSelectedService(srv)}
+                        className="py-2 bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold text-[11px] rounded-xl transition-colors flex items-center justify-center space-x-1"
+                      >
+                        <Eye className="w-3.5 h-3.5 text-orange-400" />
+                        <span>Inspect</span>
+                      </button>
+                      <button
+                        onClick={() => openEditServiceModal(srv)}
+                        className="py-2 bg-amber-50 hover:bg-amber-100 text-amber-800 font-extrabold text-[11px] rounded-xl border border-amber-200 transition-colors flex items-center justify-center space-x-1"
+                      >
+                        <Edit3 className="w-3.5 h-3.5 text-amber-600" />
+                        <span>Edit</span>
+                      </button>
+                      <button
+                        onClick={() => handleDeleteService(srv)}
+                        className="py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 font-extrabold text-[11px] rounded-xl border border-rose-200 transition-colors flex items-center justify-center space-x-1"
+                      >
+                        <Trash2 className="w-3.5 h-3.5 text-rose-600" />
+                        <span>Delete</span>
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -4182,6 +4323,266 @@ export default function AdminDashboard() {
                     <Plus className="w-4 h-4" />
                   )}
                   <span>{creatingService ? 'Publishing Service...' : 'Save & Publish Service'}</span>
+                </button>
+              </div>
+
+            </form>
+
+          </div>
+        </div>
+      )}
+
+      {/* EDIT SERVICE MODAL */}
+      {showEditServiceModal && editingServiceForm && (
+        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 space-y-6 shadow-2xl border border-slate-200 my-8">
+            
+            <div className="flex justify-between items-start border-b border-slate-100 pb-4">
+              <div>
+                <span className="text-[10px] font-black uppercase text-amber-600 tracking-wider bg-amber-50 px-2.5 py-0.5 rounded border border-amber-200">
+                  EDIT CONFIGURATION
+                </span>
+                <h3 className="font-extrabold text-xl text-slate-900 mt-1">Edit Service: {editingServiceForm.name}</h3>
+                <p className="text-xs text-slate-500">Modify service parameters, fees, category placement, dynamic fields, and required documents.</p>
+              </div>
+
+              <button
+                onClick={() => {
+                  setShowEditServiceModal(false);
+                  setEditingServiceForm(null);
+                }}
+                className="p-2 text-slate-400 hover:text-slate-600 bg-slate-100 rounded-xl transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleEditServiceSubmit} className="space-y-6 text-xs">
+              
+              {/* Basic Details */}
+              <div className="space-y-4">
+                <h4 className="font-black text-slate-900 uppercase text-xs tracking-wider border-b border-slate-100 pb-1">1. Basic Service Information</h4>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="font-bold text-slate-700 block">Service Name *</label>
+                    <input
+                      type="text"
+                      value={editingServiceForm.name}
+                      onChange={(e) => setEditingServiceForm({ ...editingServiceForm, name: e.target.value })}
+                      className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3.5 py-2.5 outline-none focus:border-amber-500 font-semibold"
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="font-bold text-slate-700 block">Category *</label>
+                    <select
+                      value={editingServiceForm.category_name}
+                      onChange={(e) => setEditingServiceForm({ ...editingServiceForm, category_name: e.target.value })}
+                      className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3.5 py-2.5 outline-none focus:border-amber-500 font-semibold"
+                    >
+                      <option value="Certificates & Official Documents">Certificates & Official Documents</option>
+                      <option value="Aadhaar & Identity Services">Aadhaar & Identity Services</option>
+                      <option value="Land & Patta Records">Land & Patta Records</option>
+                      <option value="Driving & Vehicle Services">Driving & Vehicle Services</option>
+                      <option value="Business & Trade Licenses">Business & Trade Licenses</option>
+                      <option value="Ration Card & Public Distribution">Ration Card & Public Distribution</option>
+                      <option value="Voter & Electoral Services">Voter & Electoral Services</option>
+                      <option value="PAN Card Services">PAN Card Services</option>
+                      <option value="Passport Facilitation">Passport Facilitation</option>
+                      <option value="Utility & Municipal Bills">Utility & Municipal Bills</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="font-bold text-slate-700 block">Government & Facilitation Fee (₹) *</label>
+                    <input
+                      type="number"
+                      value={editingServiceForm.fee}
+                      onChange={(e) => setEditingServiceForm({ ...editingServiceForm, fee: e.target.value })}
+                      className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3.5 py-2.5 outline-none focus:border-amber-500 font-semibold"
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="font-bold text-slate-700 block">Processing SLA / Delivery Time *</label>
+                    <input
+                      type="text"
+                      value={editingServiceForm.processing_time}
+                      onChange={(e) => setEditingServiceForm({ ...editingServiceForm, processing_time: e.target.value })}
+                      className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3.5 py-2.5 outline-none focus:border-amber-500 font-semibold"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1 sm:col-span-2">
+                    <label className="font-bold text-slate-700 block">Service Status *</label>
+                    <select
+                      value={editingServiceForm.status}
+                      onChange={(e) => setEditingServiceForm({ ...editingServiceForm, status: e.target.value })}
+                      className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3.5 py-2.5 outline-none focus:border-amber-500 font-semibold"
+                    >
+                      <option value="Active">Active (Visible in Portal)</option>
+                      <option value="Inactive">Inactive (Hidden from Portal)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="font-bold text-slate-700 block">Service Description</label>
+                  <textarea
+                    rows={2}
+                    value={editingServiceForm.description}
+                    onChange={(e) => setEditingServiceForm({ ...editingServiceForm, description: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl p-3 outline-none focus:border-amber-500 font-medium"
+                  />
+                </div>
+              </div>
+
+              {/* Required Documents */}
+              <div className="space-y-3">
+                <h4 className="font-black text-slate-900 uppercase text-xs tracking-wider border-b border-slate-100 pb-1">2. Required Proof Documents</h4>
+                
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="text"
+                    placeholder="e.g. Passport Copy / Birth Certificate"
+                    value={editingServiceForm.newDocInput || ''}
+                    onChange={(e) => setEditingServiceForm({ ...editingServiceForm, newDocInput: e.target.value })}
+                    className="flex-1 bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3.5 py-2 outline-none font-medium"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (editingServiceForm.newDocInput && editingServiceForm.newDocInput.trim()) {
+                        setEditingServiceForm({
+                          ...editingServiceForm,
+                          documents: [...editingServiceForm.documents, editingServiceForm.newDocInput.trim()],
+                          newDocInput: ''
+                        });
+                      }
+                    }}
+                    className="px-3.5 py-2 bg-slate-800 text-white font-bold rounded-xl hover:bg-slate-900"
+                  >
+                    + Add Doc
+                  </button>
+                </div>
+
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {editingServiceForm.documents.map((doc, idx) => (
+                    <span key={idx} className="bg-amber-50 border border-amber-200 text-amber-900 font-bold px-3 py-1 rounded-xl flex items-center space-x-1.5 text-xs">
+                      <span>{doc}</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditingServiceForm({
+                            ...editingServiceForm,
+                            documents: editingServiceForm.documents.filter((_, i) => i !== idx)
+                          });
+                        }}
+                        className="text-amber-600 hover:text-amber-900 font-black ml-1"
+                      >
+                        ✕
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Custom Citizen Applicant Form Fields */}
+              <div className="space-y-3">
+                <h4 className="font-black text-slate-900 uppercase text-xs tracking-wider border-b border-slate-100 pb-1">3. Citizen Application Form Fields</h4>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  <input
+                    type="text"
+                    placeholder="Field Label (e.g. Ration Card No)"
+                    value={editingServiceForm.newFieldLabel || ''}
+                    onChange={(e) => setEditingServiceForm({ ...editingServiceForm, newFieldLabel: e.target.value })}
+                    className="bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3 py-2 outline-none font-medium"
+                  />
+                  <select
+                    value={editingServiceForm.newFieldType || 'text'}
+                    onChange={(e) => setEditingServiceForm({ ...editingServiceForm, newFieldType: e.target.value })}
+                    className="bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3 py-2 outline-none font-medium"
+                  >
+                    <option value="text">Text Input</option>
+                    <option value="number">Number Input</option>
+                    <option value="textarea">Textarea / Address</option>
+                    <option value="date">Date Field</option>
+                  </select>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (editingServiceForm.newFieldLabel && editingServiceForm.newFieldLabel.trim()) {
+                        setEditingServiceForm({
+                          ...editingServiceForm,
+                          fields: [
+                            ...editingServiceForm.fields,
+                            { field_label: editingServiceForm.newFieldLabel.trim(), field_type: editingServiceForm.newFieldType || 'text', is_required: true }
+                          ],
+                          newFieldLabel: '',
+                          newFieldType: 'text'
+                        });
+                      }
+                    }}
+                    className="py-2 bg-[#0b192c] text-white font-bold rounded-xl hover:bg-slate-800"
+                  >
+                    + Add Form Field
+                  </button>
+                </div>
+
+                <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
+                  {editingServiceForm.fields.map((f, idx) => (
+                    <div key={idx} className="p-2.5 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between font-medium text-xs">
+                      <div>
+                        <span className="font-bold text-slate-900">{f.field_label}</span>
+                        <span className="text-[10px] text-slate-400 font-mono ml-2">Type: {f.field_type}</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditingServiceForm({
+                            ...editingServiceForm,
+                            fields: editingServiceForm.fields.filter((_, i) => i !== idx)
+                          });
+                        }}
+                        className="text-rose-600 hover:text-rose-800 font-extrabold text-xs"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex items-center justify-end space-x-3 pt-4 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowEditServiceModal(false);
+                    setEditingServiceForm(null);
+                  }}
+                  className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold rounded-xl"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={savingEditService}
+                  className="px-6 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-extrabold rounded-xl shadow transition-colors flex items-center space-x-2 disabled:opacity-50"
+                >
+                  {savingEditService ? (
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <Edit3 className="w-4 h-4" />
+                  )}
+                  <span>{savingEditService ? 'Saving Changes...' : 'Update & Save Service'}</span>
                 </button>
               </div>
 
