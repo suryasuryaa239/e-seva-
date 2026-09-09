@@ -240,19 +240,27 @@ app.post('/api/auth/register', authRateLimiter, async (req, res) => {
 // User Login
 app.post('/api/auth/login', authRateLimiter, async (req, res) => {
   try {
-    const { email, password } = req.body;
-    if (!email || !password) {
-      return res.status(400).json({ error: 'Email and password required' });
+    const { email, identifier, password } = req.body;
+    const loginId = (identifier || email || '').trim();
+
+    if (!loginId || !password) {
+      return res.status(400).json({ error: 'Email / Mobile Number / Aadhaar and password required' });
     }
 
-    const user = db.get('users', u => u.email.toLowerCase() === email.toLowerCase());
+    const cleanInput = loginId.toLowerCase();
+    const user = db.get('users', u => 
+      (u.email && u.email.toLowerCase() === cleanInput) ||
+      (u.phone && u.phone.trim() === loginId) ||
+      (u.aadhaar_no && u.aadhaar_no.trim() === loginId)
+    );
+
     if (!user) {
-      return res.status(400).json({ error: 'Invalid email or password' });
+      return res.status(400).json({ error: 'Invalid login credentials' });
     }
 
     const validPass = await bcrypt.compare(password, user.password_hash);
     if (!validPass) {
-      return res.status(400).json({ error: 'Invalid email or password' });
+      return res.status(400).json({ error: 'Invalid login credentials' });
     }
 
     const token = jwt.sign(

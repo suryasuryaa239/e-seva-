@@ -33,11 +33,25 @@ export default function Login() {
     setLoading(true);
     const endpoint = isRegister ? '/api/auth/register' : '/api/auth/login';
 
+    const payload = isRegister
+      ? {
+          name: formData.name.trim(),
+          email: formData.email.trim().toLowerCase(),
+          phone: formData.phone.trim(),
+          aadhaar_no: formData.aadhaar_no.trim(),
+          password: formData.password
+        }
+      : {
+          email: formData.email.trim(),
+          identifier: formData.email.trim(),
+          password: formData.password
+        };
+
     try {
       const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(payload)
       });
       const data = await res.json();
 
@@ -208,14 +222,16 @@ export default function Login() {
 
             <div>
               <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider block mb-1.5">
-                {t.emailLabel || t.authEmail || 'Email Address'} <span className="text-orange-500">*</span>
+                {isRegister
+                  ? (t.emailLabel || t.authEmail || 'Email Address')
+                  : (lang === 'ta' ? 'மின்னஞ்சல் / மொபைல் எண் / ஆதார் எண்' : 'Email / Mobile / Aadhaar Number')} <span className="text-orange-500">*</span>
               </label>
               <div className="relative">
                 <Mail className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
-                  type="email"
+                  type={isRegister ? "email" : "text"}
                   required
-                  placeholder="user@eseva.gov.in"
+                  placeholder={isRegister ? "user@eseva.gov.in" : (lang === 'ta' ? 'மின்னஞ்சல், மொபைல் எண் அல்லது ஆதார் எண்' : 'Email, 10-digit mobile or Aadhaar')}
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="w-full bg-slate-50 text-slate-900 text-xs font-semibold rounded-xl pl-10 pr-4 py-3.5 border border-slate-300 focus:border-[#0b192c] focus:bg-white outline-none transition-all"
