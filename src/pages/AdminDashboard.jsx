@@ -94,7 +94,70 @@ export default function AdminDashboard() {
   const [savingProfile, setSavingProfile] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
 
-  // New Service Modal State
+  // Category State & New Category Modal State
+  const [categoriesList, setCategoriesList] = useState([]);
+  const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
+  const [creatingCategory, setCreatingCategory] = useState(false);
+  const [newCategoryForm, setNewCategoryForm] = useState({
+    name: '',
+    description: '',
+    icon: 'Grid'
+  });
+
+  const fetchCategories = async () => {
+    try {
+      const res = await fetch('/api/categories');
+      if (res.ok) {
+        const data = await res.json();
+        setCategoriesList(data);
+      }
+    } catch (err) {
+      console.error('Error fetching categories:', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const handleCreateCategorySubmit = async (e) => {
+    e.preventDefault();
+    if (!newCategoryForm.name.trim()) {
+      addToast('Category name is required', 'error');
+      return;
+    }
+
+    setCreatingCategory(true);
+    try {
+      const res = await fetch('/api/admin/categories', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${adminToken}`
+        },
+        body: JSON.stringify({
+          name: newCategoryForm.name.trim(),
+          description: newCategoryForm.description.trim(),
+          icon: newCategoryForm.icon
+        })
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        addToast(`New Category "${newCategoryForm.name}" created successfully!`, 'success');
+        setShowAddCategoryModal(false);
+        setNewCategoryForm({ name: '', description: '', icon: 'Grid' });
+        fetchCategories();
+        fetchServices();
+      } else {
+        addToast(data.error || 'Failed to create category', 'error');
+      }
+    } catch (err) {
+      addToast('Category creation error', 'error');
+    } finally {
+      setCreatingCategory(false);
+    }
+  };
   const [showAddServiceModal, setShowAddServiceModal] = useState(false);
   const [creatingService, setCreatingService] = useState(false);
   const [newServiceForm, setNewServiceForm] = useState({
@@ -992,6 +1055,13 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className="flex items-center space-x-2 self-start sm:self-auto">
+                  <button
+                    onClick={() => setShowAddCategoryModal(true)}
+                    className="px-3.5 py-2 bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-xs rounded-xl shadow transition-all flex items-center space-x-1.5 cursor-pointer"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>Add Category</span>
+                  </button>
                   <button
                     onClick={() => setShowAddServiceModal(true)}
                     className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white font-extrabold text-xs rounded-xl shadow transition-all flex items-center space-x-1.5 cursor-pointer"
@@ -4636,6 +4706,82 @@ export default function AdminDashboard() {
                     <Edit3 className="w-4 h-4" />
                   )}
                   <span>{savingEditService ? 'Saving Changes...' : 'Update & Save Service'}</span>
+                </button>
+              </div>
+
+            </form>
+
+          </div>
+        </div>
+      )}
+
+      {/* ADD NEW CATEGORY MODAL */}
+      {showAddCategoryModal && (
+        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 space-y-6 shadow-2xl border border-slate-200 my-8">
+            
+            <div className="flex justify-between items-start border-b border-slate-100 pb-4">
+              <div>
+                <span className="text-[10px] font-black uppercase text-amber-600 tracking-wider bg-amber-50 px-2.5 py-0.5 rounded border border-amber-200">
+                  CATEGORY MANAGER
+                </span>
+                <h3 className="font-extrabold text-xl text-slate-900 mt-1">Create New Category</h3>
+                <p className="text-xs text-slate-500">Add a new service category section to organize portal services.</p>
+              </div>
+
+              <button
+                onClick={() => setShowAddCategoryModal(false)}
+                className="p-2 text-slate-400 hover:text-slate-600 bg-slate-100 rounded-xl transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateCategorySubmit} className="space-y-4 text-xs">
+              
+              <div className="space-y-1">
+                <label className="font-bold text-slate-700 block">Category Name *</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Pension & Senior Citizen Services"
+                  value={newCategoryForm.name}
+                  onChange={(e) => setNewCategoryForm({ ...newCategoryForm, name: e.target.value })}
+                  className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3.5 py-2.5 outline-none focus:border-amber-500 font-semibold"
+                  required
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="font-bold text-slate-700 block">Category Description</label>
+                <textarea
+                  rows={3}
+                  placeholder="Brief summary of services included in this category..."
+                  value={newCategoryForm.description}
+                  onChange={(e) => setNewCategoryForm({ ...newCategoryForm, description: e.target.value })}
+                  className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl p-3 outline-none focus:border-amber-500 font-medium"
+                />
+              </div>
+
+              {/* Actions */}
+              <div className="flex items-center justify-end space-x-3 pt-4 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setShowAddCategoryModal(false)}
+                  className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold rounded-xl"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={creatingCategory}
+                  className="px-6 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-extrabold rounded-xl shadow transition-colors flex items-center space-x-2 disabled:opacity-50"
+                >
+                  {creatingCategory ? (
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <Plus className="w-4 h-4" />
+                  )}
+                  <span>{creatingCategory ? 'Saving Category...' : 'Save & Publish Category'}</span>
                 </button>
               </div>
 

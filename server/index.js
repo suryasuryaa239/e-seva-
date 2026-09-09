@@ -1815,6 +1815,71 @@ app.delete('/api/admin/services/:id', authenticateAdmin, (req, res) => {
   }
 });
 
+// GET All Categories
+app.get('/api/categories', (req, res) => {
+  try {
+    const categories = db.all('categories');
+    const services = db.all('services');
+    const result = categories.map(cat => ({
+      ...cat,
+      service_count: services.filter(s => s.category_id === cat.id).length
+    }));
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Admin Add Category
+app.post('/api/admin/categories', authenticateAdmin, (req, res) => {
+  try {
+    const { name, description, icon } = req.body;
+    if (!name || !name.trim()) {
+      return res.status(400).json({ error: 'Category name is required' });
+    }
+
+    const cleanName = name.trim();
+    const existing = db.get('categories', c => c.name.toLowerCase() === cleanName.toLowerCase());
+    if (existing) {
+      return res.status(400).json({ error: 'Category with this name already exists' });
+    }
+
+    const slug = cleanName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+    const newCategory = db.insert('categories', {
+      name: cleanName,
+      slug,
+      icon: icon || 'Grid',
+      description: description ? description.trim() : `Official services under ${cleanName}`
+    });
+
+    res.status(201).json({ message: 'Category created successfully', category: newCategory });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Admin Delete Category
+app.delete('/api/admin/categories/:id', authenticateAdmin, (req, res) => {
+  try {
+    const catId = Number(req.params.id);
+    const existing = db.get('categories', c => c.id === catId);
+    if (!existing) {
+      return res.status(404).json({ error: 'Category not found' });
+    }
+
+    // Reassign services under this category to Category 1 (or General)
+    const servicesUnderCat = db.all('services', s => s.category_id === catId);
+    servicesUnderCat.forEach(s => {
+      db.update('services', item => item.id === s.id, { category_id: 1, category_name: 'Aadhaar Services' });
+    });
+
+    db.delete('categories', c => c.id === catId);
+    res.json({ message: 'Category deleted successfully', category_id: catId });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 
 // Admin Contact Messages & Enquiries
 app.get('/api/admin/enquiries', authenticateAdmin, (req, res) => {
