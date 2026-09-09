@@ -248,23 +248,45 @@ app.post('/api/auth/login', authRateLimiter, async (req, res) => {
     }
 
     const cleanInput = loginId.toLowerCase();
-    const user = db.get('users', u => 
-      (u.email && u.email.toLowerCase() === cleanInput) ||
-      (u.phone && u.phone.trim() === loginId) ||
-      (u.aadhaar_no && u.aadhaar_no.trim() === loginId)
-    );
+    const cleanDigits = loginId.replace(/\D/g, '');
 
-    if (!user) {
-      return res.status(400).json({ error: 'Invalid login credentials' });
+    // 1. Try finding users by email first
+    let candidates = db.all('users', u => u.email && u.email.toLowerCase() === cleanInput);
+
+    // 2. If no email match, try matching by phone or aadhaar
+    if (candidates.length === 0) {
+      candidates = db.all('users', u => {
+        const uPhoneDigits = (u.phone || '').replace(/\D/g, '');
+        const uAadhaarDigits = (u.aadhaar_no || '').replace(/\D/g, '');
+        return (
+          (cleanDigits.length >= 10 && uPhoneDigits === cleanDigits) ||
+          (cleanDigits.length >= 10 && uAadhaarDigits === cleanDigits) ||
+          (u.phone && u.phone.trim() === loginId) ||
+          (u.aadhaar_no && u.aadhaar_no.trim() === loginId)
+        );
+      });
     }
 
-    const validPass = await bcrypt.compare(password, user.password_hash);
-    if (!validPass) {
-      return res.status(400).json({ error: 'Invalid login credentials' });
+    if (candidates.length === 0) {
+      return res.status(400).json({ error: 'No account found with this Email, Mobile, or Aadhaar number' });
+    }
+
+    // 3. Verify password against candidate users
+    let matchedUser = null;
+    for (const candidate of candidates) {
+      const validPass = await bcrypt.compare(password, candidate.password_hash);
+      if (validPass) {
+        matchedUser = candidate;
+        break;
+      }
+    }
+
+    if (!matchedUser) {
+      return res.status(400).json({ error: 'Invalid password. Please check your credentials.' });
     }
 
     const token = jwt.sign(
-      { id: user.id, name: user.name, email: user.email, isAdmin: false },
+      { id: matchedUser.id, name: matchedUser.name, email: matchedUser.email, isAdmin: false },
       JWT_SECRET,
       { expiresIn: '7d' }
     );
@@ -272,7 +294,7 @@ app.post('/api/auth/login', authRateLimiter, async (req, res) => {
     res.json({
       message: 'Login successful',
       token,
-      user: { id: user.id, name: user.name, email: user.email, phone: user.phone, aadhaar_no: user.aadhaar_no }
+      user: { id: matchedUser.id, name: matchedUser.name, email: matchedUser.email, phone: matchedUser.phone, aadhaar_no: matchedUser.aadhaar_no }
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
