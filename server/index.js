@@ -1620,10 +1620,24 @@ app.post('/api/admin/services', authenticateAdmin, (req, res) => {
 
     let catId = Number(category_id);
     let cat = catId ? db.get('categories', c => c.id === catId) : null;
+    
     if (!cat && category_name) {
-      cat = db.get('categories', c => c.name.toLowerCase() === category_name.toLowerCase() || c.slug === category_name.toLowerCase().replace(/[^a-z0-9]+/g, '-'));
+      cat = db.get('categories', c => c.name.toLowerCase() === category_name.toLowerCase().trim() || c.slug === category_name.toLowerCase().replace(/[^a-z0-9]+/g, '-'));
       if (cat) catId = cat.id;
     }
+
+    if (!cat && category_name && category_name.trim()) {
+      // Auto-create new category if custom name provided
+      const newSlug = category_name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+      cat = db.insert('categories', {
+        name: category_name.trim(),
+        slug: newSlug,
+        icon: 'Grid',
+        description: `Official services under ${category_name.trim()}`
+      });
+      catId = cat.id;
+    }
+
     if (!catId) catId = 1;
 
     const serviceFee = Number(fee || total_fee || govt_fee || 60);

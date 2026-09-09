@@ -99,7 +99,10 @@ export default function AdminDashboard() {
   const [creatingService, setCreatingService] = useState(false);
   const [newServiceForm, setNewServiceForm] = useState({
     name: '',
-    category_name: 'Certificates & Official Documents',
+    category_id: 4,
+    category_name: 'Certificate Services',
+    is_custom_category: false,
+    custom_category_name: '',
     description: '',
     fee: 60,
     processing_time: '2-3 Business Days',
@@ -122,6 +125,15 @@ export default function AdminDashboard() {
       return;
     }
 
+    const finalCategoryName = newServiceForm.is_custom_category
+      ? newServiceForm.custom_category_name.trim()
+      : newServiceForm.category_name;
+
+    if (newServiceForm.is_custom_category && !finalCategoryName) {
+      addToast('Please enter a custom category name', 'error');
+      return;
+    }
+
     setCreatingService(true);
     try {
       const res = await fetch('/api/admin/services', {
@@ -132,7 +144,8 @@ export default function AdminDashboard() {
         },
         body: JSON.stringify({
           name: newServiceForm.name.trim(),
-          category_name: newServiceForm.category_name,
+          category_id: newServiceForm.is_custom_category ? null : newServiceForm.category_id,
+          category_name: finalCategoryName,
           description: newServiceForm.description,
           fee: Number(newServiceForm.fee) || 60,
           total_fee: Number(newServiceForm.fee) || 60,
@@ -144,11 +157,14 @@ export default function AdminDashboard() {
 
       const data = await res.json();
       if (res.ok) {
-        addToast(`New Service "${newServiceForm.name}" created and published to User Dashboard!`, 'success');
+        addToast(`New Service "${newServiceForm.name}" created under ${finalCategoryName}!`, 'success');
         setShowAddServiceModal(false);
         setNewServiceForm({
           name: '',
-          category_name: 'Certificates & Official Documents',
+          category_id: 4,
+          category_name: 'Certificate Services',
+          is_custom_category: false,
+          custom_category_name: '',
           description: '',
           fee: 60,
           processing_time: '2-3 Business Days',
@@ -4132,21 +4148,58 @@ export default function AdminDashboard() {
                   <div className="space-y-1">
                     <label className="font-bold text-slate-700 block">Category *</label>
                     <select
-                      value={newServiceForm.category_name}
-                      onChange={(e) => setNewServiceForm({ ...newServiceForm, category_name: e.target.value })}
+                      value={newServiceForm.is_custom_category ? 'CUSTOM' : newServiceForm.category_id}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        if (val === 'CUSTOM') {
+                          setNewServiceForm({ ...newServiceForm, is_custom_category: true, category_id: null });
+                        } else {
+                          const catId = Number(val);
+                          const catObj = [
+                            { id: 1, name: 'Aadhaar Services' },
+                            { id: 2, name: 'PAN Services' },
+                            { id: 3, name: 'Voter ID Services' },
+                            { id: 4, name: 'Certificate Services' },
+                            { id: 5, name: 'Land / Patta Services' },
+                            { id: 6, name: 'Passport Services' },
+                            { id: 7, name: 'Driving Licence / Vehicle Services' },
+                            { id: 8, name: 'Business Services' },
+                            { id: 9, name: 'Utility Services' },
+                            { id: 10, name: 'Other Digital Services' }
+                          ].find(c => c.id === catId);
+                          setNewServiceForm({
+                            ...newServiceForm,
+                            is_custom_category: false,
+                            category_id: catId,
+                            category_name: catObj ? catObj.name : 'Certificate Services'
+                          });
+                        }
+                      }}
                       className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3.5 py-2.5 outline-none focus:border-orange-500 font-semibold"
                     >
-                      <option value="Certificates & Official Documents">Certificates & Official Documents</option>
-                      <option value="Aadhaar & Identity Services">Aadhaar & Identity Services</option>
-                      <option value="Land & Patta Records">Land & Patta Records</option>
-                      <option value="Driving & Vehicle Services">Driving & Vehicle Services</option>
-                      <option value="Business & Trade Licenses">Business & Trade Licenses</option>
-                      <option value="Ration Card & Public Distribution">Ration Card & Public Distribution</option>
-                      <option value="Voter & Electoral Services">Voter & Electoral Services</option>
-                      <option value="PAN Card Services">PAN Card Services</option>
-                      <option value="Passport Facilitation">Passport Facilitation</option>
-                      <option value="Utility & Municipal Bills">Utility & Municipal Bills</option>
+                      <option value="4">Certificate Services</option>
+                      <option value="1">Aadhaar Services</option>
+                      <option value="2">PAN Services</option>
+                      <option value="3">Voter ID Services</option>
+                      <option value="5">Land / Patta Services</option>
+                      <option value="6">Passport Services</option>
+                      <option value="7">Driving Licence / Vehicle Services</option>
+                      <option value="8">Business Services</option>
+                      <option value="9">Utility Services</option>
+                      <option value="10">Other Digital Services</option>
+                      <option value="CUSTOM">➕ Create New Custom Category...</option>
                     </select>
+
+                    {newServiceForm.is_custom_category && (
+                      <input
+                        type="text"
+                        placeholder="Enter New Category Name (e.g. Pension Services)"
+                        value={newServiceForm.custom_category_name}
+                        onChange={(e) => setNewServiceForm({ ...newServiceForm, custom_category_name: e.target.value })}
+                        className="w-full mt-2 bg-amber-50 border border-amber-300 text-slate-900 rounded-xl px-3.5 py-2 outline-none focus:border-amber-500 font-semibold"
+                        required
+                      />
+                    )}
                   </div>
 
                   <div className="space-y-1">
@@ -4382,16 +4435,16 @@ export default function AdminDashboard() {
                       onChange={(e) => setEditingServiceForm({ ...editingServiceForm, category_name: e.target.value })}
                       className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3.5 py-2.5 outline-none focus:border-amber-500 font-semibold"
                     >
-                      <option value="Certificates & Official Documents">Certificates & Official Documents</option>
-                      <option value="Aadhaar & Identity Services">Aadhaar & Identity Services</option>
-                      <option value="Land & Patta Records">Land & Patta Records</option>
-                      <option value="Driving & Vehicle Services">Driving & Vehicle Services</option>
-                      <option value="Business & Trade Licenses">Business & Trade Licenses</option>
-                      <option value="Ration Card & Public Distribution">Ration Card & Public Distribution</option>
-                      <option value="Voter & Electoral Services">Voter & Electoral Services</option>
-                      <option value="PAN Card Services">PAN Card Services</option>
-                      <option value="Passport Facilitation">Passport Facilitation</option>
-                      <option value="Utility & Municipal Bills">Utility & Municipal Bills</option>
+                      <option value="Certificate Services">Certificate Services</option>
+                      <option value="Aadhaar Services">Aadhaar Services</option>
+                      <option value="PAN Services">PAN Services</option>
+                      <option value="Voter ID Services">Voter ID Services</option>
+                      <option value="Land / Patta Services">Land / Patta Services</option>
+                      <option value="Passport Services">Passport Services</option>
+                      <option value="Driving Licence / Vehicle Services">Driving Licence / Vehicle Services</option>
+                      <option value="Business Services">Business Services</option>
+                      <option value="Utility Services">Utility Services</option>
+                      <option value="Other Digital Services">Other Digital Services</option>
                     </select>
                   </div>
 
