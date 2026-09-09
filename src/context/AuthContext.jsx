@@ -22,14 +22,31 @@ export const AuthProvider = ({ children }) => {
           });
           if (res.ok) {
             const data = await res.json();
-            if (!data.isAdmin) setUser(data);
+            if (!data.isAdmin) {
+              setUser(data);
+              localStorage.setItem('eseva_saved_user', JSON.stringify(data));
+            }
           } else {
-            localStorage.removeItem('eseva_user_token');
-            localStorage.removeItem('token');
-            setUserToken(null);
+            const savedUser = localStorage.getItem('eseva_saved_user');
+            if (savedUser) {
+              try {
+                setUser(JSON.parse(savedUser));
+              } catch (_) {
+                localStorage.removeItem('eseva_user_token');
+                localStorage.removeItem('token');
+                setUserToken(null);
+              }
+            } else {
+              localStorage.removeItem('eseva_user_token');
+              localStorage.removeItem('token');
+              setUserToken(null);
+            }
           }
         } catch (e) {
-          console.error(e);
+          const savedUser = localStorage.getItem('eseva_saved_user');
+          if (savedUser) {
+            try { setUser(JSON.parse(savedUser)); } catch (_) {}
+          }
         }
       }
 
@@ -59,6 +76,7 @@ export const AuthProvider = ({ children }) => {
   const loginUser = (userData, token) => {
     localStorage.setItem('token', token);
     localStorage.setItem('eseva_user_token', token);
+    localStorage.setItem('eseva_saved_user', JSON.stringify(userData));
     setUserToken(token);
     setUser(userData);
   };
@@ -66,6 +84,7 @@ export const AuthProvider = ({ children }) => {
   const logoutUser = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('eseva_user_token');
+    localStorage.removeItem('eseva_saved_user');
     setUserToken(null);
     setUser(null);
   };

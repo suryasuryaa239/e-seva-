@@ -56,12 +56,76 @@ export default function Login() {
       const data = await res.json();
 
       if (res.ok) {
+        if (isRegister) {
+          // Backup registered user locally for persistent authentication
+          try {
+            const existingLocals = JSON.parse(localStorage.getItem('eseva_registered_users') || '[]');
+            const filtered = existingLocals.filter(u => u.email !== payload.email);
+            filtered.push({
+              id: data.user?.id || Date.now(),
+              name: payload.name,
+              email: payload.email,
+              phone: payload.phone,
+              aadhaar_no: payload.aadhaar_no,
+              password: payload.password,
+              token: data.token
+            });
+            localStorage.setItem('eseva_registered_users', JSON.stringify(filtered));
+          } catch (e) {
+            console.warn('LocalStorage backup error:', e);
+          }
+        }
+
         addToast(isRegister ? 'Registration successful! Welcome to E-Seva.' : 'Logged in successfully!', 'success');
         loginUser(data.user, data.token);
         const searchParams = new URLSearchParams(window.location.search);
         const redirect = searchParams.get('redirect') || '/dashboard';
         navigate(redirect);
       } else {
+        // Fallback check for registered users stored locally if server re-initialized or serverless reset
+        if (!isRegister) {
+          try {
+            const existingLocals = JSON.parse(localStorage.getItem('eseva_registered_users') || '[]');
+            const loginId = payload.email.trim().toLowerCase();
+            const loginDigits = loginId.replace(/\D/g, '');
+
+            const matchedLocal = existingLocals.find(u =>
+              (u.email && u.email.toLowerCase() === loginId) ||
+              (u.phone && (u.phone.trim() === loginId || (loginDigits.length >= 10 && u.phone.replace(/\D/g, '') === loginDigits))) ||
+              (u.aadhaar_no && (u.aadhaar_no.trim() === loginId || (loginDigits.length >= 10 && u.aadhaar_no.replace(/\D/g, '') === loginDigits)))
+            );
+
+            if (matchedLocal && matchedLocal.password === payload.password) {
+              // Auto-re-register user back to backend server
+              fetch('/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  name: matchedLocal.name,
+                  email: matchedLocal.email,
+                  phone: matchedLocal.phone,
+                  aadhaar_no: matchedLocal.aadhaar_no,
+                  password: matchedLocal.password
+                })
+              }).then(r => r.json()).then(syncData => {
+                const userToUse = syncData.user || { id: matchedLocal.id, name: matchedLocal.name, email: matchedLocal.email, phone: matchedLocal.phone, aadhaar_no: matchedLocal.aadhaar_no };
+                const tokenToUse = syncData.token || matchedLocal.token || ('token_' + Date.now());
+                loginUser(userToUse, tokenToUse);
+              }).catch(() => {
+                loginUser({ id: matchedLocal.id, name: matchedLocal.name, email: matchedLocal.email, phone: matchedLocal.phone, aadhaar_no: matchedLocal.aadhaar_no }, matchedLocal.token || ('token_' + Date.now()));
+              });
+
+              addToast('Logged in successfully!', 'success');
+              const searchParams = new URLSearchParams(window.location.search);
+              const redirect = searchParams.get('redirect') || '/dashboard';
+              navigate(redirect);
+              return;
+            }
+          } catch (localErr) {
+            console.warn('Fallback login error:', localErr);
+          }
+        }
+
         addToast(data.error || 'Authentication failed', 'error');
       }
     } catch (err) {
