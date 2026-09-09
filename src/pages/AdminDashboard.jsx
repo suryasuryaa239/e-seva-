@@ -1056,13 +1056,6 @@ export default function AdminDashboard() {
 
                 <div className="flex items-center space-x-2 self-start sm:self-auto">
                   <button
-                    onClick={() => setShowAddCategoryModal(true)}
-                    className="px-3.5 py-2 bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-xs rounded-xl shadow transition-all flex items-center space-x-1.5 cursor-pointer"
-                  >
-                    <Plus className="w-4 h-4" />
-                    <span>Add Category</span>
-                  </button>
-                  <button
                     onClick={() => setShowAddServiceModal(true)}
                     className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white font-extrabold text-xs rounded-xl shadow transition-all flex items-center space-x-1.5 cursor-pointer"
                   >
