@@ -4,9 +4,10 @@ import {
   ShieldAlert, FileText, Upload, CheckCircle2, ArrowRight, ArrowLeft,
   AlertCircle, Lock, Info, Save, Edit3, Check, FileCheck, UserCheck, Clock, Download,
   Phone, Mail, HelpCircle, Shield, Sparkles, Building, CreditCard, QrCode, Building2, Wallet,
-  Copy, Printer, ExternalLink, User
+  Copy, Printer, ExternalLink, User, Camera
 } from 'lucide-react';
 import Breadcrumbs from '../components/Breadcrumbs';
+import CameraCaptureModal from '../components/CameraCaptureModal';
 import { getServiceDefinition, DEFAULT_SERVICES_MAP, getLocalizedService } from '../data/servicesCatalogData';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -48,6 +49,11 @@ export default function ApplyService() {
 
   const [fieldValues, setFieldValues] = useState({});
   const [files, setFiles] = useState({});
+  
+  // Camera Capture Modal State
+  const [cameraModalOpen, setCameraModalOpen] = useState(false);
+  const [activeCameraDoc, setActiveCameraDoc] = useState(null);
+  const [activeCameraMaxMB, setActiveCameraMaxMB] = useState(5);
   
   // Validation Errors State
   const [errors, setErrors] = useState({});
@@ -835,11 +841,11 @@ export default function ApplyService() {
                           </div>
 
                           {!currentFile ? (
-                            <div className="space-y-2 pt-1">
-                              <label className="block w-full py-3.5 px-4 bg-orange-50 hover:bg-orange-100/80 border-2 border-dashed border-orange-300 rounded-xl text-center cursor-pointer transition-colors shadow-xs group/up">
-                                <span className="text-xs font-black text-orange-600 flex items-center justify-center gap-2 group-hover/up:scale-105 transition-transform">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                              <label className="block w-full py-3.5 px-3 bg-orange-50 hover:bg-orange-100/80 border-2 border-dashed border-orange-300 rounded-xl text-center cursor-pointer transition-colors shadow-xs group/up">
+                                <span className="text-xs font-black text-orange-600 flex items-center justify-center gap-1.5 group-hover/up:scale-105 transition-transform">
                                   <Upload className="w-4 h-4 text-orange-600" />
-                                  <span>{lang === 'ta' ? 'கோப்பைத் தேர்ந்தெடுத்து பதிவேற்றவும் (Upload File)' : 'Select & Upload File'}</span>
+                                  <span>{t.selectFileBtn || (lang === 'ta' ? 'கோப்பை பதிவேற்ற' : 'Upload File')}</span>
                                 </span>
                                 <input
                                   type="file"
@@ -848,6 +854,19 @@ export default function ApplyService() {
                                   className="hidden"
                                 />
                               </label>
+
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setActiveCameraDoc(docName);
+                                  setActiveCameraMaxMB(maxMB);
+                                  setCameraModalOpen(true);
+                                }}
+                                className="w-full py-3.5 px-3 bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-xs hover:shadow border border-slate-800 group/cam"
+                              >
+                                <Camera className="w-4 h-4 text-orange-400 group-hover/cam:scale-110 transition-transform" />
+                                <span>{t.takePhotoBtn || (lang === 'ta' ? 'கேமரா புகைப்படம்' : 'Take Photo')}</span>
+                              </button>
                             </div>
                           ) : (
                             <div className="p-3.5 bg-white rounded-xl border border-emerald-200 shadow-xs space-y-2">
@@ -876,6 +895,19 @@ export default function ApplyService() {
                                       className="hidden"
                                     />
                                   </label>
+                                  <span className="text-slate-300">|</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setActiveCameraDoc(docName);
+                                      setActiveCameraMaxMB(maxMB);
+                                      setCameraModalOpen(true);
+                                    }}
+                                    className="text-[11px] font-bold text-blue-600 hover:underline flex items-center gap-0.5"
+                                  >
+                                    <Camera className="w-3 h-3" />
+                                    <span>{lang === 'ta' ? 'கேமரா' : 'Camera'}</span>
+                                  </button>
                                   <span className="text-slate-300">|</span>
                                   <button
                                     type="button"
@@ -1598,6 +1630,19 @@ export default function ApplyService() {
 
           </div>
         )}
+
+        {/* LIVE CAMERA CAPTURE MODAL */}
+        <CameraCaptureModal
+          isOpen={cameraModalOpen}
+          onClose={() => setCameraModalOpen(false)}
+          onCapture={(capturedFile) => {
+            if (activeCameraDoc && capturedFile) {
+              processSelectedFile(activeCameraDoc, capturedFile, activeCameraMaxMB);
+            }
+          }}
+          documentName={activeCameraDoc}
+          lang={lang}
+        />
 
       </div>
     </div>
