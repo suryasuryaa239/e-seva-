@@ -70,6 +70,59 @@ export default function AdminDashboard() {
   const [notifFilter, setNotifFilter] = useState('ALL');
   const [selectedNotif, setSelectedNotif] = useState(null);
 
+  // Admin Document Explorer & Storage Notes State
+  const [adminDocs, setAdminDocs] = useState([]);
+  const [docSearchQuery, setDocSearchQuery] = useState('');
+  const [docStatusFilter, setDocStatusFilter] = useState('All');
+  const [selectedDocForNotes, setSelectedDocForNotes] = useState(null);
+  const [docNotesInput, setDocNotesInput] = useState('');
+  const [savingDocNotes, setSavingDocNotes] = useState(false);
+
+  const fetchAdminDocuments = async () => {
+    if (!adminToken) return;
+    try {
+      let url = `/api/admin/documents?status=${docStatusFilter}`;
+      if (docSearchQuery) url += `&search=${encodeURIComponent(docSearchQuery)}`;
+      const res = await fetch(url, {
+        headers: { Authorization: `Bearer ${adminToken}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setAdminDocs(data || []);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleSaveDocNotesSubmit = async (e) => {
+    e.preventDefault();
+    if (!selectedDocForNotes) return;
+    setSavingDocNotes(true);
+    try {
+      const res = await fetch(`/api/admin/documents/${selectedDocForNotes.id}/notes`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${adminToken}`
+        },
+        body: JSON.stringify({ admin_notes: docNotesInput })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        addToast('Archival note saved successfully!', 'success');
+        setSelectedDocForNotes(null);
+        fetchAdminDocuments();
+      } else {
+        addToast(data.error || 'Failed to save archival note', 'error');
+      }
+    } catch (e) {
+      addToast('Error saving archival note', 'error');
+    } finally {
+      setSavingDocNotes(false);
+    }
+  };
+
   // Admin Profile & Settings State (STEP 33)
   const [activeSettingsTab, setActiveSettingsTab] = useState('profile');
   const [profileForm, setProfileForm] = useState({
@@ -485,13 +538,18 @@ export default function AdminDashboard() {
       fetchCareers(),
       fetchServices(),
       fetchPayments(),
-      fetchAdminNotifs()
+      fetchAdminNotifs(),
+      fetchAdminDocuments()
     ]).then(() => setLoading(false));
   }, [adminToken, navigate]);
 
   useEffect(() => {
     fetchApplications();
   }, [statusFilter, searchQuery]);
+
+  useEffect(() => {
+    fetchAdminDocuments();
+  }, [docStatusFilter, docSearchQuery]);
 
   const openAppInspector = async (appId) => {
     setSelectedApp(appId);
@@ -570,6 +628,7 @@ export default function AdminDashboard() {
   const navItems = [
     { id: 'dashboard', label: 'Dashboard Overview', icon: LayoutDashboard },
     { id: 'applications', label: 'Applications Manager', icon: FileText, count: stats?.total_applications },
+    { id: 'documents', label: 'Uploaded Documents Explorer', icon: Paperclip, count: adminDocs.length },
     { id: 'services', label: 'Services Directory', icon: Grid },
     { id: 'customers', label: 'Users Directory', icon: Users, count: stats?.total_users || customers.length },
     { id: 'enquiries', label: 'Contact Enquiries', icon: Mail, count: stats?.unread_enquiries },
@@ -826,6 +885,7 @@ export default function AdminDashboard() {
               <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight mt-1">
                 {activeTab === 'dashboard' && 'Dashboard Overview'}
                 {activeTab === 'applications' && 'Application Management Directory'}
+                {activeTab === 'documents' && 'Uploaded Proof Documents Explorer'}
                 {activeTab === 'services' && 'Services Catalog Manager'}
                 {activeTab === 'customers' && 'Registered Users Directory'}
                 {activeTab === 'enquiries' && 'Contact Enquiries & Support'}
@@ -841,6 +901,218 @@ export default function AdminDashboard() {
               <span>Session: <strong className="text-slate-800">{new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</strong></span>
             </div>
           </div>
+
+          {/* TAB: UPLOADED PROOF DOCUMENTS EXPLORER */}
+          {activeTab === 'documents' && (
+            <div className="space-y-6">
+              
+              {/* Header Banner */}
+              <div className="bg-white p-5 rounded-3xl border border-slate-200/90 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-[11px] font-black uppercase text-orange-600 tracking-wider bg-orange-50 px-2.5 py-0.5 rounded border border-orange-200">
+                      DOCUMENT REPOSITORY & ARCHIVE
+                    </span>
+                    <span className="text-xs font-mono text-slate-500">• Citizen Proof Documents</span>
+                  </div>
+                  <h3 className="text-lg font-black text-slate-900 mt-1">
+                    Uploaded Proof Documents Explorer & Archival System
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Search and inspect citizen uploaded proof documents by Mobile Number, Email, Applicant Name, or Application Number.
+                  </p>
+                </div>
+
+                <div className="flex items-center space-x-2 self-start sm:self-auto">
+                  <button
+                    onClick={() => {
+                      setDocSearchQuery('');
+                      setDocStatusFilter('All');
+                      fetchAdminDocuments();
+                    }}
+                    className="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-colors flex items-center space-x-1.5 cursor-pointer"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5 text-orange-500" />
+                    <span>Reset Search</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Filters & Search Controls */}
+              <div className="bg-white p-4 sm:p-5 rounded-3xl border border-slate-200/90 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="relative flex-1 w-full">
+                  <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    placeholder="Search by Mobile No, Email, Applicant Name, Application ID, or Document Name..."
+                    value={docSearchQuery}
+                    onChange={(e) => setDocSearchQuery(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-xs rounded-xl pl-10 pr-10 py-3 focus:border-[#0b192c] focus:bg-white outline-none transition-all shadow-inner font-medium"
+                  />
+                  {docSearchQuery && (
+                    <button
+                      onClick={() => setDocSearchQuery('')}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs font-bold"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+
+                <div className="flex items-center space-x-2 w-full sm:w-auto">
+                  <Filter className="w-4 h-4 text-orange-500 shrink-0" />
+                  <label className="text-xs font-black text-slate-700 uppercase tracking-wider whitespace-nowrap">Status:</label>
+                  <select
+                    value={docStatusFilter}
+                    onChange={(e) => setDocStatusFilter(e.target.value)}
+                    className="bg-slate-50 border border-slate-300 text-slate-900 text-xs font-bold rounded-xl p-2.5 focus:ring-2 focus:ring-[#0b192c] focus:outline-none flex-1 sm:flex-none cursor-pointer"
+                  >
+                    <option value="All">All Verification Statuses</option>
+                    <option value="Verified">✓ Verified Only</option>
+                    <option value="Pending Verification">Pending Verification</option>
+                    <option value="Rejected">⚠ Rejected Only</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Documents Data Table */}
+              <div className="bg-white rounded-3xl border border-slate-200/90 shadow-xl overflow-hidden">
+                {adminDocs.length === 0 ? (
+                  <div className="p-12 text-center space-y-3">
+                    <Paperclip className="w-12 h-12 text-slate-300 mx-auto" />
+                    <h4 className="font-extrabold text-slate-800 text-sm">No uploaded documents found</h4>
+                    <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                      {docSearchQuery || docStatusFilter !== 'All' 
+                        ? 'No documents match the current search filters. Try clearing your query.'
+                        : 'No applicant proof documents are currently stored in the system.'}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="bg-[#0b192c] text-[11px] font-black text-slate-300 uppercase tracking-wider border-b border-slate-800">
+                          <th className="py-4 px-4 sm:px-6 text-orange-400">Applicant Details</th>
+                          <th className="py-4 px-4 sm:px-6">App Ref # & Service</th>
+                          <th className="py-4 px-4 sm:px-6">Document Name & File</th>
+                          <th className="py-4 px-4 sm:px-6">Upload Date</th>
+                          <th className="py-4 px-4 sm:px-6">Status</th>
+                          <th className="py-4 px-4 sm:px-6">Archival Notes</th>
+                          <th className="py-4 px-4 sm:px-6 text-right">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 text-xs font-medium">
+                        {adminDocs.map((doc) => {
+                          const isVerified = doc.verification_status === 'Verified';
+                          const isRejected = doc.verification_status === 'Rejected';
+
+                          return (
+                            <tr key={doc.id} className="hover:bg-slate-50/80 transition-colors">
+                              
+                              {/* Applicant Info */}
+                              <td className="py-4 px-4 sm:px-6">
+                                <div className="space-y-0.5">
+                                  <span className="font-black text-slate-900 block text-xs">{doc.user_name}</span>
+                                  <div className="flex items-center gap-2 text-[11px] text-slate-500">
+                                    <span className="font-mono text-orange-600 font-bold">{doc.user_phone}</span>
+                                    <span>•</span>
+                                    <span className="truncate max-w-[140px]">{doc.user_email}</span>
+                                  </div>
+                                </div>
+                              </td>
+
+                              {/* Application & Service */}
+                              <td className="py-4 px-4 sm:px-6 whitespace-nowrap">
+                                <span className="bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200 font-mono font-bold text-slate-900 block w-fit text-[11px] mb-1">
+                                  {doc.application_number}
+                                </span>
+                                <span className="text-[11px] text-slate-600 font-bold block max-w-[160px] truncate">
+                                  {doc.service_name}
+                                </span>
+                              </td>
+
+                              {/* Document Name & File */}
+                              <td className="py-4 px-4 sm:px-6">
+                                <div className="space-y-0.5">
+                                  <span className="font-extrabold text-slate-900 block text-xs">{doc.document_name}</span>
+                                  <span className="text-[10px] text-slate-400 font-mono block truncate max-w-[180px]">
+                                    {doc.file_name}
+                                  </span>
+                                </div>
+                              </td>
+
+                              {/* Upload Date */}
+                              <td className="py-4 px-4 sm:px-6 whitespace-nowrap text-slate-500 font-mono text-[11px]">
+                                {new Date(doc.uploaded_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                              </td>
+
+                              {/* Status Badge */}
+                              <td className="py-4 px-4 sm:px-6 whitespace-nowrap">
+                                <span className={`text-[10px] font-extrabold px-2.5 py-1 rounded-full border inline-block ${
+                                  isVerified
+                                    ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
+                                    : isRejected
+                                    ? 'bg-rose-100 text-rose-800 border-rose-300'
+                                    : 'bg-amber-100 text-amber-800 border-amber-300'
+                                }`}>
+                                  {isVerified ? '✓ Verified' : isRejected ? '⚠ Rejected' : 'Pending Verification'}
+                                </span>
+                              </td>
+
+                              {/* Archival Notes Preview */}
+                              <td className="py-4 px-4 sm:px-6 max-w-xs">
+                                {doc.admin_notes ? (
+                                  <div className="bg-amber-50/90 border border-amber-200 p-2 rounded-lg text-[11px] text-amber-950 font-medium leading-snug truncate" title={doc.admin_notes}>
+                                    "{doc.admin_notes}"
+                                  </div>
+                                ) : (
+                                  <span className="text-[11px] text-slate-400 italic">No notes attached</span>
+                                )}
+                              </td>
+
+                              {/* Action Buttons */}
+                              <td className="py-4 px-4 sm:px-6 text-right whitespace-nowrap">
+                                <div className="flex items-center justify-end space-x-2">
+                                  
+                                  {/* View File */}
+                                  <a
+                                    href={doc.file_path}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="p-2 bg-slate-100 hover:bg-[#0b192c] text-slate-700 hover:text-white rounded-xl border border-slate-200 transition-colors inline-flex items-center gap-1 text-[11px] font-bold"
+                                    title="View Uploaded File"
+                                  >
+                                    <Eye className="w-3.5 h-3.5 text-orange-500" />
+                                    <span>View</span>
+                                  </a>
+
+                                  {/* Edit Archival Notes */}
+                                  <button
+                                    onClick={() => {
+                                      setSelectedDocForNotes(doc);
+                                      setDocNotesInput(doc.admin_notes || '');
+                                    }}
+                                    className="p-2 bg-orange-50 hover:bg-orange-500 text-orange-700 hover:text-white rounded-xl border border-orange-200 transition-colors inline-flex items-center gap-1 text-[11px] font-bold cursor-pointer"
+                                    title="Add / Edit Archival Verification Notes"
+                                  >
+                                    <FileText className="w-3.5 h-3.5" />
+                                    <span>Note</span>
+                                  </button>
+
+                                </div>
+                              </td>
+
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+
+            </div>
+          )}
 
           {/* TAB: REGISTERED USERS DIRECTORY (STEP 27) */}
           {activeTab === 'customers' && (
@@ -4778,6 +5050,90 @@ export default function AdminDashboard() {
                 </button>
               </div>
 
+            </form>
+
+          </div>
+        </div>
+      )}
+
+      {/* INTERNAL ARCHIVAL NOTES MODAL */}
+      {selectedDocForNotes && (
+        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200 font-sans">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-200 relative space-y-5">
+            
+            <div className="flex items-start justify-between border-b border-slate-100 pb-4">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-2xl bg-orange-50 text-orange-600 border border-orange-200 flex items-center justify-center shrink-0">
+                  <FileText className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-heading font-extrabold text-base text-slate-900">
+                    Internal Archival Notes & Storage Record
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Record internal verification notes for applicant document inquiry
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedDocForNotes(null)}
+                className="p-1.5 rounded-xl text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Document & Applicant Summary Card */}
+            <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 text-xs space-y-1.5">
+              <div className="flex justify-between items-center">
+                <span className="font-black text-slate-900">{selectedDocForNotes.document_name}</span>
+                <span className="font-mono text-[10px] text-orange-600 font-bold bg-white px-2 py-0.5 rounded border border-slate-200">
+                  {selectedDocForNotes.application_number}
+                </span>
+              </div>
+              <div className="text-[11px] text-slate-600">
+                Applicant: <strong>{selectedDocForNotes.user_name}</strong> ({selectedDocForNotes.user_phone})
+              </div>
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleSaveDocNotesSubmit} className="space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider block">
+                  Archival Remarks / Storage Location Notes <span className="text-orange-500">*</span>
+                </label>
+                <textarea
+                  rows={4}
+                  placeholder="e.g. Applicant inquired on 10/09/2026. Document verified in physical archive box A-12 / validated against database."
+                  value={docNotesInput}
+                  onChange={(e) => setDocNotesInput(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-300 rounded-xl p-3.5 text-xs text-slate-900 font-medium focus:bg-white focus:border-[#0b192c] outline-none"
+                  required
+                />
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setSelectedDocForNotes(null)}
+                  className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={savingDocNotes || !docNotesInput.trim()}
+                  className="px-5 py-2.5 bg-[#0b192c] hover:bg-orange-600 text-white font-extrabold text-xs rounded-xl shadow-md transition-all flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
+                >
+                  {savingDocNotes ? (
+                    <RefreshCw className="w-4 h-4 animate-spin text-orange-400" />
+                  ) : (
+                    <Save className="w-4 h-4 text-orange-400" />
+                  )}
+                  <span>Save Archival Note</span>
+                </button>
+              </div>
             </form>
 
           </div>

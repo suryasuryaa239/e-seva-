@@ -1500,6 +1500,97 @@ app.put('/api/admin/documents/:id/verify', authenticateAdmin, (req, res) => {
   });
 });
 
+// Admin Uploaded Documents Explorer & Search Endpoint
+app.get('/api/admin/documents', authenticateAdmin, (req, res) => {
+  try {
+    const { search, status } = req.query;
+    let docs = db.all('application_documents');
+    const apps = db.all('applications');
+    const services = db.all('services');
+
+    const appMap = Object.fromEntries(apps.map(a => [a.id, a]));
+    const serviceMap = Object.fromEntries(services.map(s => [s.id, s.name]));
+
+    let result = docs.map(d => {
+      const parentApp = appMap[d.application_id] || {};
+      return {
+        id: d.id,
+        application_id: d.application_id,
+        application_number: parentApp.application_number || 'N/A',
+        user_name: parentApp.user_name || 'Applicant',
+        user_phone: parentApp.user_phone || 'N/A',
+        user_email: parentApp.user_email || 'N/A',
+        service_name: serviceMap[parentApp.service_id] || parentApp.service_name || 'Digital Service',
+        document_name: d.document_name,
+        file_name: d.original_filename || d.file_name || 'document.pdf',
+        file_path: d.file_path,
+        file_size: d.file_size,
+        verification_status: d.verification_status || 'Pending Verification',
+        rejection_reason: d.rejection_reason || null,
+        admin_notes: d.admin_notes || '',
+        uploaded_at: d.uploaded_at || d.created_at || parentApp.created_at
+      };
+    });
+
+    // Filter by Verification Status
+    if (status && status !== 'All') {
+      result = result.filter(d => d.verification_status.toLowerCase() === status.toLowerCase());
+    }
+
+    // Filter by Search Query
+    if (search && search.trim() !== '') {
+      const q = search.toLowerCase().trim();
+      const cleanQ = q.replace(/\D/g, '');
+
+      result = result.filter(d =>
+        d.application_number.toLowerCase().includes(q) ||
+        d.user_name.toLowerCase().includes(q) ||
+        d.user_email.toLowerCase().includes(q) ||
+        (cleanQ && d.user_phone.replace(/\D/g, '').includes(cleanQ)) ||
+        d.document_name.toLowerCase().includes(q) ||
+        d.file_name.toLowerCase().includes(q) ||
+        (d.admin_notes && d.admin_notes.toLowerCase().includes(q))
+      );
+    }
+
+    result.sort((a, b) => new Date(b.uploaded_at) - new Date(a.uploaded_at));
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Admin Save Archival Notes on Document
+app.put('/api/admin/documents/:id/notes', authenticateAdmin, (req, res) => {
+  try {
+    const docId = Number(req.params.id);
+    const { admin_notes } = req.body;
+
+    const doc = db.get('application_documents', d => d.id === docId);
+    if (!doc) return res.status(404).json({ error: 'Document record not found' });
+
+    db.update('application_documents', d => d.id === docId, {
+      admin_notes: admin_notes ? admin_notes.trim() : ''
+    });
+
+    logDocumentAudit(
+      doc.application_id,
+      docId,
+      'Archival Note Added',
+      req.admin.name || 'Admin',
+      'Admin',
+      `Saved internal note: ${admin_notes}`
+    );
+
+    res.json({
+      message: 'Archival note saved successfully',
+      document: db.get('application_documents', d => d.id === docId)
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Document Audit History Endpoint
 app.get('/api/documents/audit/:appId', (req, res) => {
   const appId = Number(req.params.appId);
