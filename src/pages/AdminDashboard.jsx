@@ -75,6 +75,7 @@ export default function AdminDashboard() {
   const [docSearchQuery, setDocSearchQuery] = useState('');
   const [docStatusFilter, setDocStatusFilter] = useState('All');
   const [selectedDocForNotes, setSelectedDocForNotes] = useState(null);
+  const [selectedDocForPreview, setSelectedDocForPreview] = useState(null);
   const [docNotesInput, setDocNotesInput] = useState('');
   const [savingDocNotes, setSavingDocNotes] = useState(false);
 
@@ -1075,16 +1076,14 @@ export default function AdminDashboard() {
                                 <div className="flex items-center justify-end space-x-2">
                                   
                                   {/* View File */}
-                                  <a
-                                    href={doc.file_path}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="p-2 bg-slate-100 hover:bg-[#0b192c] text-slate-700 hover:text-white rounded-xl border border-slate-200 transition-colors inline-flex items-center gap-1 text-[11px] font-bold"
-                                    title="View Uploaded File"
+                                  <button
+                                    onClick={() => setSelectedDocForPreview(doc)}
+                                    className="p-2 bg-slate-100 hover:bg-[#0b192c] text-slate-700 hover:text-white rounded-xl border border-slate-200 transition-colors inline-flex items-center gap-1 text-[11px] font-bold cursor-pointer"
+                                    title="View Uploaded File Preview"
                                   >
                                     <Eye className="w-3.5 h-3.5 text-orange-500" />
                                     <span>View</span>
-                                  </a>
+                                  </button>
 
                                   {/* Edit Archival Notes */}
                                   <button
@@ -5135,6 +5134,72 @@ export default function AdminDashboard() {
                 </button>
               </div>
             </form>
+
+          </div>
+        </div>
+      )}
+
+      {/* IN-DASHBOARD DOCUMENT PREVIEW MODAL */}
+      {selectedDocForPreview && (
+        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200 font-sans">
+          <div className="bg-white rounded-3xl max-w-3xl w-full p-6 shadow-2xl border border-slate-200 relative flex flex-col max-h-[90vh] space-y-4">
+            
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-2xl bg-orange-50 text-orange-600 border border-orange-200 flex items-center justify-center shrink-0">
+                  <Paperclip className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-base text-slate-900">
+                    {selectedDocForPreview.document_name}
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Applicant: <strong>{selectedDocForPreview.user_name}</strong> ({selectedDocForPreview.user_phone}) • Ref: <span className="font-mono text-orange-600 font-bold">{selectedDocForPreview.application_number}</span>
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <a
+                  href={`/api/documents/${selectedDocForPreview.id}/preview`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl flex items-center gap-1 transition-colors"
+                >
+                  <ExternalLink className="w-3.5 h-3.5 text-orange-500" />
+                  <span>Open in New Tab</span>
+                </a>
+                <button
+                  onClick={() => setSelectedDocForPreview(null)}
+                  className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Document Preview Frame */}
+            <div className="flex-1 bg-slate-900 rounded-2xl overflow-hidden border border-slate-200 min-h-[450px] relative flex items-center justify-center">
+              <iframe
+                src={`/api/documents/${selectedDocForPreview.id}/preview`}
+                className="w-full h-[500px] border-none rounded-2xl bg-white"
+                title="Document Preview"
+              />
+            </div>
+
+            {/* Footer */}
+            <div className="flex items-center justify-between pt-2 text-xs border-t border-slate-100">
+              <span className="text-slate-500">
+                Uploaded: <strong>{new Date(selectedDocForPreview.uploaded_at).toLocaleDateString('en-IN')}</strong>
+              </span>
+              <button
+                onClick={() => setSelectedDocForPreview(null)}
+                className="px-4 py-2 bg-[#0b192c] hover:bg-orange-600 text-white font-bold rounded-xl transition-colors cursor-pointer"
+              >
+                Close Preview
+              </button>
+            </div>
 
           </div>
         </div>
