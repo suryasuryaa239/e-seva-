@@ -3,7 +3,7 @@ import { useSearchParams, Link } from 'react-router-dom';
 import {
   FileSearch, Search, Clock, CheckCircle2, AlertCircle,
   FileText, ShieldCheck, Download, ExternalLink, RefreshCw, MessageSquare,
-  Copy, Check, Printer, ShieldAlert, Phone, HelpCircle, ArrowRight, XCircle, CreditCard
+  Copy, Check, Printer, ShieldAlert, Phone, HelpCircle, ArrowRight, XCircle, CreditCard, Key, X
 } from 'lucide-react';
 import Breadcrumbs from '../components/Breadcrumbs';
 import StatusBadge from '../components/StatusBadge';
@@ -31,7 +31,7 @@ const ALL_STATUS_STEPS_TA = [
 export default function ApplicationTracker() {
   const { lang, t } = useLanguage();
   const searchParams = useSearchParams()[0];
-  const initialAppId = searchParams.get('appId') || '';
+  const initialAppId = searchParams.get('appId') || searchParams.get('appNumber') || '';
 
   const statusSteps = lang === 'ta' ? ALL_STATUS_STEPS_TA : ALL_STATUS_STEPS_EN;
 
@@ -41,6 +41,44 @@ export default function ApplicationTracker() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [copiedAppId, setCopiedAppId] = useState(false);
+
+  // Forgot Reference ID Modal State
+  const [showForgotModal, setShowForgotModal] = useState(false);
+  const [forgotIdentifier, setForgotIdentifier] = useState('');
+  const [forgotLoading, setForgotLoading] = useState(false);
+  const [forgotError, setForgotError] = useState('');
+  const [forgotResults, setForgotResults] = useState([]);
+
+  const handleForgotLookup = async (e) => {
+    e.preventDefault();
+    if (!forgotIdentifier.trim()) return;
+    setForgotLoading(true);
+    setForgotError('');
+    setForgotResults([]);
+    try {
+      const res = await fetch('/api/applications/forgot-ref', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ identifier: forgotIdentifier.trim() })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setForgotResults(data.applications || []);
+      } else {
+        setForgotError(data.error || (lang === 'ta' ? 'விண்ணப்பங்கள் எதுவும் கிடைக்கவில்லை' : 'No matching applications found'));
+      }
+    } catch (err) {
+      setForgotError(lang === 'ta' ? 'தொடர்பு கொள்ள முடியவில்லை' : 'Error connecting to server');
+    } finally {
+      setForgotLoading(false);
+    }
+  };
+
+  const handleSelectAppNumber = (selectedAppNum) => {
+    setAppId(selectedAppNum);
+    setShowForgotModal(false);
+    fetchStatus(selectedAppNum, phone);
+  };
 
   const fetchStatus = async (queryId, queryPhone) => {
     if (!queryId.trim()) return;
@@ -116,9 +154,23 @@ export default function ApplicationTracker() {
       <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/90 shadow-xl space-y-4 max-w-3xl mx-auto">
         <form onSubmit={handleTrackSubmit} className="grid grid-cols-1 sm:grid-cols-12 gap-4">
           <div className="sm:col-span-7 space-y-1.5">
-            <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider block">
-              Application Reference ID <span className="text-orange-500">*</span>
-            </label>
+            <div className="flex justify-between items-center">
+              <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider block">
+                Application Reference ID <span className="text-orange-500">*</span>
+              </label>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowForgotModal(true);
+                  setForgotError('');
+                  setForgotResults([]);
+                }}
+                className="text-[11px] font-bold text-orange-600 hover:text-orange-700 hover:underline flex items-center gap-1 cursor-pointer transition-colors"
+              >
+                <Key className="w-3 h-3 text-orange-500" />
+                <span>{t.forgotRefBtn || 'Forgot Reference ID?'}</span>
+              </button>
+            </div>
             <input
               type="text"
               placeholder="e.g. ESV-2026-000001"
@@ -521,6 +573,109 @@ export default function ApplicationTracker() {
           {t.contactSupportDeskBtn}
         </Link>
       </div>
+
+      {/* 8. FORGOT APPLICATION REFERENCE ID MODAL */}
+      {showForgotModal && (
+        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200 font-sans">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-200 relative space-y-6">
+            
+            {/* Header */}
+            <div className="flex items-start justify-between border-b border-slate-100 pb-4">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-2xl bg-orange-50 text-orange-600 border border-orange-200 flex items-center justify-center shrink-0">
+                  <Key className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-heading font-extrabold text-base text-slate-900">
+                    {t.findAppModalTitle || (lang === 'ta' ? 'உங்கள் விண்ணப்ப எண்ணைக் கண்டறியவும்' : 'Find Your Application Reference ID')}
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    {t.enterPhoneOrEmail || (lang === 'ta' ? 'பதிவு செய்யப்பட்ட மொபைல் எண் அல்லது மின்னஞ்சலை உள்ளிடவும்' : 'Enter registered Mobile Number or Email Address')}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowForgotModal(false)}
+                className="p-1.5 rounded-xl text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Search Form */}
+            <form onSubmit={handleForgotLookup} className="space-y-3">
+              <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider block">
+                {lang === 'ta' ? 'மொபைல் எண் / மின்னஞ்சல்' : 'Registered Mobile Number or Email'}
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="e.g. 9876543210 or name@example.com"
+                  value={forgotIdentifier}
+                  onChange={(e) => setForgotIdentifier(e.target.value)}
+                  className="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-xs text-slate-900 font-medium focus:bg-white focus:border-[#0b192c] outline-none"
+                  required
+                />
+                <button
+                  type="submit"
+                  disabled={forgotLoading || !forgotIdentifier.trim()}
+                  className="px-5 py-3 bg-[#0b192c] hover:bg-orange-600 text-white font-extrabold text-xs rounded-xl shadow-md transition-all flex items-center gap-1.5 disabled:opacity-50 cursor-pointer shrink-0"
+                >
+                  {forgotLoading ? (
+                    <RefreshCw className="w-4 h-4 animate-spin text-orange-400" />
+                  ) : (
+                    <Search className="w-4 h-4 text-orange-400" />
+                  )}
+                  <span>{t.findAppsBtn || (lang === 'ta' ? 'தேடுங்கள்' : 'Find')}</span>
+                </button>
+              </div>
+            </form>
+
+            {/* Results Error */}
+            {forgotError && (
+              <div className="p-3.5 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-xs flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                <span>{forgotError}</span>
+              </div>
+            )}
+
+            {/* Results List */}
+            {forgotResults.length > 0 && (
+              <div className="space-y-3 max-h-60 overflow-y-auto pr-1">
+                <span className="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider block">
+                  {lang === 'ta' ? `கண்டறியப்பட்ட விண்ணப்பங்கள் (${forgotResults.length}):` : `Applications Found (${forgotResults.length}):`}
+                </span>
+                {forgotResults.map((app) => (
+                  <div key={app.id} className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between gap-3 hover:bg-slate-100/80 transition-colors">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-xs font-black text-orange-600 bg-white px-2 py-0.5 rounded border border-slate-200">
+                          {app.application_number}
+                        </span>
+                        <StatusBadge status={app.status} />
+                      </div>
+                      <h5 className="font-bold text-slate-900 text-xs">{app.service_name}</h5>
+                      <span className="text-[10px] text-slate-500 font-mono block">
+                        {lang === 'ta' ? 'தேதி:' : 'Submitted:'} {new Date(app.created_at).toLocaleDateString('en-IN')}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleSelectAppNumber(app.application_number)}
+                      className="px-3 py-2 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black text-[11px] rounded-xl shadow-xs transition-colors shrink-0 flex items-center gap-1 cursor-pointer"
+                    >
+                      <Check className="w-3.5 h-3.5" />
+                      <span>{t.selectAndTrack || (lang === 'ta' ? 'கண்காணிக்கவும்' : 'Track')}</span>
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+          </div>
+        </div>
+      )}
 
     </div>
   );

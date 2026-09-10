@@ -886,6 +886,47 @@ app.post('/api/applications', submitRateLimiter, upload.any(), async (req, res) 
   }
 });
 
+// Forgot Reference ID / Find Applications by Phone or Email
+app.post('/api/applications/forgot-ref', (req, res) => {
+  try {
+    const { identifier } = req.body;
+    if (!identifier || !identifier.trim()) {
+      return res.status(400).json({ error: 'Please provide a valid phone number or email address' });
+    }
+
+    const query = identifier.trim().toLowerCase();
+    const cleanPhone = query.replace(/\D/g, '');
+
+    const matchingApps = db.all('applications', a => {
+      const appEmail = (a.user_email || '').toLowerCase();
+      const appPhone = (a.user_phone || '').replace(/\D/g, '');
+      return (cleanPhone && cleanPhone.length >= 4 && appPhone.includes(cleanPhone)) || (query && appEmail === query);
+    });
+
+    if (!matchingApps || matchingApps.length === 0) {
+      return res.status(404).json({ error: 'No applications found matching the provided mobile number or email' });
+    }
+
+    const services = db.all('services');
+
+    const result = matchingApps.map(a => {
+      const s = services.find(srv => srv.id === a.service_id);
+      return {
+        id: a.id,
+        application_number: a.application_number,
+        service_name: s ? s.name : (a.service_name || 'Digital Service'),
+        user_name: a.user_name,
+        status: a.status,
+        created_at: a.created_at || a.submitted_at
+      };
+    }).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+    res.json({ applications: result });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Public / User Application Tracking Endpoint
 app.get('/api/applications/track/:appNumber', (req, res) => {
   const appNum = req.params.appNumber.trim().toUpperCase();
