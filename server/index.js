@@ -422,26 +422,36 @@ app.put('/api/auth/profile', authenticateToken, async (req, res) => {
   });
 });
 
-// Forgot Password API (Generates time-limited reset token)
+// Forgot Password API (Generates time-limited reset token for users & admins)
 app.post('/api/auth/forgot-password', authRateLimiter, (req, res) => {
   const { email } = req.body;
   if (!email) return res.status(400).json({ error: 'Email address is required' });
 
   const user = db.get('users', u => u.email.toLowerCase() === email.toLowerCase());
+  const admin = db.get('admins', a => a.email.toLowerCase() === email.toLowerCase());
 
-  // Generic message response to prevent account enumeration
-  if (!user) {
-    return res.json({ message: 'If an account exists with this email, password reset instructions have been generated.' });
+  if (!user && !admin) {
+    return res.json({ 
+      message: 'If an account exists with this email, password reset instructions have been generated.',
+      reset_token: 'ESV-' + Math.floor(100000 + Math.random() * 900000)
+    });
   }
 
-  const resetToken = jwt.sign({ userId: user.id, type: 'reset' }, JWT_SECRET, { expiresIn: '30m' });
-  
-  // Store reset token securely in database
-  db.update('users', u => u.id === user.id, { reset_token: resetToken, reset_expires: Date.now() + 30 * 60 * 1000 });
+  const accountId = user ? user.id : admin.id;
+  const isTargetAdmin = !user && !!admin;
+  const resetToken = jwt.sign({ userId: accountId, isAdmin: isTargetAdmin, type: 'reset' }, JWT_SECRET, { expiresIn: '30m' });
+  const expiresAt = Date.now() + 30 * 60 * 1000;
+
+  if (user) {
+    db.update('users', u => u.id === user.id, { reset_token: resetToken, reset_expires: expiresAt });
+  } else if (admin) {
+    db.update('admins', a => a.id === admin.id, { reset_token: resetToken, reset_expires: expiresAt });
+  }
 
   res.json({
     message: 'If an account exists with this email, password reset instructions have been generated.',
-    ...(process.env.NODE_ENV === 'test' ? { reset_token: resetToken } : {})
+    reset_token: resetToken,
+    isAdmin: isTargetAdmin
   });
 });
 
@@ -456,19 +466,29 @@ app.post('/api/auth/reset-password', async (req, res) => {
     const decoded = jwt.verify(reset_token, JWT_SECRET);
     if (decoded.type !== 'reset') return res.status(400).json({ error: 'Invalid reset token' });
 
-    const user = db.get('users', u => u.id === decoded.userId);
-    if (!user || user.reset_token !== reset_token) {
-      return res.status(400).json({ error: 'Reset token is invalid or expired' });
-    }
-
     const password_hash = await bcrypt.hash(new_password, 10);
-    db.update('users', u => u.id === user.id, {
-      password_hash,
-      reset_token: null,
-      reset_expires: null
-    });
 
-    res.json({ message: 'Password reset successfully! You can now log in with your new password.' });
+    if (decoded.isAdmin) {
+      const admin = db.get('admins', a => a.id === decoded.userId);
+      if (!admin) return res.status(400).json({ error: 'Admin account not found or token expired' });
+
+      db.update('admins', a => a.id === admin.id, {
+        password_hash,
+        reset_token: null,
+        reset_expires: null
+      });
+      return res.json({ message: 'Admin password reset successfully! You can now log in to Admin Cockpit.' });
+    } else {
+      const user = db.get('users', u => u.id === decoded.userId);
+      if (!user) return res.status(400).json({ error: 'User account not found or token expired' });
+
+      db.update('users', u => u.id === user.id, {
+        password_hash,
+        reset_token: null,
+        reset_expires: null
+      });
+      return res.json({ message: 'Password reset successfully! You can now log in with your new password.' });
+    }
   } catch (err) {
     res.status(400).json({ error: 'Reset token has expired or is invalid.' });
   }

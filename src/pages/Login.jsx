@@ -370,30 +370,39 @@ export default function Login() {
           </form>
 
           {/* Mode Switcher */}
-          <div className="text-center text-xs text-slate-600 pt-3 border-t border-slate-100">
-            {isRegister ? (
-              <span>
-                {t.authAlreadyHaveAccount || 'Already have an account?'}{' '}
-                <button
-                  type="button"
-                  onClick={() => setIsRegister(false)}
-                  className="text-[#0b192c] font-black hover:text-orange-600 underline cursor-pointer ml-1"
-                >
-                  {t.loginBtn || 'Sign In'}
-                </button>
-              </span>
-            ) : (
-              <span>
-                {t.authDontHaveAccount || "Don't have an account?"}{' '}
-                <button
-                  type="button"
-                  onClick={() => setIsRegister(true)}
-                  className="text-[#0b192c] font-black hover:text-orange-600 underline cursor-pointer ml-1"
-                >
-                  {t.authCreateAccount || 'Create Account'}
-                </button>
-              </span>
-            )}
+          <div className="text-center text-xs text-slate-600 pt-3 border-t border-slate-100 space-y-2">
+            <div>
+              {isRegister ? (
+                <span>
+                  {t.authAlreadyHaveAccount || 'Already have an account?'}{' '}
+                  <button
+                    type="button"
+                    onClick={() => setIsRegister(false)}
+                    className="text-[#0b192c] font-black hover:text-orange-600 underline cursor-pointer ml-1"
+                  >
+                    {t.loginBtn || 'Sign In'}
+                  </button>
+                </span>
+              ) : (
+                <span>
+                  {t.authDontHaveAccount || "Don't have an account?"}{' '}
+                  <button
+                    type="button"
+                    onClick={() => setIsRegister(true)}
+                    className="text-[#0b192c] font-black hover:text-orange-600 underline cursor-pointer ml-1"
+                  >
+                    {t.authCreateAccount || 'Create Account'}
+                  </button>
+                </span>
+              )}
+            </div>
+
+            <div className="pt-2 border-t border-slate-100/60 flex items-center justify-between text-[11px]">
+              <span className="text-slate-400 font-medium">E-Seva Officer or System Administrator?</span>
+              <Link to="/admin/login" className="text-[#0b192c] hover:text-orange-600 font-extrabold transition-colors">
+                Admin Cockpit Sign-In →
+              </Link>
+            </div>
           </div>
 
         </div>
