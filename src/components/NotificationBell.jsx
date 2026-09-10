@@ -58,9 +58,11 @@ export default function NotificationBell() {
         headers: { Authorization: `Bearer ${token}` }
       });
       fetchNotifications();
+      setIsOpen(false);
       if (link) {
-        setIsOpen(false);
         navigate(link);
+      } else {
+        navigate('/user-dashboard');
       }
     } catch (e) {}
   };
@@ -130,7 +132,7 @@ export default function NotificationBell() {
                 return (
                   <div
                     key={n.id}
-                    onClick={() => markAsRead(n.id, n.link)}
+                    onClick={() => markAsRead(n.id, n.link || n.metadata?.link)}
                     className={`p-3.5 hover:bg-slate-800/50 cursor-pointer transition-colors space-y-1 ${
                       isUnread ? 'bg-slate-850/80 border-l-4 border-amber-500' : 'opacity-80'
                     }`}

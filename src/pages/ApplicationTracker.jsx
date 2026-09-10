@@ -223,18 +223,44 @@ export default function ApplicationTracker() {
               </div>
             </div>
 
-            {/* OFFICER REMARKS CALLOUT */}
-            <div className="bg-amber-50/90 border border-amber-200 p-4.5 rounded-2xl flex items-start gap-3 text-xs text-amber-950">
-              <MessageSquare className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-              <div className="space-y-0.5">
-                <span className="text-[10px] font-black text-amber-950 uppercase tracking-wider block">
-                  Officer Remarks & Notes
-                </span>
-                <p className="font-medium text-amber-900 leading-relaxed">
-                  "{trackResult.application.admin_remarks || 'Application submitted successfully and assigned to executive queue for review.'}"
-                </p>
+            {/* REJECTION ALERT OR OFFICER REMARKS CALLOUT */}
+            {trackResult.application.status?.toUpperCase() === 'REJECTED' ? (
+              <div className="bg-rose-50 border-2 border-rose-300 p-5 rounded-2xl flex items-start gap-4 text-rose-950 shadow-sm animate-pulse">
+                <XCircle className="w-7 h-7 text-rose-600 shrink-0 mt-0.5" />
+                <div className="space-y-2 w-full">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-black text-rose-700 uppercase tracking-wider bg-rose-200/90 border border-rose-300 px-2.5 py-0.5 rounded-md">
+                      {lang === 'ta' ? 'விண்ணப்பம் நிராகரிக்கப்பட்டது' : 'APPLICATION REJECTED'}
+                    </span>
+                  </div>
+                  <h4 className="font-extrabold text-sm text-rose-900">
+                    {lang === 'ta' ? 'அதிகாரப்பூர்வ நிராகரிப்பு காரணம்:' : 'Official Reason for Rejection:'}
+                  </h4>
+                  <div className="bg-white p-3.5 rounded-xl border border-rose-200 shadow-inner">
+                    <p className="font-extrabold text-xs text-rose-800 leading-relaxed">
+                      "{trackResult.application.admin_remarks || (lang === 'ta' ? 'காரணம் குறிப்பிடப்படவில்லை. உதவி மையத்தை தொடர்பு கொள்ளவும்.' : 'No specific reason provided by officer. Please contact support desk.')}"
+                    </p>
+                  </div>
+                  <p className="text-[11px] text-rose-700 font-medium">
+                    {lang === 'ta' 
+                      ? 'மேலே குறிப்பிடப்பட்டுள்ள குறைபாடுகளை சரிசெய்து புதிய விண்ணப்பத்தை சமர்ப்பிக்கலாம் அல்லது உதவி மையத்தை அணுகவும்.' 
+                      : 'Please review the rejection reason above. You may correct the noted deficiencies and re-apply.'}
+                  </p>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="bg-amber-50/90 border border-amber-200 p-4.5 rounded-2xl flex items-start gap-3 text-xs text-amber-950">
+                <MessageSquare className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <div className="space-y-0.5">
+                  <span className="text-[10px] font-black text-amber-950 uppercase tracking-wider block">
+                    Officer Remarks & Notes
+                  </span>
+                  <p className="font-medium text-amber-900 leading-relaxed">
+                    "{trackResult.application.admin_remarks || 'Application submitted successfully and assigned to executive queue for review.'}"
+                  </p>
+                </div>
+              </div>
+            )}
 
             {/* 4. VERTICAL PROGRESS TIMELINE */}
             <div className="space-y-4 pt-2">
@@ -243,7 +269,7 @@ export default function ApplicationTracker() {
                 <span>{t.appLifecycleTimeline}</span>
               </h3>
 
-              {trackResult.application.status === 'REJECTED' ? (
+              {trackResult.application.status?.toUpperCase() === 'REJECTED' ? (
                 <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl flex items-center gap-3 text-rose-900 text-xs font-bold">
                   <XCircle className="w-6 h-6 text-rose-600 shrink-0" />
                   <div>
@@ -389,19 +415,57 @@ export default function ApplicationTracker() {
               {trackResult.documents && trackResult.documents.length > 0 && (
                 <div className="pt-3 border-t border-slate-100 space-y-2">
                   <h4 className="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider">{t.uploadedProofDocsTitle}</h4>
-                  {trackResult.documents.map((doc) => (
-                    <div key={doc.id} className="p-3 bg-emerald-50/70 rounded-xl text-xs flex justify-between items-center border border-emerald-200">
-                      <span className="font-bold text-emerald-950">{doc.document_name} ({doc.file_name})</span>
-                      <a
-                        href={doc.file_path}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-[#0b192c] font-bold hover:text-orange-600 flex items-center gap-1"
-                      >
-                        <span>{t.viewFileBtn}</span> <ExternalLink className="w-3 h-3 text-orange-500" />
-                      </a>
-                    </div>
-                  ))}
+                  {trackResult.documents.map((doc) => {
+                    const isVerified = doc.verification_status === 'Verified';
+                    const isDocRejected = doc.verification_status === 'Rejected';
+
+                    return (
+                      <div key={doc.id} className={`p-3.5 rounded-xl text-xs space-y-2 border transition-all ${
+                        isDocRejected 
+                          ? 'bg-rose-50 border-rose-300' 
+                          : isVerified 
+                          ? 'bg-emerald-50/80 border-emerald-200' 
+                          : 'bg-slate-50 border-slate-200'
+                      }`}>
+                        <div className="flex justify-between items-center">
+                          <span className={`font-bold ${isDocRejected ? 'text-rose-950' : isVerified ? 'text-emerald-950' : 'text-slate-900'}`}>
+                            {doc.document_name} ({doc.file_name})
+                          </span>
+                          <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full border ${
+                            isVerified 
+                              ? 'bg-emerald-100 text-emerald-800 border-emerald-300' 
+                              : isDocRejected 
+                              ? 'bg-rose-100 text-rose-800 border-rose-300' 
+                              : 'bg-amber-100 text-amber-800 border-amber-300'
+                          }`}>
+                            {isVerified ? '✓ Verified' : isDocRejected ? '⚠ Rejected' : 'Pending Verification'}
+                          </span>
+                        </div>
+
+                        {isDocRejected && (
+                          <div className="p-2.5 bg-white border border-rose-200 rounded-lg text-rose-900 space-y-0.5 shadow-xs">
+                            <span className="font-extrabold text-[11px] text-rose-700 block">
+                              {lang === 'ta' ? 'ஆவண நிராகரிப்பு காரணம்:' : 'Document Rejection Reason:'}
+                            </span>
+                            <p className="text-[11px] text-rose-800 font-medium leading-snug">
+                              {doc.rejection_reason || (lang === 'ta' ? 'ஆவணம் தெளிவாக இல்லை. புதிய நகலை பதிவேற்றவும்.' : 'Document is unclear or incomplete.')}
+                            </p>
+                          </div>
+                        )}
+
+                        <div className="flex justify-end pt-1">
+                          <a
+                            href={doc.file_path}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-[#0b192c] font-bold hover:text-orange-600 flex items-center gap-1 text-[11px]"
+                          >
+                            <span>{t.viewFileBtn}</span> <ExternalLink className="w-3 h-3 text-orange-500" />
+                          </a>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>

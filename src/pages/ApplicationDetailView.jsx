@@ -170,6 +170,24 @@ export default function ApplicationDetailView() {
           </div>
         </div>
 
+        {/* Application Rejection Banner */}
+        {details.status?.toUpperCase() === 'REJECTED' && (
+          <div className="p-5 bg-rose-50 border-2 border-rose-300 rounded-2xl space-y-2 text-xs text-rose-950 shadow-sm animate-pulse">
+            <div className="flex items-center space-x-2 font-black text-sm text-rose-700 uppercase tracking-wider">
+              <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
+              <span>{lang === 'ta' ? 'விண்ணப்பம் நிராகரிக்கப்பட்டது' : 'Application Rejected by E-Seva Officer'}</span>
+            </div>
+            <div className="bg-white p-3.5 rounded-xl border border-rose-200 shadow-inner">
+              <span className="font-extrabold text-rose-900 block text-[11px] uppercase tracking-wider mb-1">
+                {lang === 'ta' ? 'அதிகாரப்பூர்வ நிராகரிப்பு காரணம்:' : 'Official Reason for Rejection:'}
+              </span>
+              <p className="font-bold text-xs text-rose-800 leading-relaxed">
+                "{details.admin_remarks || (lang === 'ta' ? 'காரணம் குறிப்பிடப்படவில்லை. உதவி மையத்தை தொடர்பு கொள்ளவும்.' : 'No specific reason provided by officer. Please contact support desk.')}"
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Action Required Banner */}
         {(details.status === 'ACTION_REQUIRED' || details.status === 'Action Required') && (
           <div className="p-4 bg-rose-50 border border-rose-300 rounded-2xl space-y-2 text-xs text-rose-900 shadow-sm">

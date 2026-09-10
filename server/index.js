@@ -850,6 +850,28 @@ app.post('/api/applications', submitRateLimiter, upload.any(), async (req, res) 
       };
     });
 
+    // Dispatch Notification to Applicant
+    try {
+      NotificationService.sendNotification(db, {
+        userId: userId,
+        applicationId: submissionResult.application_id,
+        type: 'APPLICATION_SUBMITTED',
+        title: `Application Submitted: ${submissionResult.application_number}`,
+        message: `Your application (${submissionResult.application_number}) for ${service.name} has been submitted successfully. Track status online anytime.`,
+        data: {
+          applicationId: submissionResult.application_id,
+          applicationNumber: submissionResult.application_number,
+          serviceName: service.name,
+          status: 'SUBMITTED',
+          link: `/track-application?appNumber=${submissionResult.application_number}`
+        },
+        userEmail: user_email,
+        userPhone: user_phone
+      });
+    } catch (notifErr) {
+      console.error('Submission notification error:', notifErr);
+    }
+
     res.status(201).json({
       message: 'Application submitted successfully',
       application_number: submissionResult.application_number,
@@ -1402,6 +1424,35 @@ app.put('/api/admin/documents/:id/verify', authenticateAdmin, (req, res) => {
     verification_status === 'Rejected' ? `Rejected: ${rejection_reason}` : 'Verified document proof'
   );
 
+  // Dispatch Notification to Applicant regarding Document Status
+  try {
+    const appRecord = db.get('applications', a => a.id === doc.application_id);
+    if (appRecord) {
+      const notifType = verification_status === 'Verified' ? 'DOCUMENT_VERIFIED' : 'DOCUMENT_REJECTED';
+      const trackLink = `/track-application?appNumber=${appRecord.application_number}`;
+
+      NotificationService.sendNotification(db, {
+        userId: appRecord.user_id,
+        applicationId: appRecord.id,
+        type: notifType,
+        title: `Document ${verification_status}: ${doc.document_name}`,
+        message: `Your document "${doc.document_name}" for application ${appRecord.application_number} was marked as "${verification_status}". ${rejection_reason ? 'Reason: ' + rejection_reason : ''}`,
+        data: {
+          applicationId: appRecord.id,
+          applicationNumber: appRecord.application_number,
+          documentName: doc.document_name,
+          verification_status,
+          rejectionReason: rejection_reason,
+          link: trackLink
+        },
+        userEmail: appRecord.user_email,
+        userPhone: appRecord.user_phone
+      });
+    }
+  } catch (docNotifErr) {
+    console.error('Failed to send document verification notification:', docNotifErr);
+  }
+
   res.json({
     message: `Document status updated to ${verification_status}`,
     document: db.get('application_documents', d => d.id === docId)
@@ -1582,6 +1633,40 @@ app.put('/api/admin/applications/:id/status', authenticateAdmin, (req, res) => {
     admin_remarks: remarks,
     updated_by: req.admin.name || 'Admin'
   });
+
+  // Dispatch Notification to Applicant
+  try {
+    const service = db.get('services', s => s.id === application.service_id);
+    const serviceName = service ? service.name : 'Digital Service';
+
+    const notifType = (status === 'Approved' || status === 'Completed')
+      ? 'APPLICATION_APPROVED'
+      : status === 'Rejected'
+      ? 'APPLICATION_REJECTED'
+      : 'STATUS_UPDATE';
+
+    const trackLink = `/track-application?appNumber=${application.application_number}`;
+
+    NotificationService.sendNotification(db, {
+      userId: application.user_id,
+      applicationId: appId,
+      type: notifType,
+      title: `Application Status Updated: ${status}`,
+      message: `Your application (${application.application_number}) for ${serviceName} status is now "${status}". Remarks: ${remarks}`,
+      data: {
+        applicationId: appId,
+        applicationNumber: application.application_number,
+        serviceName,
+        status,
+        remarks,
+        link: trackLink
+      },
+      userEmail: application.user_email,
+      userPhone: application.user_phone
+    });
+  } catch (notifErr) {
+    console.error('Failed to send status update notification:', notifErr);
+  }
 
   res.json({
     message: `Application status successfully updated to ${status}`,
