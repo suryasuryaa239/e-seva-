@@ -20,7 +20,8 @@ const initialTables = {
   payments: [],
   application_status_history: [],
   contact_messages: [],
-  career_applications: []
+  career_applications: [],
+  banners: []
 };
 
 class LocalDatabase {

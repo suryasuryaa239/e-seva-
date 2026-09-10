@@ -1609,6 +1609,129 @@ app.put('/api/admin/documents/:id/notes', authenticateAdmin, (req, res) => {
   }
 });
 
+// Initialize Banner Seed Data if empty
+try {
+  if (db.all('banners').length === 0) {
+    db.insert('banners', {
+      title: 'Government Services at Your Doorstep',
+      description: 'Apply for Community, Birth, Income & Residence Certificates online with instant tracking.',
+      image_url: 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?q=80&w=1200&auto=format&fit=crop',
+      link_url: '/services',
+      duration_seconds: 5,
+      status: 'Active',
+      display_order: 1
+    });
+    db.insert('banners', {
+      title: 'Fast-Track Aadhaar & Ration Card Portals',
+      description: 'Update your biometric details, mobile number, and address seamlessly.',
+      image_url: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=1200&auto=format&fit=crop',
+      link_url: '/category/aadhaar',
+      duration_seconds: 6,
+      status: 'Active',
+      display_order: 2
+    });
+    db.insert('banners', {
+      title: 'TNeGA Verified Digital Documentation',
+      description: 'Upload, inspect, and download official certificate records with automated SMS notifications.',
+      image_url: 'https://images.unsplash.com/photo-1450133064473-71024230f91b?q=80&w=1200&auto=format&fit=crop',
+      link_url: '/track',
+      duration_seconds: 5,
+      status: 'Active',
+      display_order: 3
+    });
+  }
+} catch (e) {
+  console.warn('Banner seed warning:', e.message);
+}
+
+// Public Banners Endpoint (Active Banners)
+app.get('/api/banners', (req, res) => {
+  const activeBanners = db.all('banners', b => b.status === 'Active')
+                         .sort((a, b) => (a.display_order || a.id) - (b.display_order || b.id));
+  res.json(activeBanners);
+});
+
+// Admin All Banners Endpoint
+app.get('/api/admin/banners', authenticateAdmin, (req, res) => {
+  const allBanners = db.all('banners')
+                       .sort((a, b) => (a.display_order || a.id) - (b.display_order || b.id));
+  res.json(allBanners);
+});
+
+// Admin Create Banner
+app.post('/api/admin/banners', authenticateAdmin, upload.single('image'), (req, res) => {
+  try {
+    const { title, description, link_url, duration_seconds, status, display_order, image_url_input } = req.body;
+
+    let image_url = image_url_input || '';
+    if (req.file) {
+      image_url = `/api/documents/preview-file/${req.file.filename}`;
+    }
+
+    if (!image_url) {
+      image_url = 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?q=80&w=1200&auto=format&fit=crop';
+    }
+
+    const newBanner = db.insert('banners', {
+      title: title ? title.trim() : 'E-Seva Portal Announcement',
+      description: description ? description.trim() : '',
+      image_url,
+      link_url: link_url ? link_url.trim() : '/services',
+      duration_seconds: duration_seconds ? Math.max(2, Math.min(60, Number(duration_seconds))) : 5,
+      status: status || 'Active',
+      display_order: display_order ? Number(display_order) : 1
+    });
+
+    res.json({ message: 'Banner created successfully', banner: newBanner });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Admin Update Banner
+app.put('/api/admin/banners/:id', authenticateAdmin, upload.single('image'), (req, res) => {
+  try {
+    const bannerId = Number(req.params.id);
+    const banner = db.get('banners', b => b.id === bannerId);
+    if (!banner) return res.status(404).json({ error: 'Banner not found' });
+
+    const { title, description, link_url, duration_seconds, status, display_order, image_url_input } = req.body;
+
+    let image_url = banner.image_url;
+    if (req.file) {
+      image_url = `/api/documents/preview-file/${req.file.filename}`;
+    } else if (image_url_input) {
+      image_url = image_url_input.trim();
+    }
+
+    db.update('banners', b => b.id === bannerId, {
+      title: title !== undefined ? title.trim() : banner.title,
+      description: description !== undefined ? description.trim() : banner.description,
+      image_url,
+      link_url: link_url !== undefined ? link_url.trim() : banner.link_url,
+      duration_seconds: duration_seconds ? Math.max(2, Math.min(60, Number(duration_seconds))) : banner.duration_seconds,
+      status: status !== undefined ? status : banner.status,
+      display_order: display_order !== undefined ? Number(display_order) : banner.display_order
+    });
+
+    res.json({ message: 'Banner updated successfully', banner: db.get('banners', b => b.id === bannerId) });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Admin Delete Banner
+app.delete('/api/admin/banners/:id', authenticateAdmin, (req, res) => {
+  try {
+    const bannerId = Number(req.params.id);
+    const removed = db.delete('banners', b => b.id === bannerId);
+    if (!removed) return res.status(404).json({ error: 'Banner not found' });
+    res.json({ message: 'Banner deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Document Audit History Endpoint
 app.get('/api/documents/audit/:appId', (req, res) => {
   const appId = Number(req.params.appId);

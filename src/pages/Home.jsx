@@ -40,6 +40,30 @@ export default function Home() {
     supportAvailable: '24/7 SLA'
   });
 
+  const [heroBanners, setHeroBanners] = useState([]);
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  useEffect(() => {
+    fetch('/api/banners')
+      .then((r) => (r.ok ? r.json() : []))
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setHeroBanners(data);
+        }
+      })
+      .catch((e) => console.error(e));
+  }, []);
+
+  // Timer-driven slide auto-rotation
+  useEffect(() => {
+    if (heroBanners.length <= 1) return;
+    const duration = (heroBanners[currentSlide]?.duration_seconds || 5) * 1000;
+    const timer = setTimeout(() => {
+      setCurrentSlide((prev) => (prev + 1) % heroBanners.length);
+    }, duration);
+    return () => clearTimeout(timer);
+  }, [currentSlide, heroBanners]);
+
   useEffect(() => {
     Promise.all([
       fetch('/api/categories').then((r) => r.ok ? r.json() : []).catch(() => []),
@@ -126,71 +150,129 @@ export default function Home() {
   return (
     <div className="space-y-0 bg-slate-50 selection:bg-[#0b192c] selection:text-white">
       
-      {/* 1. HERO / WELCOME SECTION (STEP 2 SPECIFICATION) */}
-      <section className="bg-gradient-to-b from-slate-100/90 via-slate-50 to-white text-slate-900 py-16 sm:py-20 border-b border-slate-200/80 relative overflow-hidden">
+      {/* 1. HERO / TIMED SLIDE CAROUSEL SECTION */}
+      <section className="bg-gradient-to-b from-slate-100/90 via-slate-50 to-white text-slate-900 py-12 sm:py-16 border-b border-slate-200/80 relative overflow-hidden">
         
         {/* Soft Background Pattern Graphic */}
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:16px_16px]"></div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-            
-            {/* LEFT CONTENT COLUMN */}
-            <div className="lg:col-span-6 space-y-6 text-center lg:text-left">
+          
+          {heroBanners.length > 0 ? (
+            <div className="relative bg-[#0b192c] rounded-3xl overflow-hidden shadow-2xl border border-slate-800 text-white min-h-[380px] sm:min-h-[420px] flex items-center">
               
-              {/* SMALL UPPERCASE LABEL */}
-              <div>
-                <span className="inline-block text-xs font-extrabold text-orange-600 uppercase tracking-widest bg-orange-50 border border-orange-200/80 px-3.5 py-1 rounded-full">
-                  {t.portalName}
-                </span>
+              {/* Active Banner Background Image */}
+              <div className="absolute inset-0 z-0">
+                <img
+                  src={heroBanners[currentSlide]?.image_url}
+                  alt={heroBanners[currentSlide]?.title}
+                  className="w-full h-full object-cover opacity-35 transition-all duration-700 scale-105"
+                  onError={(e) => {
+                    e.target.src = 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?q=80&w=1200&auto=format&fit=crop';
+                  }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-[#0b192c] via-[#0b192c]/90 to-transparent" />
               </div>
 
-              {/* HEADING */}
-              <h1 className="font-heading font-extrabold text-4xl sm:text-5xl lg:text-6xl tracking-tight leading-tight text-slate-900">
-                {t.trustedPartner || t.heroTitle}
-              </h1>
+              {/* Content Overlay */}
+              <div className="relative z-10 p-8 sm:p-12 lg:p-16 max-w-2xl space-y-5">
+                <div className="flex items-center space-x-3">
+                  <span className="inline-block text-[11px] font-black uppercase text-orange-400 tracking-widest bg-orange-950/70 border border-orange-500/30 px-3 py-1 rounded-full">
+                    {t.portalName} • PROMOTION
+                  </span>
+                  
+                  {/* Dynamic Slide Duration Counter */}
+                  <span className="text-[11px] font-mono text-slate-300 bg-slate-900/80 px-2.5 py-0.5 rounded-full border border-slate-700 flex items-center gap-1">
+                    <Clock className="w-3 h-3 text-orange-400 animate-pulse" />
+                    <span>{heroBanners[currentSlide]?.duration_seconds || 5}s Timer</span>
+                  </span>
+                </div>
 
-              {/* SUPPORTING TEXT */}
-              <p className="text-slate-600 text-base sm:text-lg max-w-xl font-normal leading-relaxed">
-                {t.heroDesc || t.heroSubtitle}
-              </p>
+                <h1 className="font-heading font-extrabold text-3xl sm:text-4xl lg:text-5xl tracking-tight leading-tight text-white animate-in fade-in duration-300">
+                  {heroBanners[currentSlide]?.title}
+                </h1>
 
-              {/* ACTION BUTTONS */}
-              <div className="pt-3 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
-                {/* Primary Button: Explore Services */}
-                <Link
-                  to="/services"
-                  className="w-full sm:w-auto bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold text-xs sm:text-sm px-8 py-3.5 rounded-xl shadow-md hover:shadow-lg transition-all text-center flex items-center justify-center gap-2 group"
-                >
-                  <span>{t.exploreServices || (lang === 'ta' ? 'சேவைகளைப் பார்க்கவும்' : 'Explore Services')}</span>
-                  <ArrowRight className="w-4 h-4 text-orange-400 group-hover:translate-x-1 transition-transform" />
-                </Link>
+                <p className="text-slate-300 text-sm sm:text-base font-normal leading-relaxed line-clamp-3">
+                  {heroBanners[currentSlide]?.description || t.heroDesc}
+                </p>
 
-                {/* Secondary Button: Track Application */}
-                <Link
-                  to="/track"
-                  className="w-full sm:w-auto bg-white hover:bg-slate-50 text-slate-800 font-bold text-xs sm:text-sm px-8 py-3.5 rounded-xl border border-slate-300 hover:border-slate-800 shadow-xs transition-all text-center"
-                >
-                  {t.trackAppHero || t.trackApp || (lang === 'ta' ? 'விண்ணப்பத்தை கண்காணிக்கவும்' : 'Track Application')}
-                </Link>
-              </div>
+                {/* Actions */}
+                <div className="pt-2 flex flex-wrap items-center gap-4">
+                  <Link
+                    to={heroBanners[currentSlide]?.link_url || '/services'}
+                    className="bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-xs sm:text-sm px-7 py-3.5 rounded-xl shadow-lg transition-all flex items-center gap-2 group"
+                  >
+                    <span>{t.exploreServices || (lang === 'ta' ? 'சேவைகளைப் பார்க்கவும்' : 'Explore Services')}</span>
+                    <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform" />
+                  </Link>
 
-            </div>
-
-            {/* RIGHT CONTENT COLUMN: DIGITAL SERVICES ILLUSTRATION */}
-            <div className="lg:col-span-6 flex justify-center lg:justify-end">
-              <div className="relative w-full max-w-xl">
-                <div className="relative group">
-                  <img
-                    src="/hero_devices.png"
-                    alt="E-Seva Digital Portal Devices Mockup"
-                    className="w-full h-auto object-contain rounded-2xl shadow-xl transition-all duration-300 group-hover:scale-[1.01]"
-                  />
+                  <Link
+                    to="/track"
+                    className="bg-white/10 hover:bg-white/20 text-white font-bold text-xs sm:text-sm px-6 py-3.5 rounded-xl border border-white/20 transition-all"
+                  >
+                    {t.trackAppHero || t.trackApp || (lang === 'ta' ? 'விண்ணப்பத்தைக் கண்காணிக்கவும்' : 'Track Application')}
+                  </Link>
                 </div>
               </div>
-            </div>
 
-          </div>
+              {/* Carousel Indicators / Controls */}
+              {heroBanners.length > 1 && (
+                <div className="absolute bottom-5 right-6 z-20 flex items-center space-x-2 bg-slate-950/60 backdrop-blur-md px-3.5 py-2 rounded-full border border-slate-800">
+                  {heroBanners.map((banner, idx) => (
+                    <button
+                      key={banner.id || idx}
+                      onClick={() => setCurrentSlide(idx)}
+                      className={`h-2 rounded-full transition-all cursor-pointer ${
+                        currentSlide === idx ? 'w-7 bg-orange-500' : 'w-2 bg-slate-600 hover:bg-slate-400'
+                      }`}
+                      title={`Go to slide ${idx + 1}: ${banner.title}`}
+                    />
+                  ))}
+                </div>
+              )}
+
+            </div>
+          ) : (
+            /* Default Static Hero Fallback if Banners Empty */
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+              <div className="lg:col-span-6 space-y-6 text-center lg:text-left">
+                <div>
+                  <span className="inline-block text-xs font-extrabold text-orange-600 uppercase tracking-widest bg-orange-50 border border-orange-200/80 px-3.5 py-1 rounded-full">
+                    {t.portalName}
+                  </span>
+                </div>
+                <h1 className="font-heading font-extrabold text-4xl sm:text-5xl lg:text-6xl tracking-tight leading-tight text-slate-900">
+                  {t.trustedPartner || t.heroTitle}
+                </h1>
+                <p className="text-slate-600 text-base sm:text-lg max-w-xl font-normal leading-relaxed">
+                  {t.heroDesc || t.heroSubtitle}
+                </p>
+                <div className="pt-3 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+                  <Link
+                    to="/services"
+                    className="w-full sm:w-auto bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold text-xs sm:text-sm px-8 py-3.5 rounded-xl shadow-md hover:shadow-lg transition-all text-center flex items-center justify-center gap-2 group"
+                  >
+                    <span>{t.exploreServices || (lang === 'ta' ? 'சேவைகளைப் பார்க்கவும்' : 'Explore Services')}</span>
+                    <ArrowRight className="w-4 h-4 text-orange-400 group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                  <Link
+                    to="/track"
+                    className="w-full sm:w-auto bg-white hover:bg-slate-50 text-slate-800 font-bold text-xs sm:text-sm px-8 py-3.5 rounded-xl border border-slate-300 shadow-xs transition-all text-center"
+                  >
+                    {t.trackAppHero || t.trackApp || (lang === 'ta' ? 'விண்ணப்பத்தைக் கண்காணிக்கவும்' : 'Track Application')}
+                  </Link>
+                </div>
+              </div>
+              <div className="lg:col-span-6 flex justify-center lg:justify-end">
+                <img
+                  src="/hero_devices.png"
+                  alt="E-Seva Digital Portal Devices Mockup"
+                  className="w-full h-auto max-w-xl object-contain rounded-2xl shadow-xl"
+                />
+              </div>
+            </div>
+          )}
+
         </div>
       </section>
 

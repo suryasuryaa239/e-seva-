@@ -7,7 +7,8 @@ import {
   Menu, X, Award, ChevronRight, TrendingUp, ShieldCheck, Activity,
   Filter, RotateCcw, Inbox, UserCheck, FileCheck, History, MessageSquare,
   User, Phone, Mail as MailIcon, Calendar, CheckCircle, Shield, Trash2,
-  Settings, Key, Lock, EyeOff, Save, CheckCheck, Bell, CreditCard, Paperclip
+  Settings, Key, Lock, EyeOff, Save, CheckCheck, Bell, CreditCard, Paperclip,
+  Sliders, Image as ImageIcon
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -93,6 +94,139 @@ export default function AdminDashboard() {
       }
     } catch (e) {
       console.error(e);
+    }
+  };
+
+  // Banner Management State
+  const [banners, setBanners] = useState([]);
+  const [showBannerModal, setShowBannerModal] = useState(false);
+  const [editingBanner, setEditingBanner] = useState(null);
+  const [savingBanner, setSavingBanner] = useState(false);
+  const [bannerForm, setBannerForm] = useState({
+    title: '',
+    description: '',
+    link_url: '/services',
+    duration_seconds: 5,
+    status: 'Active',
+    image_url_input: '',
+    image_file: null
+  });
+
+  const fetchBanners = async () => {
+    if (!adminToken) return;
+    try {
+      const res = await fetch('/api/admin/banners', {
+        headers: { Authorization: `Bearer ${adminToken}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setBanners(data || []);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const openAddBannerModal = () => {
+    setEditingBanner(null);
+    setBannerForm({
+      title: '',
+      description: '',
+      link_url: '/services',
+      duration_seconds: 5,
+      status: 'Active',
+      image_url_input: '',
+      image_file: null
+    });
+    setShowBannerModal(true);
+  };
+
+  const openEditBannerModal = (b) => {
+    setEditingBanner(b);
+    setBannerForm({
+      title: b.title || '',
+      description: b.description || '',
+      link_url: b.link_url || '/services',
+      duration_seconds: b.duration_seconds || 5,
+      status: b.status || 'Active',
+      image_url_input: b.image_url || '',
+      image_file: null
+    });
+    setShowBannerModal(true);
+  };
+
+  const handleSaveBannerSubmit = async (e) => {
+    e.preventDefault();
+    setSavingBanner(true);
+    try {
+      const formData = new FormData();
+      formData.append('title', bannerForm.title);
+      formData.append('description', bannerForm.description);
+      formData.append('link_url', bannerForm.link_url);
+      formData.append('duration_seconds', bannerForm.duration_seconds);
+      formData.append('status', bannerForm.status);
+      formData.append('image_url_input', bannerForm.image_url_input);
+      if (bannerForm.image_file) {
+        formData.append('image', bannerForm.image_file);
+      }
+
+      const url = editingBanner ? `/api/admin/banners/${editingBanner.id}` : '/api/admin/banners';
+      const method = editingBanner ? 'PUT' : 'POST';
+
+      const res = await fetch(url, {
+        method,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        body: formData
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        addToast(editingBanner ? 'Banner updated successfully!' : 'New Banner created successfully!', 'success');
+        setShowBannerModal(false);
+        fetchBanners();
+      } else {
+        addToast(data.error || 'Failed to save banner', 'error');
+      }
+    } catch (err) {
+      addToast('Error saving banner', 'error');
+    } finally {
+      setSavingBanner(false);
+    }
+  };
+
+  const handleToggleBannerStatus = async (banner) => {
+    try {
+      const newStatus = banner.status === 'Active' ? 'Inactive' : 'Active';
+      const res = await fetch(`/api/admin/banners/${banner.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${adminToken}`
+        },
+        body: JSON.stringify({ status: newStatus })
+      });
+      if (res.ok) {
+        addToast(`Banner marked as ${newStatus}`, 'success');
+        fetchBanners();
+      }
+    } catch (e) {
+      addToast('Failed to update status', 'error');
+    }
+  };
+
+  const handleDeleteBanner = async (bannerId) => {
+    if (!window.confirm('Are you sure you want to delete this hero banner?')) return;
+    try {
+      const res = await fetch(`/api/admin/banners/${bannerId}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${adminToken}` }
+      });
+      if (res.ok) {
+        addToast('Banner deleted successfully', 'success');
+        fetchBanners();
+      }
+    } catch (e) {
+      addToast('Failed to delete banner', 'error');
     }
   };
 
@@ -540,7 +674,8 @@ export default function AdminDashboard() {
       fetchServices(),
       fetchPayments(),
       fetchAdminNotifs(),
-      fetchAdminDocuments()
+      fetchAdminDocuments(),
+      fetchBanners()
     ]).then(() => setLoading(false));
   }, [adminToken, navigate]);
 
@@ -630,6 +765,7 @@ export default function AdminDashboard() {
     { id: 'dashboard', label: 'Dashboard Overview', icon: LayoutDashboard },
     { id: 'applications', label: 'Applications Manager', icon: FileText, count: stats?.total_applications },
     { id: 'documents', label: 'Uploaded Documents Explorer', icon: Paperclip, count: adminDocs.length },
+    { id: 'banners', label: 'Banner Manager', icon: Sliders, count: banners.length },
     { id: 'services', label: 'Services Directory', icon: Grid },
     { id: 'customers', label: 'Users Directory', icon: Users, count: stats?.total_users || customers.length },
     { id: 'enquiries', label: 'Contact Enquiries', icon: Mail, count: stats?.unread_enquiries },
@@ -1109,6 +1245,158 @@ export default function AdminDashboard() {
                   </div>
                 )}
               </div>
+
+            </div>
+          )}
+
+          {/* BANNER MANAGER TAB WORKSPACE */}
+          {activeTab === 'banners' && (
+            <div className="space-y-6">
+              
+              {/* Header Banner */}
+              <div className="bg-white p-5 sm:p-6 rounded-3xl border border-slate-200/90 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-[11px] font-black uppercase text-orange-600 tracking-wider bg-orange-50 px-2.5 py-0.5 rounded border border-orange-200">
+                      HOMEPAGE PROMOTIONS
+                    </span>
+                    <span className="text-xs font-mono text-slate-500">• Timed Slide Carousel</span>
+                  </div>
+                  <h3 className="text-lg font-black text-slate-900 mt-1">
+                    Hero Banner Manager & Rotation Timer
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Add, edit, upload banner artwork, configure custom display duration (seconds), and set target links.
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={openAddBannerModal}
+                  className="px-5 py-3 bg-[#0b192c] hover:bg-orange-600 text-white font-extrabold text-xs rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer shrink-0"
+                >
+                  <Plus className="w-4 h-4 text-orange-400" />
+                  <span>Add New Banner</span>
+                </button>
+              </div>
+
+              {/* Banners Grid */}
+              {banners.length === 0 ? (
+                <div className="bg-white rounded-3xl p-12 text-center border border-slate-200 shadow-sm space-y-3">
+                  <div className="w-12 h-12 rounded-2xl bg-orange-50 text-orange-500 border border-orange-200 flex items-center justify-center mx-auto">
+                    <Sliders className="w-6 h-6" />
+                  </div>
+                  <h4 className="font-extrabold text-slate-800 text-sm">No Hero Banners Found</h4>
+                  <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                    Create your first promotional banner to display on the portal home page.
+                  </p>
+                  <button
+                    onClick={openAddBannerModal}
+                    className="px-4 py-2 bg-orange-500 text-white text-xs font-bold rounded-xl hover:bg-orange-600 transition-colors"
+                  >
+                    + Create Banner
+                  </button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {banners.map((b) => (
+                    <div
+                      key={b.id}
+                      className={`bg-white rounded-3xl border ${
+                        b.status === 'Active' ? 'border-slate-200 shadow-sm' : 'border-slate-200/60 opacity-60'
+                      } overflow-hidden flex flex-col justify-between group hover:shadow-md transition-all`}
+                    >
+                      {/* Banner Image Preview */}
+                      <div className="relative h-44 bg-slate-900 overflow-hidden">
+                        <img
+                          src={b.image_url}
+                          alt={b.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          onError={(e) => {
+                            e.target.src = 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?q=80&w=1200&auto=format&fit=crop';
+                          }}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
+                        
+                        {/* Status Badge */}
+                        <div className="absolute top-3 left-3 flex items-center space-x-2">
+                          <span
+                            className={`text-[10px] font-black uppercase px-2.5 py-1 rounded-full border shadow-sm ${
+                              b.status === 'Active'
+                                ? 'bg-emerald-500 text-white border-emerald-400'
+                                : 'bg-slate-800 text-slate-300 border-slate-700'
+                            }`}
+                          >
+                            {b.status === 'Active' ? '● Live Active' : 'Hidden / Inactive'}
+                          </span>
+                        </div>
+
+                        {/* Display Timer Badge */}
+                        <div className="absolute top-3 right-3">
+                          <span className="text-[10px] font-mono font-bold bg-slate-950/80 text-orange-400 border border-orange-500/30 px-2.5 py-1 rounded-full backdrop-blur-sm flex items-center gap-1">
+                            <Clock className="w-3 h-3" />
+                            <span>{b.duration_seconds || 5}s Timer</span>
+                          </span>
+                        </div>
+
+                        {/* Banner Title overlay */}
+                        <div className="absolute bottom-3 left-3 right-3 text-white">
+                          <h4 className="font-heading font-black text-sm text-white line-clamp-1">
+                            {b.title}
+                          </h4>
+                        </div>
+                      </div>
+
+                      {/* Details & Actions */}
+                      <div className="p-4 space-y-3 flex-1 flex flex-col justify-between">
+                        <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
+                          {b.description || 'No subtitle provided.'}
+                        </p>
+
+                        <div className="pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
+                          <div className="text-[11px] font-mono text-slate-500 truncate max-w-[150px]" title={b.link_url}>
+                            Link: <span className="text-orange-600 font-semibold">{b.link_url || '/services'}</span>
+                          </div>
+
+                          <div className="flex items-center space-x-1.5 shrink-0">
+                            {/* Toggle Active */}
+                            <button
+                              onClick={() => handleToggleBannerStatus(b)}
+                              className={`px-2.5 py-1.5 text-[11px] font-bold rounded-xl border transition-colors cursor-pointer ${
+                                b.status === 'Active'
+                                  ? 'bg-slate-100 text-slate-700 hover:bg-slate-200 border-slate-300'
+                                  : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border-emerald-200'
+                              }`}
+                              title={b.status === 'Active' ? 'Hide Banner' : 'Publish Banner'}
+                            >
+                              {b.status === 'Active' ? 'Hide' : 'Publish'}
+                            </button>
+
+                            {/* Edit */}
+                            <button
+                              onClick={() => openEditBannerModal(b)}
+                              className="p-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition-colors cursor-pointer"
+                              title="Edit Banner"
+                            >
+                              <Edit3 className="w-3.5 h-3.5 text-slate-600" />
+                            </button>
+
+                            {/* Delete */}
+                            <button
+                              onClick={() => handleDeleteBanner(b.id)}
+                              className="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl transition-colors cursor-pointer"
+                              title="Delete Banner"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
+                  ))}
+                </div>
+              )}
 
             </div>
           )}
@@ -5200,6 +5488,205 @@ export default function AdminDashboard() {
                 Close Preview
               </button>
             </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* ADD / EDIT BANNER MODAL */}
+      {showBannerModal && (
+        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto font-sans">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-200 relative space-y-5 my-8">
+            
+            <div className="flex items-start justify-between border-b border-slate-100 pb-4">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-2xl bg-orange-50 text-orange-600 border border-orange-200 flex items-center justify-center shrink-0">
+                  <Sliders className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-heading font-extrabold text-base text-slate-900">
+                    {editingBanner ? 'Edit Hero Banner' : 'Create New Hero Banner'}
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Configure portal home slide image, caption, link, and rotation timer
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowBannerModal(false)}
+                className="p-1.5 rounded-xl text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveBannerSubmit} className="space-y-4 text-xs">
+              
+              {/* Banner Title */}
+              <div className="space-y-1">
+                <label className="font-extrabold text-slate-800 block">
+                  Banner Title *
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Government Services at Your Doorstep"
+                  value={bannerForm.title}
+                  onChange={(e) => setBannerForm({ ...bannerForm, title: e.target.value })}
+                  className="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-slate-900 font-semibold outline-none focus:border-orange-500"
+                  required
+                />
+              </div>
+
+              {/* Banner Subtitle / Description */}
+              <div className="space-y-1">
+                <label className="font-extrabold text-slate-800 block">
+                  Banner Subtitle / Description
+                </label>
+                <textarea
+                  rows={2}
+                  placeholder="e.g. Apply for Community, Birth & Income Certificates with instant SMS tracking."
+                  value={bannerForm.description}
+                  onChange={(e) => setBannerForm({ ...bannerForm, description: e.target.value })}
+                  className="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-slate-900 font-medium outline-none focus:border-orange-500"
+                />
+              </div>
+
+              {/* Slide Display Duration Timer */}
+              <div className="space-y-1.5 bg-orange-50/70 border border-orange-200 p-3.5 rounded-2xl">
+                <div className="flex items-center justify-between">
+                  <label className="font-extrabold text-orange-950 flex items-center gap-1.5">
+                    <Clock className="w-4 h-4 text-orange-600" />
+                    <span>Slide Timer Duration (Seconds) *</span>
+                  </label>
+                  <span className="font-mono text-sm font-black text-orange-600 bg-white px-2.5 py-0.5 rounded border border-orange-200 shadow-sm">
+                    {bannerForm.duration_seconds} Seconds
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-500">
+                  How many seconds this slide stays visible before automatically switching to the next banner.
+                </p>
+
+                <div className="flex items-center gap-2 pt-1">
+                  <input
+                    type="range"
+                    min="2"
+                    max="30"
+                    step="1"
+                    value={bannerForm.duration_seconds}
+                    onChange={(e) => setBannerForm({ ...bannerForm, duration_seconds: Number(e.target.value) })}
+                    className="flex-1 accent-orange-600 cursor-pointer"
+                  />
+                </div>
+
+                {/* Preset Timer Buttons */}
+                <div className="flex items-center gap-1.5 pt-1">
+                  <span className="text-[10px] font-bold text-slate-500">Presets:</span>
+                  {[3, 5, 8, 10, 15].map((sec) => (
+                    <button
+                      key={sec}
+                      type="button"
+                      onClick={() => setBannerForm({ ...bannerForm, duration_seconds: sec })}
+                      className={`px-2.5 py-1 text-[10px] font-extrabold rounded-lg border transition-colors cursor-pointer ${
+                        bannerForm.duration_seconds === sec
+                          ? 'bg-orange-600 text-white border-orange-600 shadow-sm'
+                          : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
+                      }`}
+                    >
+                      {sec}s
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Banner Artwork Image */}
+              <div className="space-y-2">
+                <label className="font-extrabold text-slate-800 block">
+                  Banner Artwork Image
+                </label>
+
+                {/* File Upload Input */}
+                <div className="space-y-1">
+                  <span className="text-[10px] text-slate-500 block">Upload Image File (JPG/PNG):</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files[0]) {
+                        setBannerForm({ ...bannerForm, image_file: e.target.files[0] });
+                      }
+                    }}
+                    className="w-full text-xs text-slate-500 bg-slate-50 border border-slate-300 rounded-xl p-2.5 cursor-pointer"
+                  />
+                </div>
+
+                {/* Image URL Input */}
+                <div className="space-y-1">
+                  <span className="text-[10px] text-slate-500 block">OR Image URL:</span>
+                  <input
+                    type="url"
+                    placeholder="https://images.unsplash.com/..."
+                    value={bannerForm.image_url_input}
+                    onChange={(e) => setBannerForm({ ...bannerForm, image_url_input: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-slate-900 font-mono text-[11px] outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* Target Service Link URL & Status */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="font-extrabold text-slate-800 block">Target Link / URL</label>
+                  <select
+                    value={bannerForm.link_url}
+                    onChange={(e) => setBannerForm({ ...bannerForm, link_url: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-slate-900 font-semibold outline-none"
+                  >
+                    <option value="/services">/services (Services Catalog)</option>
+                    <option value="/category/aadhaar">/category/aadhaar (Aadhaar Portal)</option>
+                    <option value="/track">/track (Application Tracker)</option>
+                    <option value="/category/revenue">/category/revenue (Revenue Dept)</option>
+                    <option value="/category/welfare">/category/welfare (Welfare Schemes)</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="font-extrabold text-slate-800 block">Banner Status</label>
+                  <select
+                    value={bannerForm.status}
+                    onChange={(e) => setBannerForm({ ...bannerForm, status: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-slate-900 font-semibold outline-none"
+                  >
+                    <option value="Active">Active (Live on Portal)</option>
+                    <option value="Inactive">Inactive (Hidden)</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setShowBannerModal(false)}
+                  className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={savingBanner || !bannerForm.title.trim()}
+                  className="px-5 py-2.5 bg-[#0b192c] hover:bg-orange-600 text-white font-extrabold rounded-xl shadow-md transition-all flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
+                >
+                  {savingBanner ? (
+                    <RefreshCw className="w-4 h-4 animate-spin text-orange-400" />
+                  ) : (
+                    <Save className="w-4 h-4 text-orange-400" />
+                  )}
+                  <span>{editingBanner ? 'Save Changes' : 'Publish Banner'}</span>
+                </button>
+              </div>
+
+            </form>
 
           </div>
         </div>
