@@ -11,8 +11,8 @@ export default function WhatsAppSupport() {
   const location = useLocation();
   const { lang } = useLanguage();
 
-  // Support WhatsApp Number (Configurable)
-  const whatsappNumber = '919876543210'; 
+  // Support WhatsApp Number (Configurable - User Specified 6374889944)
+  const whatsappNumber = '916374889944'; 
 
   // Generate contextual WhatsApp message based on current page
   const getContextualChatMessage = () => {

@@ -60,7 +60,7 @@ export default function ContactUs() {
             </div>
             <div>
               <h4 className="font-bold text-sm text-slate-900">Toll-Free Helpline</h4>
-              <p className="text-xs text-slate-500 mt-1">1800-123-ESEVA (37382)</p>
+              <p className="text-xs text-slate-500 mt-1 font-mono font-bold">+91 63748 89944 / 1800-123-ESEVA</p>
               <p className="text-[11px] text-slate-400">Mon - Sat: 8:00 AM - 8:00 PM</p>
             </div>
           </div>
