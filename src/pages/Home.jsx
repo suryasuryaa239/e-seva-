@@ -165,55 +165,84 @@ export default function Home() {
               <div className="absolute inset-0 z-0">
                 <img
                   src={heroBanners[currentSlide]?.image_url}
-                  alt={heroBanners[currentSlide]?.title}
-                  className="w-full h-full object-cover opacity-35 transition-all duration-700 scale-105"
+                  alt={heroBanners[currentSlide]?.title || 'Hero Banner'}
+                  className={`w-full h-full object-cover transition-all duration-700 ${
+                    heroBanners[currentSlide]?.title ? 'opacity-35 scale-105' : 'opacity-100'
+                  }`}
                   onError={(e) => {
                     e.target.src = 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?q=80&w=1200&auto=format&fit=crop';
                   }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-r from-[#0b192c] via-[#0b192c]/90 to-transparent" />
+                {heroBanners[currentSlide]?.title && (
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#0b192c] via-[#0b192c]/90 to-transparent" />
+                )}
               </div>
 
               {/* Content Overlay */}
-              <div className="relative z-10 p-8 sm:p-12 lg:p-16 max-w-2xl space-y-5">
-                <div className="flex items-center space-x-3">
-                  <span className="inline-block text-[11px] font-black uppercase text-orange-400 tracking-widest bg-orange-950/70 border border-orange-500/30 px-3 py-1 rounded-full">
-                    {t.portalName} • PROMOTION
-                  </span>
-                  
-                  {/* Dynamic Slide Duration Counter */}
-                  <span className="text-[11px] font-mono text-slate-300 bg-slate-900/80 px-2.5 py-0.5 rounded-full border border-slate-700 flex items-center gap-1">
-                    <Clock className="w-3 h-3 text-orange-400 animate-pulse" />
-                    <span>{heroBanners[currentSlide]?.duration_seconds || 5}s Timer</span>
-                  </span>
+              {heroBanners[currentSlide]?.title ? (
+                <div className="relative z-10 p-8 sm:p-12 lg:p-16 max-w-2xl space-y-5">
+                  <div className="flex items-center space-x-3">
+                    <span className="inline-block text-[11px] font-black uppercase text-orange-400 tracking-widest bg-orange-950/70 border border-orange-500/30 px-3 py-1 rounded-full">
+                      {t.portalName} • PROMOTION
+                    </span>
+                    
+                    {/* Dynamic Slide Duration Counter */}
+                    <span className="text-[11px] font-mono text-slate-300 bg-slate-900/80 px-2.5 py-0.5 rounded-full border border-slate-700 flex items-center gap-1">
+                      <Clock className="w-3 h-3 text-orange-400 animate-pulse" />
+                      <span>{heroBanners[currentSlide]?.duration_seconds || 5}s Timer</span>
+                    </span>
+                  </div>
+
+                  <h1 className="font-heading font-extrabold text-3xl sm:text-4xl lg:text-5xl tracking-tight leading-tight text-white animate-in fade-in duration-300">
+                    {heroBanners[currentSlide]?.title}
+                  </h1>
+
+                  {heroBanners[currentSlide]?.description && (
+                    <p className="text-slate-300 text-sm sm:text-base font-normal leading-relaxed line-clamp-3">
+                      {heroBanners[currentSlide]?.description}
+                    </p>
+                  )}
+
+                  {/* Actions */}
+                  <div className="pt-2 flex flex-wrap items-center gap-4">
+                    <Link
+                      to={heroBanners[currentSlide]?.link_url || '/services'}
+                      className="bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-xs sm:text-sm px-7 py-3.5 rounded-xl shadow-lg transition-all flex items-center gap-2 group"
+                    >
+                      <span>{t.exploreServices || (lang === 'ta' ? 'சேவைகளைப் பார்க்கவும்' : 'Explore Services')}</span>
+                      <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform" />
+                    </Link>
+
+                    <Link
+                      to="/track"
+                      className="bg-white/10 hover:bg-white/20 text-white font-bold text-xs sm:text-sm px-6 py-3.5 rounded-xl border border-white/20 transition-all"
+                    >
+                      {t.trackAppHero || t.trackApp || (lang === 'ta' ? 'விண்ணப்பத்தைக் கண்காணிக்கவும்' : 'Track Application')}
+                    </Link>
+                  </div>
                 </div>
-
-                <h1 className="font-heading font-extrabold text-3xl sm:text-4xl lg:text-5xl tracking-tight leading-tight text-white animate-in fade-in duration-300">
-                  {heroBanners[currentSlide]?.title}
-                </h1>
-
-                <p className="text-slate-300 text-sm sm:text-base font-normal leading-relaxed line-clamp-3">
-                  {heroBanners[currentSlide]?.description || t.heroDesc}
-                </p>
-
-                {/* Actions */}
-                <div className="pt-2 flex flex-wrap items-center gap-4">
-                  <Link
-                    to={heroBanners[currentSlide]?.link_url || '/services'}
-                    className="bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-xs sm:text-sm px-7 py-3.5 rounded-xl shadow-lg transition-all flex items-center gap-2 group"
-                  >
-                    <span>{t.exploreServices || (lang === 'ta' ? 'சேவைகளைப் பார்க்கவும்' : 'Explore Services')}</span>
-                    <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform" />
-                  </Link>
-
-                  <Link
-                    to="/track"
-                    className="bg-white/10 hover:bg-white/20 text-white font-bold text-xs sm:text-sm px-6 py-3.5 rounded-xl border border-white/20 transition-all"
-                  >
-                    {t.trackAppHero || t.trackApp || (lang === 'ta' ? 'விண்ணப்பத்தைக் கண்காணிக்கவும்' : 'Track Application')}
-                  </Link>
+              ) : (
+                /* Pure Image Banner Overlay Badge */
+                <div className="relative z-10 p-6 sm:p-8 flex flex-col justify-between h-full w-full pointer-events-none">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-mono font-bold text-white bg-slate-950/70 border border-slate-700 px-3 py-1 rounded-full backdrop-blur-md flex items-center gap-1.5 pointer-events-auto">
+                      <Clock className="w-3.5 h-3.5 text-orange-400 animate-pulse" />
+                      <span>{heroBanners[currentSlide]?.duration_seconds || 5}s Timer</span>
+                    </span>
+                  </div>
+                  {heroBanners[currentSlide]?.link_url && (
+                    <div className="pt-4 pointer-events-auto">
+                      <Link
+                        to={heroBanners[currentSlide]?.link_url}
+                        className="inline-flex items-center gap-2 bg-[#0b192c]/90 hover:bg-orange-600 text-white font-extrabold text-xs sm:text-sm px-6 py-3 rounded-xl shadow-xl border border-slate-700/80 backdrop-blur-md transition-all group"
+                      >
+                        <span>{lang === 'ta' ? 'மேலும் விவரங்களுக்கு இங்கே கிளிக் செய்யவும்' : 'Click to View Details'}</span>
+                        <ArrowRight className="w-4 h-4 text-orange-400 group-hover:translate-x-1 transition-transform" />
+                      </Link>
+                    </div>
+                  )}
                 </div>
-              </div>
+              )}
 
               {/* Carousel Indicators / Controls */}
               {heroBanners.length > 1 && (

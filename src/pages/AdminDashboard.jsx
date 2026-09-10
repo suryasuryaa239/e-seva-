@@ -1342,7 +1342,7 @@ export default function AdminDashboard() {
                         {/* Banner Title overlay */}
                         <div className="absolute bottom-3 left-3 right-3 text-white">
                           <h4 className="font-heading font-black text-sm text-white line-clamp-1">
-                            {b.title}
+                            {b.title ? b.title : <span className="italic font-mono text-xs text-orange-300">🖼 Image Banner (No Text Overlay)</span>}
                           </h4>
                         </div>
                       </div>
@@ -1350,11 +1350,11 @@ export default function AdminDashboard() {
                       {/* Details & Actions */}
                       <div className="p-4 space-y-3 flex-1 flex flex-col justify-between">
                         <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
-                          {b.description || 'No subtitle provided.'}
+                          {b.description ? b.description : <span className="text-slate-400 italic">No text description set (Clean Image Slide)</span>}
                         </p>
 
                         <div className="pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
-                          <div className="text-[11px] font-mono text-slate-500 truncate max-w-[150px]" title={b.link_url}>
+                          <div className="text-[11px] font-mono text-slate-500 truncate max-w-[140px]" title={b.link_url}>
                             Link: <span className="text-orange-600 font-semibold">{b.link_url || '/services'}</span>
                           </div>
 
@@ -1375,16 +1375,17 @@ export default function AdminDashboard() {
                             {/* Edit */}
                             <button
                               onClick={() => openEditBannerModal(b)}
-                              className="p-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition-colors cursor-pointer"
+                              className="px-2.5 py-1.5 bg-slate-100 hover:bg-orange-50 text-slate-700 hover:text-orange-700 font-bold text-[11px] rounded-xl border border-slate-200 hover:border-orange-300 transition-colors cursor-pointer flex items-center gap-1"
                               title="Edit Banner"
                             >
-                              <Edit3 className="w-3.5 h-3.5 text-slate-600" />
+                              <Edit3 className="w-3.5 h-3.5" />
+                              <span>Edit</span>
                             </button>
 
                             {/* Delete */}
                             <button
                               onClick={() => handleDeleteBanner(b.id)}
-                              className="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl transition-colors cursor-pointer"
+                              className="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl transition-colors cursor-pointer border border-rose-200"
                               title="Delete Banner"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
@@ -5526,26 +5527,25 @@ export default function AdminDashboard() {
               {/* Banner Title */}
               <div className="space-y-1">
                 <label className="font-extrabold text-slate-800 block">
-                  Banner Title *
+                  Banner Title (Optional - Leave blank for Image-Only Banner)
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. Government Services at Your Doorstep"
+                  placeholder="e.g. Government Services at Your Doorstep (Optional)"
                   value={bannerForm.title}
                   onChange={(e) => setBannerForm({ ...bannerForm, title: e.target.value })}
                   className="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-slate-900 font-semibold outline-none focus:border-orange-500"
-                  required
                 />
               </div>
 
               {/* Banner Subtitle / Description */}
               <div className="space-y-1">
                 <label className="font-extrabold text-slate-800 block">
-                  Banner Subtitle / Description
+                  Banner Subtitle / Description (Optional)
                 </label>
                 <textarea
                   rows={2}
-                  placeholder="e.g. Apply for Community, Birth & Income Certificates with instant SMS tracking."
+                  placeholder="e.g. Apply for Community, Birth & Income Certificates with instant SMS tracking. (Optional)"
                   value={bannerForm.description}
                   onChange={(e) => setBannerForm({ ...bannerForm, description: e.target.value })}
                   className="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-slate-900 font-medium outline-none focus:border-orange-500"
@@ -5674,7 +5674,7 @@ export default function AdminDashboard() {
                 </button>
                 <button
                   type="submit"
-                  disabled={savingBanner || !bannerForm.title.trim()}
+                  disabled={savingBanner || (!bannerForm.image_file && !bannerForm.image_url_input.trim() && !bannerForm.title.trim() && !editingBanner)}
                   className="px-5 py-2.5 bg-[#0b192c] hover:bg-orange-600 text-white font-extrabold rounded-xl shadow-md transition-all flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
                 >
                   {savingBanner ? (

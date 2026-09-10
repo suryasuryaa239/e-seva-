@@ -1673,7 +1673,7 @@ app.post('/api/admin/banners', authenticateAdmin, upload.single('image'), (req, 
     }
 
     const newBanner = db.insert('banners', {
-      title: title ? title.trim() : 'E-Seva Portal Announcement',
+      title: title ? title.trim() : '',
       description: description ? description.trim() : '',
       image_url,
       link_url: link_url ? link_url.trim() : '/services',
