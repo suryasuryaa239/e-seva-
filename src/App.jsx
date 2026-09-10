@@ -8,6 +8,7 @@ import { LanguageProvider } from './context/LanguageContext';
 import TopBar from './components/TopBar';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import WhatsAppSupport from './components/WhatsAppSupport';
 
 // Pages
 import Home from './pages/Home';
@@ -189,8 +190,9 @@ function AppContent() {
         </Routes>
       </main>
 
-      {/* Global Footer - Hidden on Admin Pages */}
+      {/* Global Footer & WhatsApp Floating Support - Hidden on Admin Pages */}
       {!isAdminRoute && <Footer />}
+      {!isAdminRoute && <WhatsAppSupport />}
 
     </div>
   );
