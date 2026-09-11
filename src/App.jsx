@@ -84,15 +84,17 @@ function ScrollToTop() {
 
 function AppContent() {
   const location = useLocation();
-  const isAdminRoute = location.pathname.startsWith('/admin') || location.pathname.startsWith('/admin-');
+  const isAdminDashboard = (location.pathname.startsWith('/admin') || location.pathname.startsWith('/admin-')) && !['/admin/login', '/admin-login'].includes(location.pathname);
+  const isLoginPage = ['/login', '/register', '/admin/login', '/admin-login'].includes(location.pathname);
+  const hideFooter = isAdminDashboard || isLoginPage;
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-100 font-sans text-slate-900 selection:bg-indigo-500 selection:text-white">
       <ScrollToTop />
       
-      {/* Top Info Bar & Main Navbar - Hidden on Admin Pages */}
-      {!isAdminRoute && <TopBar />}
-      {!isAdminRoute && <Navbar />}
+      {/* Top Info Bar & Main Navbar - Hidden only on Admin Dashboard Pages */}
+      {!isAdminDashboard && <TopBar />}
+      {!isAdminDashboard && <Navbar />}
 
       {/* Main Content Area */}
       <main className="flex-1">
@@ -190,9 +192,9 @@ function AppContent() {
         </Routes>
       </main>
 
-      {/* Global Footer & WhatsApp Floating Support - Hidden on Admin Pages */}
-      {!isAdminRoute && <Footer />}
-      {!isAdminRoute && <WhatsAppSupport />}
+      {/* Global Footer & WhatsApp Floating Support - Hidden on Admin & Login Pages */}
+      {!hideFooter && <Footer />}
+      {!hideFooter && <WhatsAppSupport />}
 
     </div>
   );

@@ -2,425 +2,249 @@
   "users": [
     {
       "id": 1,
-      "created_at": "2026-09-02T12:59:21.258Z",
-      "name": "Karthik Subramanian",
+      "name": "Karthik Raja",
       "email": "user@eseva.gov.in",
       "phone": "9876543210",
-      "aadhaar_no": "5482-9102-3847",
-      "password_hash": "$2a$10$Br9CZwLabsSjdYVDxFsBVuMwifkiWboR057sgN7/YEDdLOfhh.pUi"
-    },
-    {
-      "id": 2,
-      "created_at": "2026-09-03T08:32:00.093Z",
-      "name": "Security Audit Tester",
-      "email": "audit_user_1788424319458@eseva.gov.in",
-      "phone": "9876543210",
-      "aadhaar_no": "",
-      "password_hash": "$2a$10$HqPU.CQMIhsh6rxQgVO/Du3u4u1WEzoleaOMQIreFRmWrFfebMlM2"
-    },
-    {
-      "id": 3,
-      "created_at": "2026-09-03T08:32:46.250Z",
-      "name": "Security Audit Tester",
-      "email": "audit_user_1788424366128@eseva.gov.in",
-      "phone": "9876543210",
-      "aadhaar_no": "",
-      "password_hash": "$2a$10$kFCPNK0CQtGnWN0iCJkwMuj.USRVjNpzjV3W4SaSzl7Ll2382i5ie"
-    },
-    {
-      "id": 4,
-      "created_at": "2026-09-03T08:32:56.100Z",
-      "name": "Security Audit Tester",
-      "email": "audit_user_1788424376003@eseva.gov.in",
-      "phone": "9876543210",
-      "aadhaar_no": "",
-      "password_hash": "$2a$10$RrA5LjXp1nSP6zXL8/5Lu.cwwgj25KD9BEfF/m9fvv4Ovdt.C5jS6"
-    },
-    {
-      "id": 5,
-      "created_at": "2026-09-03T08:33:59.320Z",
-      "name": "Security Audit Tester",
-      "email": "audit_user_1788424439219@eseva.gov.in",
-      "phone": "9876543210",
-      "aadhaar_no": "",
-      "password_hash": "$2a$10$prNsEcJVPNuf.vRKh6HDP.HyVGLHHGh3tQTA73wWDnK9Zus/gwSRm"
-    },
-    {
-      "id": 6,
-      "created_at": "2026-09-03T08:34:48.550Z",
-      "name": "Security Audit Tester",
-      "email": "audit_user_1788424488455@eseva.gov.in",
-      "phone": "9876543210",
-      "aadhaar_no": "",
-      "password_hash": "$2a$10$r8ixifN6vHwlSjPap7YuHe7k7bqZqCRACRvFxZYvWNw3S2J7atMpy"
-    },
-    {
-      "id": 7,
-      "created_at": "2026-09-03T08:42:35.373Z",
-      "name": "Security Audit Tester",
-      "email": "audit_user_1788424955275@eseva.gov.in",
-      "phone": "9876543210",
-      "aadhaar_no": "",
-      "password_hash": "$2a$10$Quq9YV3hq/Wyg4hzQVKkn.43d2o.ADO9mET7NIWDN18EHIdwYQYIK"
-    },
-    {
-      "id": 8,
-      "created_at": "2026-09-03T08:50:36.637Z",
-      "name": "Security Audit Tester",
-      "email": "audit_user_1788425436528@eseva.gov.in",
-      "phone": "9876543210",
-      "aadhaar_no": "",
-      "password_hash": "$2a$10$18bmZla267e3q5ZVPts5y.4tt8szWOR/2X59gcVs3.m1RTJYaCw.K"
-    },
-    {
-      "id": 9,
-      "created_at": "2026-09-03T08:50:53.823Z",
-      "name": "Security Audit Tester",
-      "email": "audit_user_1788425453715@eseva.gov.in",
-      "phone": "9876543210",
-      "aadhaar_no": "",
-      "password_hash": "$2a$10$PTRrb2GNAKuED/RejfpZLemccKAmOzLI4uudFtlqOTsRCeP9/UmF."
+      "password": "$2a$10$GzoLxZHXW2Dw8OoLnSVTjO7pXzR69IRsJGWIArIODyat2bVetc.zO",
+      "role": "citizen",
+      "created_at": "2026-09-11T12:40:07.000Z",
+      "updated_at": "2026-09-11T12:40:07.000Z"
     }
   ],
   "admins": [
     {
       "id": 1,
-      "created_at": "2026-09-02T12:59:21.260Z",
-      "name": "Super Admin",
+      "name": "System Administrator",
       "email": "admin@eseva.gov.in",
-      "role": "Super Admin",
-      "password_hash": "$2a$10$PwvDQZra4BuWc1..gDkCl.sU2HUteHNJ67enjCvHr0f5M26nxtGLK"
+      "password": "$2a$10$Ek4JISQjGp70.NEUsi8mzO31JK7PpTHxGwa3ZRlBBprnVLV5JS5U6",
+      "role": "admin",
+      "department": "Core Operations",
+      "created_at": "2026-09-11T12:40:07.000Z"
     }
   ],
   "categories": [
     {
       "id": 1,
-      "created_at": "2026-09-02T12:59:21.260Z",
       "name": "Aadhaar Services",
-      "slug": "aadhaar-services",
+      "slug": "aadhaar",
+      "description": "Aadhaar Enrollment, Address Update, Mobile Link, Duplicate Card",
       "icon": "Fingerprint",
-      "description": "Official UIDAI services including new enrollment, demographic update, photo, and PVC card orders."
+      "badge": "Fast Track",
+      "service_count": 5,
+      "created_at": "2026-09-11T12:40:07.000Z"
     },
     {
       "id": 2,
-      "created_at": "2026-09-02T12:59:21.260Z",
-      "name": "PAN Services",
+      "name": "PAN Card Services",
       "slug": "pan-services",
+      "description": "New PAN Card Application, PAN Correction, Aadhaar-PAN Link",
       "icon": "CreditCard",
-      "description": "Income Tax Department PAN card applications, correction, lost PAN reprint, and e-PAN downloads."
+      "badge": "Instant PDF",
+      "service_count": 4,
+      "created_at": "2026-09-11T12:40:07.000Z"
     },
     {
       "id": 3,
-      "created_at": "2026-09-02T12:59:21.261Z",
       "name": "Voter ID Services",
-      "slug": "voter-id-services",
+      "slug": "voter",
+      "description": "New Voter Registration, EPIC Download, Address Shift, Deletion",
       "icon": "Vote",
-      "description": "Election Commission voter registration, address transfer, correction, and Aadhaar linking."
+      "badge": "NVSP Direct",
+      "service_count": 4,
+      "created_at": "2026-09-11T12:40:07.000Z"
     },
     {
       "id": 4,
-      "created_at": "2026-09-02T12:59:21.261Z",
-      "name": "Certificate Services",
-      "slug": "certificate-services",
-      "icon": "FileText",
-      "description": "Government issued certificates: Income, Community/Caste, Native/Domicile, First Graduate, Birth/Death."
+      "name": "Revenue Certificates",
+      "slug": "certificates",
+      "description": "Income Certificate, Community Certificate, Native/Residence Certificate",
+      "icon": "Award",
+      "badge": "Digital Sign",
+      "service_count": 6,
+      "created_at": "2026-09-11T12:40:07.000Z"
     },
     {
       "id": 5,
-      "created_at": "2026-09-02T12:59:21.261Z",
-      "name": "Land / Patta Services",
+      "name": "Land & Patta Services",
       "slug": "land-patta-services",
-      "icon": "MapPin",
-      "description": "Revenue department land records, Patta transfer, Chitta extracts, A-Register, and FMB sketches."
+      "description": "Patta Chitta Copy, Encumbrance Certificate (EC), Land Transfer",
+      "icon": "Map",
+      "badge": "Land Records",
+      "service_count": 4,
+      "created_at": "2026-09-11T12:40:07.000Z"
     },
     {
       "id": 6,
-      "created_at": "2026-09-02T12:59:21.262Z",
       "name": "Passport Services",
-      "slug": "passport-services",
-      "icon": "Globe",
-      "description": "Ministry of External Affairs fresh passport, renewal, Tatkaal applications, and PCC certificates."
+      "slug": "passport",
+      "description": "Fresh Passport Application, Re-issue, Police Clearance Certificate",
+      "icon": "FileText",
+      "badge": "Sewa Kendra",
+      "service_count": 3,
+      "created_at": "2026-09-11T12:40:07.000Z"
     },
     {
       "id": 7,
-      "created_at": "2026-09-02T12:59:21.262Z",
-      "name": "Driving Licence / Vehicle Services",
-      "slug": "driving-licence-vehicle-services",
+      "name": "RTO & Driving License",
+      "slug": "driving-licence",
+      "description": "Learner License (LLR), Driving License Renewal, RC Transfer",
       "icon": "Car",
-      "description": "RTO Learner licence (LLR), Permanent DL, DL renewal, vehicle RC transfer, and fitness certificates."
+      "badge": "Parivahan",
+      "service_count": 5,
+      "created_at": "2026-09-11T12:40:08.000Z"
     },
     {
       "id": 8,
-      "created_at": "2026-09-02T12:59:21.263Z",
-      "name": "Business Services",
-      "slug": "business-services",
+      "name": "Business & GST",
+      "slug": "business",
+      "description": "MSME Udyam Registration, GST Registration, FSSAI Food License",
       "icon": "Briefcase",
-      "description": "GST registration, FSSAI Food Licence, Udyam MSME, Shop & Establishment, and Digital Signature (DSC)."
+      "badge": "MSME Govt",
+      "service_count": 4,
+      "created_at": "2026-09-11T12:40:08.000Z"
     },
     {
       "id": 9,
-      "created_at": "2026-09-02T12:59:21.263Z",
-      "name": "Utility Services",
-      "slug": "utility-services",
+      "name": "Utility Bill Payments",
+      "slug": "utility",
+      "description": "TNEB Electricity Bill Payment, Metro Water, Property Tax Clearance",
       "icon": "Zap",
-      "description": "Electricity (EB) new connection/name transfer, Property tax online payment, Water connection."
+      "badge": "Auto Sync",
+      "service_count": 4,
+      "created_at": "2026-09-11T12:40:08.000Z"
     },
     {
       "id": 10,
-      "created_at": "2026-09-02T12:59:21.263Z",
-      "name": "Other Digital Services",
+      "name": "Ration Card & Social Welfare",
       "slug": "other-digital-services",
-      "icon": "Grid",
-      "description": "Ration Smart Card, PF/EPFO claims, Ayushman Bharat Card, Employment Exchange, and Jeevan Pramaan."
+      "description": "Smart Ration Card Correction, Family Member Add/Delete",
+      "icon": "ShoppingBag",
+      "badge": "TNPDS",
+      "service_count": 5,
+      "created_at": "2026-09-11T12:40:08.000Z"
     }
   ],
   "services": [
     {
       "id": 1,
-      "created_at": "2026-09-02T12:59:21.264Z",
-      "category_id": 1,
+      "category_id": null,
+      "category_slug": "aadhaar",
       "name": "Aadhaar Address Update",
       "slug": "aadhaar-address-update",
-      "description": "Update your residential address in official UIDAI database with valid proof of address.",
-      "eligibility": "Resident Indian citizen holding a valid 12-digit Aadhaar card with active registered mobile number.",
-      "processing_info": "Request processed by UIDAI backend within 3 to 7 working days. e-Aadhaar downloadable immediately after approval.",
-      "processing_time": "3-5 Working Days",
-      "fee": 50,
-      "status": "Active"
+      "description": "Update your resident address in official UIDAI Aadhaar Database with proof of address.",
+      "fee": "50.00",
+      "processing_time": "2-3 Working Days",
+      "documents_required": [
+        "Address Proof (Voter ID / EB Bill / Bank Passbook)",
+        "Aadhaar Card Copy"
+      ],
+      "eligibility": [
+        "Applicant must hold a valid 12-digit Aadhaar number",
+        "Active mobile number registered for OTP"
+      ],
+      "status": "active",
+      "created_at": "2026-09-11T12:40:08.000Z"
     },
     {
       "id": 2,
-      "created_at": "2026-09-02T12:59:21.268Z",
-      "category_id": 1,
-      "name": "PVC Aadhaar Card Order",
-      "slug": "pvc-aadhaar-card-order",
-      "description": "Order durable, waterproof plastic PVC Aadhaar Card with microtext, ghost image, and QR code.",
-      "eligibility": "Any registered Aadhaar holder.",
-      "processing_info": "Printed by Speed Post printing division and delivered directly to registered home address.",
-      "processing_time": "7-10 Working Days",
-      "fee": 50,
-      "status": "Active"
+      "category_id": null,
+      "category_slug": "pan-services",
+      "name": "New PAN Card Application (Form 49A)",
+      "slug": "new-pan-card",
+      "description": "Apply for fresh 10-digit Permanent Account Number (PAN) Card with physical & digital e-PAN delivery.",
+      "fee": "110.00",
+      "processing_time": "5-7 Working Days",
+      "documents_required": [
+        "Identity Proof",
+        "Address Proof",
+        "Date of Birth Proof",
+        "Passport Photograph"
+      ],
+      "eligibility": [
+        "Indian Citizens / Non-Individual Entities without existing PAN"
+      ],
+      "status": "active",
+      "created_at": "2026-09-11T12:40:08.000Z"
     },
     {
       "id": 3,
-      "created_at": "2026-09-02T12:59:21.270Z",
-      "category_id": 1,
-      "name": "Aadhaar Name & DoB Correction",
-      "slug": "aadhaar-name-dob-correction",
-      "description": "Correct typographical errors in Name or Date of Birth in your UIDAI record.",
-      "eligibility": "Allowed only up to 2 times for Name and 1 time for DoB as per UIDAI rules.",
-      "processing_info": "Verified against official Government birth certificate or passport.",
-      "processing_time": "5-7 Working Days",
-      "fee": 50,
-      "status": "Active"
+      "category_id": null,
+      "category_slug": "certificates",
+      "name": "Income Certificate (Varumaana Saanrithazh)",
+      "slug": "income-certificate",
+      "description": "Official e-District revenue department certificate declaring annual family income.",
+      "fee": "60.00",
+      "processing_time": "3-5 Working Days",
+      "documents_required": [
+        "Aadhaar Card",
+        "Ration Card Copy",
+        "Salary Slip / Income Declaration",
+        "Self Photo"
+      ],
+      "eligibility": [
+        "Permanent resident of Tamil Nadu"
+      ],
+      "status": "active",
+      "created_at": "2026-09-11T12:40:08.000Z"
     },
     {
       "id": 4,
-      "created_at": "2026-09-02T12:59:21.273Z",
-      "category_id": 1,
-      "name": "New Aadhaar Enrollment Booking",
-      "slug": "new-aadhaar-enrollment-booking",
-      "description": "Book appointment slot and file initial pre-enrollment for new Aadhaar issuance.",
-      "eligibility": "All Indian residents, infants, and children.",
-      "processing_info": "Biometric capture completed at designated local E-Seva / UIDAI Kendra.",
-      "processing_time": "15-30 Working Days",
-      "fee": 0,
-      "status": "Active"
+      "category_id": null,
+      "category_slug": "certificates",
+      "name": "Community Certificate (Jaathi Saanrithazh)",
+      "slug": "community-certificate",
+      "description": "Government authorized caste/community verification certificate (BC/MBC/SC/ST).",
+      "fee": "60.00",
+      "processing_time": "5-7 Working Days",
+      "documents_required": [
+        "Applicant Aadhaar",
+        "Parent Community Certificate Copy",
+        "School Transfer Certificate",
+        "Ration Card"
+      ],
+      "eligibility": [
+        "Resident belonging to recognized community categories"
+      ],
+      "status": "active",
+      "created_at": "2026-09-11T12:40:08.000Z"
     },
     {
       "id": 5,
-      "created_at": "2026-09-02T12:59:21.276Z",
-      "category_id": 2,
-      "name": "New PAN Card Application (Form 49A)",
-      "slug": "new-pan-card-application",
-      "description": "Apply for fresh Permanent Account Number (PAN) for individuals and entities.",
-      "eligibility": "Any Indian citizen, NRI, or entity requiring PAN for financial transactions.",
-      "processing_info": "Physical PAN card dispatched by NSDL/UTIITSL. Instant e-PAN sent to email.",
-      "processing_time": "7-12 Working Days",
-      "fee": 107,
-      "status": "Active"
+      "category_id": null,
+      "category_slug": "land-patta-services",
+      "name": "Patta Chitta Copy (AnyTamilLand)",
+      "slug": "patta-chitta-extract",
+      "description": "Extract official e-Patta and Chitta revenue record extracts online.",
+      "fee": "30.00",
+      "processing_time": "Instant / 24 Hours",
+      "documents_required": [
+        "District, Taluk & Village Details",
+        "Survey Number / Sub-division Number / Patta Number"
+      ],
+      "eligibility": [
+        "Land owner or authorized property search applicant"
+      ],
+      "status": "active",
+      "created_at": "2026-09-11T12:40:08.000Z"
     },
     {
       "id": 6,
-      "created_at": "2026-09-02T12:59:21.280Z",
-      "category_id": 2,
-      "name": "PAN Card Correction / Update",
-      "slug": "pan-card-correction-update",
-      "description": "Correct details in existing PAN card such as Name, DOB, Father Name, or Photo.",
-      "eligibility": "Existing PAN card holders.",
-      "processing_info": "Reprint with updated info issued by NSDL.",
-      "processing_time": "7-10 Working Days",
-      "fee": 107,
-      "status": "Active"
-    },
-    {
-      "id": 7,
-      "created_at": "2026-09-02T12:59:21.283Z",
-      "category_id": 3,
-      "name": "New Voter Registration (Form 6)",
-      "slug": "new-voter-registration-form-6",
-      "description": "Enroll as a new voter in the Electoral Roll of Election Commission of India.",
-      "eligibility": "Indian citizens aged 18 years and above on the qualifying date.",
-      "processing_info": "Field Verification by Booth Level Officer (BLO) followed by Electoral Registration Officer (ERO) approval.",
-      "processing_time": "15-25 Working Days",
-      "fee": 0,
-      "status": "Active"
-    },
-    {
-      "id": 8,
-      "created_at": "2026-09-02T12:59:21.288Z",
-      "category_id": 3,
-      "name": "Voter Address Transfer / Correction (Form 8)",
-      "slug": "voter-address-transfer-form-8",
-      "description": "Shift constituency address or correct voter details in EPIC card.",
-      "eligibility": "Registered voters changing residence.",
-      "processing_info": "Updated EPIC card generated with QR code.",
-      "processing_time": "10-20 Working Days",
-      "fee": 25,
-      "status": "Active"
-    },
-    {
-      "id": 9,
-      "created_at": "2026-09-02T12:59:21.292Z",
-      "category_id": 4,
-      "name": "Income Certificate",
-      "slug": "income-certificate",
-      "description": "Official revenue document certifying annual family income from all sources.",
-      "eligibility": "Permanent residents of the state requiring income verification for education/subsidies.",
-      "processing_info": "Verified by Village Administrative Officer (VAO) & Revenue Inspector (RI) and issued by Tahsildar.",
-      "processing_time": "7-14 Working Days",
-      "fee": 60,
-      "status": "Active"
-    },
-    {
-      "id": 10,
-      "created_at": "2026-09-02T12:59:21.296Z",
-      "category_id": 4,
-      "name": "Community / Caste Certificate",
-      "slug": "community-caste-certificate",
-      "description": "Revenue department certificate verifying community / caste category (BC/MBC/SC/ST).",
-      "eligibility": "Residents belonging to recognized state/central community lists.",
-      "processing_info": "Field inquiry by Revenue Inspector & approved by Tahsildar with QR digitally signed certificate.",
-      "processing_time": "10-15 Working Days",
-      "fee": 60,
-      "status": "Active"
-    },
-    {
-      "id": 11,
-      "created_at": "2026-09-02T12:59:21.299Z",
-      "category_id": 4,
-      "name": "Native / Domicile Certificate",
-      "slug": "native-domicile-certificate",
-      "description": "Official proof of continuous residence in the state for education and job quotas.",
-      "eligibility": "Continuous residence for specified statutory period.",
-      "processing_info": "VAO & RI verification.",
-      "processing_time": "7-14 Working Days",
-      "fee": 60,
-      "status": "Active"
-    },
-    {
-      "id": 12,
-      "created_at": "2026-09-02T12:59:21.302Z",
-      "category_id": 4,
-      "name": "First Graduate Certificate",
-      "slug": "first-graduate-certificate",
-      "description": "Certificate for students who are the first person in their family to pursue graduation (for tuition fee concession).",
-      "eligibility": "No other graduate degree holders in the applicant's immediate family.",
-      "processing_info": "Requires joint family declaration.",
-      "processing_time": "10-14 Working Days",
-      "fee": 60,
-      "status": "Active"
-    },
-    {
-      "id": 13,
-      "created_at": "2026-09-02T12:59:21.307Z",
-      "category_id": 5,
-      "name": "Patta Transfer Application",
-      "slug": "patta-transfer-application",
-      "description": "Apply for Patta / Chitta ownership name transfer post land purchase or inheritance.",
-      "eligibility": "Property owners with registered sale deed or settlement deed.",
-      "processing_info": "Surveyor inspection & Tahsildar approval.",
-      "processing_time": "15-30 Working Days",
-      "fee": 100,
-      "status": "Active"
-    },
-    {
-      "id": 14,
-      "created_at": "2026-09-02T12:59:21.312Z",
-      "category_id": 5,
-      "name": "Chitta Extract & FMB Map Download",
-      "slug": "chitta-extract-fmb-download",
-      "description": "Get verified digital copy of Chitta land record and Field Measurement Book (FMB) map.",
-      "eligibility": "Public domain service for land buyers and owners.",
-      "processing_info": "Instant digital extraction from State Land Portal.",
-      "processing_time": "1 Working Day",
-      "fee": 50,
-      "status": "Active"
-    },
-    {
-      "id": 15,
-      "created_at": "2026-09-02T12:59:21.314Z",
-      "category_id": 6,
-      "name": "Fresh Passport Application",
-      "slug": "fresh-passport-application",
-      "description": "Apply for fresh 36 or 60 page Ordinary Indian Passport under Normal scheme.",
-      "eligibility": "Indian citizens with valid identity and address proof.",
-      "processing_info": "Police Verification Report (PVR) followed by Passport Seva Kendra (PSK) appointment.",
-      "processing_time": "15-20 Working Days",
-      "fee": 1500,
-      "status": "Active"
-    },
-    {
-      "id": 16,
-      "created_at": "2026-09-02T12:59:21.320Z",
-      "category_id": 7,
-      "name": "Learner Licence (LLR) Booking",
-      "slug": "learner-licence-llr-booking",
-      "description": "Apply for LLR test for Motorcycle, Light Motor Vehicle (Car) or Commercial category.",
-      "eligibility": "Minimum 16 years for gearless two-wheeler, 18 years for LMV car.",
-      "processing_info": "Computerized RTO test for traffic rules.",
-      "processing_time": "3-5 Working Days",
-      "fee": 350,
-      "status": "Active"
-    },
-    {
-      "id": 17,
-      "created_at": "2026-09-02T12:59:21.323Z",
-      "category_id": 8,
-      "name": "GST Registration Application",
-      "slug": "gst-registration-application",
-      "description": "Obtain 15-digit GSTIN for proprietorship, partnership, or private limited business.",
-      "eligibility": "Businesses with turnover exceeding statutory threshold or conducting inter-state supply.",
-      "processing_info": "Approved by Commercial Tax Officer.",
-      "processing_time": "5-7 Working Days",
-      "fee": 499,
-      "status": "Active"
-    },
-    {
-      "id": 18,
-      "created_at": "2026-09-02T12:59:21.328Z",
-      "category_id": 9,
-      "name": "Electricity Connection (EB) Name Transfer",
-      "slug": "electricity-eb-name-transfer",
-      "description": "Transfer EB service connection meter to new property owner name.",
-      "eligibility": "New property owners with valid registered property document.",
-      "processing_info": "RTI Inspection by TNEB / Electricity Board Engineer.",
-      "processing_time": "10-15 Working Days",
-      "fee": 200,
-      "status": "Active"
-    },
-    {
-      "id": 19,
-      "created_at": "2026-09-02T12:59:21.332Z",
-      "category_id": 10,
-      "name": "Ration Smart Card Add/Remove Member",
-      "slug": "ration-smart-card-member-update",
-      "description": "Add new born child or newly wed spouse or remove deceased member in Smart Ration Card.",
-      "eligibility": "Existing Smart Ration card head of family.",
-      "processing_info": "Civil Supplies department field inspector check.",
-      "processing_time": "7-15 Working Days",
-      "fee": 30,
-      "status": "Active"
+      "category_id": null,
+      "category_slug": "land-patta-services",
+      "name": "Encumbrance Certificate (EC Online)",
+      "slug": "encumbrance-certificate",
+      "description": "Verify property ownership history and encumbrances registered at Sub-Registrar Office (SRO).",
+      "fee": "100.00",
+      "processing_time": "1-2 Working Days",
+      "documents_required": [
+        "Document Number or Survey Details",
+        "Registration Year Range"
+      ],
+      "eligibility": [
+        "Public service search available for all properties"
+      ],
+      "status": "active",
+      "created_at": "2026-09-11T12:40:08.000Z"
     }
   ],
   "service_fields": [
@@ -1805,180 +1629,85 @@
   "applications": [
     {
       "id": 1,
-      "created_at": "2026-09-02T12:59:21.336Z",
-      "application_number": "APP-20260902-8492",
+      "application_number": "ESV-2026-000101",
       "user_id": 1,
-      "service_id": 1,
-      "user_name": "Karthik Subramanian",
-      "user_email": "user@eseva.gov.in",
-      "user_phone": "9876543210",
-      "status": "Processing",
-      "admin_remarks": "Document verification completed by VAO. Sent to UIDAI backend for final update.",
-      "total_fee": 50
+      "applicant_name": "Karthik Raja",
+      "applicant_email": "user@eseva.gov.in",
+      "applicant_phone": "9876543210",
+      "service_id": null,
+      "service_name": "Income Certificate (Varumaana Saanrithazh)",
+      "service_slug": "income-certificate",
+      "status": "Approved",
+      "fee_amount": "60.00",
+      "payment_status": "Paid",
+      "payment_id": "PAY-89230198",
+      "form_data": {
+        "annual_income": "120000",
+        "district": "Chennai",
+        "taluk": "Egmore"
+      },
+      "documents": [
+        {
+          "name": "Aadhaar_Card.pdf",
+          "url": "/uploads/documents/sample.pdf"
+        }
+      ],
+      "rejection_reason": null,
+      "remarks": null,
+      "created_at": "2026-09-11T12:40:08.000Z",
+      "updated_at": "2026-09-11T12:40:08.000Z"
     },
     {
       "id": 2,
-      "created_at": "2026-09-03T08:32:00.388Z",
-      "application_number": "ESV-2026-000001",
-      "user_id": 2,
-      "service_id": 1,
-      "user_name": "Security Audit Tester",
-      "user_email": "audit_user_1788424319458@eseva.gov.in",
-      "user_phone": "9876543210",
-      "status": "SUBMITTED",
-      "current_step": 5,
-      "admin_remarks": "Application submitted successfully. Under verification by E-Seva team.",
-      "total_fee": 50,
-      "submitted_at": "2026-09-03T08:32:00.402Z",
-      "updated_at": "2026-09-03T08:32:00.432Z",
-      "payment_status": "PAID"
+      "application_number": "ESV-2026-000102",
+      "user_id": 1,
+      "applicant_name": "Karthik Raja",
+      "applicant_email": "user@eseva.gov.in",
+      "applicant_phone": "9876543210",
+      "service_id": null,
+      "service_name": "Aadhaar Address Update",
+      "service_slug": "aadhaar-address-update",
+      "status": "Under Review",
+      "fee_amount": "50.00",
+      "payment_status": "Paid",
+      "payment_id": "PAY-89230245",
+      "form_data": {
+        "new_address": "Door 45, Gandhi Road, Adyar, Chennai - 600020"
+      },
+      "documents": [
+        {
+          "name": "Voter_ID_Proof.jpg",
+          "url": "/uploads/documents/sample.jpg"
+        }
+      ],
+      "rejection_reason": null,
+      "remarks": null,
+      "created_at": "2026-09-11T12:40:09.000Z",
+      "updated_at": "2026-09-11T12:40:09.000Z"
     },
     {
       "id": 3,
-      "created_at": "2026-09-03T08:32:46.480Z",
-      "application_number": "ESV-2026-000002",
-      "user_id": 3,
-      "service_id": 1,
-      "user_name": "Security Audit Tester",
-      "user_email": "audit_user_1788424366128@eseva.gov.in",
-      "user_phone": "9876543210",
-      "status": "SUBMITTED",
-      "current_step": 5,
-      "admin_remarks": "Application submitted successfully. Under verification by E-Seva team.",
-      "total_fee": 50,
-      "submitted_at": "2026-09-03T08:32:46.491Z",
-      "updated_at": "2026-09-03T08:32:46.521Z",
-      "payment_status": "PAID"
-    },
-    {
-      "id": 4,
-      "created_at": "2026-09-03T08:32:56.350Z",
-      "application_number": "ESV-2026-000003",
-      "user_id": 4,
-      "service_id": 1,
-      "user_name": "Security Audit Tester",
-      "user_email": "audit_user_1788424376003@eseva.gov.in",
-      "user_phone": "9876543210",
-      "status": "SUBMITTED",
-      "current_step": 5,
-      "admin_remarks": "Application submitted successfully. Under verification by E-Seva team.",
-      "total_fee": 50,
-      "submitted_at": "2026-09-03T08:32:56.355Z",
-      "updated_at": "2026-09-03T08:32:56.373Z",
-      "payment_status": "PAID"
-    },
-    {
-      "id": 5,
-      "created_at": "2026-09-03T08:33:59.327Z",
-      "application_number": "ESV-2026-000004",
-      "user_id": 5,
-      "service_id": 1,
-      "user_name": "Security Audit Tester",
-      "user_email": "audit_user_1788424439219@eseva.gov.in",
-      "user_phone": "9876543210",
-      "status": "SUBMITTED",
-      "current_step": 5,
-      "admin_remarks": "Application submitted successfully. Under verification by E-Seva team.",
-      "total_fee": 50,
-      "submitted_at": "2026-09-03T08:33:59.333Z",
-      "updated_at": "2026-09-03T08:33:59.333Z"
-    },
-    {
-      "id": 6,
-      "created_at": "2026-09-03T08:34:48.746Z",
-      "application_number": "ESV-2026-000005",
-      "user_id": 6,
-      "service_id": 1,
-      "user_name": "Security Audit Tester",
-      "user_email": "audit_user_1788424488455@eseva.gov.in",
-      "user_phone": "9876543210",
-      "status": "SUBMITTED",
-      "current_step": 5,
-      "admin_remarks": "Application submitted successfully. Under verification by E-Seva team.",
-      "total_fee": 50,
-      "submitted_at": "2026-09-03T08:34:48.754Z",
-      "updated_at": "2026-09-03T08:34:48.784Z",
-      "payment_status": "PAID"
-    },
-    {
-      "id": 7,
-      "created_at": "2026-09-03T08:42:35.644Z",
-      "application_number": "ESV-2026-000006",
-      "user_id": 7,
-      "service_id": 1,
-      "user_name": "Security Audit Tester",
-      "user_email": "audit_user_1788424955275@eseva.gov.in",
-      "user_phone": "9876543210",
-      "status": "Processing",
-      "current_step": 5,
-      "admin_remarks": "Verified documents.",
-      "total_fee": 50,
-      "submitted_at": "2026-09-03T08:42:35.651Z",
-      "updated_at": "2026-09-03T08:42:35.676Z",
-      "payment_status": "PAID"
-    },
-    {
-      "id": 8,
-      "created_at": "2026-09-03T08:50:36.919Z",
-      "application_number": "ESV-2026-000007",
-      "user_id": 8,
-      "service_id": 1,
-      "user_name": "Security Audit Tester",
-      "user_email": "audit_user_1788425436528@eseva.gov.in",
-      "user_phone": "9876543210",
-      "status": "Processing",
-      "current_step": 5,
-      "admin_remarks": "Verified documents.",
-      "total_fee": 50,
-      "submitted_at": "2026-09-03T08:50:36.930Z",
-      "updated_at": "2026-09-03T08:50:36.977Z",
-      "payment_status": "PAID"
-    },
-    {
-      "id": 9,
-      "created_at": "2026-09-03T08:50:54.117Z",
-      "application_number": "ESV-2026-000008",
-      "user_id": 9,
-      "service_id": 1,
-      "user_name": "Security Audit Tester",
-      "user_email": "audit_user_1788425453715@eseva.gov.in",
-      "user_phone": "9876543210",
-      "status": "Processing",
-      "current_step": 5,
-      "admin_remarks": "Verified documents.",
-      "total_fee": 50,
-      "submitted_at": "2026-09-03T08:50:54.137Z",
-      "updated_at": "2026-09-03T08:50:54.171Z",
-      "payment_status": "PAID"
-    },
-    {
-      "id": 10,
-      "created_at": "2026-09-03T10:00:54.672Z",
-      "application_number": "ESV-2026-000009",
-      "user_id": null,
-      "service_id": 3,
-      "user_name": "Surya a",
-      "user_email": "suryasiva637480@gmail.com",
-      "user_phone": "6374889944",
-      "status": "SUBMITTED",
-      "current_step": 5,
-      "submitted_at": "2026-09-03T10:00:54.672Z",
-      "admin_remarks": "Application submitted successfully. Under verification by E-Seva team.",
-      "total_fee": 50
-    },
-    {
-      "id": 11,
-      "created_at": "2026-09-03T19:54:31.280Z",
-      "application_number": "ESV-2026-DRAFT-000001",
+      "application_number": "ESV-2026-000103",
       "user_id": 1,
-      "service_id": 1,
-      "user_name": "Karthik Subramanian",
-      "user_email": "user@eseva.gov.in",
-      "user_phone": "9876543210",
-      "status": "DRAFT",
-      "current_step": "2",
-      "admin_remarks": "Application saved as draft.",
-      "total_fee": 50
+      "applicant_name": "Suresh Kumar",
+      "applicant_email": "suresh.k@gmail.com",
+      "applicant_phone": "9444123456",
+      "service_id": null,
+      "service_name": "Patta Chitta Copy (AnyTamilLand)",
+      "service_slug": "patta-chitta-extract",
+      "status": "Processing",
+      "fee_amount": "30.00",
+      "payment_status": "Paid",
+      "payment_id": "PAY-89230399",
+      "form_data": {
+        "survey_no": "142/3A",
+        "village": "Velachery"
+      },
+      "documents": [],
+      "rejection_reason": null,
+      "remarks": null,
+      "created_at": "2026-09-11T12:40:09.000Z",
+      "updated_at": "2026-09-11T12:40:09.000Z"
     }
   ],
   "application_field_values": [
@@ -2232,7 +1961,7 @@
     },
     {
       "id": 32,
-      "created_at": "2026-09-03T19:54:31.284Z",
+      "created_at": "2026-09-11T16:11:56.639Z",
       "application_id": 11,
       "field_id": null,
       "field_label": "user_name",
@@ -2240,7 +1969,7 @@
     },
     {
       "id": 33,
-      "created_at": "2026-09-03T19:54:31.286Z",
+      "created_at": "2026-09-11T16:11:56.641Z",
       "application_id": 11,
       "field_id": null,
       "field_label": "dob",
@@ -2248,7 +1977,7 @@
     },
     {
       "id": 34,
-      "created_at": "2026-09-03T19:54:31.288Z",
+      "created_at": "2026-09-11T16:11:56.643Z",
       "application_id": 11,
       "field_id": null,
       "field_label": "gender",
@@ -2256,7 +1985,7 @@
     },
     {
       "id": 35,
-      "created_at": "2026-09-03T19:54:31.290Z",
+      "created_at": "2026-09-11T16:11:56.645Z",
       "application_id": 11,
       "field_id": null,
       "field_label": "user_phone",
@@ -2264,7 +1993,7 @@
     },
     {
       "id": 36,
-      "created_at": "2026-09-03T19:54:31.292Z",
+      "created_at": "2026-09-11T16:11:56.649Z",
       "application_id": 11,
       "field_id": null,
       "field_label": "user_email",
@@ -2272,7 +2001,7 @@
     },
     {
       "id": 37,
-      "created_at": "2026-09-03T19:54:31.295Z",
+      "created_at": "2026-09-11T16:11:56.651Z",
       "application_id": 11,
       "field_id": null,
       "field_label": "address",
@@ -2280,91 +2009,91 @@
     },
     {
       "id": 38,
-      "created_at": "2026-09-03T19:54:31.299Z",
+      "created_at": "2026-09-11T16:11:56.654Z",
       "application_id": 11,
       "field_id": 9,
       "field_label": "District",
-      "value": "Chennai"
+      "value": ""
     },
     {
       "id": 39,
-      "created_at": "2026-09-03T19:54:31.303Z",
+      "created_at": "2026-09-11T16:11:56.657Z",
       "application_id": 11,
       "field_id": 10,
       "field_label": "State",
-      "value": "Tamil Nadu"
+      "value": ""
     },
     {
       "id": 40,
-      "created_at": "2026-09-03T19:54:31.307Z",
+      "created_at": "2026-09-11T16:11:56.659Z",
       "application_id": 11,
       "field_id": 8,
       "field_label": "6-Digit PIN Code",
-      "value": "600017"
+      "value": ""
     },
     {
       "id": 41,
-      "created_at": "2026-09-03T19:54:31.312Z",
+      "created_at": "2026-09-11T16:11:56.662Z",
       "application_id": 11,
       "field_id": 1,
       "field_label": "12-Digit Aadhaar Number",
-      "value": "123456789012"
+      "value": ""
     },
     {
       "id": 42,
-      "created_at": "2026-09-03T19:54:31.314Z",
+      "created_at": "2026-09-11T16:11:56.666Z",
       "application_id": 11,
       "field_id": 2,
       "field_label": "Full Name (as in Aadhaar)",
-      "value": "Karthik Subramanian"
+      "value": ""
     },
     {
       "id": 43,
-      "created_at": "2026-09-03T19:54:31.316Z",
+      "created_at": "2026-09-11T16:11:56.669Z",
       "application_id": 11,
       "field_id": 3,
       "field_label": "C/O (Father / Husband / Guardian Name)",
-      "value": "Subramanian"
+      "value": ""
     },
     {
       "id": 44,
-      "created_at": "2026-09-03T19:54:31.320Z",
+      "created_at": "2026-09-11T16:11:56.672Z",
       "application_id": 11,
       "field_id": 4,
       "field_label": "House / Building / Apartment No.",
-      "value": "Flat 101, block A"
+      "value": ""
     },
     {
       "id": 45,
-      "created_at": "2026-09-03T19:54:31.331Z",
+      "created_at": "2026-09-11T16:11:56.674Z",
       "application_id": 11,
       "field_id": 5,
       "field_label": "Street / Road / Lane Name",
-      "value": "Anna Salai"
+      "value": ""
     },
     {
       "id": 46,
-      "created_at": "2026-09-03T19:54:31.336Z",
+      "created_at": "2026-09-11T16:11:56.677Z",
       "application_id": 11,
       "field_id": 6,
       "field_label": "Landmark",
-      "value": "Near Metro"
+      "value": ""
     },
     {
       "id": 47,
-      "created_at": "2026-09-03T19:54:31.346Z",
+      "created_at": "2026-09-11T16:11:56.680Z",
       "application_id": 11,
       "field_id": 7,
       "field_label": "Area / Locality / Sector",
-      "value": "T Nagar"
+      "value": ""
     },
     {
       "id": 48,
-      "created_at": "2026-09-03T19:54:31.355Z",
+      "created_at": "2026-09-11T16:11:56.684Z",
       "application_id": 11,
       "field_id": 11,
       "field_label": "Reason for Address Change",
-      "value": "Relocation"
+      "value": ""
     }
   ],
   "application_documents": [
@@ -2399,252 +2128,33 @@
   "payments": [
     {
       "id": 1,
-      "created_at": "2026-09-02T12:59:21.339Z",
-      "application_id": 1,
-      "payment_number": "PAY-8492-98401",
-      "amount": 50,
-      "payment_method": "UPI (GPay)",
-      "payment_status": "Completed",
-      "paid_at": "2026-09-02T12:59:21.339Z"
+      "payment_id": "PAY-89230198",
+      "application_number": "ESV-2026-000101",
+      "user_id": 1,
+      "amount": "60.00",
+      "payment_method": "UPI / Razorpay",
+      "status": "Success",
+      "transaction_date": "2026-09-11T12:40:09.000Z"
     },
     {
       "id": 2,
-      "created_at": "2026-09-03T08:32:00.408Z",
-      "application_id": 2,
-      "user_id": 2,
-      "payment_number": "PAY-2026-635613",
-      "amount": 50,
-      "payment_method": "Online Facilitation Fee / UPI",
-      "payment_status": "Completed",
-      "paid_at": "2026-09-03T08:32:00.408Z"
+      "payment_id": "PAY-89230245",
+      "application_number": "ESV-2026-000102",
+      "user_id": 1,
+      "amount": "50.00",
+      "payment_method": "UPI / Razorpay",
+      "status": "Success",
+      "transaction_date": "2026-09-11T12:40:09.000Z"
     },
     {
       "id": 3,
-      "created_at": "2026-09-03T08:32:00.421Z",
-      "application_id": 2,
-      "user_id": 2,
-      "amount": 50,
-      "currency": "INR",
-      "payment_gateway": "RAZORPAY_SANDBOX",
-      "payment_order_id": "ORD-2026-839395",
-      "payment_transaction_id": "TXN-TEST-1788424320426",
-      "payment_status": "PAID",
-      "payment_method": "Online UPI / NetBanking",
-      "initiated_at": "2026-09-03T08:32:00.421Z",
-      "metadata": {
-        "service_name": "Aadhaar Address Update",
-        "application_number": "ESV-2026-000001"
-      },
-      "paid_at": "2026-09-03T08:32:00.430Z",
-      "updated_at": "2026-09-03T08:32:00.430Z"
-    },
-    {
-      "id": 4,
-      "created_at": "2026-09-03T08:32:46.496Z",
-      "application_id": 3,
-      "user_id": 3,
-      "payment_number": "PAY-2026-214618",
-      "amount": 50,
-      "payment_method": "Online Facilitation Fee / UPI",
-      "payment_status": "Completed",
-      "paid_at": "2026-09-03T08:32:46.496Z"
-    },
-    {
-      "id": 5,
-      "created_at": "2026-09-03T08:32:46.510Z",
-      "application_id": 3,
-      "user_id": 3,
-      "amount": 50,
-      "currency": "INR",
-      "payment_gateway": "RAZORPAY_SANDBOX",
-      "payment_order_id": "ORD-2026-988909",
-      "payment_transaction_id": "TXN-TEST-1788424366515",
-      "payment_status": "PAID",
-      "payment_method": "Online UPI / NetBanking",
-      "initiated_at": "2026-09-03T08:32:46.510Z",
-      "metadata": {
-        "service_name": "Aadhaar Address Update",
-        "application_number": "ESV-2026-000002"
-      },
-      "paid_at": "2026-09-03T08:32:46.519Z",
-      "updated_at": "2026-09-03T08:32:46.520Z"
-    },
-    {
-      "id": 6,
-      "created_at": "2026-09-03T08:32:56.359Z",
-      "application_id": 4,
-      "user_id": 4,
-      "payment_number": "PAY-2026-833890",
-      "amount": 50,
-      "payment_method": "Online Facilitation Fee / UPI",
-      "payment_status": "Completed",
-      "paid_at": "2026-09-03T08:32:56.359Z"
-    },
-    {
-      "id": 7,
-      "created_at": "2026-09-03T08:32:56.365Z",
-      "application_id": 4,
-      "user_id": 4,
-      "amount": 50,
-      "currency": "INR",
-      "payment_gateway": "RAZORPAY_SANDBOX",
-      "payment_order_id": "ORD-2026-271088",
-      "payment_transaction_id": "TXN-TEST-1788424376369",
-      "payment_status": "PAID",
-      "payment_method": "Online UPI / NetBanking",
-      "initiated_at": "2026-09-03T08:32:56.365Z",
-      "metadata": {
-        "service_name": "Aadhaar Address Update",
-        "application_number": "ESV-2026-000003"
-      },
-      "paid_at": "2026-09-03T08:32:56.371Z",
-      "updated_at": "2026-09-03T08:32:56.371Z"
-    },
-    {
-      "id": 8,
-      "created_at": "2026-09-03T08:33:59.336Z",
-      "application_id": 5,
-      "user_id": 5,
-      "payment_number": "PAY-2026-770339",
-      "amount": 50,
-      "payment_method": "Online Facilitation Fee / UPI",
-      "payment_status": "Completed",
-      "paid_at": "2026-09-03T08:33:59.336Z"
-    },
-    {
-      "id": 9,
-      "created_at": "2026-09-03T08:34:48.759Z",
-      "application_id": 6,
-      "user_id": 6,
-      "payment_number": "PAY-2026-517784",
-      "amount": 50,
-      "payment_method": "Online Facilitation Fee / UPI",
-      "payment_status": "Completed",
-      "paid_at": "2026-09-03T08:34:48.759Z"
-    },
-    {
-      "id": 10,
-      "created_at": "2026-09-03T08:34:48.772Z",
-      "application_id": 6,
-      "user_id": 6,
-      "amount": 50,
-      "currency": "INR",
-      "payment_gateway": "RAZORPAY_SANDBOX",
-      "payment_order_id": "ORD-2026-814631",
-      "payment_transaction_id": "TXN-TEST-1788424488777",
-      "payment_status": "PAID",
-      "payment_method": "Online UPI / NetBanking",
-      "initiated_at": "2026-09-03T08:34:48.772Z",
-      "metadata": {
-        "service_name": "Aadhaar Address Update",
-        "application_number": "ESV-2026-000005"
-      },
-      "paid_at": "2026-09-03T08:34:48.781Z",
-      "updated_at": "2026-09-03T08:34:48.781Z"
-    },
-    {
-      "id": 11,
-      "created_at": "2026-09-03T08:42:35.654Z",
-      "application_id": 7,
-      "user_id": 7,
-      "payment_number": "PAY-2026-597011",
-      "amount": 50,
-      "payment_method": "Online Facilitation Fee / UPI",
-      "payment_status": "Completed",
-      "paid_at": "2026-09-03T08:42:35.654Z"
-    },
-    {
-      "id": 12,
-      "created_at": "2026-09-03T08:42:35.663Z",
-      "application_id": 7,
-      "user_id": 7,
-      "amount": 50,
-      "currency": "INR",
-      "payment_gateway": "RAZORPAY_SANDBOX",
-      "payment_order_id": "ORD-2026-588112",
-      "payment_transaction_id": "TXN-TEST-1788424955668",
-      "payment_status": "PAID",
-      "payment_method": "Online UPI / NetBanking",
-      "initiated_at": "2026-09-03T08:42:35.663Z",
-      "metadata": {
-        "service_name": "Aadhaar Address Update",
-        "application_number": "ESV-2026-000006"
-      },
-      "paid_at": "2026-09-03T08:42:35.669Z",
-      "updated_at": "2026-09-03T08:42:35.669Z"
-    },
-    {
-      "id": 13,
-      "created_at": "2026-09-03T08:50:36.937Z",
-      "application_id": 8,
-      "user_id": 8,
-      "payment_number": "PAY-2026-883891",
-      "amount": 50,
-      "payment_method": "Online Facilitation Fee / UPI",
-      "payment_status": "Completed",
-      "paid_at": "2026-09-03T08:50:36.937Z"
-    },
-    {
-      "id": 14,
-      "created_at": "2026-09-03T08:50:36.950Z",
-      "application_id": 8,
-      "user_id": 8,
-      "amount": 50,
-      "currency": "INR",
-      "payment_gateway": "RAZORPAY_SANDBOX",
-      "payment_order_id": "ORD-2026-788235",
-      "payment_transaction_id": "TXN-TEST-1788425436963",
-      "payment_status": "PAID",
-      "payment_method": "Online UPI / NetBanking",
-      "initiated_at": "2026-09-03T08:50:36.950Z",
-      "metadata": {
-        "service_name": "Aadhaar Address Update",
-        "application_number": "ESV-2026-000007"
-      },
-      "paid_at": "2026-09-03T08:50:36.961Z",
-      "updated_at": "2026-09-03T08:50:36.961Z"
-    },
-    {
-      "id": 15,
-      "created_at": "2026-09-03T08:50:54.144Z",
-      "application_id": 9,
-      "user_id": 9,
-      "payment_number": "PAY-2026-284585",
-      "amount": 50,
-      "payment_method": "Online Facilitation Fee / UPI",
-      "payment_status": "Completed",
-      "paid_at": "2026-09-03T08:50:54.144Z"
-    },
-    {
-      "id": 16,
-      "created_at": "2026-09-03T08:50:54.155Z",
-      "application_id": 9,
-      "user_id": 9,
-      "amount": 50,
-      "currency": "INR",
-      "payment_gateway": "RAZORPAY_SANDBOX",
-      "payment_order_id": "ORD-2026-169961",
-      "payment_transaction_id": "TXN-TEST-1788425454165",
-      "payment_status": "PAID",
-      "payment_method": "Online UPI / NetBanking",
-      "initiated_at": "2026-09-03T08:50:54.155Z",
-      "metadata": {
-        "service_name": "Aadhaar Address Update",
-        "application_number": "ESV-2026-000008"
-      },
-      "paid_at": "2026-09-03T08:50:54.161Z",
-      "updated_at": "2026-09-03T08:50:54.161Z"
-    },
-    {
-      "id": 17,
-      "created_at": "2026-09-03T10:00:54.726Z",
-      "application_id": 10,
-      "user_id": null,
-      "payment_number": "PAY-2026-912237",
-      "amount": 50,
-      "payment_method": "Online Facilitation Fee / UPI",
-      "payment_status": "Completed",
-      "paid_at": "2026-09-03T10:00:54.726Z"
+      "payment_id": "PAY-89230399",
+      "application_number": "ESV-2026-000103",
+      "user_id": 1,
+      "amount": "30.00",
+      "payment_method": "UPI / Razorpay",
+      "status": "Success",
+      "transaction_date": "2026-09-11T12:40:09.000Z"
     }
   ],
   "application_status_history": [
@@ -2842,6 +2352,42 @@
       "status": "Under Review"
     }
   ],
+  "banners": [
+    {
+      "id": 1,
+      "created_at": "2026-09-11T15:54:42.348Z",
+      "title": "Government Services at Your Doorstep",
+      "description": "Apply for Community, Birth, Income & Residence Certificates online with instant tracking.",
+      "image_url": "https://images.unsplash.com/photo-1541872703-74c5e44368f9?q=80&w=1200&auto=format&fit=crop",
+      "link_url": "/services",
+      "duration_seconds": 5,
+      "status": "Active",
+      "display_order": 1
+    },
+    {
+      "id": 2,
+      "created_at": "2026-09-11T15:54:42.352Z",
+      "title": "Fast-Track Aadhaar & Ration Card Portals",
+      "description": "Update your biometric details, mobile number, and address seamlessly.",
+      "image_url": "https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=1200&auto=format&fit=crop",
+      "link_url": "/category/aadhaar",
+      "duration_seconds": 6,
+      "status": "Active",
+      "display_order": 2
+    },
+    {
+      "id": 3,
+      "created_at": "2026-09-11T15:54:42.354Z",
+      "title": "TNeGA Verified Digital Documentation",
+      "description": "Upload, inspect, and download official certificate records with automated SMS notifications.",
+      "image_url": "https://images.unsplash.com/photo-1450133064473-71024230f91b?q=80&w=1200&auto=format&fit=crop",
+      "link_url": "/track",
+      "duration_seconds": 5,
+      "status": "Active",
+      "display_order": 3
+    }
+  ],
+  "notifications": [],
   "document_audit_history": [
     {
       "id": 1,

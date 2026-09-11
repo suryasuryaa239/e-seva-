@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import pool, { initializeDatabaseSchema } from './mysql_db.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,40 +22,75 @@ const initialTables = {
   application_status_history: [],
   contact_messages: [],
   career_applications: [],
-  banners: []
+  banners: [],
+  notifications: [],
+  document_audit_history: []
 };
 
-class LocalDatabase {
+class TiDBSupportedDatabase {
   constructor() {
     this.data = { ...initialTables };
     this.init();
   }
 
-  init() {
+  async init() {
     this.data = { ...initialTables };
-    const tmpPath = path.join('/tmp', 'db_data.json');
-
     try {
-      if (process.env.VERCEL && fs.existsSync(tmpPath)) {
-        const raw = fs.readFileSync(tmpPath, 'utf8');
-        this.data = { ...initialTables, ...JSON.parse(raw) };
-      } else if (fs.existsSync(DB_FILE)) {
+      if (fs.existsSync(DB_FILE)) {
         const raw = fs.readFileSync(DB_FILE, 'utf8');
         this.data = { ...initialTables, ...JSON.parse(raw) };
       }
     } catch (err) {
-      console.warn('[DB INIT WARNING] Using initial seed state:', err.message);
-      this.data = { ...initialTables };
+      console.warn('[DB INIT WARNING] Using initial memory state:', err.message);
+    }
+
+    // Connect & load sync from TiDB Cloud MySQL
+    try {
+      await initializeDatabaseSchema();
+      await this.syncFromTiDB();
+    } catch (e) {
+      console.error('[TiDB SYNC INIT ERROR]', e.message);
     }
   }
 
-  save() {
+  async syncFromTiDB() {
+    try {
+      const conn = await pool.getConnection();
+      try {
+        const tables = ['users', 'admins', 'categories', 'services', 'applications', 'payments', 'contact_messages', 'career_applications', 'notifications'];
+        for (const tbl of tables) {
+          try {
+            const [rows] = await conn.query(`SELECT * FROM ${tbl}`);
+            if (rows && rows.length > 0) {
+              this.data[tbl] = rows.map(r => {
+                const obj = { ...r };
+                for (const key of Object.keys(obj)) {
+                  if (typeof obj[key] === 'string' && (obj[key].startsWith('{') || obj[key].startsWith('['))) {
+                    try {
+                      obj[key] = JSON.parse(obj[key]);
+                    } catch (e) {}
+                  }
+                }
+                return obj;
+              });
+            }
+          } catch (e) {}
+        }
+        this.saveLocal();
+        console.log('✅ [TiDB CLOUD] Successfully loaded & synchronized tables from TiDB Cloud MySQL!');
+      } finally {
+        conn.release();
+      }
+    } catch (err) {
+      console.error('Failed to sync from TiDB:', err.message);
+    }
+  }
+
+  saveLocal() {
     try {
       const targetPath = process.env.VERCEL ? path.join('/tmp', 'db_data.json') : DB_FILE;
       fs.writeFileSync(targetPath, JSON.stringify(this.data, null, 2), 'utf8');
-    } catch (err) {
-      console.warn('[DB SAVE WARNING] Read-only environment, state maintained in-memory:', err.message);
-    }
+    } catch (err) {}
   }
 
   all(tableName, filterFn = null) {
@@ -79,8 +115,30 @@ class LocalDatabase {
       ...row
     };
     this.data[tableName].push(newRow);
-    this.save();
+    this.saveLocal();
+
+    // Async save to TiDB Cloud
+    this.persistInsertToTiDB(tableName, newRow).catch(err => {
+      console.warn(`[TiDB PERSIST INSERT WARNING] ${tableName}:`, err.message);
+    });
+
     return newRow;
+  }
+
+  async persistInsertToTiDB(tableName, row) {
+    try {
+      const allowedTables = ['users', 'admins', 'categories', 'services', 'applications', 'payments', 'contact_messages', 'career_applications', 'notifications'];
+      if (!allowedTables.includes(tableName)) return;
+
+      const keys = Object.keys(row).filter(k => k !== 'id');
+      const values = keys.map(k => typeof row[k] === 'object' ? JSON.stringify(row[k]) : row[k]);
+      const placeholders = keys.map(() => '?').join(', ');
+
+      const sql = `INSERT INTO ${tableName} (${keys.join(', ')}) VALUES (${placeholders})`;
+      await pool.query(sql, values);
+    } catch (e) {
+      console.warn(`[TiDB SQL INSERT ERROR] ${tableName}:`, e.message);
+    }
   }
 
   update(tableName, filterFn, updates) {
@@ -89,24 +147,56 @@ class LocalDatabase {
     this.data[tableName] = this.data[tableName].map(item => {
       if (filterFn(item)) {
         updatedCount++;
-        return {
+        const updatedItem = {
           ...item,
           ...updates,
           updated_at: new Date().toISOString()
         };
+        // Async save to TiDB Cloud
+        this.persistUpdateToTiDB(tableName, item.id, updates).catch(err => {
+          console.warn(`[TiDB PERSIST UPDATE WARNING] ${tableName}:`, err.message);
+        });
+        return updatedItem;
       }
       return item;
     });
-    if (updatedCount > 0) this.save();
+    if (updatedCount > 0) this.saveLocal();
     return updatedCount;
+  }
+
+  async persistUpdateToTiDB(tableName, id, updates) {
+    try {
+      const allowedTables = ['users', 'admins', 'categories', 'services', 'applications', 'payments', 'contact_messages', 'career_applications', 'notifications'];
+      if (!allowedTables.includes(tableName) || !id) return;
+
+      const keys = Object.keys(updates);
+      if (keys.length === 0) return;
+
+      const setClause = keys.map(k => `${k} = ?`).join(', ');
+      const values = keys.map(k => typeof updates[k] === 'object' ? JSON.stringify(updates[k]) : updates[k]);
+      values.push(id);
+
+      const sql = `UPDATE ${tableName} SET ${setClause} WHERE id = ?`;
+      await pool.query(sql, values);
+    } catch (e) {
+      console.warn(`[TiDB SQL UPDATE ERROR] ${tableName}:`, e.message);
+    }
   }
 
   delete(tableName, filterFn) {
     if (!this.data[tableName]) return 0;
     const initialLen = this.data[tableName].length;
+    const itemsToDelete = this.data[tableName].filter(item => filterFn(item));
     this.data[tableName] = this.data[tableName].filter(item => !filterFn(item));
     const removedCount = initialLen - this.data[tableName].length;
-    if (removedCount > 0) this.save();
+    if (removedCount > 0) {
+      this.saveLocal();
+      itemsToDelete.forEach(item => {
+        if (item.id) {
+          pool.query(`DELETE FROM ${tableName} WHERE id = ?`, [item.id]).catch(() => {});
+        }
+      });
+    }
     return removedCount;
   }
 
@@ -135,33 +225,19 @@ class LocalDatabase {
     const snapshot = JSON.parse(JSON.stringify(this.data));
     try {
       const result = fn();
-      this.save();
+      this.saveLocal();
       return result;
     } catch (err) {
       this.data = snapshot;
-      this.save();
+      this.saveLocal();
       throw err;
     }
   }
 
   reset() {
-    this.data = {
-      users: [],
-      admins: [],
-      categories: [],
-      services: [],
-      service_fields: [],
-      service_documents: [],
-      applications: [],
-      application_field_values: [],
-      application_documents: [],
-      payments: [],
-      application_status_history: [],
-      contact_messages: [],
-      career_applications: []
-    };
-    this.save();
+    this.data = { ...initialTables };
+    this.saveLocal();
   }
 }
 
-export const db = new LocalDatabase();
+export const db = new TiDBSupportedDatabase();

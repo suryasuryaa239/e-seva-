@@ -427,79 +427,14 @@ export default function Navbar() {
               </div>
             ) : (
               <div className="flex items-center gap-1.5 xl:gap-2 shrink-0 whitespace-nowrap">
-                {/* LOGIN DROPDOWN BUTTON */}
-                <div className="relative" ref={loginDropdownRef}>
-                  <button
-                    onClick={() => setLoginDropdownOpen(!loginDropdownOpen)}
-                    className="h-9 inline-flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-[11px] xl:text-xs px-3 xl:px-4 rounded-lg shadow-sm transition-all border border-slate-800 uppercase shrink-0 whitespace-nowrap cursor-pointer"
-                  >
-                    <User className="w-3.5 h-3.5 text-orange-400 shrink-0" />
-                    <span>{lang === 'ta' ? 'உள்நுழைக' : 'LOGIN'}</span>
-                    <ChevronDown className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                  </button>
-
-                  {loginDropdownOpen && (
-                    <div className="absolute right-0 mt-2 w-64 bg-white border border-slate-200 rounded-2xl shadow-xl py-2 z-50 text-xs animate-in fade-in slide-in-from-top-2 duration-150">
-                      <div className="px-4 py-2 border-b border-slate-100">
-                        <p className="text-[10px] font-black uppercase text-orange-600 tracking-wider">
-                          {lang === 'ta' ? 'போர்ட்டல் உள்நுழைவு' : 'Portal Login Options'}
-                        </p>
-                        <p className="text-[11px] text-slate-500 font-medium">
-                          {lang === 'ta' ? 'உங்கள் கணக்கு வகையைத் தேர்ந்தெடுக்கவும்' : 'Select your portal access account'}
-                        </p>
-                      </div>
-
-                      {/* Option 1: Citizen User Login */}
-                      <Link
-                        to="/login"
-                        onClick={() => setLoginDropdownOpen(false)}
-                        className="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 transition-colors group"
-                      >
-                        <div className="w-8 h-8 rounded-xl bg-orange-50 text-orange-600 font-extrabold flex items-center justify-center border border-orange-200 group-hover:bg-orange-600 group-hover:text-white transition-colors shrink-0">
-                          <User className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <span className="font-extrabold text-slate-900 block text-xs">
-                            {lang === 'ta' ? 'பயனர் உள்நுழைவு (User)' : 'User Login (Citizen)'}
-                          </span>
-                          <span className="text-[10px] text-slate-500 font-medium block">
-                            {lang === 'ta' ? 'சேவைகளுக்கு விண்ணப்பிக்க' : 'Apply for digital e-services'}
-                          </span>
-                        </div>
-                      </Link>
-
-                      {/* Option 2: Admin Cockpit Login */}
-                      <Link
-                        to="/admin/login"
-                        onClick={() => setLoginDropdownOpen(false)}
-                        className="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 transition-colors group border-t border-slate-100 mt-1 pt-2.5"
-                      >
-                        <div className="w-8 h-8 rounded-xl bg-slate-900 text-orange-400 font-extrabold flex items-center justify-center border border-slate-800 group-hover:bg-slate-800 transition-colors shrink-0">
-                          <ShieldCheck className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <span className="font-extrabold text-slate-900 block text-xs">
-                            {lang === 'ta' ? 'நிர்வாகி உள்நுழைவு (Admin)' : 'Admin Login (Cockpit)'}
-                          </span>
-                          <span className="text-[10px] text-slate-500 font-medium block">
-                            {lang === 'ta' ? 'அதிகாரப்பூர்வ மேலாண்மை' : 'Official governance desk'}
-                          </span>
-                        </div>
-                      </Link>
-
-                      <div className="pt-2 border-t border-slate-100 mt-2 px-4">
-                        <Link
-                          to="/register"
-                          onClick={() => setLoginDropdownOpen(false)}
-                          className="w-full py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-extrabold text-[11px] rounded-lg transition-colors flex items-center justify-center gap-1"
-                        >
-                          <span>{lang === 'ta' ? 'புதிய கணக்கு பதிவு' : 'New Registration'}</span>
-                          <ArrowRight className="w-3 h-3 text-orange-600" />
-                        </Link>
-                      </div>
-                    </div>
-                  )}
-                </div>
+                {/* DIRECT LOGIN LINK */}
+                <Link
+                  to="/login"
+                  className="h-9 inline-flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-[11px] xl:text-xs px-3.5 xl:px-4 rounded-lg shadow-sm transition-all border border-slate-800 uppercase shrink-0 whitespace-nowrap cursor-pointer hover:border-orange-500"
+                >
+                  <User className="w-3.5 h-3.5 text-orange-400 shrink-0" />
+                  <span>{lang === 'ta' ? 'உள்நுழைக' : 'LOGIN'}</span>
+                </Link>
               </div>
             )}
 
@@ -533,161 +468,214 @@ export default function Navbar() {
       {/* MOBILE RESPONSIVE NAVIGATION DRAWER */}
       {/* ========================================================================= */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-white border-b border-slate-200 px-4 pt-3 pb-6 space-y-4 animate-in slide-in-from-top-2 duration-200 shadow-lg">
-          
-          {/* Quick Search */}
-          <form onSubmit={handleSearchSubmit} className="relative">
-            <input
-              type="text"
-              placeholder={t.searchPlaceholder || (lang === 'ta' ? 'சேவைகளைத் தேடவும் (ஆதார், பான், பட்டா)...' : 'Search services (Aadhaar, PAN, Patta)...')}
-              value={navSearch}
-              onChange={(e) => setNavSearch(e.target.value)}
-              className="w-full bg-slate-50 text-slate-900 text-xs rounded-lg pl-9 pr-4 py-2.5 border border-slate-300 focus:border-slate-800 outline-none"
-            />
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
-          </form>
-
-          {/* Navigation Links List */}
-          <div className="flex flex-col space-y-1 text-xs font-bold text-slate-800">
+        <div className="lg:hidden bg-white border-t border-slate-200/80 px-4 pt-3 pb-6 space-y-4 shadow-2xl max-h-[calc(100vh-70px)] overflow-y-auto animate-in slide-in-from-top-2 duration-200">
+          <div className="space-y-4 max-w-md mx-auto">
             
-            <Link
-              to="/"
-              onClick={() => setMobileMenuOpen(false)}
-              className={`px-3 py-2.5 rounded-lg ${isActive('/') ? 'bg-slate-100 text-slate-950 font-extrabold' : 'hover:bg-slate-50'}`}
-            >
-              {t.home ? t.home.toUpperCase() : (lang === 'ta' ? 'முகப்பு' : 'HOME')}
-            </Link>
+            {/* Quick Search */}
+            <form onSubmit={handleSearchSubmit} className="relative">
+              <input
+                type="text"
+                placeholder={t.searchPlaceholder || (lang === 'ta' ? 'சேவைகளைத் தேடவும் (ஆதார், பான், பட்டா)...' : 'Search services (Aadhaar, PAN, Patta)...')}
+                value={navSearch}
+                onChange={(e) => setNavSearch(e.target.value)}
+                className="w-full bg-slate-50 text-slate-900 text-xs font-medium rounded-xl pl-9 pr-4 py-2.5 border border-slate-200 focus:border-orange-500 focus:bg-white outline-none shadow-xs transition-all"
+              />
+              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+            </form>
 
-            {/* Accordion 1: E-SERVICES */}
-            <div className="border border-slate-200 rounded-xl overflow-hidden bg-slate-50/50">
-              <button
-                onClick={() => setMobileServicesOpen(!mobileServicesOpen)}
-                className="w-full flex items-center justify-between px-3 py-2.5 text-left font-bold text-slate-900"
-              >
-                <span>{lang === 'ta' ? 'சேவை பிரிவுகள்' : 'E-SERVICES CATEGORIES'} ({serviceCategories.length})</span>
-                <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${mobileServicesOpen ? 'rotate-180 text-orange-500' : ''}`} />
-              </button>
+            {/* Mobile App Grid Navigation Cards */}
+            <div className="space-y-3">
+              <div className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider px-1">
+                Quick Navigation
+              </div>
+              
+              <div className="grid grid-cols-2 gap-2">
+                <Link
+                  to="/"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`flex items-center gap-2 p-2.5 rounded-xl border transition-all ${
+                    isActive('/') 
+                      ? 'bg-[#0b192c] text-white border-[#0b192c] font-extrabold shadow-xs' 
+                      : 'bg-slate-50 hover:bg-slate-100 border-slate-200/90 text-slate-800 font-bold'
+                  }`}
+                >
+                  <Grid className={`w-4 h-4 shrink-0 ${isActive('/') ? 'text-orange-400' : 'text-orange-500'}`} />
+                  <span className="text-xs truncate">{t.home ? t.home.toUpperCase() : (lang === 'ta' ? 'முகப்பு' : 'HOME')}</span>
+                </Link>
 
-              {mobileServicesOpen && (
-                <div className="px-3 pb-3 space-y-1 border-t border-slate-200 pt-2 bg-white font-medium text-xs">
-                  {serviceCategories.map((cat, i) => (
+                <Link
+                  to="/track"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-2 p-2.5 rounded-xl bg-orange-50 hover:bg-orange-100/80 border border-orange-200/90 text-orange-950 font-bold transition-all shadow-xs"
+                >
+                  <FileSearch className="w-4 h-4 text-orange-600 shrink-0" />
+                  <span className="text-xs truncate">{lang === 'ta' ? 'விண்ணப்ப நிலை' : 'TRACK STATUS'}</span>
+                </Link>
+
+                <Link
+                  to="/about"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`flex items-center gap-2 p-2.5 rounded-xl border transition-all ${
+                    isActive('/about') 
+                      ? 'bg-[#0b192c] text-white border-[#0b192c] font-extrabold shadow-xs' 
+                      : 'bg-slate-50 hover:bg-slate-100 border-slate-200/90 text-slate-800 font-bold'
+                  }`}
+                >
+                  <HelpCircle className={`w-4 h-4 shrink-0 ${isActive('/about') ? 'text-orange-400' : 'text-emerald-600'}`} />
+                  <span className="text-xs truncate">{lang === 'ta' ? 'எங்களைப் பற்றி' : 'ABOUT US'}</span>
+                </Link>
+
+                <Link
+                  to="/contact"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`flex items-center gap-2 p-2.5 rounded-xl border transition-all ${
+                    isActive('/contact') 
+                      ? 'bg-[#0b192c] text-white border-[#0b192c] font-extrabold shadow-xs' 
+                      : 'bg-slate-50 hover:bg-slate-100 border-slate-200/90 text-slate-800 font-bold'
+                  }`}
+                >
+                  <Globe className={`w-4 h-4 shrink-0 ${isActive('/contact') ? 'text-orange-400' : 'text-indigo-600'}`} />
+                  <span className="text-xs truncate">{lang === 'ta' ? 'தொடர்புகொள்ள' : 'CONTACT US'}</span>
+                </Link>
+              </div>
+            </div>
+
+            {/* Accordion Categories & Resources Section */}
+            <div className="space-y-2 pt-1">
+              <div className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider px-1">
+                Portal Directory
+              </div>
+
+              {/* Accordion 1: E-SERVICES CATEGORIES */}
+              <div className="border border-slate-200/90 rounded-xl overflow-hidden bg-slate-50/70 shadow-xs">
+                <button
+                  onClick={() => setMobileServicesOpen(!mobileServicesOpen)}
+                  className="w-full flex items-center justify-between px-3 py-2 text-left font-bold text-slate-900 text-xs cursor-pointer"
+                >
+                  <div className="flex items-center space-x-2">
+                    <Layers className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                    <span>{lang === 'ta' ? 'சேவை பிரிவுகள்' : 'E-SERVICES'} ({serviceCategories.length})</span>
+                  </div>
+                  <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${mobileServicesOpen ? 'rotate-180 text-orange-500' : ''}`} />
+                </button>
+
+                {mobileServicesOpen && (
+                  <div className="px-2 pb-2 space-y-1 border-t border-slate-200/80 pt-1.5 bg-white font-medium text-xs max-h-56 overflow-y-auto">
+                    {serviceCategories.map((cat, i) => {
+                      const CatIcon = cat.icon || Grid;
+                      return (
+                        <Link
+                          key={i}
+                          to={cat.slug === 'aadhaar' ? '/services/aadhaar' : cat.slug === 'pan' ? '/services/pan-services' : `/services/${cat.slug}`}
+                          onClick={() => setMobileMenuOpen(false)}
+                          className="flex items-center justify-between p-1.5 rounded-lg text-slate-700 hover:text-orange-600 hover:bg-orange-50/70 transition-colors group"
+                        >
+                          <div className="flex items-center space-x-2 min-w-0">
+                            <div className="w-5 h-5 rounded bg-slate-100 group-hover:bg-orange-100 text-slate-600 group-hover:text-orange-600 flex items-center justify-center shrink-0">
+                              <CatIcon className="w-3 h-3" />
+                            </div>
+                            <span className="truncate font-semibold text-[11px] text-slate-800 group-hover:text-orange-600">{cat.name}</span>
+                          </div>
+                          {cat.badge && (
+                            <span className="text-[9px] font-bold text-orange-600 bg-orange-50 border border-orange-200 px-1 py-0.1 rounded shrink-0">
+                              {cat.badge}
+                            </span>
+                          )}
+                        </Link>
+                      );
+                    })}
                     <Link
-                      key={i}
-                      to={cat.slug === 'aadhaar' ? '/services/aadhaar' : cat.slug === 'pan' ? '/services/pan-services' : `/services/${cat.slug}`}
+                      to="/services"
                       onClick={() => setMobileMenuOpen(false)}
-                      className="block px-2.5 py-2 rounded-md text-slate-700 hover:text-slate-950 hover:bg-slate-100 flex items-center justify-between"
+                      className="block px-2.5 py-1.5 rounded-lg font-bold text-[11px] text-orange-700 bg-orange-50 hover:bg-orange-100 text-center mt-1 border border-orange-200 transition-colors"
                     >
-                      <span>• {cat.name}</span>
-                      {cat.badge && (
-                        <span className="text-[9px] font-bold text-orange-600 bg-orange-50 border border-orange-200 px-1.5 py-0.2 rounded">
-                          {cat.badge}
-                        </span>
-                      )}
+                      {t.viewAllServices || (lang === 'ta' ? 'அனைத்து சேவைகள் →' : 'View Full Directory →')}
                     </Link>
-                  ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Accordion 2: MORE RESOURCES */}
+              <div className="border border-slate-200/90 rounded-xl overflow-hidden bg-slate-50/70 shadow-xs">
+                <button
+                  onClick={() => setMobileMoreOpen(!mobileMoreOpen)}
+                  className="w-full flex items-center justify-between px-3 py-2 text-left font-bold text-slate-900 text-xs cursor-pointer"
+                >
+                  <div className="flex items-center space-x-2">
+                    <Zap className="w-3.5 h-3.5 text-purple-600 shrink-0" />
+                    <span>{lang === 'ta' ? 'கூடுதல் வளங்கள்' : 'RESOURCES'} ({moreLinks.length})</span>
+                  </div>
+                  <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${mobileMoreOpen ? 'rotate-180 text-orange-500' : ''}`} />
+                </button>
+
+                {mobileMoreOpen && (
+                  <div className="px-2 pb-2 space-y-1 border-t border-slate-200/80 pt-1.5 bg-white font-medium text-xs">
+                    {moreLinks.map((item, i) => {
+                      const ItemIcon = item.icon || FileText;
+                      return (
+                        <Link
+                          key={i}
+                          to={item.path}
+                          onClick={() => setMobileMenuOpen(false)}
+                          className="flex items-center space-x-2 p-1.5 rounded-lg text-slate-700 hover:text-slate-950 hover:bg-slate-100 transition-colors group"
+                        >
+                          <div className="w-5 h-5 rounded bg-slate-100 text-slate-600 flex items-center justify-center shrink-0">
+                            <ItemIcon className="w-3 h-3 text-slate-600" />
+                          </div>
+                          <span className="font-semibold text-[11px] text-slate-800">{item.name}</span>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Mobile Bottom Action Buttons */}
+            <div className="pt-2.5 border-t border-slate-200">
+              {user ? (
+                <div className="flex items-center justify-between gap-2">
                   <Link
-                    to="/services"
+                    to="/dashboard"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="block px-2.5 py-2 rounded-md font-bold text-slate-900 bg-orange-50 text-orange-700 text-center mt-2 border border-orange-200"
+                    className="bg-[#0b192c] text-white font-extrabold text-xs px-3.5 py-2.5 rounded-xl w-full text-center flex items-center justify-center space-x-2 shadow-xs"
                   >
-                    {t.viewAllServices || (lang === 'ta' ? 'அனைத்து சேவைகள் →' : 'View Full Directory →')}
+                    <User className="w-3.5 h-3.5 text-orange-400" />
+                    <span>{t.dashboardNav || (lang === 'ta' ? 'முகப்புப்பலகை' : 'My Dashboard')} ({user.name ? user.name.split(' ')[0] : 'User'})</span>
+                  </Link>
+                  <button
+                    onClick={() => {
+                      logoutUser();
+                      setMobileMenuOpen(false);
+                    }}
+                    className="bg-rose-100 text-rose-700 p-2.5 rounded-xl hover:bg-rose-200 cursor-pointer shadow-xs"
+                    title="Logout"
+                  >
+                    <LogOut className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-2">
+                  <Link
+                    to="/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="bg-slate-100 text-slate-900 font-extrabold text-xs py-2.5 rounded-xl text-center border border-slate-300 hover:bg-slate-200 shadow-xs transition-all"
+                  >
+                    {t.login ? t.login.toUpperCase() : (lang === 'ta' ? 'உள்நுழைக' : 'LOGIN')}
+                  </Link>
+                  <Link
+                    to="/register"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="bg-[#0b192c] text-white font-extrabold text-xs py-2.5 rounded-xl text-center shadow-xs hover:bg-orange-600 flex items-center justify-center gap-1.5 uppercase transition-all"
+                  >
+                    <span>{t.registerNav || (lang === 'ta' ? 'பதிவு செய்ய' : 'REGISTER')}</span>
+                    <ArrowRight className="w-3.5 h-3.5 text-orange-400" />
                   </Link>
                 </div>
               )}
             </div>
 
-            {/* Accordion 2: MORE LINKS */}
-            <div className="border border-slate-200 rounded-xl overflow-hidden bg-slate-50/50">
-              <button
-                onClick={() => setMobileMoreOpen(!mobileMoreOpen)}
-                className="w-full flex items-center justify-between px-3 py-2.5 text-left font-bold text-slate-900"
-              >
-                <span>{lang === 'ta' ? 'கூடுதல் வளங்கள்' : 'MORE RESOURCES'} ({moreLinks.length})</span>
-                <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${mobileMoreOpen ? 'rotate-180 text-orange-500' : ''}`} />
-              </button>
-
-              {mobileMoreOpen && (
-                <div className="px-3 pb-3 space-y-1 border-t border-slate-200 pt-2 bg-white font-medium text-xs">
-                  {moreLinks.map((item, i) => (
-                    <Link
-                      key={i}
-                      to={item.path}
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="block px-2.5 py-2 rounded-md text-slate-700 hover:text-slate-950 hover:bg-slate-100"
-                    >
-                      • {item.name}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <Link
-              to="/about"
-              onClick={() => setMobileMenuOpen(false)}
-              className={`px-3 py-2.5 rounded-lg ${isActive('/about') ? 'bg-slate-100 text-slate-950 font-extrabold' : 'hover:bg-slate-50'}`}
-            >
-              {t.about ? t.about.toUpperCase() : (lang === 'ta' ? 'எங்களைப் பற்றி' : 'ABOUT')}
-            </Link>
-
-            <Link
-              to="/contact"
-              onClick={() => setMobileMenuOpen(false)}
-              className={`px-3 py-2.5 rounded-lg ${isActive('/contact') ? 'bg-slate-100 text-slate-950 font-extrabold' : 'hover:bg-slate-50'}`}
-            >
-              {t.contact ? t.contact.toUpperCase() : (lang === 'ta' ? 'தொடர்புகொள்ள' : 'CONTACT')}
-            </Link>
-
-            <Link
-              to="/track"
-              onClick={() => setMobileMenuOpen(false)}
-              className="px-3 py-2.5 rounded-lg bg-slate-100 text-slate-900 flex items-center gap-2 border border-slate-300 font-bold"
-            >
-              <FileSearch className="w-4 h-4 text-slate-700" /> {t.checkStatus || (lang === 'ta' ? 'விண்ணப்பத்தை கண்காணிக்க' : 'CHECK APPLICATION STATUS')}
-            </Link>
           </div>
-
-          {/* Mobile Bottom Action Buttons */}
-          <div className="pt-3 border-t border-slate-200">
-            {user ? (
-              <div className="flex items-center justify-between gap-2">
-                <Link
-                  to="/dashboard"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="bg-slate-900 text-white font-bold text-xs px-4 py-3 rounded-xl w-full text-center"
-                >
-                  {t.dashboardNav || (lang === 'ta' ? 'முகப்புப்பலகை' : 'My Dashboard')} ({user.name ? user.name.split(' ')[0] : 'User'})
-                </Link>
-                <button
-                  onClick={() => {
-                    logoutUser();
-                    setMobileMenuOpen(false);
-                  }}
-                  className="bg-rose-100 text-rose-700 p-3 rounded-xl hover:bg-rose-200 cursor-pointer"
-                >
-                  <LogOut className="w-4 h-4" />
-                </button>
-              </div>
-            ) : (
-              <div className="grid grid-cols-2 gap-2">
-                <Link
-                  to="/login"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="bg-slate-100 text-slate-900 font-bold text-xs py-3 rounded-xl text-center border border-slate-300 hover:bg-slate-200"
-                >
-                  {t.login ? t.login.toUpperCase() : (lang === 'ta' ? 'உள்நுழைக' : 'SIGN IN')}
-                </Link>
-                <Link
-                  to="/register"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="bg-slate-900 text-white font-bold text-xs py-3 rounded-xl text-center shadow hover:bg-slate-800 flex items-center justify-center gap-1 uppercase"
-                >
-                  {t.registerNav || (lang === 'ta' ? 'பதிவு செய்ய' : 'REGISTER')} <ArrowRight className="w-3.5 h-3.5 text-orange-400" />
-                </Link>
-              </div>
-            )}
-          </div>
-
         </div>
       )}
     </header>

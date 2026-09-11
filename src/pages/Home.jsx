@@ -185,12 +185,6 @@ export default function Home() {
                     <span className="inline-block text-[11px] font-black uppercase text-orange-400 tracking-widest bg-orange-950/70 border border-orange-500/30 px-3 py-1 rounded-full">
                       {t.portalName} • PROMOTION
                     </span>
-                    
-                    {/* Dynamic Slide Duration Counter */}
-                    <span className="text-[11px] font-mono text-slate-300 bg-slate-900/80 px-2.5 py-0.5 rounded-full border border-slate-700 flex items-center gap-1">
-                      <Clock className="w-3 h-3 text-orange-400 animate-pulse" />
-                      <span>{heroBanners[currentSlide]?.duration_seconds || 5}s Timer</span>
-                    </span>
                   </div>
 
                   <h1 className="font-heading font-extrabold text-3xl sm:text-4xl lg:text-5xl tracking-tight leading-tight text-white animate-in fade-in duration-300">
@@ -222,14 +216,8 @@ export default function Home() {
                   </div>
                 </div>
               ) : (
-                /* Pure Image Banner Overlay Badge */
-                <div className="relative z-10 p-6 sm:p-8 flex flex-col justify-between h-full w-full pointer-events-none">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-mono font-bold text-white bg-slate-950/70 border border-slate-700 px-3 py-1 rounded-full backdrop-blur-md flex items-center gap-1.5 pointer-events-auto">
-                      <Clock className="w-3.5 h-3.5 text-orange-400 animate-pulse" />
-                      <span>{heroBanners[currentSlide]?.duration_seconds || 5}s Timer</span>
-                    </span>
-                  </div>
+                /* Pure Image Banner Overlay */
+                <div className="relative z-10 p-6 sm:p-8 flex flex-col justify-end h-full w-full pointer-events-none">
                   {heroBanners[currentSlide]?.link_url && (
                     <div className="pt-4 pointer-events-auto">
                       <Link

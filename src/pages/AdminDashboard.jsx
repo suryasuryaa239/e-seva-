@@ -875,10 +875,10 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-100 flex flex-col font-sans selection:bg-orange-500 selection:text-white">
+    <div className="h-screen max-h-screen overflow-hidden bg-slate-100 flex flex-col font-sans selection:bg-orange-500 selection:text-white">
       
       {/* Top Main Admin Bar */}
-      <header className="bg-[#0b192c] border-b border-slate-800 text-white px-4 sm:px-6 py-3.5 flex justify-between items-center sticky top-0 z-40 shadow-lg">
+      <header className="bg-[#0b192c] border-b border-slate-800 text-white px-4 sm:px-6 py-3 flex justify-between items-center shrink-0 z-40 shadow-lg">
         
         <div className="flex items-center space-x-3">
           <button
@@ -954,12 +954,84 @@ export default function AdminDashboard() {
         </div>
       </header>
 
-      {/* Main Admin Body */}
-      <div className="flex-1 flex relative">
+      {/* Main Admin Body Wrapper */}
+      <div className="flex-1 flex overflow-hidden relative">
         
-        {/* Navigation Sidebar - Desktop */}
-        <aside className="w-64 bg-[#0b192c] text-white border-r border-slate-800 p-4 space-y-1.5 hidden md:flex md:flex-col justify-between min-h-[calc(100vh-61px)] sticky top-[61px] self-start">
-          <div className="space-y-1.5">
+        {/* Mobile Navigation Drawer */}
+        {mobileMenuOpen && (
+          <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-xs z-50 md:hidden flex animate-in fade-in duration-150">
+            <div className="w-72 bg-[#0b192c] text-white h-full p-4 flex flex-col justify-between overflow-y-auto shadow-2xl border-r border-slate-800 animate-in slide-in-from-left duration-200">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+                  <div className="flex items-center space-x-2">
+                    <ShieldAlert className="w-5 h-5 text-orange-400" />
+                    <span className="font-black text-sm text-white">ADMIN NAVIGATION</span>
+                  </div>
+                  <button
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="p-1.5 text-slate-400 hover:text-white rounded-xl bg-slate-800 border border-slate-700 cursor-pointer"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
+                <div className="px-1 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                  NAVIGATION MODULES
+                </div>
+
+                <div className="space-y-1.5">
+                  {navItems.map((item) => {
+                    const Icon = item.icon;
+                    const isActive = activeTab === item.id;
+                    return (
+                      <button
+                        key={item.id}
+                        onClick={() => {
+                          setActiveTab(item.id);
+                          setMobileMenuOpen(false);
+                        }}
+                        className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                          isActive
+                            ? 'bg-orange-500 text-white shadow-md font-black'
+                            : 'text-slate-300 hover:bg-slate-800/80 hover:text-white'
+                        }`}
+                      >
+                        <div className="flex items-center space-x-3">
+                          <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-400'}`} />
+                          <span>{item.label}</span>
+                        </div>
+                        {item.count !== undefined && item.count > 0 && (
+                          <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full ${
+                            isActive ? 'bg-white text-orange-600' : 'bg-slate-800 text-orange-400'
+                          }`}>
+                            {item.count}
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-slate-800 mt-4 shrink-0">
+                <div className="p-3.5 bg-slate-900/90 rounded-2xl border border-slate-800 space-y-2">
+                  <div className="flex items-center space-x-1.5 text-xs font-bold text-slate-200">
+                    <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                    <span>Verified Desk Portal</span>
+                  </div>
+                  <p className="text-[11px] text-slate-400 leading-normal">
+                    Session active under ID <code className="text-orange-400 font-mono">#ADM-8492</code>. All updates logged.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="flex-1" onClick={() => setMobileMenuOpen(false)}></div>
+          </div>
+        )}
+
+        {/* Navigation Sidebar - Desktop with 100% Independent Scrolling */}
+        <aside className="w-64 bg-[#0b192c] text-white border-r border-slate-800 p-4 hidden md:flex md:flex-col justify-between h-full shrink-0 overflow-hidden">
+          <div className="flex-1 overflow-y-auto space-y-1.5 pr-1.5 py-1 [scrollbar-width:thin] [scrollbar-color:#334155_#0b192c]">
             <div className="px-3 py-2 text-[10px] font-black text-slate-400 uppercase tracking-widest">
               NAVIGATION MODULES
             </div>
@@ -971,7 +1043,7 @@ export default function AdminDashboard() {
                 <button
                   key={item.id}
                   onClick={() => setActiveTab(item.id)}
-                  className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-xs font-bold transition-all ${
+                  className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                     isActive
                       ? 'bg-orange-500 text-white shadow-md font-black'
                       : 'text-slate-300 hover:bg-slate-800/80 hover:text-white'
@@ -993,19 +1065,21 @@ export default function AdminDashboard() {
             })}
           </div>
 
-          <div className="p-3.5 bg-slate-900/90 rounded-2xl border border-slate-800 space-y-2">
-            <div className="flex items-center space-x-1.5 text-xs font-bold text-slate-200">
-              <ShieldCheck className="w-4 h-4 text-emerald-400" />
-              <span>Verified Desk Portal</span>
+          <div className="pt-3 shrink-0 border-t border-slate-800/80 mt-2">
+            <div className="p-3.5 bg-slate-900/90 rounded-2xl border border-slate-800 space-y-2">
+              <div className="flex items-center space-x-1.5 text-xs font-bold text-slate-200">
+                <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                <span>Verified Desk Portal</span>
+              </div>
+              <p className="text-[11px] text-slate-400 leading-normal">
+                Session active under ID <code className="text-orange-400 font-mono">#ADM-8492</code>. All updates logged.
+              </p>
             </div>
-            <p className="text-[11px] text-slate-400 leading-normal">
-              Session active under ID <code className="text-orange-400 font-mono">#ADM-8492</code>. All updates logged.
-            </p>
           </div>
         </aside>
 
-        {/* Content Area */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 space-y-6 overflow-x-hidden max-w-7xl">
+        {/* Content Area - 100% Independent Content Scrolling */}
+        <main className="flex-1 h-full overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl [scrollbar-width:thin]">
           
           {/* Breadcrumb Header Bar */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-slate-200">

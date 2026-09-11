@@ -286,7 +286,8 @@ app.post('/api/auth/login', authRateLimiter, async (req, res) => {
     // 3. Verify password against candidate users
     let matchedUser = null;
     for (const candidate of candidates) {
-      const validPass = await bcrypt.compare(password, candidate.password_hash);
+      const passHash = candidate.password || candidate.password_hash;
+      const validPass = passHash ? await bcrypt.compare(password, passHash) : false;
       if (validPass) {
         matchedUser = candidate;
         break;
@@ -326,7 +327,8 @@ app.post('/api/auth/admin/login', authRateLimiter, async (req, res) => {
       return res.status(400).json({ error: 'Invalid admin credentials' });
     }
 
-    const validPass = await bcrypt.compare(password, admin.password_hash);
+    const adminPassHash = admin.password || admin.password_hash;
+    const validPass = adminPassHash ? await bcrypt.compare(password, adminPassHash) : false;
     if (!validPass) {
       return res.status(400).json({ error: 'Invalid admin credentials' });
     }
