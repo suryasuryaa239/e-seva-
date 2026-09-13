@@ -6,11 +6,13 @@ import {
 } from 'lucide-react';
 import Breadcrumbs from '../components/Breadcrumbs';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { useLanguage } from '../context/LanguageContext';
 
 export default function Profile() {
   const navigate = useNavigate();
-  const { logoutUser } = useAuth();
+  const { loginUser } = useAuth();
+  const { addToast } = useToast();
   const { lang, t } = useLanguage();
 
   const [profile, setProfile] = useState({
@@ -38,7 +40,7 @@ export default function Profile() {
     try {
       setLoading(true);
       setError(null);
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('token') || localStorage.getItem('eseva_user_token');
       if (!token) {
         navigate('/login?redirect=/profile');
         return;
@@ -68,7 +70,7 @@ export default function Profile() {
       setMessage(null);
       setError(null);
 
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('token') || localStorage.getItem('eseva_user_token');
       const res = await fetch('/api/auth/profile', {
         method: 'PUT',
         headers: {
@@ -85,17 +87,23 @@ export default function Profile() {
         })
       });
 
+      const data = await res.json();
+
       if (!res.ok) {
-        const errData = await res.json();
-        throw new Error(errData.error || (lang === 'ta' ? 'சுயவிவரத்தைப் புதுப்பிக்க முடியவில்லை' : 'Failed to update profile'));
+        throw new Error(data.error || (lang === 'ta' ? 'சுயவிவரத்தைப் புதுப்பிக்க முடியவில்லை' : 'Failed to update profile'));
       }
 
-      setMessage(lang === 'ta' ? 'சுயவிவரம் வெற்றிகரமாகப் புதுப்பிக்கப்பட்டது!' : 'Profile updated successfully!');
-      // Update local stored user
-      const stored = JSON.parse(localStorage.getItem('user') || '{}');
-      localStorage.setItem('user', JSON.stringify({ ...stored, name: profile.name, phone: profile.phone }));
+      const successMsg = lang === 'ta' ? 'சுயவிவரம் வெற்றிகரமாகப் புதுப்பிக்கப்பட்டது!' : 'Profile updated successfully!';
+      setMessage(successMsg);
+      addToast(successMsg, 'success');
+
+      // Sync with global auth state & localStorage
+      if (data.user) {
+        loginUser(data.user, token);
+      }
     } catch (err) {
       setError(err.message);
+      addToast(err.message, 'error');
     } finally {
       setSaving(false);
     }

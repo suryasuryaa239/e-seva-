@@ -7,6 +7,8 @@ import {
 import { useLanguage } from '../context/LanguageContext';
 import { getLocalizedService } from '../data/servicesCatalogData';
 
+import Breadcrumbs from '../components/Breadcrumbs';
+
 export default function CertificateServicesCatalog() {
   const navigate = useNavigate();
   const { lang, t } = useLanguage();
@@ -108,6 +110,10 @@ export default function CertificateServicesCatalog() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 pb-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+        <Breadcrumbs items={[{ label: lang === 'ta' ? 'இ-சேவைகள்' : 'E-Services', path: '/services' }, { label: lang === 'ta' ? 'வருவாய் சான்றிதழ்கள்' : 'Revenue Certificates' }]} />
+      </div>
+
       {/* Hero Banner */}
       <div className="bg-gradient-to-r from-slate-900 via-blue-950 to-indigo-950 text-white py-12 px-4 sm:px-6 lg:px-8 border-b border-blue-900/40">
         <div className="max-w-7xl mx-auto space-y-4">

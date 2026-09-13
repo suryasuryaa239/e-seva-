@@ -92,12 +92,15 @@ export const translations = {
     panDownload: "PAN Download",
 
     // 6. COMMON FORM LABELS
+    fullName: "Full Name",
     fullNameLabel: "Full Name",
     firstNameLabel: "First Name",
     lastNameLabel: "Last Name",
     dobLabel: "Date of Birth",
     genderLabel: "Gender",
+    mobileNumber: "Mobile Number",
     mobileLabel: "Mobile Number",
+    emailAddress: "Email Address",
     emailLabel: "Email Address",
     fatherNameLabel: "Father's Name",
     motherNameLabel: "Mother's Name",
@@ -634,12 +637,15 @@ export const translations = {
     panDownload: "PAN பதிவிறக்கம்",
 
     // 6. COMMON FORM LABELS
+    fullName: "விண்ணப்பதாரர் பெயர்",
     fullNameLabel: "முழுப் பெயர்",
     firstNameLabel: "முதல் பெயர்",
     lastNameLabel: "கடைசி பெயர்",
     dobLabel: "பிறந்த தேதி",
     genderLabel: "பாலினம்",
+    mobileNumber: "கைபேசி / மொபைல் எண்",
     mobileLabel: "மொபைல் எண்",
+    emailAddress: "மின்னஞ்சல் முகவரி",
     emailLabel: "மின்னஞ்சல் முகவரி",
     fatherNameLabel: "தந்தையின் பெயர்",
     motherNameLabel: "தாயின் பெயர்",

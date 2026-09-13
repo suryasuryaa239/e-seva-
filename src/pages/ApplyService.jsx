@@ -4,7 +4,7 @@ import {
   ShieldAlert, FileText, Upload, CheckCircle2, ArrowRight, ArrowLeft,
   AlertCircle, Lock, Info, Save, Edit3, Check, FileCheck, UserCheck, Clock, Download,
   Phone, Mail, HelpCircle, Shield, Sparkles, Building, CreditCard, QrCode, Building2, Wallet,
-  Copy, Printer, ExternalLink, User, Camera
+  Copy, Printer, ExternalLink, User, Camera, Eye, X, Maximize2
 } from 'lucide-react';
 import Breadcrumbs from '../components/Breadcrumbs';
 import CameraCaptureModal from '../components/CameraCaptureModal';
@@ -53,7 +53,8 @@ export default function ApplyService() {
   // Camera Capture Modal State
   const [cameraModalOpen, setCameraModalOpen] = useState(false);
   const [activeCameraDoc, setActiveCameraDoc] = useState(null);
-  const [activeCameraMaxMB, setActiveCameraMaxMB] = useState(5);
+  // Document Preview Modal State
+  const [previewModalDoc, setPreviewModalDoc] = useState(null);
   
   // Validation Errors State
   const [errors, setErrors] = useState({});
@@ -75,9 +76,161 @@ export default function ApplyService() {
     return [];
   };
 
+  const { user, admin } = useAuth();
+
   useEffect(() => {
     fetchService();
   }, [serviceParam, lang]);
+
+  // Sync logged-in user session profile details to applicant form state
+  useEffect(() => {
+    let activeUser = user || admin;
+    if (!activeUser) {
+      try {
+        const savedUser = localStorage.getItem('eseva_saved_user');
+        if (savedUser) activeUser = JSON.parse(savedUser);
+      } catch (e) {}
+    }
+
+    if (activeUser) {
+      setApplicantInfo(prev => ({
+        ...prev,
+        user_name: prev.user_name || activeUser.name || activeUser.user_name || '',
+        user_email: prev.user_email || activeUser.email || activeUser.user_email || '',
+        user_phone: prev.user_phone || activeUser.phone || activeUser.mobile || activeUser.phone_number || '',
+        aadhaar_no: prev.aadhaar_no || activeUser.aadhaar_no || activeUser.aadhaar || '',
+        address: prev.address || activeUser.address || '',
+        district: prev.district || activeUser.district || '',
+        state: prev.state || activeUser.state || 'Tamil Nadu',
+        pincode: prev.pincode || activeUser.pincode || ''
+      }));
+    }
+  }, [user, admin]);
+
+  // Fetch and Restore Draft Application Data (pre-filling fields & restoring current step)
+  useEffect(() => {
+    const activeDraftId = draftIdParam || draftId;
+    if (!activeDraftId) return;
+
+    const loadDraftData = async () => {
+      try {
+        const token = localStorage.getItem('token') || localStorage.getItem('eseva_user_token');
+        const headers = {};
+        if (token) headers.Authorization = `Bearer ${token}`;
+
+        const res = await fetch(`/api/applications/${activeDraftId}`, { headers });
+        if (!res.ok) return;
+
+        const data = await res.json();
+        if (!data) return;
+
+        setDraftId(data.id);
+
+        // 1. Restore Saved Wizard Step
+        if (data.current_step) {
+          const stepNum = parseInt(data.current_step, 10);
+          if (!isNaN(stepNum) && stepNum >= 1 && stepNum <= 4) {
+            setCurrentStep(stepNum);
+          }
+        }
+
+        // 2. Restore Primary Applicant Info base fields
+        setApplicantInfo(prev => ({
+          ...prev,
+          user_name: data.user_name || prev.user_name || '',
+          user_email: data.user_email || prev.user_email || '',
+          user_phone: data.user_phone || prev.user_phone || '',
+          aadhaar_no: data.aadhaar_no || prev.aadhaar_no || '',
+          address: data.address || prev.address || '',
+          district: data.district || prev.district || '',
+          state: data.state || prev.state || 'Tamil Nadu',
+          pincode: data.pincode || prev.pincode || ''
+        }));
+
+        // 3. Restore Dynamic & Custom Field Values with Key Normalization
+        if (Array.isArray(data.field_values) && data.field_values.length > 0) {
+          const restoredFields = {};
+          const restoredApplicantInfo = {};
+
+          const keyAliasMap = {
+            'district': 'district',
+            'District': 'district',
+            'state': 'state',
+            'State': 'state',
+            'pincode': 'pincode',
+            'Pincode': 'pincode',
+            '6-digit pin code': 'pincode',
+            '6-digit pincode': 'pincode',
+            'pin code': 'pincode',
+            'pincode / zip': 'pincode',
+            'aadhaar_no': 'aadhaar_no',
+            'aadhaar_number': 'aadhaar_no',
+            '12-digit aadhaar number': 'aadhaar_no',
+            'user_name': 'user_name',
+            'full_name': 'user_name',
+            'full name (as in aadhaar)': 'user_name',
+            'applicant name': 'user_name',
+            'user_phone': 'user_phone',
+            'mobile_number': 'user_phone',
+            'mobile': 'user_phone',
+            'mobile number': 'user_phone',
+            'user_email': 'user_email',
+            'email': 'user_email',
+            'email address': 'user_email',
+            'address': 'address',
+            'residential address': 'address'
+          };
+
+          const fieldIdToNameMap = {};
+          const fieldLabelToNameMap = {};
+          if (service && service.fields) {
+            service.fields.forEach(f => {
+              const fName = f.field_name || f.name;
+              if (f.id) fieldIdToNameMap[f.id] = fName;
+              if (f.field_label || f.label) fieldLabelToNameMap[f.field_label || f.label] = fName;
+            });
+          }
+
+          data.field_values.forEach(fv => {
+            const rawKey = fv.field_name || fv.field_label;
+            const val = fv.value;
+            if (!rawKey || val === undefined || val === null) return;
+
+            const lowerKey = String(rawKey).trim().toLowerCase();
+            const lowerLabel = fv.field_label ? String(fv.field_label).trim().toLowerCase() : '';
+            const normKey = keyAliasMap[lowerKey] || keyAliasMap[lowerLabel] || lowerKey;
+
+            if (['district', 'state', 'pincode', 'aadhaar_no', 'user_name', 'user_phone', 'user_email', 'address', 'dob', 'gender'].includes(normKey)) {
+              restoredApplicantInfo[normKey] = val;
+            }
+
+            // Always store under rawKey, lowerKey, label, and fieldName so all custom inputs find their value
+            restoredFields[rawKey] = val;
+            if (fv.field_label) restoredFields[fv.field_label] = val;
+            if (fv.field_name) restoredFields[fv.field_name] = val;
+            if (fv.field_id && fieldIdToNameMap[fv.field_id]) {
+              restoredFields[fieldIdToNameMap[fv.field_id]] = val;
+            }
+            if (normKey) {
+              restoredFields[normKey] = val;
+            }
+          });
+
+          if (Object.keys(restoredApplicantInfo).length > 0) {
+            setApplicantInfo(prev => ({ ...prev, ...restoredApplicantInfo }));
+          }
+
+          if (Object.keys(restoredFields).length > 0) {
+            setFieldValues(prev => ({ ...prev, ...restoredFields }));
+          }
+        }
+      } catch (err) {
+        console.error('Error restoring draft application:', err);
+      }
+    };
+
+    loadDraftData();
+  }, [draftIdParam, service]);
 
   const fetchService = async () => {
     try {
@@ -97,7 +250,7 @@ export default function ApplyService() {
             initialFields[key] = f.default_value || '';
           });
         }
-        setFieldValues(initialFields);
+        setFieldValues(prev => ({ ...initialFields, ...prev }));
       } else {
         // Fallback service definition
         const fallback = getServiceDefinition(serviceParam, lang);
@@ -109,23 +262,28 @@ export default function ApplyService() {
             initialFields[key] = f.default_value || '';
           });
         }
-        setFieldValues(initialFields);
+        setFieldValues(prev => ({ ...initialFields, ...prev }));
       }
 
       // Check user session to prefill applicant info if logged in
-      const token = localStorage.getItem('token');
-      if (token) {
+      const userTok = localStorage.getItem('eseva_user_token') || localStorage.getItem('token') || localStorage.getItem('eseva_admin_token');
+      if (userTok) {
         try {
           const meRes = await fetch('/api/auth/me', {
-            headers: { Authorization: `Bearer ${token}` }
+            headers: { Authorization: `Bearer ${userTok}` }
           });
           if (meRes.ok) {
             const userData = await meRes.json();
             setApplicantInfo(prev => ({
               ...prev,
-              user_name: userData.name || prev.user_name,
-              user_email: userData.email || prev.user_email,
-              user_phone: userData.phone || prev.user_phone
+              user_name: prev.user_name || userData.name || '',
+              user_email: prev.user_email || userData.email || '',
+              user_phone: prev.user_phone || userData.phone || userData.mobile || '',
+              aadhaar_no: prev.aadhaar_no || userData.aadhaar_no || '',
+              address: prev.address || userData.address || '',
+              district: prev.district || userData.district || '',
+              state: prev.state || userData.state || 'Tamil Nadu',
+              pincode: prev.pincode || userData.pincode || ''
             }));
           }
         } catch (e) {}
@@ -141,7 +299,7 @@ export default function ApplyService() {
             initialFields[key] = f.default_value || '';
           });
         }
-        setFieldValues(initialFields);
+        setFieldValues(prev => ({ ...initialFields, ...prev }));
       } else {
         setError(err.message);
       }
@@ -170,6 +328,26 @@ export default function ApplyService() {
     if (errors[`doc_${docName}`]) {
       setErrors(prev => ({ ...prev, [`doc_${docName}`]: null }));
     }
+  };
+
+  const processSelectedFile = (dName, selectedFile, maxLimitMB = 5) => {
+    if (!selectedFile) return;
+    const validExts = ['.pdf', '.jpg', '.jpeg', '.png'];
+    const fileName = selectedFile.name || 'file.jpg';
+    const ext = '.' + fileName.split('.').pop().toLowerCase();
+    
+    if (!validExts.includes(ext)) {
+      setErrors(prev => ({ ...prev, [`doc_${dName}`]: lang === 'ta' ? 'கோப்பு வகை ஆதரிக்கப்படவில்லை. PDF, JPG, அல்லது PNG பதிவேற்றவும்.' : 'File type not supported. Upload PDF, JPG, or PNG.' }));
+      return;
+    }
+
+    if (selectedFile.size > maxLimitMB * 1024 * 1024) {
+      setErrors(prev => ({ ...prev, [`doc_${dName}`]: lang === 'ta' ? `கோப்பு அளவு ${maxLimitMB}MB வரம்பை விட அதிகமாக உள்ளது.` : `File size exceeds ${maxLimitMB}MB limit.` }));
+      return;
+    }
+
+    setErrors(prev => ({ ...prev, [`doc_${dName}`]: null }));
+    handleFileChange(dName, selectedFile);
   };
 
   // Dynamic Conditional Field Visibility Evaluation
@@ -259,18 +437,25 @@ export default function ApplyService() {
       setSavingDraft(true);
       setDraftSavedMessage(null);
 
+      const activeServiceId = service?.id || serviceParam;
+      if (!activeServiceId) {
+        throw new Error(lang === 'ta' ? 'சேவை அடையாள எண் கிடைக்கவில்லை' : 'Service identifier not found');
+      }
+
       const formData = new FormData();
       if (draftId) formData.append('application_id', draftId);
-      formData.append('service_id', service.id);
-      formData.append('user_name', applicantInfo.user_name);
-      formData.append('user_email', applicantInfo.user_email);
-      formData.append('user_phone', applicantInfo.user_phone);
-      formData.append('current_step', currentStep);
+      formData.append('service_id', activeServiceId);
+      formData.append('user_name', applicantInfo.user_name || '');
+      formData.append('user_email', applicantInfo.user_email || '');
+      formData.append('user_phone', applicantInfo.user_phone || '');
+      formData.append('current_step', currentStep || 1);
       formData.append('field_values', JSON.stringify({ ...applicantInfo, ...fieldValues }));
 
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('token') || localStorage.getItem('eseva_user_token');
       const headers = {};
-      if (token) headers.Authorization = `Bearer ${token}`;
+      if (token && token !== 'null' && token !== 'undefined') {
+        headers.Authorization = `Bearer ${token}`;
+      }
 
       const res = await fetch('/api/applications/draft', {
         method: 'POST',
@@ -282,10 +467,19 @@ export default function ApplyService() {
       if (!res.ok) throw new Error(data.error || 'Failed to save draft');
 
       setDraftId(data.application_id);
-      setDraftSavedMessage(`Draft saved! Reference Code: ${data.application_number}`);
-      setTimeout(() => setDraftSavedMessage(null), 5000);
+
+      // Trigger automatic toast popup ("Your application saved in draft")
+      addToast(
+        lang === 'ta' ? 'உங்கள் விண்ணப்பம் வரைவாகச் சேமிக்கப்பட்டது' : 'Your application saved in draft',
+        'success',
+        3000
+      );
+
+      // Immediately navigate from current form page to My Applications portfolio page
+      navigate('/my-applications');
     } catch (err) {
-      setSubmitError(err.message);
+      console.error('Save draft error:', err);
+      addToast(err.message || (lang === 'ta' ? 'வரைவாக சேமிப்பதில் தோல்வி' : 'Failed to save draft'), 'error', 3000);
     } finally {
       setSavingDraft(false);
     }
@@ -336,7 +530,7 @@ export default function ApplyService() {
     }
   };
 
-  const { user, userToken, loading: authLoading } = useAuth();
+  const { userToken, loading: authLoading } = useAuth();
   const { addToast } = useToast();
 
   useEffect(() => {
@@ -443,7 +637,7 @@ export default function ApplyService() {
           items={[
             { label: lang === 'ta' ? 'இ-சேவைகள்' : 'E-Services', path: '/services' },
             { label: service.name, path: `/service/${service.slug || service.id}` },
-            { label: lang === 'ta' ? 'விண்ணப்பிக்குக' : 'Apply' },
+            { label: lang === 'ta' ? 'விண்ணப்பிக்குக' : 'Apply', path: currentStep > 1 ? `/apply/${service.slug || service.id}` : null },
             ...(currentStep === 2 ? [{ label: lang === 'ta' ? 'ஆவணங்கள்' : 'Documents' }] : currentStep === 3 ? [{ label: lang === 'ta' ? 'சரிபார்ப்பு' : 'Review' }] : currentStep === 4 ? [{ label: lang === 'ta' ? 'கட்டணம்' : 'Payment' }] : currentStep === 5 ? [{ label: lang === 'ta' ? 'உறுதிப்படுத்தல்' : 'Confirmation' }] : [])
           ]} 
         />
@@ -569,9 +763,11 @@ export default function ApplyService() {
                 </div>
 
                 {/* PRIMARY APPLICANT CONTACT & IDENTIFICATION (FOR TRACKING & NOTIFICATIONS) */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                   <div>
-                    <label className="block text-xs font-extrabold text-slate-700 mb-1.5">{t.fullName} *</label>
+                    <label className="block text-xs font-extrabold text-slate-700 mb-1.5">
+                      {t.fullName || t.fullNameLabel || (lang === 'ta' ? 'விண்ணப்பதாரர் பெயர்' : 'Full Name')} <span className="text-rose-500">*</span>
+                    </label>
                     <input
                       type="text"
                       name="user_name"
@@ -584,7 +780,9 @@ export default function ApplyService() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-extrabold text-slate-700 mb-1.5">{t.mobileNumber} *</label>
+                    <label className="block text-xs font-extrabold text-slate-700 mb-1.5">
+                      {t.mobileNumber || t.mobileLabel || (lang === 'ta' ? 'கைபேசி / மொபைல் எண்' : 'Mobile Number')} <span className="text-rose-500">*</span>
+                    </label>
                     <input
                       type="tel"
                       name="user_phone"
@@ -597,7 +795,9 @@ export default function ApplyService() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-extrabold text-slate-700 mb-1.5">{t.emailAddress} *</label>
+                    <label className="block text-xs font-extrabold text-slate-700 mb-1.5">
+                      {t.emailAddress || t.emailLabel || (lang === 'ta' ? 'மின்னஞ்சல் முகவரி' : 'Email Address')} <span className="text-rose-500">*</span>
+                    </label>
                     <input
                       type="email"
                       name="user_email"
@@ -607,6 +807,21 @@ export default function ApplyService() {
                       className={`w-full px-4 py-3 bg-slate-50 border ${errors.user_email ? 'border-rose-500 bg-rose-50/50' : 'border-slate-200'} rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-[#0b192c] focus:bg-white transition-all`}
                     />
                     {errors.user_email && <p className="text-[11px] text-rose-600 font-bold mt-1">{errors.user_email}</p>}
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-extrabold text-slate-700 mb-1.5">
+                      {lang === 'ta' ? 'ஆதார் எண்' : 'Aadhaar Number'} <span className="text-rose-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="aadhaar_no"
+                      placeholder="e.g. 9876 5432 1098"
+                      value={applicantInfo.aadhaar_no}
+                      onChange={handleApplicantChange}
+                      className={`w-full px-4 py-3 bg-slate-50 border ${errors.aadhaar_no ? 'border-rose-500 bg-rose-50/50' : 'border-slate-200'} rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-[#0b192c] focus:bg-white transition-all`}
+                    />
+                    {errors.aadhaar_no && <p className="text-[11px] text-rose-600 font-bold mt-1">{errors.aadhaar_no}</p>}
                   </div>
                 </div>
 
@@ -788,24 +1003,6 @@ export default function ApplyService() {
                         }
                       };
 
-                      const processSelectedFile = (dName, selectedFile, maxLimitMB) => {
-                        const validExts = ['.pdf', '.jpg', '.jpeg', '.png'];
-                        const ext = '.' + selectedFile.name.split('.').pop().toLowerCase();
-                        
-                        if (!validExts.includes(ext)) {
-                          setErrors(prev => ({ ...prev, [`doc_${dName}`]: lang === 'ta' ? 'கோப்பு வகை ஆதரிக்கப்படவில்லை. PDF, JPG, அல்லது PNG பதிவேற்றவும்.' : 'File type not supported. Upload PDF, JPG, or PNG.' }));
-                          return;
-                        }
-
-                        if (selectedFile.size > maxLimitMB * 1024 * 1024) {
-                          setErrors(prev => ({ ...prev, [`doc_${dName}`]: lang === 'ta' ? `கோப்பு அளவு ${maxLimitMB}MB வரம்பை விட அதிகமாக உள்ளது.` : `File size exceeds ${maxLimitMB}MB limit.` }));
-                          return;
-                        }
-
-                        setErrors(prev => ({ ...prev, [`doc_${dName}`]: null }));
-                        handleFileChange(dName, selectedFile);
-                      };
-
                       return (
                         <div 
                           key={idx}
@@ -865,7 +1062,7 @@ export default function ApplyService() {
                                 className="w-full py-3.5 px-3 bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-xs hover:shadow border border-slate-800 group/cam"
                               >
                                 <Camera className="w-4 h-4 text-orange-400 group-hover/cam:scale-110 transition-transform" />
-                                <span>{t.takePhotoBtn || (lang === 'ta' ? 'கேமரா புகைப்படம்' : 'Take Photo')}</span>
+                                <span>{t.takePhotoBtn || (lang === 'ta' ? 'நேரலை கேமரா' : 'Live Camera')}</span>
                               </button>
                             </div>
                           ) : (
@@ -1054,29 +1251,130 @@ export default function ApplyService() {
                   </div>
                 )}
 
-                {/* UPLOADED DOCUMENTS SUMMARY */}
-                <div className="p-6 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-3">
+                {/* UPLOADED DOCUMENTS SUMMARY WITH VISUAL PREVIEWS */}
+                <div className="p-6 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-4">
                   <div className="flex items-center justify-between border-b pb-3 border-slate-200/80">
-                    <h4 className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">{t.uploadedDocumentsTitle}</h4>
+                    <div>
+                      <h4 className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">{t.uploadedDocumentsTitle}</h4>
+                      <p className="text-[11px] text-slate-400 font-normal mt-0.5">
+                        {lang === 'ta' ? 'பதிவேற்றப்பட்ட சான்று ஆவணங்களின் சரிபார்ப்பு முன்னோட்டம்' : 'Visual inspection of uploaded proof documents'}
+                      </p>
+                    </div>
                     <button
                       onClick={() => setCurrentStep(2)}
-                      className="text-xs font-bold text-orange-600 hover:underline flex items-center gap-1"
+                      className="text-xs font-bold text-orange-600 hover:text-orange-700 bg-orange-50 hover:bg-orange-100 border border-orange-200 px-3 py-1.5 rounded-lg flex items-center gap-1 transition-colors"
                     >
                       <Edit3 className="w-3.5 h-3.5" />
-                      <span>{lang === 'ta' ? 'திருத்த' : 'Edit'}</span>
+                      <span>{lang === 'ta' ? 'ஆவணங்களை மாற்ற / திருத்த' : 'Edit / Replace Docs'}</span>
                     </button>
                   </div>
-                  <div className="space-y-2 text-xs">
-                    {Object.entries(files).map(([dName, fObj], idx) => (
-                      <div key={idx} className="flex items-center justify-between bg-white p-3 rounded-xl border border-slate-200/80">
-                        <span className="font-medium text-slate-700">{dName}</span>
-                        <span className="font-bold text-emerald-600 flex items-center gap-1">
-                          <CheckCircle2 className="w-4 h-4" />
-                          <span>{fObj ? fObj.name : (lang === 'ta' ? 'பதிவேற்றப்படவில்லை' : 'Not Uploaded')}</span>
-                        </span>
-                      </div>
-                    ))}
-                  </div>
+
+                  {Object.keys(files).length > 0 ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {Object.entries(files).map(([dName, fObj], idx) => {
+                        if (!fObj) {
+                          return (
+                            <div key={idx} className="p-4 bg-white rounded-xl border border-slate-200 flex items-center justify-between">
+                              <span className="text-xs font-bold text-slate-700">{dName}</span>
+                              <span className="text-xs font-bold text-amber-600 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-md">
+                                {lang === 'ta' ? 'பதிவேற்றப்படவில்லை' : 'Not Uploaded'}
+                              </span>
+                            </div>
+                          );
+                        }
+
+                        let isImage = false;
+                        let isPdf = false;
+                        let previewUrl = null;
+                        let fileName = fObj.name || 'document';
+                        let fileSize = fObj.size ? `${(fObj.size / (1024 * 1024)).toFixed(2)} MB` : '';
+
+                        if (fObj instanceof File || fObj instanceof Blob) {
+                          isImage = fObj.type ? fObj.type.startsWith('image/') : /\.(jpg|jpeg|png|webp|gif)$/i.test(fObj.name);
+                          isPdf = fObj.type === 'application/pdf' || /\.pdf$/i.test(fObj.name);
+                          if (isImage) {
+                            previewUrl = URL.createObjectURL(fObj);
+                          }
+                        } else if (typeof fObj === 'string') {
+                          isImage = fObj.startsWith('data:image/') || /\.(jpg|jpeg|png|webp|gif)$/i.test(fObj);
+                          isPdf = fObj.endsWith('.pdf');
+                          previewUrl = fObj;
+                        }
+
+                        return (
+                          <div key={idx} className="p-4 bg-white rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-md transition-all space-y-3">
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-black text-slate-900 flex items-center gap-1.5 truncate">
+                                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                                <span className="truncate">{dName}</span>
+                              </span>
+                              {fileSize && (
+                                <span className="text-[10px] font-extrabold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md shrink-0">
+                                  {fileSize}
+                                </span>
+                              )}
+                            </div>
+
+                            {/* THUMBNAIL BOX */}
+                            <div className="relative group/thumb rounded-xl overflow-hidden bg-slate-100 border border-slate-200/80 flex items-center justify-center min-h-[140px] max-h-[180px]">
+                              {isImage && previewUrl ? (
+                                <>
+                                  <img 
+                                    src={previewUrl} 
+                                    alt={dName} 
+                                    className="w-full h-36 object-cover group-hover/thumb:scale-105 transition-transform duration-300"
+                                  />
+                                  <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover/thumb:opacity-100 transition-opacity flex items-center justify-center gap-2 backdrop-blur-xs">
+                                    <button
+                                      type="button"
+                                      onClick={() => setPreviewModalDoc({ title: dName, url: previewUrl, isPdf: false, fileName })}
+                                      className="px-3.5 py-2 bg-white text-slate-900 font-extrabold text-xs rounded-xl shadow-lg flex items-center gap-1.5 hover:bg-orange-500 hover:text-white transition-all transform hover:scale-105"
+                                    >
+                                      <Eye className="w-4 h-4" />
+                                      <span>{lang === 'ta' ? 'பெரிதாக்குக' : 'Zoom Preview'}</span>
+                                    </button>
+                                  </div>
+                                </>
+                              ) : isPdf ? (
+                                <div className="p-4 text-center space-y-2">
+                                  <div className="w-12 h-12 bg-rose-100 text-rose-600 rounded-xl flex items-center justify-center mx-auto border border-rose-200">
+                                    <FileText className="w-6 h-6" />
+                                  </div>
+                                  <div className="text-xs font-extrabold text-slate-800 truncate max-w-[200px] mx-auto">{fileName}</div>
+                                  <span className="inline-block text-[10px] font-black uppercase text-rose-700 bg-rose-50 border border-rose-200 px-2.5 py-0.5 rounded-md">PDF Document</span>
+                                </div>
+                              ) : (
+                                <div className="p-4 text-center space-y-2">
+                                  <div className="w-12 h-12 bg-emerald-100 text-emerald-700 rounded-xl flex items-center justify-center mx-auto border border-emerald-200">
+                                    <CheckCircle2 className="w-6 h-6" />
+                                  </div>
+                                  <div className="text-xs font-extrabold text-slate-800 truncate max-w-[200px] mx-auto">{fileName}</div>
+                                </div>
+                              )}
+                            </div>
+
+                            <div className="flex items-center justify-between text-[11px] pt-1">
+                              <span className="text-slate-500 font-medium truncate max-w-[160px]">{fileName}</span>
+                              {isImage && previewUrl && (
+                                <button
+                                  type="button"
+                                  onClick={() => setPreviewModalDoc({ title: dName, url: previewUrl, isPdf: false, fileName })}
+                                  className="font-extrabold text-orange-600 hover:text-orange-700 flex items-center gap-1 hover:underline shrink-0"
+                                >
+                                  <Eye className="w-3.5 h-3.5" />
+                                  <span>{lang === 'ta' ? 'காண்க' : 'View'}</span>
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="p-4 bg-white rounded-xl border border-slate-200 text-center text-xs font-medium text-slate-500">
+                      {lang === 'ta' ? 'ஆவணங்கள் பதிவேற்றப்படவில்லை.' : 'No documents uploaded yet.'}
+                    </div>
+                  )}
                 </div>
 
                 {/* FEE BREAKDOWN CARD */}
@@ -1643,6 +1941,81 @@ export default function ApplyService() {
           documentName={activeCameraDoc}
           lang={lang}
         />
+
+        {/* FULLSCREEN DOCUMENT ZOOM PREVIEW MODAL */}
+        {previewModalDoc && (
+          <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200 font-sans">
+            <div className="bg-white rounded-3xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden border border-slate-700/50">
+              
+              {/* MODAL HEADER */}
+              <div className="px-6 py-4 bg-[#0b192c] text-white flex items-center justify-between border-b border-slate-800">
+                <div className="flex items-center space-x-3">
+                  <div className="w-9 h-9 bg-orange-500/20 text-orange-400 rounded-xl flex items-center justify-center border border-orange-500/30">
+                    <Eye className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-heading font-extrabold text-sm text-white">{previewModalDoc.title}</h3>
+                    <p className="text-[10px] text-slate-400 font-medium">{previewModalDoc.fileName || 'Proof Document'}</p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setPreviewModalDoc(null)}
+                  className="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* MODAL BODY PREVIEW AREA */}
+              <div className="p-6 overflow-y-auto flex-1 bg-slate-950 flex items-center justify-center min-h-[300px]">
+                {previewModalDoc.url ? (
+                  <img
+                    src={previewModalDoc.url}
+                    alt={previewModalDoc.title}
+                    className="max-w-full max-h-[65vh] object-contain rounded-xl shadow-2xl border border-slate-800"
+                  />
+                ) : (
+                  <div className="text-center text-slate-400 text-xs py-10 font-medium">
+                    {lang === 'ta' ? 'முன்னோட்டம் கிடைக்கவில்லை' : 'Preview Unavailable'}
+                  </div>
+                )}
+              </div>
+
+              {/* MODAL FOOTER */}
+              <div className="px-6 py-4 bg-slate-900 text-white flex items-center justify-between border-t border-slate-800">
+                <div className="text-xs text-slate-400 font-medium flex items-center gap-1.5">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  <span>{lang === 'ta' ? 'சரிபார்க்கப்பட்ட சான்று ஆவணம்' : 'Verified Proof Document'}</span>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  {previewModalDoc.url && (
+                    <a
+                      href={previewModalDoc.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-xl transition-colors flex items-center gap-1.5"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" />
+                      <span>{lang === 'ta' ? 'புதிய தாவலில் திறக்க' : 'Open Full Tab'}</span>
+                    </a>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={() => setPreviewModalDoc(null)}
+                    className="px-5 py-2 bg-orange-500 hover:bg-orange-600 text-white text-xs font-extrabold rounded-xl transition-colors shadow-xs"
+                  >
+                    {lang === 'ta' ? 'மூடுக' : 'Close'}
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        )}
 
       </div>
     </div>

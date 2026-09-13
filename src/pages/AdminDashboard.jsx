@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import {
   ShieldAlert, LayoutDashboard, FileText, Grid, Users, Mail,
   Briefcase, Search, RefreshCw, Eye, Edit3, CheckCircle2,
@@ -13,19 +13,47 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import StatusBadge from '../components/StatusBadge';
+import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 
 export default function AdminDashboard() {
   const { admin, adminToken, logoutAdmin } = useAuth();
   const { addToast } = useToast();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const [activeTab, setActiveTab] = useState('applications');
+  const activeTabParam = searchParams.get('tab');
+  const [activeTabState, setActiveTabState] = useState(() => {
+    return activeTabParam || localStorage.getItem('admin_active_tab') || 'applications';
+  });
+
+  const activeTab = activeTabParam || activeTabState;
+
+  const setActiveTab = (tab) => {
+    localStorage.setItem('admin_active_tab', tab);
+    setActiveTabState(tab);
+    setSearchParams({ tab });
+  };
+
+  const getAuthToken = () => {
+    return adminToken || localStorage.getItem('eseva_admin_token') || localStorage.getItem('adminToken') || localStorage.getItem('token');
+  };
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [stats, setStats] = useState(null);
   const [applications, setApplications] = useState([]);
   const [statusFilter, setStatusFilter] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
+
+  // Custom Delete Modal State
+  const [deleteModalState, setDeleteModalState] = useState({
+    isOpen: false,
+    title: '',
+    description: '',
+    confirmText: '',
+    onConfirm: null,
+    loading: false
+  });
 
   // Inspector & Status Update Modal State
   const [selectedApp, setSelectedApp] = useState(null);
@@ -581,23 +609,196 @@ export default function AdminDashboard() {
   };
 
   const fetchCustomers = async () => {
-    if (!adminToken) return;
+    const token = getAuthToken();
+    if (!token) return;
     try {
-      const res = await fetch('/api/admin/customers', {
-        headers: { Authorization: `Bearer ${adminToken}` }
+      const res = await fetch('/api/admin/users', {
+        headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) setCustomers(await res.json());
     } catch (e) {}
   };
 
+  const getUserApplicationCount = (user) => {
+    if (!user) return 0;
+    const uEmail = (user.email || '').trim().toLowerCase();
+    const uPhone = (user.phone || '').replace(/\D/g, '');
+    const uName = (user.name || '').trim().toLowerCase();
+
+    const countFromState = applications.filter(a => {
+      const appUserId = a.user_id ? String(a.user_id) : null;
+      const appEmail = (a.user_email || a.email || '').trim().toLowerCase();
+      const appPhone = (a.user_phone || a.phone || '').replace(/\D/g, '');
+      const appName = (a.applicant_name || a.user_name || a.name || '').trim().toLowerCase();
+
+      const matchId = appUserId && String(user.id) === appUserId;
+      const matchEmail = uEmail && appEmail && (uEmail === appEmail || appEmail.includes(uEmail.split('@')[0]) || uEmail.includes(appEmail.split('@')[0]));
+      const matchPhone = uPhone && appPhone && uPhone.length >= 10 && appPhone.length >= 10 && (uPhone.endsWith(appPhone.slice(-10)) || appPhone.endsWith(uPhone.slice(-10)));
+      const matchName = uName && appName && uName === appName;
+
+      return matchId || matchEmail || matchPhone || matchName;
+    }).length;
+
+    const countFromUserObj = Array.isArray(user.applications) ? user.applications.length : (user.total_applications || user.application_count || 0);
+
+    return Math.max(countFromUserObj, countFromState);
+  };
+
+  const getUserApplicationsList = (user) => {
+    if (!user) return [];
+    
+    const uEmail = (user.email || '').trim().toLowerCase();
+    const uPhone = (user.phone || '').replace(/\D/g, '');
+    const uName = (user.name || '').trim().toLowerCase();
+
+    const appsFromState = applications.filter(a => {
+      const appUserId = a.user_id ? String(a.user_id) : null;
+      const appEmail = (a.user_email || a.email || '').trim().toLowerCase();
+      const appPhone = (a.user_phone || a.phone || '').replace(/\D/g, '');
+      const appName = (a.applicant_name || a.user_name || a.name || '').trim().toLowerCase();
+
+      const matchId = appUserId && String(user.id) === appUserId;
+      const matchEmail = uEmail && appEmail && (uEmail === appEmail || appEmail.includes(uEmail.split('@')[0]) || uEmail.includes(appEmail.split('@')[0]));
+      const matchPhone = uPhone && appPhone && uPhone.length >= 10 && appPhone.length >= 10 && (uPhone.endsWith(appPhone.slice(-10)) || appPhone.endsWith(uPhone.slice(-10)));
+      const matchName = uName && appName && uName === appName;
+
+      return matchId || matchEmail || matchPhone || matchName;
+    }).map(a => ({
+      id: a.id,
+      application_number: a.application_number,
+      service_name: a.service_name || 'Digital Service',
+      status: a.status || 'SUBMITTED',
+      created_at: a.created_at
+    }));
+
+    if (Array.isArray(user.applications) && user.applications.length > 0) {
+      // Merge unique applications by application_number
+      const map = new Map();
+      user.applications.forEach(a => map.set(a.application_number || a.id, a));
+      appsFromState.forEach(a => map.set(a.application_number || a.id, a));
+      return Array.from(map.values());
+    }
+
+    return appsFromState;
+  };
+
+  const handleDeleteUser = (userId, userName) => {
+    const targetUser = customers.find(u => String(u.id) === String(userId)) || selectedUser;
+    const displayName = userName || targetUser?.name || 'Citizen User';
+
+    setDeleteModalState({
+      isOpen: true,
+      title: 'Delete Citizen User Account?',
+      description: `Are you sure you want to delete the citizen user account for "${displayName}" (ID #${userId})? This action cannot be undone.`,
+      confirmText: 'Yes, Delete User',
+      loading: false,
+      onConfirm: async () => {
+        setDeleteModalState(prev => ({ ...prev, loading: true }));
+        try {
+          const token = getAuthToken();
+          const res = await fetch(`/api/admin/users/${userId}`, {
+            method: 'DELETE',
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          if (res.ok) {
+            addToast('Citizen user account deleted successfully', 'success');
+            if (selectedUser && String(selectedUser.id) === String(userId)) setSelectedUser(null);
+            setCustomers(prev => prev.filter(u => String(u.id) !== String(userId)));
+            fetchCustomers();
+          } else {
+            const data = await res.json().catch(() => ({}));
+            addToast(data.error || 'Failed to delete user account', 'error');
+          }
+        } catch (e) {
+          addToast('Failed to delete user account', 'error');
+        } finally {
+          setDeleteModalState({ isOpen: false, title: '', description: '', confirmText: '', onConfirm: null, loading: false });
+        }
+      }
+    });
+  };
+
   const fetchEnquiries = async () => {
-    if (!adminToken) return;
+    const token = getAuthToken();
+    if (!token) return;
     try {
       const res = await fetch('/api/admin/enquiries', {
-        headers: { Authorization: `Bearer ${adminToken}` }
+        headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) setEnquiries(await res.json());
     } catch (e) {}
+  };
+
+  const handleDeleteEnquiry = (enquiryId) => {
+    const targetId = enquiryId ?? selectedEnquiry?.id;
+    setDeleteModalState({
+      isOpen: true,
+      title: 'Delete Contact Enquiry?',
+      description: 'Are you sure you want to delete this citizen contact enquiry? This action cannot be undone.',
+      confirmText: 'Yes, Delete',
+      loading: false,
+      onConfirm: async () => {
+        setDeleteModalState(prev => ({ ...prev, loading: true }));
+        try {
+          const token = getAuthToken();
+          const deleteUrl = (targetId && targetId !== 'undefined' && targetId !== 'null') ? `/api/admin/enquiries/${targetId}` : '/api/admin/enquiries';
+          const res = await fetch(deleteUrl, {
+            method: 'DELETE',
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          if (res.ok) {
+            addToast('Enquiry deleted successfully', 'success');
+            if (selectedEnquiry && (String(selectedEnquiry.id) === String(targetId) || !targetId)) setSelectedEnquiry(null);
+            if (targetId && targetId !== 'undefined') {
+              setEnquiries(prev => prev.filter(m => String(m.id) !== String(targetId)));
+            } else {
+              setEnquiries([]);
+            }
+            fetchEnquiries();
+          } else {
+            const data = await res.json().catch(() => ({}));
+            addToast(data.error || 'Failed to delete enquiry', 'error');
+          }
+        } catch (e) {
+          addToast('Failed to delete enquiry', 'error');
+        } finally {
+          setDeleteModalState({ isOpen: false, title: '', description: '', confirmText: '', onConfirm: null, loading: false });
+        }
+      }
+    });
+  };
+
+  const handlePurgeAllEnquiries = () => {
+    setDeleteModalState({
+      isOpen: true,
+      title: 'Purge All Contact Enquiries?',
+      description: 'Are you sure you want to purge ALL contact enquiry messages? This action cannot be undone.',
+      confirmText: 'Purge All',
+      loading: false,
+      onConfirm: async () => {
+        setDeleteModalState(prev => ({ ...prev, loading: true }));
+        try {
+          const token = getAuthToken();
+          const res = await fetch('/api/admin/enquiries-purge-all', {
+            method: 'DELETE',
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          if (res.ok) {
+            addToast('All contact enquiries purged successfully', 'success');
+            setSelectedEnquiry(null);
+            setEnquiries([]);
+            fetchEnquiries();
+          } else {
+            const data = await res.json().catch(() => ({}));
+            addToast(data.error || 'Failed to purge enquiries', 'error');
+          }
+        } catch (e) {
+          addToast('Failed to purge enquiries', 'error');
+        } finally {
+          setDeleteModalState({ isOpen: false, title: '', description: '', confirmText: '', onConfirm: null, loading: false });
+        }
+      }
+    });
   };
 
   const fetchCareers = async () => {
@@ -660,7 +861,7 @@ export default function AdminDashboard() {
   };
 
   useEffect(() => {
-    if (!adminToken) {
+    if (!admin || !adminToken) {
       navigate('/admin/login');
       return;
     }
@@ -677,7 +878,7 @@ export default function AdminDashboard() {
       fetchAdminDocuments(),
       fetchBanners()
     ]).then(() => setLoading(false));
-  }, [adminToken, navigate]);
+  }, [admin, adminToken, navigate]);
 
   useEffect(() => {
     fetchApplications();
@@ -1586,48 +1787,89 @@ export default function AdminDashboard() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                      {filteredCustomers.map((user) => (
-                        <tr key={user.id} className="hover:bg-slate-50/80 transition-colors">
-                          <td className="py-4 px-4">
-                            <div className="flex items-center space-x-3">
-                              <div className="w-9 h-9 rounded-xl bg-[#0b192c] text-orange-400 font-black flex items-center justify-center text-sm shadow-sm">
-                                {(user.name || 'U')[0].toUpperCase()}
+                      {filteredCustomers.length === 0 ? (
+                        <tr>
+                          <td colSpan={6} className="py-12 px-4 text-center">
+                            <div className="flex flex-col items-center justify-center space-y-3">
+                              <div className="w-12 h-12 rounded-2xl bg-orange-50 text-orange-500 border border-orange-200 flex items-center justify-center">
+                                <Users className="w-6 h-6" />
                               </div>
                               <div>
-                                <div className="font-extrabold text-slate-900">{user.name}</div>
-                                <div className="text-[10px] text-slate-400 font-mono">ID: #{user.id}</div>
+                                <h4 className="font-extrabold text-slate-800 text-sm">No Registered Citizen Users Found</h4>
+                                <p className="text-xs text-slate-500 max-w-sm mx-auto mt-1">
+                                  {userSearchQuery 
+                                    ? 'No citizen user accounts match your search query.' 
+                                    : 'There are currently no registered citizen user accounts in the system.'}
+                                </p>
                               </div>
+                              {userSearchQuery && (
+                                <button
+                                  onClick={() => setUserSearchQuery('')}
+                                  className="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-colors inline-flex items-center space-x-1"
+                                >
+                                  <RotateCcw className="w-3.5 h-3.5 text-orange-500" />
+                                  <span>Reset Search</span>
+                                </button>
+                              )}
                             </div>
                           </td>
-                          <td className="py-4 px-4">
-                            <div className="font-semibold text-slate-800">{user.email}</div>
-                            <div className="text-[11px] text-slate-500">{user.phone || 'No Phone Registered'}</div>
-                          </td>
-                          <td className="py-4 px-4 text-slate-600 font-medium">
-                            {user.created_at ? new Date(user.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Registered'}
-                          </td>
-                          <td className="py-4 px-4">
-                            <span className="bg-slate-100 text-slate-800 text-xs font-black px-2.5 py-1 rounded-lg border border-slate-200">
-                              {user.application_count || applications.filter(a => a.user_email === user.email || a.user_name === user.name).length || 0} Apps
-                            </span>
-                          </td>
-                          <td className="py-4 px-4">
-                            <span className="inline-flex items-center space-x-1 bg-emerald-50 text-emerald-700 text-[11px] font-extrabold px-2.5 py-0.5 rounded-full border border-emerald-200">
-                              <CheckCircle className="w-3 h-3 text-emerald-600" />
-                              <span>Active</span>
-                            </span>
-                          </td>
-                          <td className="py-4 px-4 text-right">
-                            <button
-                              onClick={() => setSelectedUser(user)}
-                              className="bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold px-3.5 py-1.5 rounded-xl text-xs transition-colors shadow flex items-center space-x-1.5 ml-auto"
-                            >
-                              <Eye className="w-3.5 h-3.5 text-orange-400" />
-                              <span>Inspect Details</span>
-                            </button>
-                          </td>
                         </tr>
-                      ))}
+                      ) : (
+                        filteredCustomers.map((user) => (
+                          <tr key={user.id} className="hover:bg-slate-50/80 transition-colors">
+                            <td className="py-4 px-4">
+                              <div className="flex items-center space-x-3">
+                                <div className="w-9 h-9 rounded-xl bg-[#0b192c] text-orange-400 font-black flex items-center justify-center text-sm shadow-sm">
+                                  {(user.name || 'U')[0].toUpperCase()}
+                                </div>
+                                <div>
+                                  <div className="font-extrabold text-slate-900">{user.name}</div>
+                                  <div className="text-[10px] text-slate-400 font-mono">ID: #{user.id}</div>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="py-4 px-4">
+                              <div className="font-semibold text-slate-800">{user.email}</div>
+                              <div className="text-[11px] text-slate-500">{user.phone || 'No Mobile Registered'}</div>
+                              {user.aadhaar_no && (
+                                <div className="text-[10px] font-mono text-slate-400 mt-0.5">Aadhaar: {user.aadhaar_no}</div>
+                              )}
+                            </td>
+                            <td className="py-4 px-4 text-slate-600 font-medium">
+                              {user.created_at ? new Date(user.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Registered'}
+                            </td>
+                             <td className="py-4 px-4">
+                              <span className="bg-slate-100 text-slate-800 text-xs font-black px-2.5 py-1 rounded-lg border border-slate-200">
+                                {getUserApplicationCount(user)} Apps
+                              </span>
+                            </td>
+                            <td className="py-4 px-4">
+                              <span className="inline-flex items-center space-x-1 bg-emerald-50 text-emerald-700 text-[11px] font-extrabold px-2.5 py-0.5 rounded-full border border-emerald-200">
+                                <CheckCircle className="w-3 h-3 text-emerald-600" />
+                                <span>{user.status || 'Active'}</span>
+                              </span>
+                            </td>
+                            <td className="py-4 px-4 text-right">
+                              <div className="flex items-center justify-end space-x-1.5">
+                                <button
+                                  onClick={() => setSelectedUser(user)}
+                                  className="bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold px-3 py-1.5 rounded-xl text-xs transition-colors shadow flex items-center space-x-1"
+                                >
+                                  <Eye className="w-3.5 h-3.5 text-orange-400" />
+                                  <span>Inspect</span>
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteUser(user.id, user.name)}
+                                  className="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl transition-colors border border-rose-200 cursor-pointer"
+                                  title="Delete User Account"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))
+                      )}
                     </tbody>
                   </table>
                 </div>
@@ -1635,34 +1877,54 @@ export default function AdminDashboard() {
 
               {/* Mobile Stacked User Cards (`md:hidden`) */}
               <div className="space-y-3 md:hidden">
-                {filteredCustomers.map((user) => (
-                  <div key={user.id} className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm space-y-3">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 rounded-xl bg-[#0b192c] text-orange-400 font-black flex items-center justify-center text-sm shadow-sm">
-                        {(user.name || 'U')[0].toUpperCase()}
-                      </div>
-                      <div>
-                        <h4 className="font-extrabold text-sm text-slate-900">{user.name}</h4>
-                        <p className="text-[11px] text-slate-500">{user.email}</p>
-                      </div>
+                {filteredCustomers.length === 0 ? (
+                  <div className="bg-white rounded-2xl p-8 text-center border border-slate-200 shadow-sm space-y-3">
+                    <div className="w-10 h-10 rounded-xl bg-orange-50 text-orange-500 border border-orange-200 flex items-center justify-center mx-auto">
+                      <Users className="w-5 h-5" />
                     </div>
-
-                    <div className="flex justify-between items-center pt-2 border-t border-slate-100 text-xs text-slate-600">
-                      <div>Phone: <strong className="text-slate-800">{user.phone || 'N/A'}</strong></div>
-                      <span className="bg-emerald-50 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded border border-emerald-200">
-                        Active Account
-                      </span>
-                    </div>
-
-                    <button
-                      onClick={() => setSelectedUser(user)}
-                      className="w-full py-2.5 bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold text-xs rounded-xl transition-colors flex items-center justify-center space-x-1.5"
-                    >
-                      <Eye className="w-3.5 h-3.5 text-orange-400" />
-                      <span>Inspect Citizen Details</span>
-                    </button>
+                    <h4 className="font-extrabold text-slate-800 text-sm">No Citizen Users Found</h4>
+                    <p className="text-xs text-slate-500">
+                      {userSearchQuery ? 'No citizen user accounts match your search query.' : 'No citizen accounts registered yet.'}
+                    </p>
                   </div>
-                ))}
+                ) : (
+                  filteredCustomers.map((user) => (
+                    <div key={user.id} className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-10 h-10 rounded-xl bg-[#0b192c] text-orange-400 font-black flex items-center justify-center text-sm shadow-sm">
+                            {(user.name || 'U')[0].toUpperCase()}
+                          </div>
+                          <div>
+                            <h4 className="font-extrabold text-sm text-slate-900">{user.name}</h4>
+                            <p className="text-[11px] text-slate-500">{user.email}</p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => handleDeleteUser(user.id, user.name)}
+                          className="p-2 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl transition-colors border border-rose-200"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+
+                      <div className="flex justify-between items-center pt-2 border-t border-slate-100 text-xs text-slate-600">
+                        <div>Phone: <strong className="text-slate-800">{user.phone || 'N/A'}</strong></div>
+                        <span className="bg-emerald-50 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded border border-emerald-200">
+                          {user.status || 'Active'}
+                        </span>
+                      </div>
+
+                      <button
+                        onClick={() => setSelectedUser(user)}
+                        className="w-full py-2.5 bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold text-xs rounded-xl transition-colors flex items-center justify-center space-x-1.5"
+                      >
+                        <Eye className="w-3.5 h-3.5 text-orange-400" />
+                        <span>Inspect Citizen Details</span>
+                      </button>
+                    </div>
+                  ))
+                )}
               </div>
 
             </div>
@@ -2052,37 +2314,66 @@ export default function AdminDashboard() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                      {applications.map((app) => (
-                        <tr key={app.id} className="hover:bg-slate-50/80 transition-colors">
-                          <td className="py-4 px-4 font-mono font-extrabold text-orange-600">
-                            {app.application_number}
-                          </td>
-                          <td className="py-4 px-4">
-                            <div className="font-bold text-slate-900">{app.user_name}</div>
-                            <div className="text-[11px] text-slate-500">{app.user_phone} • {app.user_email}</div>
-                          </td>
-                          <td className="py-4 px-4">
-                            <div className="font-semibold text-slate-800">{app.service_name}</div>
-                            <div className="text-[10px] text-slate-500">{app.category_name}</div>
-                          </td>
-                          <td className="py-4 px-4">
-                            <div className="text-slate-600">{new Date(app.created_at).toLocaleDateString()}</div>
-                            <div className="font-bold text-emerald-600">₹{app.total_fee}</div>
-                          </td>
-                          <td className="py-4 px-4">
-                            <StatusBadge status={app.status} />
-                          </td>
-                          <td className="py-4 px-4 text-right">
-                            <button
-                              onClick={() => openAppInspector(app.id)}
-                              className="bg-orange-500 hover:bg-orange-600 text-white font-extrabold px-3.5 py-1.5 rounded-lg text-xs transition-colors shadow flex items-center space-x-1 ml-auto"
-                            >
-                              <Eye className="w-3.5 h-3.5" />
-                              <span>Inspect & Review</span>
-                            </button>
+                      {applications.length === 0 ? (
+                        <tr>
+                          <td colSpan={6} className="py-12 px-4 text-center">
+                            <div className="flex flex-col items-center justify-center space-y-3">
+                              <div className="w-12 h-12 rounded-2xl bg-orange-50 text-orange-500 border border-orange-200 flex items-center justify-center">
+                                <FileText className="w-6 h-6" />
+                              </div>
+                              <div>
+                                <h4 className="font-extrabold text-slate-800 text-sm">No Applications Found</h4>
+                                <p className="text-xs text-slate-500 max-w-sm mx-auto mt-1">
+                                  {searchQuery || statusFilter !== 'All' 
+                                    ? 'No applications match your search criteria or status filter. Try resetting filters.'
+                                    : 'There are currently no submitted citizen applications in the queue.'}
+                                </p>
+                              </div>
+                              {(searchQuery || statusFilter !== 'All') && (
+                                <button
+                                  onClick={() => { setSearchQuery(''); setStatusFilter('All'); }}
+                                  className="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-colors inline-flex items-center space-x-1"
+                                >
+                                  <RotateCcw className="w-3.5 h-3.5 text-orange-500" />
+                                  <span>Reset Filters</span>
+                                </button>
+                              )}
+                            </div>
                           </td>
                         </tr>
-                      ))}
+                      ) : (
+                        applications.map((app) => (
+                          <tr key={app.id} className="hover:bg-slate-50/80 transition-colors">
+                            <td className="py-4 px-4 font-mono font-extrabold text-orange-600">
+                              {app.application_number}
+                            </td>
+                            <td className="py-4 px-4">
+                              <div className="font-bold text-slate-900">{app.user_name}</div>
+                              <div className="text-[11px] text-slate-500">{app.user_phone} • {app.user_email}</div>
+                            </td>
+                            <td className="py-4 px-4">
+                              <div className="font-semibold text-slate-800">{app.service_name}</div>
+                              <div className="text-[10px] text-slate-500">{app.category_name}</div>
+                            </td>
+                            <td className="py-4 px-4">
+                              <div className="text-slate-600">{new Date(app.created_at).toLocaleDateString()}</div>
+                              <div className="font-bold text-emerald-600">₹{app.total_fee}</div>
+                            </td>
+                            <td className="py-4 px-4">
+                              <StatusBadge status={app.status} />
+                            </td>
+                            <td className="py-4 px-4 text-right">
+                              <button
+                                onClick={() => openAppInspector(app.id)}
+                                className="bg-orange-500 hover:bg-orange-600 text-white font-extrabold px-3.5 py-1.5 rounded-lg text-xs transition-colors shadow flex items-center space-x-1 ml-auto"
+                              >
+                                <Eye className="w-3.5 h-3.5" />
+                                <span>Inspect & Review</span>
+                              </button>
+                            </td>
+                          </tr>
+                        ))
+                      )}
                     </tbody>
                   </table>
                 </div>
@@ -2090,33 +2381,56 @@ export default function AdminDashboard() {
 
               {/* Mobile Stacked Application Cards View (`md:hidden`) */}
               <div className="space-y-3 md:hidden">
-                {applications.map((app) => (
-                  <div key={app.id} className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm space-y-3">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <span className="font-mono text-xs font-extrabold text-orange-600 bg-orange-50 px-2 py-0.5 rounded border border-orange-200">
-                          {app.application_number}
-                        </span>
-                        <h4 className="font-bold text-sm text-slate-900 mt-1">{app.service_name}</h4>
-                        <p className="text-[11px] text-slate-500">{app.user_name} ({app.user_phone})</p>
-                      </div>
-                      <StatusBadge status={app.status} />
+                {applications.length === 0 ? (
+                  <div className="bg-white rounded-2xl p-8 text-center border border-slate-200 shadow-sm space-y-3">
+                    <div className="w-10 h-10 rounded-xl bg-orange-50 text-orange-500 border border-orange-200 flex items-center justify-center mx-auto">
+                      <FileText className="w-5 h-5" />
                     </div>
-
-                    <div className="flex justify-between items-center pt-2 border-t border-slate-100 text-xs text-slate-600">
-                      <div>Date: <strong className="text-slate-800">{new Date(app.created_at).toLocaleDateString()}</strong></div>
-                      <div>Fee: <strong className="text-emerald-700">₹{app.total_fee}</strong></div>
-                    </div>
-
-                    <button
-                      onClick={() => openAppInspector(app.id)}
-                      className="w-full py-2.5 bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold text-xs rounded-xl transition-colors flex items-center justify-center space-x-1.5"
-                    >
-                      <Eye className="w-3.5 h-3.5 text-orange-400" />
-                      <span>Inspect Application</span>
-                    </button>
+                    <h4 className="font-extrabold text-slate-800 text-sm">No Applications Found</h4>
+                    <p className="text-xs text-slate-500">
+                      {searchQuery || statusFilter !== 'All' 
+                        ? 'No applications match your search criteria or status filter.' 
+                        : 'There are currently no submitted citizen applications in the queue.'}
+                    </p>
+                    {(searchQuery || statusFilter !== 'All') && (
+                      <button
+                        onClick={() => { setSearchQuery(''); setStatusFilter('All'); }}
+                        className="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-colors inline-flex items-center space-x-1"
+                      >
+                        <RotateCcw className="w-3.5 h-3.5 text-orange-500" />
+                        <span>Reset Filters</span>
+                      </button>
+                    )}
                   </div>
-                ))}
+                ) : (
+                  applications.map((app) => (
+                    <div key={app.id} className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm space-y-3">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <span className="font-mono text-xs font-extrabold text-orange-600 bg-orange-50 px-2 py-0.5 rounded border border-orange-200">
+                            {app.application_number}
+                          </span>
+                          <h4 className="font-bold text-sm text-slate-900 mt-1">{app.service_name}</h4>
+                          <p className="text-[11px] text-slate-500">{app.user_name} ({app.user_phone})</p>
+                        </div>
+                        <StatusBadge status={app.status} />
+                      </div>
+
+                      <div className="flex justify-between items-center pt-2 border-t border-slate-100 text-xs text-slate-600">
+                        <div>Date: <strong className="text-slate-800">{new Date(app.created_at).toLocaleDateString()}</strong></div>
+                        <div>Fee: <strong className="text-emerald-700">₹{app.total_fee}</strong></div>
+                      </div>
+
+                      <button
+                        onClick={() => openAppInspector(app.id)}
+                        className="w-full py-2.5 bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold text-xs rounded-xl transition-colors flex items-center justify-center space-x-1.5"
+                      >
+                        <Eye className="w-3.5 h-3.5 text-orange-400" />
+                        <span>Inspect Application</span>
+                      </button>
+                    </div>
+                  ))
+                )}
               </div>
 
             </div>
@@ -2410,6 +2724,15 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className="flex items-center space-x-2 self-start sm:self-auto">
+                  {enquiries.length > 0 && (
+                    <button
+                      onClick={handlePurgeAllEnquiries}
+                      className="px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold rounded-xl transition-colors flex items-center space-x-1.5"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>Clear All Enquiries</span>
+                    </button>
+                  )}
                   <button
                     onClick={() => {
                       setEnquirySearchQuery('');
@@ -2531,59 +2854,97 @@ export default function AdminDashboard() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                      {filteredEnquiries.map((enq) => {
-                        const isUnread = !enq.status || enq.status.toLowerCase() === 'unread';
-                        const isResponded = enq.status && (enq.status.toLowerCase() === 'responded' || enq.status.toLowerCase() === 'resolved');
-
-                        return (
-                          <tr key={enq.id} className="hover:bg-slate-50/80 transition-colors">
-                            <td className="py-4 px-4">
-                              <div className="flex items-center space-x-3">
-                                <div className="w-9 h-9 rounded-xl bg-[#0b192c] text-orange-400 font-black flex items-center justify-center text-sm shadow-sm">
-                                  {(enq.name || 'C')[0].toUpperCase()}
-                                </div>
-                                <div>
-                                  <div className="font-extrabold text-slate-900 text-sm">{enq.name}</div>
-                                  <div className="text-[11px] text-slate-500 font-mono">ID #{enq.id}</div>
-                                </div>
+                      {filteredEnquiries.length === 0 ? (
+                        <tr>
+                          <td colSpan={6} className="py-12 px-4 text-center">
+                            <div className="flex flex-col items-center justify-center space-y-3">
+                              <div className="w-12 h-12 rounded-2xl bg-orange-50 text-orange-500 border border-orange-200 flex items-center justify-center">
+                                <Mail className="w-6 h-6" />
                               </div>
-                            </td>
-                            <td className="py-4 px-4">
-                              <div className="font-bold text-slate-900 text-xs">{enq.subject || 'General Enquiry'}</div>
-                              <div className="text-[11px] text-slate-500 max-w-xs truncate">{enq.message}</div>
-                            </td>
-                            <td className="py-4 px-4">
-                              <div className="font-semibold text-slate-900">{enq.email}</div>
-                              <div className="text-[10px] text-slate-500 font-mono">{enq.phone || 'N/A'}</div>
-                            </td>
-                            <td className="py-4 px-4 font-semibold text-slate-700">
-                              {enq.created_at ? new Date(enq.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Logged'}
-                            </td>
-                            <td className="py-4 px-4">
-                              <span className={`inline-flex items-center space-x-1 text-[11px] font-extrabold px-2.5 py-0.5 rounded-full border ${
-                                isUnread ? 'bg-blue-50 text-blue-700 border-blue-200' :
-                                isResponded ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
-                                'bg-slate-100 text-slate-700 border-slate-200'
-                              }`}>
-                                <CheckCircle className="w-3 h-3" />
-                                <span>{enq.status || 'Unread'}</span>
-                              </span>
-                            </td>
-                            <td className="py-4 px-4 text-right">
-                              <button
-                                onClick={() => {
-                                  setSelectedEnquiry(enq);
-                                  setReplyText('');
-                                }}
-                                className="bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold px-3 py-1.5 rounded-xl text-xs transition-colors shadow flex items-center space-x-1 ml-auto"
-                              >
-                                <Eye className="w-3.5 h-3.5 text-orange-400" />
-                                <span>Inspect Enquiry</span>
-                              </button>
-                            </td>
-                          </tr>
-                        );
-                      })}
+                              <div>
+                                <h4 className="font-extrabold text-slate-800 text-sm">No Contact Enquiries Found</h4>
+                                <p className="text-xs text-slate-500 max-w-sm mx-auto mt-1">
+                                  {enquirySearchQuery || enquiryStatusFilter !== 'All' 
+                                    ? 'No contact messages match your search or filter parameters.' 
+                                    : 'No citizen contact messages or support queries have been received yet.'}
+                                </p>
+                              </div>
+                              {(enquirySearchQuery || enquiryStatusFilter !== 'All') && (
+                                <button
+                                  onClick={() => { setEnquirySearchQuery(''); setEnquiryStatusFilter('All'); }}
+                                  className="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-colors inline-flex items-center space-x-1"
+                                >
+                                  <RotateCcw className="w-3.5 h-3.5 text-orange-500" />
+                                  <span>Reset Filters</span>
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ) : (
+                        filteredEnquiries.map((enq) => {
+                          const isUnread = !enq.status || enq.status.toLowerCase() === 'unread';
+                          const isResponded = enq.status && (enq.status.toLowerCase() === 'responded' || enq.status.toLowerCase() === 'resolved');
+
+                          return (
+                            <tr key={enq.id} className="hover:bg-slate-50/80 transition-colors">
+                              <td className="py-4 px-4">
+                                <div className="flex items-center space-x-3">
+                                  <div className="w-9 h-9 rounded-xl bg-[#0b192c] text-orange-400 font-black flex items-center justify-center text-sm shadow-sm">
+                                    {(enq.name || 'C')[0].toUpperCase()}
+                                  </div>
+                                  <div>
+                                    <div className="font-extrabold text-slate-900 text-sm">{enq.name}</div>
+                                    <div className="text-[11px] text-slate-500 font-mono">ID #{enq.id}</div>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="py-4 px-4">
+                                <div className="font-bold text-slate-900 text-xs">{enq.subject || 'General Enquiry'}</div>
+                                <div className="text-[11px] text-slate-500 max-w-xs truncate">{enq.message}</div>
+                              </td>
+                              <td className="py-4 px-4">
+                                <div className="font-semibold text-slate-900">{enq.email}</div>
+                                <div className="text-[10px] text-slate-500 font-mono">{enq.phone || 'N/A'}</div>
+                              </td>
+                              <td className="py-4 px-4 font-semibold text-slate-700">
+                                {enq.created_at ? new Date(enq.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Logged'}
+                              </td>
+                              <td className="py-4 px-4">
+                                <span className={`inline-flex items-center space-x-1 text-[11px] font-extrabold px-2.5 py-0.5 rounded-full border ${
+                                  isUnread ? 'bg-blue-50 text-blue-700 border-blue-200' :
+                                  isResponded ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                                  'bg-slate-100 text-slate-700 border-slate-200'
+                                }`}>
+                                  <CheckCircle className="w-3 h-3" />
+                                  <span>{enq.status || 'Unread'}</span>
+                                </span>
+                              </td>
+                              <td className="py-4 px-4 text-right">
+                                <div className="flex items-center justify-end space-x-1.5">
+                                  <button
+                                    onClick={() => {
+                                      setSelectedEnquiry(enq);
+                                      setReplyText('');
+                                    }}
+                                    className="bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold px-3 py-1.5 rounded-xl text-xs transition-colors shadow flex items-center space-x-1"
+                                  >
+                                    <Eye className="w-3.5 h-3.5 text-orange-400" />
+                                    <span>Inspect Enquiry</span>
+                                  </button>
+                                  <button
+                                    onClick={() => handleDeleteEnquiry(enq.id)}
+                                    title="Delete Enquiry"
+                                    className="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl transition-colors border border-rose-200"
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })
+                      )}
                     </tbody>
                   </table>
                 </div>
@@ -2591,40 +2952,63 @@ export default function AdminDashboard() {
 
               {/* Mobile Stacked Enquiry Cards (`md:hidden`) */}
               <div className="space-y-3 md:hidden">
-                {filteredEnquiries.map((enq) => (
-                  <div key={enq.id} className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm space-y-3">
-                    <div className="flex justify-between items-start">
-                      <div className="flex items-center space-x-2.5">
-                        <div className="w-9 h-9 rounded-xl bg-[#0b192c] text-orange-400 font-black flex items-center justify-center text-xs shadow-sm">
-                          {(enq.name || 'C')[0].toUpperCase()}
-                        </div>
-                        <div>
-                          <h4 className="font-extrabold text-sm text-slate-900">{enq.name}</h4>
-                          <p className="text-[11px] text-slate-500">{enq.email}</p>
-                        </div>
-                      </div>
-                      <span className="bg-blue-50 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded border border-blue-200">
-                        {enq.status || 'Unread'}
-                      </span>
+                {filteredEnquiries.length === 0 ? (
+                  <div className="bg-white rounded-2xl p-8 text-center border border-slate-200 shadow-sm space-y-3">
+                    <div className="w-10 h-10 rounded-xl bg-orange-50 text-orange-500 border border-orange-200 flex items-center justify-center mx-auto">
+                      <Mail className="w-5 h-5" />
                     </div>
-
-                    <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200 space-y-1">
-                      <span className="font-bold text-slate-900 text-xs block">{enq.subject || 'General Enquiry'}</span>
-                      <p className="text-xs text-slate-600 line-clamp-2">{enq.message}</p>
-                    </div>
-
-                    <button
-                      onClick={() => {
-                        setSelectedEnquiry(enq);
-                        setReplyText('');
-                      }}
-                      className="w-full py-2.5 bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold text-xs rounded-xl transition-colors flex items-center justify-center space-x-1.5"
-                    >
-                      <Eye className="w-3.5 h-3.5 text-orange-400" />
-                      <span>Inspect & Reply</span>
-                    </button>
+                    <h4 className="font-extrabold text-slate-800 text-sm">No Contact Enquiries Found</h4>
+                    <p className="text-xs text-slate-500">
+                      {enquirySearchQuery || enquiryStatusFilter !== 'All' 
+                        ? 'No contact messages match your search or filter parameters.' 
+                        : 'No citizen contact messages or support queries have been received yet.'}
+                    </p>
+                    {(enquirySearchQuery || enquiryStatusFilter !== 'All') && (
+                      <button
+                        onClick={() => { setEnquirySearchQuery(''); setEnquiryStatusFilter('All'); }}
+                        className="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-colors inline-flex items-center space-x-1"
+                      >
+                        <RotateCcw className="w-3.5 h-3.5 text-orange-500" />
+                        <span>Reset Filters</span>
+                      </button>
+                    )}
                   </div>
-                ))}
+                ) : (
+                  filteredEnquiries.map((enq) => (
+                    <div key={enq.id} className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm space-y-3">
+                      <div className="flex justify-between items-start">
+                        <div className="flex items-center space-x-2.5">
+                          <div className="w-9 h-9 rounded-xl bg-[#0b192c] text-orange-400 font-black flex items-center justify-center text-xs shadow-sm">
+                            {(enq.name || 'C')[0].toUpperCase()}
+                          </div>
+                          <div>
+                            <h4 className="font-extrabold text-sm text-slate-900">{enq.name}</h4>
+                            <p className="text-[11px] text-slate-500">{enq.email}</p>
+                          </div>
+                        </div>
+                        <span className="bg-blue-50 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded border border-blue-200">
+                          {enq.status || 'Unread'}
+                        </span>
+                      </div>
+
+                      <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200 space-y-1">
+                        <span className="font-bold text-slate-900 text-xs block">{enq.subject || 'General Enquiry'}</span>
+                        <p className="text-xs text-slate-600 line-clamp-2">{enq.message}</p>
+                      </div>
+
+                      <button
+                        onClick={() => {
+                          setSelectedEnquiry(enq);
+                          setReplyText('');
+                        }}
+                        className="w-full py-2.5 bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold text-xs rounded-xl transition-colors flex items-center justify-center space-x-1.5"
+                      >
+                        <Eye className="w-3.5 h-3.5 text-orange-400" />
+                        <span>Inspect & Reply</span>
+                      </button>
+                    </div>
+                  ))
+                )}
               </div>
 
             </div>
@@ -4515,6 +4899,158 @@ export default function AdminDashboard() {
         </div>
       )}
 
+      {/* CITIZEN USER DIRECTORY INSPECTOR MODAL */}
+      {selectedUser && (
+        <div className="fixed inset-0 bg-slate-950/75 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white border border-slate-200 rounded-3xl max-w-2xl w-full p-6 space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+            
+            {/* Modal Header */}
+            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 rounded-2xl bg-[#0b192c] text-orange-400 font-black flex items-center justify-center text-xl shadow-md">
+                  {(selectedUser.name || 'U')[0].toUpperCase()}
+                </div>
+                <div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-[10px] font-black uppercase text-orange-600 tracking-wider bg-orange-50 px-2 py-0.5 rounded border border-orange-200">
+                      CITIZEN ACCOUNT PROFILE
+                    </span>
+                    <span className="text-xs font-mono text-slate-500">• User ID #{selectedUser.id}</span>
+                  </div>
+                  <h3 className="font-extrabold text-xl text-slate-900 mt-0.5">{selectedUser.name || 'Citizen Account'}</h3>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setSelectedUser(null)}
+                className="p-2 text-slate-400 hover:text-slate-600 bg-slate-100 rounded-xl transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Body Content */}
+            <div className="space-y-5 text-xs">
+              
+              {/* Account Status & Registered Date */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                  <span className="text-slate-500 block font-medium">Account Status</span>
+                  <span className="font-extrabold text-emerald-600 uppercase text-xs inline-flex items-center space-x-1 mt-0.5">
+                    <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>{selectedUser.status || 'Active'}</span>
+                  </span>
+                </div>
+
+                <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                  <span className="text-slate-500 block font-medium">Registration Date</span>
+                  <span className="font-bold text-slate-900 text-xs">
+                    {selectedUser.created_at ? new Date(selectedUser.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'N/A'}
+                  </span>
+                </div>
+
+                <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 col-span-2 sm:col-span-1">
+                  <span className="text-slate-500 block font-medium">Total Applications</span>
+                  <span className="font-black text-orange-600 text-base">
+                    {getUserApplicationCount(selectedUser)}
+                  </span>
+                </div>
+              </div>
+
+              {/* Personal Contact & Identity Card */}
+              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
+                <span className="text-slate-900 font-extrabold text-xs uppercase tracking-wider block border-b border-slate-200/80 pb-2">
+                  Contact & Identity Registration Info
+                </span>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                  <div>
+                    <span className="text-slate-400 block font-mono text-[10px]">Mobile Phone Number</span>
+                    <span className="font-bold text-slate-900 text-xs">{selectedUser.phone || 'No Mobile Registered'}</span>
+                  </div>
+
+                  <div>
+                    <span className="text-slate-400 block font-mono text-[10px]">Email Address</span>
+                    <span className="font-bold text-slate-900 text-xs">{selectedUser.email || 'No Email Registered'}</span>
+                  </div>
+
+                  <div>
+                    <span className="text-slate-400 block font-mono text-[10px]">Aadhaar Card Number</span>
+                    <span className="font-bold text-slate-900 font-mono text-xs">{selectedUser.aadhaar_no || 'Not Provided'}</span>
+                  </div>
+
+                  <div>
+                    <span className="text-slate-400 block font-mono text-[10px]">District & State</span>
+                    <span className="font-bold text-slate-900 text-xs">{selectedUser.district ? `${selectedUser.district}, Tamil Nadu` : 'Tamil Nadu'}</span>
+                  </div>
+                </div>
+
+                {(selectedUser.address || selectedUser.pincode) && (
+                  <div className="pt-2 border-t border-slate-200/70">
+                    <span className="text-slate-400 block font-mono text-[10px]">Registered Address</span>
+                    <span className="font-medium text-slate-800 text-xs">
+                      {selectedUser.address} {selectedUser.pincode ? `- ${selectedUser.pincode}` : ''}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* Applications Logged by User */}
+              <div className="space-y-2">
+                <span className="text-slate-900 font-extrabold text-xs uppercase tracking-wider block">
+                  Submitted Citizen Applications
+                </span>
+
+                {getUserApplicationsList(selectedUser).length === 0 ? (
+                  <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 text-center text-slate-500 text-xs">
+                    No submitted applications recorded for this user account.
+                  </div>
+                ) : (
+                  <div className="max-h-40 overflow-y-auto space-y-2 pr-1">
+                    {getUserApplicationsList(selectedUser).map((app) => (
+                      <div key={app.id || app.application_number} className="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between text-xs">
+                        <div>
+                          <span className="font-mono font-extrabold text-orange-600 block">{app.application_number}</span>
+                          <span className="font-bold text-slate-900 text-xs">{app.service_name}</span>
+                        </div>
+                        <div className="text-right">
+                          <span className="bg-emerald-50 text-emerald-700 text-[10px] font-extrabold px-2 py-0.5 rounded border border-emerald-200 block mb-0.5">
+                            {app.status || 'Submitted'}
+                          </span>
+                          <span className="text-[10px] text-slate-400">
+                            {app.created_at ? new Date(app.created_at).toLocaleDateString('en-IN') : ''}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+            </div>
+
+            {/* Modal Actions */}
+            <div className="flex items-center space-x-3 pt-2 border-t border-slate-100">
+              <button
+                onClick={() => handleDeleteUser(selectedUser.id, selectedUser.name)}
+                className="py-2.5 px-4 bg-rose-50 hover:bg-rose-100 text-rose-700 font-extrabold text-xs rounded-xl border border-rose-200 transition-colors flex items-center justify-center space-x-1.5 cursor-pointer"
+              >
+                <Trash2 className="w-4 h-4 text-rose-600" />
+                <span>Delete Account</span>
+              </button>
+
+              <button
+                onClick={() => setSelectedUser(null)}
+                className="flex-1 py-2.5 bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold text-xs rounded-xl transition-colors shadow cursor-pointer"
+              >
+                Close Profile Inspector
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
+
       {/* CONTACT ENQUIRY & COMMUNICATION INSPECTOR MODAL (STEP 30) */}
       {selectedEnquiry && (
         <div className="fixed inset-0 bg-slate-950/75 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
@@ -5765,6 +6301,16 @@ export default function AdminDashboard() {
           </div>
         </div>
       )}
+      {/* Custom Delete Confirmation Modal (Compact, Bottom-Right on Desktop, Centered on Mobile) */}
+      <ConfirmDeleteModal
+        isOpen={deleteModalState.isOpen}
+        onClose={() => setDeleteModalState({ isOpen: false, title: '', description: '', confirmText: '', onConfirm: null, loading: false })}
+        onConfirm={deleteModalState.onConfirm}
+        title={deleteModalState.title}
+        description={deleteModalState.description}
+        confirmText={deleteModalState.confirmText}
+        loading={deleteModalState.loading}
+      />
 
     </div>
   );

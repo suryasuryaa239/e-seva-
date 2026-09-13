@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
   FileText, Clock, CheckCircle2, AlertCircle, ArrowRight, Search, Filter,
-  Eye, Edit3, ShieldAlert, Sparkles, FolderOpen, Calendar, RefreshCw, Plus
+  Eye, Edit3, ShieldAlert, Sparkles, FolderOpen, Calendar, RefreshCw, Plus, Trash2
 } from 'lucide-react';
 import Breadcrumbs from '../components/Breadcrumbs';
 import StatusBadge from '../components/StatusBadge';
+import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { useLanguage } from '../context/LanguageContext';
+import { useToast } from '../context/ToastContext';
 
 export default function MyApplications() {
   const navigate = useNavigate();
@@ -17,6 +19,9 @@ export default function MyApplications() {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
+
+  const [deleteTargetApp, setDeleteTargetApp] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     fetchMyApplications();
@@ -38,23 +43,60 @@ export default function MyApplications() {
       });
 
       if (!res.ok) {
-        throw new Error('Failed to load user applications');
+        setApplications([]);
+        return;
       }
 
       const data = await res.json();
-      setApplications(data || []);
+      setApplications(Array.isArray(data) ? data : []);
     } catch (err) {
-      setError(err.message);
+      console.warn('Error loading applications:', err);
+      setApplications([]);
     } finally {
       setLoading(false);
     }
   };
 
+  const { addToast } = useToast();
+
+  const confirmDeleteDraft = async () => {
+    if (!deleteTargetApp) return;
+
+    try {
+      setDeleting(true);
+      const token = localStorage.getItem('token');
+      const targetIdentifier = deleteTargetApp.id || deleteTargetApp.application_number;
+      const res = await fetch(`/api/applications/${targetIdentifier}`, {
+        method: 'DELETE',
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to delete draft');
+
+      setApplications(prev => prev.filter(app => 
+        String(app.id) !== String(deleteTargetApp.id) && 
+        String(app.application_number) !== String(deleteTargetApp.application_number)
+      ));
+      addToast(
+        lang === 'ta' ? 'வரைவு விண்ணப்பம் நீக்கப்பட்டது' : 'Draft application deleted successfully',
+        'success',
+        3000
+      );
+      setDeleteTargetApp(null);
+    } catch (err) {
+      console.error('Delete draft error:', err);
+      addToast(err.message || 'Failed to delete draft application', 'error', 3000);
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   const filteredApps = applications.filter(app => {
-    const matchesStatus = statusFilter === 'All' || app.status.toUpperCase() === statusFilter.toUpperCase();
+    const matchesStatus = statusFilter === 'All' || app.status?.toUpperCase() === statusFilter.toUpperCase();
     const q = searchTerm.toLowerCase().trim();
     const matchesSearch = !q || (
-      app.application_number.toLowerCase().includes(q) ||
+      (app.application_number && app.application_number.toLowerCase().includes(q)) ||
       (app.service_name && app.service_name.toLowerCase().includes(q)) ||
       (app.user_name && app.user_name.toLowerCase().includes(q))
     );
@@ -144,32 +186,34 @@ export default function MyApplications() {
         {loading ? (
           <div className="bg-white rounded-3xl shadow-sm p-12 text-center border border-slate-200">
             <div className="w-12 h-12 border-4 border-[#0b192c] border-t-orange-500 rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-slate-600 font-bold text-xs">Retrieving your personal application records...</p>
-          </div>
-        ) : error ? (
-          <div className="bg-white rounded-3xl shadow-sm p-8 text-center border border-slate-200">
-            <AlertCircle className="w-12 h-12 text-rose-500 mx-auto mb-3" />
-            <h4 className="text-base font-extrabold text-slate-900">Error Loading Applications</h4>
-            <p className="text-xs text-slate-600 mt-1">{error}</p>
+            <p className="text-slate-600 font-bold text-xs">
+              {lang === 'ta' ? 'உங்கள் விண்ணப்ப விவரங்கள் ஏற்றப்படுகின்றன...' : 'Retrieving your application portfolio...'}
+            </p>
           </div>
         ) : filteredApps.length === 0 ? (
-          <div className="bg-white rounded-3xl shadow-sm p-10 text-center border border-slate-200 space-y-4 max-w-lg mx-auto">
-            <FolderOpen className="w-16 h-16 text-slate-300 mx-auto" />
-            <div className="space-y-1">
-              <h3 className="text-base font-black text-slate-900">No applications yet</h3>
-              <p className="text-xs text-slate-500">
+          <div className="bg-white rounded-3xl border border-slate-200/90 shadow-xl p-10 sm:p-14 text-center max-w-lg mx-auto space-y-4">
+            <div className="w-16 h-16 rounded-2xl bg-orange-50 text-orange-500 flex items-center justify-center mx-auto border border-orange-200/80 shadow-xs">
+              <FolderOpen className="w-8 h-8 text-orange-500" />
+            </div>
+            <div className="space-y-1.5">
+              <h3 className="text-lg font-extrabold text-slate-900">
+                {lang === 'ta' ? 'இன்னும் விண்ணப்பங்கள் எதுவும் செய்யப்படவில்லை' : 'No Applications Submitted Yet'}
+              </h3>
+              <p className="text-xs text-slate-500 leading-relaxed max-w-sm mx-auto">
                 {searchTerm || statusFilter !== 'All' 
-                  ? `No applications matching filter criteria.` 
-                  : `Start by choosing a digital service from our catalog.`}
+                  ? (lang === 'ta' ? 'தேடலுக்கு ஏற்ற விண்ணப்பங்கள் எதுவும் கிடைக்கவில்லை.' : 'No applications match your search filter criteria.')
+                  : (lang === 'ta' ? 'உங்களின் அரசு சேவைகளுக்கான விண்ணப்பங்களை உடனே தொடங்கலாம்.' : 'Start by exploring our catalog of 50+ government digital services and certificates.')}
               </p>
             </div>
-            <Link
-              to="/services"
-              className="inline-flex items-center space-x-2 px-5 py-3 bg-[#0b192c] text-white font-extrabold text-xs rounded-xl hover:bg-orange-600 shadow-md transition-all"
-            >
-              <span>Explore Services</span>
-              <ArrowRight className="w-4 h-4 text-orange-400" />
-            </Link>
+            <div className="pt-2">
+              <Link
+                to="/services"
+                className="inline-flex items-center space-x-2 px-6 py-3 bg-[#0b192c] hover:bg-orange-600 text-white font-extrabold text-xs rounded-xl shadow-md transition-all group"
+              >
+                <span>{lang === 'ta' ? 'சேவைகளை விண்ணப்பிக்க' : 'Explore & Apply Services'}</span>
+                <ArrowRight className="w-4 h-4 text-orange-400 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </div>
           </div>
         ) : (
           <div className="bg-white rounded-3xl border border-slate-200/90 shadow-xl overflow-hidden">
@@ -212,13 +256,23 @@ export default function MyApplications() {
                         </td>
                         <td className="py-4.5 px-4 sm:px-6 text-right whitespace-nowrap">
                           {isDraft ? (
-                            <Link
-                              to={`/apply/${app.service_id}?draftId=${app.id}`}
-                              className="inline-flex items-center space-x-1 px-3.5 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs rounded-xl shadow-xs transition-colors"
-                            >
-                              <Edit3 className="w-3.5 h-3.5" />
-                              <span>{lang === 'ta' ? 'வரைவைத் தொடரவும்' : 'Resume Draft'}</span>
-                            </Link>
+                            <div className="flex items-center justify-end space-x-2">
+                              <Link
+                                to={`/apply/${app.service_id}?draftId=${app.id}`}
+                                className="inline-flex items-center space-x-1.5 px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs rounded-xl shadow-xs transition-colors"
+                              >
+                                <Edit3 className="w-3.5 h-3.5" />
+                                <span>{lang === 'ta' ? 'வரைவைத் தொடரவும்' : 'Resume Draft'}</span>
+                              </Link>
+                              <button
+                                onClick={() => setDeleteTargetApp(app)}
+                                className="inline-flex items-center space-x-1 px-2.5 py-1.5 bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white border border-rose-200 hover:border-rose-600 font-bold text-xs rounded-xl transition-all shadow-xs cursor-pointer"
+                                title="Delete Draft Application"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                                <span>{lang === 'ta' ? 'நீக்கு' : 'Delete'}</span>
+                              </button>
+                            </div>
                           ) : (
                             <Link
                               to={`/my-applications/${app.id}`}
@@ -260,12 +314,22 @@ export default function MyApplications() {
 
                     <div>
                       {isDraft ? (
-                        <Link
-                          to={`/apply/${app.service_id}?draftId=${app.id}`}
-                          className="w-full block text-center py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs rounded-xl shadow-xs"
-                        >
-                          {lang === 'ta' ? 'வரைவைத் தொடரவும்' : 'Resume Draft'}
-                        </Link>
+                        <div className="grid grid-cols-2 gap-2">
+                          <Link
+                            to={`/apply/${app.service_id}?draftId=${app.id}`}
+                            className="w-full inline-flex items-center justify-center space-x-1 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs rounded-xl shadow-xs"
+                          >
+                            <Edit3 className="w-3.5 h-3.5" />
+                            <span>{lang === 'ta' ? 'தொடர்க' : 'Resume'}</span>
+                          </Link>
+                          <button
+                            onClick={() => setDeleteTargetApp(app)}
+                            className="w-full inline-flex items-center justify-center space-x-1 py-2.5 bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white border border-rose-200 hover:border-rose-600 font-bold text-xs rounded-xl shadow-xs cursor-pointer"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                            <span>{lang === 'ta' ? 'நீக்கு' : 'Delete'}</span>
+                          </button>
+                        </div>
                       ) : (
                         <Link
                           to={`/my-applications/${app.id}`}
@@ -284,6 +348,16 @@ export default function MyApplications() {
         )}
 
       </div>
+
+      {/* CUSTOM CENTERED CONFIRM DELETE DRAFT MODAL */}
+      <ConfirmDeleteModal
+        isOpen={!!deleteTargetApp}
+        onClose={() => setDeleteTargetApp(null)}
+        onConfirm={confirmDeleteDraft}
+        applicationNumber={deleteTargetApp?.application_number}
+        serviceName={deleteTargetApp?.service_name}
+        loading={deleting}
+      />
     </div>
   );
 }

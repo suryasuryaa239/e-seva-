@@ -72,6 +72,29 @@ function RequireCitizenAuth({ children }) {
   return children;
 }
 
+function RequireAdminAuth({ children }) {
+  const { admin, adminToken, loading } = useAuth();
+
+  const token = adminToken || localStorage.getItem('eseva_admin_token') || localStorage.getItem('adminToken');
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0b192c] py-16 px-4 flex items-center justify-center font-sans text-white">
+        <div className="bg-slate-800 rounded-3xl shadow-sm p-8 text-center max-w-sm w-full space-y-4 border border-slate-700">
+          <div className="w-12 h-12 border-4 border-orange-500 border-t-white rounded-full animate-spin mx-auto"></div>
+          <p className="text-slate-300 font-bold text-xs">Verifying administrator authentication...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!admin || !token) {
+    return <Navigate to="/admin/login" replace />;
+  }
+
+  return children;
+}
+
 function ScrollToTop() {
   const { pathname } = useLocation();
 
@@ -183,11 +206,11 @@ function AppContent() {
           <Route path="/profile/notifications" element={<RequireCitizenAuth><UserNotificationPreferences /></RequireCitizenAuth>} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin-login" element={<AdminLogin />} />
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          <Route path="/admin-dashboard" element={<AdminDashboard />} />
-          <Route path="/admin/notifications" element={<AdminNotifications />} />
-          <Route path="/admin/notification-templates" element={<AdminNotificationTemplates />} />
+          <Route path="/admin" element={<RequireAdminAuth><AdminDashboard /></RequireAdminAuth>} />
+          <Route path="/admin/dashboard" element={<RequireAdminAuth><AdminDashboard /></RequireAdminAuth>} />
+          <Route path="/admin-dashboard" element={<RequireAdminAuth><AdminDashboard /></RequireAdminAuth>} />
+          <Route path="/admin/notifications" element={<RequireAdminAuth><AdminNotifications /></RequireAdminAuth>} />
+          <Route path="/admin/notification-templates" element={<RequireAdminAuth><AdminNotificationTemplates /></RequireAdminAuth>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>

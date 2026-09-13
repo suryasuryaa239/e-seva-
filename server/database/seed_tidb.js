@@ -74,7 +74,7 @@ export async function seedDatabase() {
         eligibility: JSON.stringify(['Indian Citizens / Non-Individual Entities without existing PAN'])
       },
       {
-        name: 'Income Certificate (Varumaana Saanrithazh)',
+        name: 'Income Certificate',
         slug: 'income-certificate',
         category_slug: 'certificates',
         description: 'Official e-District revenue department certificate declaring annual family income.',
@@ -84,7 +84,7 @@ export async function seedDatabase() {
         eligibility: JSON.stringify(['Permanent resident of Tamil Nadu'])
       },
       {
-        name: 'Community Certificate (Jaathi Saanrithazh)',
+        name: 'Community Certificate',
         slug: 'community-certificate',
         category_slug: 'certificates',
         description: 'Government authorized caste/community verification certificate (BC/MBC/SC/ST).',
@@ -94,7 +94,7 @@ export async function seedDatabase() {
         eligibility: JSON.stringify(['Resident belonging to recognized community categories'])
       },
       {
-        name: 'Patta Chitta Copy (AnyTamilLand)',
+        name: 'Patta Chitta Copy',
         slug: 'patta-chitta-extract',
         category_slug: 'land-patta-services',
         description: 'Extract official e-Patta and Chitta revenue record extracts online.',
@@ -131,7 +131,7 @@ export async function seedDatabase() {
         name: 'Karthik Raja',
         email: 'user@eseva.gov.in',
         phone: '9876543210',
-        service_name: 'Income Certificate (Varumaana Saanrithazh)',
+        service_name: 'Income Certificate',
         service_slug: 'income-certificate',
         status: 'Approved',
         fee: 60.00,
@@ -161,7 +161,7 @@ export async function seedDatabase() {
         name: 'Suresh Kumar',
         email: 'suresh.k@gmail.com',
         phone: '9444123456',
-        service_name: 'Patta Chitta Copy (AnyTamilLand)',
+        service_name: 'Patta Chitta Copy',
         service_slug: 'patta-chitta-extract',
         status: 'Processing',
         fee: 30.00,

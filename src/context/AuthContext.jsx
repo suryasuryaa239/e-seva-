@@ -57,14 +57,30 @@ export const AuthProvider = ({ children }) => {
           });
           if (res.ok) {
             const data = await res.json();
-            if (data.isAdmin) setAdmin(data);
+            if (data.isAdmin) {
+              setAdmin(data);
+            } else {
+              setAdmin(null);
+              setAdminToken(null);
+              localStorage.removeItem('eseva_admin_token');
+              localStorage.removeItem('adminToken');
+            }
           } else {
             localStorage.removeItem('eseva_admin_token');
+            localStorage.removeItem('adminToken');
             setAdminToken(null);
+            setAdmin(null);
           }
         } catch (e) {
           console.error(e);
+          localStorage.removeItem('eseva_admin_token');
+          localStorage.removeItem('adminToken');
+          setAdminToken(null);
+          setAdmin(null);
         }
+      } else {
+        setAdmin(null);
+        setAdminToken(null);
       }
 
       setLoading(false);
@@ -90,15 +106,15 @@ export const AuthProvider = ({ children }) => {
   };
 
   const loginAdmin = (adminData, token) => {
-    localStorage.setItem('token', token);
     localStorage.setItem('eseva_admin_token', token);
+    localStorage.setItem('adminToken', token);
     setAdminToken(token);
     setAdmin(adminData);
   };
 
   const logoutAdmin = () => {
-    localStorage.removeItem('token');
     localStorage.removeItem('eseva_admin_token');
+    localStorage.removeItem('adminToken');
     setAdminToken(null);
     setAdmin(null);
   };

@@ -432,7 +432,7 @@ export default function ServiceDetails() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-            {DEFAULT_SERVICES.filter(s => s.id !== service.id && s.category_slug === service.category_slug).slice(0, 3).map((relSrv) => {
+            {Object.values(DEFAULT_SERVICES_MAP).filter(s => s.id !== service.id && s.category_slug === service.category_slug).slice(0, 3).map((relSrv) => {
               const localizedRel = getLocalizedService(relSrv, lang);
               return (
                 <div key={relSrv.id} className="p-5 rounded-2xl border border-slate-200/80 hover:border-orange-400/50 bg-slate-50/50 hover:bg-white transition-all space-y-3 flex flex-col justify-between">

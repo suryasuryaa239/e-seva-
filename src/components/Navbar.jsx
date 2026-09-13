@@ -340,14 +340,7 @@ export default function Navbar() {
             </Link>
 
             {/* SIGN IN & REGISTER / USER PROFILE LOGIC */}
-            {admin ? (
-              <Link
-                to="/admin"
-                className="h-9 inline-flex items-center gap-1 bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-[11px] xl:text-xs px-2.5 xl:px-3.5 rounded-lg shadow-sm transition-colors shrink-0 whitespace-nowrap"
-              >
-                <ShieldCheck className="w-3.5 h-3.5 xl:w-4 xl:h-4 text-orange-400 shrink-0" /> Admin Cockpit
-              </Link>
-            ) : user ? (
+            {user ? (
               <div className="flex items-center gap-1.5 xl:gap-2 shrink-0">
                 <NotificationBell />
                 

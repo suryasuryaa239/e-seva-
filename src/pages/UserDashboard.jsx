@@ -3,10 +3,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, FileText, Clock, CheckCircle2, AlertCircle, ArrowRight, 
   Sparkles, UserCheck, PlusCircle, Search, User, ShieldCheck, FileClock, ChevronRight,
-  FolderOpen, XCircle, CreditCard, ExternalLink, HelpCircle
+  FolderOpen, XCircle, CreditCard, ExternalLink, HelpCircle, Trash2, Edit3
 } from 'lucide-react';
 import StatusBadge from '../components/StatusBadge';
+import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { useLanguage } from '../context/LanguageContext';
+import { useToast } from '../context/ToastContext';
 
 export default function UserDashboard() {
   const navigate = useNavigate();
@@ -58,6 +60,44 @@ export default function UserDashboard() {
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const [deleteTargetApp, setDeleteTargetApp] = useState(null);
+  const [deleting, setDeleting] = useState(false);
+
+  const { addToast } = useToast();
+
+  const confirmDeleteDraft = async () => {
+    if (!deleteTargetApp) return;
+
+    try {
+      setDeleting(true);
+      const token = localStorage.getItem('token');
+      const targetIdentifier = deleteTargetApp.id || deleteTargetApp.application_number;
+      const res = await fetch(`/api/applications/${targetIdentifier}`, {
+        method: 'DELETE',
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to delete draft');
+
+      setApplications(prev => prev.filter(app => 
+        String(app.id) !== String(deleteTargetApp.id) && 
+        String(app.application_number) !== String(deleteTargetApp.application_number)
+      ));
+      addToast(
+        lang === 'ta' ? 'வரைவு விண்ணப்பம் நீக்கப்பட்டது' : 'Draft application deleted successfully',
+        'success',
+        3000
+      );
+      setDeleteTargetApp(null);
+    } catch (err) {
+      console.error('Delete draft error:', err);
+      addToast(err.message || 'Failed to delete draft application', 'error', 3000);
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -288,12 +328,23 @@ export default function UserDashboard() {
                           </td>
                           <td className="py-4 px-4 text-right">
                             {isDraft ? (
-                              <Link
-                                to={`/apply/${app.service_id}?draftId=${app.id}`}
-                                className="px-3.5 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black rounded-xl text-xs shadow-xs transition-colors inline-block"
-                              >
-                                {lang === 'ta' ? 'வரைவைத் தொடரவும்' : 'Resume Draft'}
-                              </Link>
+                              <div className="flex items-center justify-end space-x-2">
+                                <Link
+                                  to={`/apply/${app.service_id}?draftId=${app.id}`}
+                                  className="inline-flex items-center space-x-1.5 px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black rounded-xl text-xs shadow-xs transition-colors"
+                                >
+                                  <Edit3 className="w-3.5 h-3.5" />
+                                  <span>{lang === 'ta' ? 'வரைவைத் தொடரவும்' : 'Resume Draft'}</span>
+                                </Link>
+                                <button
+                                  onClick={() => setDeleteTargetApp(app)}
+                                  className="inline-flex items-center space-x-1 px-2.5 py-1.5 bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white border border-rose-200 hover:border-rose-600 font-bold text-xs rounded-xl transition-all shadow-xs cursor-pointer"
+                                  title="Delete Draft Application"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                  <span>{lang === 'ta' ? 'நீக்கு' : 'Delete'}</span>
+                                </button>
+                              </div>
                             ) : (
                               <Link
                                 to={`/my-applications/${app.id}`}
@@ -333,12 +384,22 @@ export default function UserDashboard() {
 
                       <div>
                         {isDraft ? (
-                          <Link
-                            to={`/apply/${app.service_id}?draftId=${app.id}`}
-                            className="w-full block text-center py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs rounded-xl shadow-xs"
-                          >
-                            {lang === 'ta' ? 'வரைவைத் தொடரவும்' : 'Resume Draft'}
-                          </Link>
+                          <div className="grid grid-cols-2 gap-2">
+                            <Link
+                              to={`/apply/${app.service_id}?draftId=${app.id}`}
+                              className="w-full inline-flex items-center justify-center space-x-1 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs rounded-xl shadow-xs"
+                            >
+                              <Edit3 className="w-3.5 h-3.5" />
+                              <span>{lang === 'ta' ? 'தொடர்க' : 'Resume'}</span>
+                            </Link>
+                            <button
+                              onClick={() => setDeleteTargetApp(app)}
+                              className="w-full inline-flex items-center justify-center space-x-1 py-2.5 bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white border border-rose-200 hover:border-rose-600 font-bold text-xs rounded-xl shadow-xs cursor-pointer"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                              <span>{lang === 'ta' ? 'நீக்கு' : 'Delete'}</span>
+                            </button>
+                          </div>
                         ) : (
                           <Link
                             to={`/my-applications/${app.id}`}
@@ -357,6 +418,16 @@ export default function UserDashboard() {
         </div>
 
       </div>
+
+      {/* CUSTOM CENTERED CONFIRM DELETE DRAFT MODAL */}
+      <ConfirmDeleteModal
+        isOpen={!!deleteTargetApp}
+        onClose={() => setDeleteTargetApp(null)}
+        onConfirm={confirmDeleteDraft}
+        applicationNumber={deleteTargetApp?.application_number}
+        serviceName={deleteTargetApp?.service_name}
+        loading={deleting}
+      />
     </div>
   );
 }

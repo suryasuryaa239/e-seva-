@@ -1992,19 +1992,32 @@ export const TAMIL_SERVICES_TRANSLATIONS = {
 };
 
 /**
+ * Helper to strip Tanglish text in parentheses from service names
+ */
+export function sanitizeServiceName(name) {
+  if (!name || typeof name !== 'string') return name;
+  return name.replace(/\s*\((Varumaana Saanrithazh|Jaathi Saanrithazh|AnyTamilLand|Saanrithazh|Thunglish|Tanglish)\)/gi, '').trim();
+}
+
+/**
  * Helper to localize a single service definition
  */
 export function getLocalizedService(srv, lang = 'en') {
   if (!srv) return srv;
-  if (lang !== 'ta') return srv;
+  
+  // Clean up any Tanglish text from srv.name
+  const cleanName = sanitizeServiceName(srv.name);
+  const cleanSrv = { ...srv, name: cleanName };
+
+  if (lang !== 'ta') return cleanSrv;
 
   const key = srv.slug || '';
-  const taData = TAMIL_SERVICES_TRANSLATIONS[key] || Object.values(TAMIL_SERVICES_TRANSLATIONS).find(item => item.name === srv.name);
+  const taData = TAMIL_SERVICES_TRANSLATIONS[key] || Object.values(TAMIL_SERVICES_TRANSLATIONS).find(item => sanitizeServiceName(item.name) === cleanName);
 
   if (taData) {
     return {
-      ...srv,
-      name: taData.name || srv.name,
+      ...cleanSrv,
+      name: taData.name || cleanName,
       description: taData.description || srv.description,
       category_name: taData.category_name || srv.category_name,
       processing_time: taData.processing_time || srv.processing_time,
@@ -2013,7 +2026,7 @@ export function getLocalizedService(srv, lang = 'en') {
     };
   }
 
-  return srv;
+  return cleanSrv;
 }
 
 /**

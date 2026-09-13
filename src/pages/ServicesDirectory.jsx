@@ -95,22 +95,35 @@ export default function ServicesDirectory() {
   const getCategoryIcon = (slug = '') => {
     const s = slug.toLowerCase();
     let img = '/cat_ration.png';
-    if (s.includes('aadhaar')) img = '/cat_aadhaar.png';
-    else if (s.includes('pan')) img = '/cat_pan.png';
-    else if (s.includes('voter')) img = '/cat_voter.png';
-    else if (s.includes('certificate')) img = '/cat_certificates.png';
-    else if (s.includes('land')) img = '/cat_land.png';
-    else if (s.includes('passport')) img = '/cat_passport.png';
-    else if (s.includes('driving') || s.includes('vehicle')) img = '/cat_driving.png';
-    else if (s.includes('business')) img = '/cat_business.png';
-    else if (s.includes('utility')) img = '/cat_utility.png';
+    let FallbackIcon = Grid;
+
+    if (s.includes('aadhaar')) { img = '/cat_aadhaar.png'; FallbackIcon = Fingerprint; }
+    else if (s.includes('pan')) { img = '/cat_pan.png'; FallbackIcon = CreditCard; }
+    else if (s.includes('voter')) { img = '/cat_voter.png'; FallbackIcon = Vote; }
+    else if (s.includes('certificate')) { img = '/cat_certificates.png'; FallbackIcon = FileText; }
+    else if (s.includes('land')) { img = '/cat_land.png'; FallbackIcon = MapPin; }
+    else if (s.includes('passport')) { img = '/cat_passport.png'; FallbackIcon = Globe; }
+    else if (s.includes('driving') || s.includes('vehicle')) { img = '/cat_driving.png'; FallbackIcon = Car; }
+    else if (s.includes('business')) { img = '/cat_business.png'; FallbackIcon = Briefcase; }
+    else if (s.includes('utility')) { img = '/cat_utility.png'; FallbackIcon = Zap; }
 
     return (
-      <img
-        src={img}
-        alt={slug}
-        className="w-full h-full object-contain drop-shadow-sm"
-      />
+      <div className="w-full h-full flex items-center justify-center relative">
+        <img
+          src={img}
+          alt={slug}
+          className="w-full h-full object-contain drop-shadow-sm"
+          onError={(e) => {
+            e.target.style.display = 'none';
+            if (e.target.nextSibling) {
+              e.target.nextSibling.style.display = 'flex';
+            }
+          }}
+        />
+        <div className="hidden w-full h-full items-center justify-center text-orange-500">
+          <FallbackIcon className="w-8 h-8" />
+        </div>
+      </div>
     );
   };
 

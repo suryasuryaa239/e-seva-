@@ -2,13 +2,17 @@
   "users": [
     {
       "id": 1,
-      "name": "Karthik Raja",
-      "email": "user@eseva.gov.in",
-      "phone": "9876543210",
-      "password": "$2a$10$GzoLxZHXW2Dw8OoLnSVTjO7pXzR69IRsJGWIArIODyat2bVetc.zO",
+      "created_at": "2026-09-13T07:33:29.061Z",
+      "name": "hariraj",
+      "email": "hariraj2005.m@gmail.com",
+      "phone": "9003454109",
+      "aadhaar_no": "",
+      "address": "",
+      "district": "",
+      "pincode": "",
+      "status": "Active",
       "role": "citizen",
-      "created_at": "2026-09-11T12:40:07.000Z",
-      "updated_at": "2026-09-11T12:40:07.000Z"
+      "password_hash": "$2a$10$wFB9LVUC5FzHZxLg0vUPFuD1soyvbPwO74PnHL24gz36h//2kDija"
     }
   ],
   "admins": [
@@ -16,7 +20,7 @@
       "id": 1,
       "name": "System Administrator",
       "email": "admin@eseva.gov.in",
-      "password": "$2a$10$Ek4JISQjGp70.NEUsi8mzO31JK7PpTHxGwa3ZRlBBprnVLV5JS5U6",
+      "password": "$2a$10$KxTfmhR/fWbGrgVra/LZPO1fszWbsUxZ.YGedfDgDigZf1xaq5XLG",
       "role": "admin",
       "department": "Core Operations",
       "created_at": "2026-09-11T12:40:07.000Z"
@@ -149,7 +153,7 @@
       "id": 2,
       "category_id": null,
       "category_slug": "pan-services",
-      "name": "New PAN Card Application (Form 49A)",
+      "name": "New PAN Card Application",
       "slug": "new-pan-card",
       "description": "Apply for fresh 10-digit Permanent Account Number (PAN) Card with physical & digital e-PAN delivery.",
       "fee": "110.00",
@@ -170,7 +174,7 @@
       "id": 3,
       "category_id": null,
       "category_slug": "certificates",
-      "name": "Income Certificate (Varumaana Saanrithazh)",
+      "name": "Income Certificate",
       "slug": "income-certificate",
       "description": "Official e-District revenue department certificate declaring annual family income.",
       "fee": "60.00",
@@ -191,7 +195,7 @@
       "id": 4,
       "category_id": null,
       "category_slug": "certificates",
-      "name": "Community Certificate (Jaathi Saanrithazh)",
+      "name": "Community Certificate",
       "slug": "community-certificate",
       "description": "Government authorized caste/community verification certificate (BC/MBC/SC/ST).",
       "fee": "60.00",
@@ -212,7 +216,7 @@
       "id": 5,
       "category_id": null,
       "category_slug": "land-patta-services",
-      "name": "Patta Chitta Copy (AnyTamilLand)",
+      "name": "Patta Chitta Copy",
       "slug": "patta-chitta-extract",
       "description": "Extract official e-Patta and Chitta revenue record extracts online.",
       "fee": "30.00",
@@ -231,7 +235,7 @@
       "id": 6,
       "category_id": null,
       "category_slug": "land-patta-services",
-      "name": "Encumbrance Certificate (EC Online)",
+      "name": "Encumbrance Certificate",
       "slug": "encumbrance-certificate",
       "description": "Verify property ownership history and encumbrances registered at Sub-Registrar Office (SRO).",
       "fee": "100.00",
@@ -1629,551 +1633,362 @@
   "applications": [
     {
       "id": 1,
-      "application_number": "ESV-2026-000101",
+      "created_at": "2026-09-13T08:29:56.731Z",
+      "application_number": "ESV-2026-DRAFT-000001",
       "user_id": 1,
-      "applicant_name": "Karthik Raja",
-      "applicant_email": "user@eseva.gov.in",
-      "applicant_phone": "9876543210",
-      "service_id": null,
-      "service_name": "Income Certificate (Varumaana Saanrithazh)",
-      "service_slug": "income-certificate",
-      "status": "Approved",
-      "fee_amount": "60.00",
-      "payment_status": "Paid",
-      "payment_id": "PAY-89230198",
-      "form_data": {
-        "annual_income": "120000",
-        "district": "Chennai",
-        "taluk": "Egmore"
-      },
-      "documents": [
-        {
-          "name": "Aadhaar_Card.pdf",
-          "url": "/uploads/documents/sample.pdf"
-        }
-      ],
-      "rejection_reason": null,
-      "remarks": null,
-      "created_at": "2026-09-11T12:40:08.000Z",
-      "updated_at": "2026-09-11T12:40:08.000Z"
-    },
-    {
-      "id": 2,
-      "application_number": "ESV-2026-000102",
-      "user_id": 1,
-      "applicant_name": "Karthik Raja",
-      "applicant_email": "user@eseva.gov.in",
-      "applicant_phone": "9876543210",
-      "service_id": null,
-      "service_name": "Aadhaar Address Update",
-      "service_slug": "aadhaar-address-update",
-      "status": "Under Review",
-      "fee_amount": "50.00",
-      "payment_status": "Paid",
-      "payment_id": "PAY-89230245",
-      "form_data": {
-        "new_address": "Door 45, Gandhi Road, Adyar, Chennai - 600020"
-      },
-      "documents": [
-        {
-          "name": "Voter_ID_Proof.jpg",
-          "url": "/uploads/documents/sample.jpg"
-        }
-      ],
-      "rejection_reason": null,
-      "remarks": null,
-      "created_at": "2026-09-11T12:40:09.000Z",
-      "updated_at": "2026-09-11T12:40:09.000Z"
-    },
-    {
-      "id": 3,
-      "application_number": "ESV-2026-000103",
-      "user_id": 1,
-      "applicant_name": "Suresh Kumar",
-      "applicant_email": "suresh.k@gmail.com",
-      "applicant_phone": "9444123456",
-      "service_id": null,
-      "service_name": "Patta Chitta Copy (AnyTamilLand)",
-      "service_slug": "patta-chitta-extract",
-      "status": "Processing",
-      "fee_amount": "30.00",
-      "payment_status": "Paid",
-      "payment_id": "PAY-89230399",
-      "form_data": {
-        "survey_no": "142/3A",
-        "village": "Velachery"
-      },
-      "documents": [],
-      "rejection_reason": null,
-      "remarks": null,
-      "created_at": "2026-09-11T12:40:09.000Z",
-      "updated_at": "2026-09-11T12:40:09.000Z"
+      "service_id": 1,
+      "user_name": "Surya A",
+      "user_email": "hariraj2005.m@gmail.com",
+      "user_phone": "9003454109",
+      "status": "DRAFT",
+      "current_step": "1",
+      "admin_remarks": "Application saved as draft.",
+      "total_fee": "50.00",
+      "updated_at": "2026-09-13T08:56:46.300Z"
     }
   ],
   "application_field_values": [
     {
       "id": 1,
-      "created_at": "2026-09-02T12:59:21.336Z",
+      "created_at": "2026-09-13T08:56:46.327Z",
       "application_id": 1,
-      "field_id": 1,
-      "field_label": "12-Digit Aadhaar Number",
-      "value": "5482-9102-3847"
+      "field_id": null,
+      "field_label": "user_name",
+      "field_name": "user_name",
+      "value": "Surya A"
     },
     {
       "id": 2,
-      "created_at": "2026-09-02T12:59:21.337Z",
+      "created_at": "2026-09-13T08:56:46.330Z",
       "application_id": 1,
-      "field_id": 2,
-      "field_label": "Full Name (as in Aadhaar)",
-      "value": "Karthik Subramanian"
+      "field_id": null,
+      "field_label": "dob",
+      "field_name": "dob",
+      "value": ""
     },
     {
       "id": 3,
-      "created_at": "2026-09-02T12:59:21.337Z",
+      "created_at": "2026-09-13T08:56:46.332Z",
       "application_id": 1,
-      "field_id": 3,
-      "field_label": "Reason for Address Change",
-      "value": "Relocated to new apartment in Anna Nagar, Chennai"
+      "field_id": null,
+      "field_label": "gender",
+      "field_name": "gender",
+      "value": "Male"
     },
     {
       "id": 4,
-      "created_at": "2026-09-03T08:32:00.405Z",
-      "application_id": 2,
+      "created_at": "2026-09-13T08:56:46.335Z",
+      "application_id": 1,
       "field_id": null,
-      "field_label": "applicant_name",
-      "value": "Security Audit Tester"
+      "field_label": "user_phone",
+      "field_name": "user_phone",
+      "value": "9003454109"
     },
     {
       "id": 5,
-      "created_at": "2026-09-03T08:32:00.406Z",
-      "application_id": 2,
+      "created_at": "2026-09-13T08:56:46.338Z",
+      "application_id": 1,
       "field_id": null,
-      "field_label": "income_amount",
-      "value": "150000"
+      "field_label": "user_email",
+      "field_name": "user_email",
+      "value": "hariraj2005.m@gmail.com"
     },
     {
       "id": 6,
-      "created_at": "2026-09-03T08:32:46.493Z",
-      "application_id": 3,
+      "created_at": "2026-09-13T08:56:46.340Z",
+      "application_id": 1,
       "field_id": null,
-      "field_label": "applicant_name",
-      "value": "Security Audit Tester"
+      "field_label": "address",
+      "field_name": "address",
+      "value": ""
     },
     {
       "id": 7,
-      "created_at": "2026-09-03T08:32:46.494Z",
-      "application_id": 3,
-      "field_id": null,
-      "field_label": "income_amount",
-      "value": "150000"
-    },
-    {
-      "id": 8,
-      "created_at": "2026-09-03T08:32:56.356Z",
-      "application_id": 4,
-      "field_id": null,
-      "field_label": "applicant_name",
-      "value": "Security Audit Tester"
-    },
-    {
-      "id": 9,
-      "created_at": "2026-09-03T08:32:56.357Z",
-      "application_id": 4,
-      "field_id": null,
-      "field_label": "income_amount",
-      "value": "150000"
-    },
-    {
-      "id": 10,
-      "created_at": "2026-09-03T08:33:59.334Z",
-      "application_id": 5,
-      "field_id": null,
-      "field_label": "applicant_name",
-      "value": "Security Audit Tester"
-    },
-    {
-      "id": 11,
-      "created_at": "2026-09-03T08:33:59.335Z",
-      "application_id": 5,
-      "field_id": null,
-      "field_label": "income_amount",
-      "value": "150000"
-    },
-    {
-      "id": 12,
-      "created_at": "2026-09-03T08:34:48.756Z",
-      "application_id": 6,
-      "field_id": null,
-      "field_label": "applicant_name",
-      "value": "Security Audit Tester"
-    },
-    {
-      "id": 13,
-      "created_at": "2026-09-03T08:34:48.758Z",
-      "application_id": 6,
-      "field_id": null,
-      "field_label": "income_amount",
-      "value": "150000"
-    },
-    {
-      "id": 14,
-      "created_at": "2026-09-03T08:42:35.652Z",
-      "application_id": 7,
-      "field_id": null,
-      "field_label": "applicant_name",
-      "value": "Security Audit Tester"
-    },
-    {
-      "id": 15,
-      "created_at": "2026-09-03T08:42:35.653Z",
-      "application_id": 7,
-      "field_id": null,
-      "field_label": "income_amount",
-      "value": "150000"
-    },
-    {
-      "id": 16,
-      "created_at": "2026-09-03T08:50:36.932Z",
-      "application_id": 8,
-      "field_id": null,
-      "field_label": "applicant_name",
-      "value": "Security Audit Tester"
-    },
-    {
-      "id": 17,
-      "created_at": "2026-09-03T08:50:36.935Z",
-      "application_id": 8,
-      "field_id": null,
-      "field_label": "income_amount",
-      "value": "150000"
-    },
-    {
-      "id": 18,
-      "created_at": "2026-09-03T08:50:54.139Z",
-      "application_id": 9,
-      "field_id": null,
-      "field_label": "applicant_name",
-      "value": "Security Audit Tester"
-    },
-    {
-      "id": 19,
-      "created_at": "2026-09-03T08:50:54.141Z",
-      "application_id": 9,
-      "field_id": null,
-      "field_label": "income_amount",
-      "value": "150000"
-    },
-    {
-      "id": 20,
-      "created_at": "2026-09-03T10:00:54.677Z",
-      "application_id": 10,
-      "field_id": null,
-      "field_label": "user_name",
-      "value": "Surya a"
-    },
-    {
-      "id": 21,
-      "created_at": "2026-09-03T10:00:54.680Z",
-      "application_id": 10,
-      "field_id": null,
-      "field_label": "dob",
-      "value": "2006-01-05"
-    },
-    {
-      "id": 22,
-      "created_at": "2026-09-03T10:00:54.682Z",
-      "application_id": 10,
-      "field_id": 19,
-      "field_label": "Gender",
-      "value": "Male"
-    },
-    {
-      "id": 23,
-      "created_at": "2026-09-03T10:00:54.685Z",
-      "application_id": 10,
-      "field_id": null,
-      "field_label": "user_phone",
-      "value": "6374889944"
-    },
-    {
-      "id": 24,
-      "created_at": "2026-09-03T10:00:54.688Z",
-      "application_id": 10,
-      "field_id": null,
-      "field_label": "user_email",
-      "value": "suryasiva637480@gmail.com"
-    },
-    {
-      "id": 25,
-      "created_at": "2026-09-03T10:00:54.691Z",
-      "application_id": 10,
-      "field_id": null,
-      "field_label": "address",
-      "value": "Ghxdgh"
-    },
-    {
-      "id": 26,
-      "created_at": "2026-09-03T10:00:54.695Z",
-      "application_id": 10,
-      "field_id": null,
-      "field_label": "district",
+      "created_at": "2026-09-13T08:56:46.342Z",
+      "application_id": 1,
+      "field_id": 9,
+      "field_label": "District",
+      "field_name": "district",
       "value": "vnr"
     },
     {
-      "id": 27,
-      "created_at": "2026-09-03T10:00:54.698Z",
-      "application_id": 10,
-      "field_id": null,
-      "field_label": "state",
+      "id": 8,
+      "created_at": "2026-09-13T08:56:46.343Z",
+      "application_id": 1,
+      "field_id": 10,
+      "field_label": "State",
+      "field_name": "state",
       "value": "Tamil Nadu"
     },
     {
-      "id": 28,
-      "created_at": "2026-09-03T10:00:54.700Z",
-      "application_id": 10,
-      "field_id": null,
-      "field_label": "pincode",
+      "id": 9,
+      "created_at": "2026-09-13T08:56:46.346Z",
+      "application_id": 1,
+      "field_id": 8,
+      "field_label": "6-Digit PIN Code",
+      "field_name": "pincode",
       "value": "626125"
     },
     {
-      "id": 29,
-      "created_at": "2026-09-03T10:00:54.703Z",
-      "application_id": 10,
-      "field_id": 16,
-      "field_label": "12-Digit Aadhaar Number",
+      "id": 10,
+      "created_at": "2026-09-13T08:56:46.348Z",
+      "application_id": 1,
+      "field_id": null,
+      "field_label": "aadhaar_no",
+      "field_name": "aadhaar_no",
       "value": "633938484155"
     },
     {
+      "id": 11,
+      "created_at": "2026-09-13T08:56:46.350Z",
+      "application_id": 1,
+      "field_id": 1,
+      "field_label": "12-Digit Aadhaar Number",
+      "field_name": "aadhaar_number",
+      "value": "633938484155"
+    },
+    {
+      "id": 12,
+      "created_at": "2026-09-13T08:56:46.354Z",
+      "application_id": 1,
+      "field_id": 2,
+      "field_label": "Full Name (as in Aadhaar)",
+      "field_name": "full_name",
+      "value": "Surya A"
+    },
+    {
+      "id": 13,
+      "created_at": "2026-09-13T08:56:46.356Z",
+      "application_id": 1,
+      "field_id": 3,
+      "field_label": "C/O (Father / Husband / Guardian Name)",
+      "field_name": "care_of",
+      "value": "ayyanar"
+    },
+    {
+      "id": 14,
+      "created_at": "2026-09-13T08:56:46.358Z",
+      "application_id": 1,
+      "field_id": 4,
+      "field_label": "House / Building / Apartment No.",
+      "field_name": "house_no",
+      "value": "33 a"
+    },
+    {
+      "id": 15,
+      "created_at": "2026-09-13T08:56:46.360Z",
+      "application_id": 1,
+      "field_id": 5,
+      "field_label": "Street / Road / Lane Name",
+      "field_name": "street",
+      "value": "mayandi patti street"
+    },
+    {
+      "id": 16,
+      "created_at": "2026-09-13T08:56:46.363Z",
+      "application_id": 1,
+      "field_id": 6,
+      "field_label": "Landmark",
+      "field_name": "landmark",
+      "value": "sriviliputthur nearby church"
+    },
+    {
+      "id": 17,
+      "created_at": "2026-09-13T08:56:46.365Z",
+      "application_id": 1,
+      "field_id": 7,
+      "field_label": "Area / Locality / Sector",
+      "field_name": "area_locality",
+      "value": "sriviiliputhur"
+    },
+    {
+      "id": 18,
+      "created_at": "2026-09-13T08:56:46.367Z",
+      "application_id": 1,
+      "field_id": 11,
+      "field_label": "Reason for Address Change",
+      "field_name": "update_reason",
+      "value": "ama change pannanum "
+    },
+    {
+      "id": 19,
+      "created_at": "2026-09-13T08:56:46.369Z",
+      "application_id": 1,
+      "field_id": null,
+      "field_label": "District",
+      "field_name": "District",
+      "value": "vnr"
+    },
+    {
+      "id": 20,
+      "created_at": "2026-09-13T08:56:46.372Z",
+      "application_id": 1,
+      "field_id": null,
+      "field_label": "State",
+      "field_name": "State",
+      "value": "Tamil Nadu"
+    },
+    {
+      "id": 21,
+      "created_at": "2026-09-13T08:56:46.373Z",
+      "application_id": 1,
+      "field_id": null,
+      "field_label": "6-Digit PIN Code",
+      "field_name": "6-Digit PIN Code",
+      "value": "626125"
+    },
+    {
+      "id": 22,
+      "created_at": "2026-09-13T08:56:46.379Z",
+      "application_id": 1,
+      "field_id": null,
+      "field_label": "12-Digit Aadhaar Number",
+      "field_name": "12-Digit Aadhaar Number",
+      "value": "633938484155"
+    },
+    {
+      "id": 23,
+      "created_at": "2026-09-13T08:56:46.381Z",
+      "application_id": 1,
+      "field_id": null,
+      "field_label": "Full Name (as in Aadhaar)",
+      "field_name": "Full Name (as in Aadhaar)",
+      "value": "Surya A"
+    },
+    {
+      "id": 24,
+      "created_at": "2026-09-13T08:56:46.384Z",
+      "application_id": 1,
+      "field_id": null,
+      "field_label": "C/O (Father / Husband / Guardian Name)",
+      "field_name": "C/O (Father / Husband / Guardian Name)",
+      "value": "ayyanar"
+    },
+    {
+      "id": 25,
+      "created_at": "2026-09-13T08:56:46.387Z",
+      "application_id": 1,
+      "field_id": null,
+      "field_label": "House / Building / Apartment No.",
+      "field_name": "House / Building / Apartment No.",
+      "value": "33 a"
+    },
+    {
+      "id": 26,
+      "created_at": "2026-09-13T08:56:46.389Z",
+      "application_id": 1,
+      "field_id": null,
+      "field_label": "Street / Road / Lane Name",
+      "field_name": "Street / Road / Lane Name",
+      "value": "mayandi patti street"
+    },
+    {
+      "id": 27,
+      "created_at": "2026-09-13T08:56:46.391Z",
+      "application_id": 1,
+      "field_id": null,
+      "field_label": "Landmark",
+      "field_name": "Landmark",
+      "value": "sriviliputthur nearby church"
+    },
+    {
+      "id": 28,
+      "created_at": "2026-09-13T08:56:46.394Z",
+      "application_id": 1,
+      "field_id": null,
+      "field_label": "Area / Locality / Sector",
+      "field_name": "Area / Locality / Sector",
+      "value": "sriviiliputhur"
+    },
+    {
+      "id": 29,
+      "created_at": "2026-09-13T08:56:46.396Z",
+      "application_id": 1,
+      "field_id": null,
+      "field_label": "Reason for Address Change",
+      "field_name": "Reason for Address Change",
+      "value": "ama change pannanum "
+    },
+    {
       "id": 30,
-      "created_at": "2026-09-03T10:00:54.706Z",
-      "application_id": 10,
-      "field_id": 17,
-      "field_label": "Correct Full Name",
-      "value": "Surya a"
+      "created_at": "2026-09-13T08:56:46.398Z",
+      "application_id": 1,
+      "field_id": null,
+      "field_label": "c/o (father / husband / guardian name)",
+      "field_name": "c/o (father / husband / guardian name)",
+      "value": "ayyanar"
     },
     {
       "id": 31,
-      "created_at": "2026-09-03T10:00:54.709Z",
-      "application_id": 10,
-      "field_id": 18,
-      "field_label": "Correct Date of Birth",
-      "value": "2006-01-05"
+      "created_at": "2026-09-13T08:56:46.400Z",
+      "application_id": 1,
+      "field_id": null,
+      "field_label": "house / building / apartment no.",
+      "field_name": "house / building / apartment no.",
+      "value": "33 a"
     },
     {
       "id": 32,
-      "created_at": "2026-09-11T16:11:56.639Z",
-      "application_id": 11,
+      "created_at": "2026-09-13T08:56:46.401Z",
+      "application_id": 1,
       "field_id": null,
-      "field_label": "user_name",
-      "value": "Karthik Subramanian"
+      "field_label": "street / road / lane name",
+      "field_name": "street / road / lane name",
+      "value": "mayandi patti street"
     },
     {
       "id": 33,
-      "created_at": "2026-09-11T16:11:56.641Z",
-      "application_id": 11,
+      "created_at": "2026-09-13T08:56:46.404Z",
+      "application_id": 1,
       "field_id": null,
-      "field_label": "dob",
-      "value": ""
+      "field_label": "area / locality / sector",
+      "field_name": "area / locality / sector",
+      "value": "sriviiliputhur"
     },
     {
       "id": 34,
-      "created_at": "2026-09-11T16:11:56.643Z",
-      "application_id": 11,
-      "field_id": null,
-      "field_label": "gender",
-      "value": "Male"
-    },
-    {
-      "id": 35,
-      "created_at": "2026-09-11T16:11:56.645Z",
-      "application_id": 11,
-      "field_id": null,
-      "field_label": "user_phone",
-      "value": "9876543210"
-    },
-    {
-      "id": 36,
-      "created_at": "2026-09-11T16:11:56.649Z",
-      "application_id": 11,
-      "field_id": null,
-      "field_label": "user_email",
-      "value": "user@eseva.gov.in"
-    },
-    {
-      "id": 37,
-      "created_at": "2026-09-11T16:11:56.651Z",
-      "application_id": 11,
-      "field_id": null,
-      "field_label": "address",
-      "value": ""
-    },
-    {
-      "id": 38,
-      "created_at": "2026-09-11T16:11:56.654Z",
-      "application_id": 11,
-      "field_id": 9,
-      "field_label": "District",
-      "value": ""
-    },
-    {
-      "id": 39,
-      "created_at": "2026-09-11T16:11:56.657Z",
-      "application_id": 11,
-      "field_id": 10,
-      "field_label": "State",
-      "value": ""
-    },
-    {
-      "id": 40,
-      "created_at": "2026-09-11T16:11:56.659Z",
-      "application_id": 11,
-      "field_id": 8,
-      "field_label": "6-Digit PIN Code",
-      "value": ""
-    },
-    {
-      "id": 41,
-      "created_at": "2026-09-11T16:11:56.662Z",
-      "application_id": 11,
-      "field_id": 1,
-      "field_label": "12-Digit Aadhaar Number",
-      "value": ""
-    },
-    {
-      "id": 42,
-      "created_at": "2026-09-11T16:11:56.666Z",
-      "application_id": 11,
-      "field_id": 2,
-      "field_label": "Full Name (as in Aadhaar)",
-      "value": ""
-    },
-    {
-      "id": 43,
-      "created_at": "2026-09-11T16:11:56.669Z",
-      "application_id": 11,
-      "field_id": 3,
-      "field_label": "C/O (Father / Husband / Guardian Name)",
-      "value": ""
-    },
-    {
-      "id": 44,
-      "created_at": "2026-09-11T16:11:56.672Z",
-      "application_id": 11,
-      "field_id": 4,
-      "field_label": "House / Building / Apartment No.",
-      "value": ""
-    },
-    {
-      "id": 45,
-      "created_at": "2026-09-11T16:11:56.674Z",
-      "application_id": 11,
-      "field_id": 5,
-      "field_label": "Street / Road / Lane Name",
-      "value": ""
-    },
-    {
-      "id": 46,
-      "created_at": "2026-09-11T16:11:56.677Z",
-      "application_id": 11,
-      "field_id": 6,
-      "field_label": "Landmark",
-      "value": ""
-    },
-    {
-      "id": 47,
-      "created_at": "2026-09-11T16:11:56.680Z",
-      "application_id": 11,
-      "field_id": 7,
-      "field_label": "Area / Locality / Sector",
-      "value": ""
-    },
-    {
-      "id": 48,
-      "created_at": "2026-09-11T16:11:56.684Z",
-      "application_id": 11,
-      "field_id": 11,
-      "field_label": "Reason for Address Change",
-      "value": ""
-    }
-  ],
-  "application_documents": [
-    {
-      "id": 1,
-      "created_at": "2026-09-02T12:59:21.338Z",
+      "created_at": "2026-09-13T08:56:46.407Z",
       "application_id": 1,
-      "document_name": "Proof of Address (PoA)",
-      "file_name": "electricity_bill_chennai.pdf",
-      "file_path": "/uploads/sample_eb_bill.pdf",
-      "file_type": "application/pdf"
-    },
-    {
-      "id": 2,
-      "created_at": "2026-09-03T10:00:54.719Z",
-      "application_id": 10,
-      "service_document_id": null,
-      "document_name": "proof of identity birth proof",
-      "original_filename": "WhatsApp Image 2026-08-18 at 2.45.07 PM.jpeg",
-      "stored_filename": "1788429654641-971708398_WhatsApp_Image_2026-08-18_at_2.45.07_PM.jpeg",
-      "file_type": "image/jpeg",
-      "file_size": 113241,
-      "file_path": "/api/documents/preview-file/1788429654641-971708398_WhatsApp_Image_2026-08-18_at_2.45.07_PM.jpeg",
-      "uploaded_by": "Guest User",
-      "uploaded_at": "2026-09-03T10:00:54.719Z",
-      "verification_status": "Pending Verification",
-      "verified_by": null,
-      "verified_at": null,
-      "rejection_reason": null
+      "field_id": null,
+      "field_label": "reason for address change",
+      "field_name": "reason for address change",
+      "value": "ama change pannanum "
     }
   ],
+  "application_documents": [],
   "payments": [
     {
-      "id": 1,
+      "id": 30001,
       "payment_id": "PAY-89230198",
       "application_number": "ESV-2026-000101",
-      "user_id": 1,
+      "user_id": 30001,
       "amount": "60.00",
       "payment_method": "UPI / Razorpay",
       "status": "Success",
-      "transaction_date": "2026-09-11T12:40:09.000Z"
+      "transaction_date": "2026-09-12T13:40:38.000Z"
     },
     {
-      "id": 2,
+      "id": 30002,
       "payment_id": "PAY-89230245",
       "application_number": "ESV-2026-000102",
-      "user_id": 1,
+      "user_id": 30001,
       "amount": "50.00",
       "payment_method": "UPI / Razorpay",
       "status": "Success",
-      "transaction_date": "2026-09-11T12:40:09.000Z"
+      "transaction_date": "2026-09-12T13:40:38.000Z"
     },
     {
-      "id": 3,
+      "id": 30003,
       "payment_id": "PAY-89230399",
       "application_number": "ESV-2026-000103",
-      "user_id": 1,
+      "user_id": 30001,
       "amount": "30.00",
       "payment_method": "UPI / Razorpay",
       "status": "Success",
-      "transaction_date": "2026-09-11T12:40:09.000Z"
+      "transaction_date": "2026-09-12T13:40:38.000Z"
     }
   ],
   "application_status_history": [
-    {
-      "id": 1,
-      "created_at": "2026-09-02T12:59:21.339Z",
-      "application_id": 1,
-      "status": "Pending",
-      "admin_remarks": "Application submitted successfully. Awaiting initial document check.",
-      "updated_by": "System"
-    },
-    {
-      "id": 2,
-      "created_at": "2026-09-02T12:59:21.340Z",
-      "application_id": 1,
-      "status": "Processing",
-      "admin_remarks": "Document verification completed by VAO. Sent to UIDAI backend for final update.",
-      "updated_by": "Super Admin"
-    },
     {
       "id": 3,
       "created_at": "2026-09-03T08:32:00.410Z",
@@ -2325,20 +2140,33 @@
       "status": "SUBMITTED",
       "admin_remarks": "Application submitted successfully with verified dynamic field data.",
       "updated_by": "Applicant / Web Portal"
-    }
-  ],
-  "contact_messages": [
+    },
     {
-      "id": 1,
-      "created_at": "2026-09-02T12:59:21.340Z",
-      "name": "Anand Kumar",
-      "email": "anand@gmail.com",
-      "phone": "9443210987",
-      "subject": "Query regarding Patta Transfer timelines",
-      "message": "Hello, I have submitted patta transfer request last week. Could you please provide estimate for surveyor visit?",
-      "status": "Unread"
+      "id": 22,
+      "created_at": "2026-09-12T18:07:52.891Z",
+      "application_id": 2,
+      "status": "Rejected",
+      "admin_remarks": "wait",
+      "updated_by": "System Administrator"
+    },
+    {
+      "id": 24,
+      "created_at": "2026-09-12T18:12:46.940Z",
+      "application_id": 4,
+      "status": "SUBMITTED",
+      "admin_remarks": "Application submitted successfully with verified dynamic field data.",
+      "updated_by": "Applicant / Web Portal"
+    },
+    {
+      "id": 25,
+      "created_at": "2026-09-12T18:16:39.772Z",
+      "application_id": 4,
+      "status": "Processing",
+      "admin_remarks": "Application submitted successfully. Under verification by E-Seva team.",
+      "updated_by": "System Administrator"
     }
   ],
+  "contact_messages": [],
   "career_applications": [
     {
       "id": 1,
@@ -2387,17 +2215,196 @@
       "display_order": 3
     }
   ],
-  "notifications": [],
-  "document_audit_history": [
+  "notifications": [
     {
       "id": 1,
-      "created_at": "2026-09-03T10:00:54.723Z",
-      "application_id": 10,
-      "document_id": 2,
-      "action": "Uploaded",
-      "actor": "Surya a",
-      "actor_role": "User",
-      "details": "Uploaded WhatsApp Image 2026-08-18 at 2.45.07 PM.jpeg"
+      "created_at": "2026-09-13T07:42:42.795Z",
+      "userId": 1,
+      "adminId": null,
+      "applicationId": 1,
+      "type": "APPLICATION_SUBMITTED",
+      "title": "Application Submitted: ESV-2026-000001",
+      "message": "Your application (ESV-2026-000001) for Aadhaar Address Update has been submitted successfully. Track status online anytime.",
+      "status": "DELIVERED",
+      "isRead": 0,
+      "createdAt": "2026-09-13T07:42:42.795Z",
+      "readAt": null,
+      "metadata": {
+        "applicationId": 1,
+        "applicationNumber": "ESV-2026-000001",
+        "serviceName": "Aadhaar Address Update",
+        "status": "SUBMITTED",
+        "link": "/track-application?appNumber=ESV-2026-000001",
+        "idempotencyKey": null
+      }
+    }
+  ],
+  "document_audit_history": [],
+  "notification_delivery_logs": [
+    {
+      "id": 1,
+      "created_at": "2026-09-12T18:07:52.910Z",
+      "recipient": "customer@eseva.gov.in",
+      "channel": "EMAIL",
+      "template": "APPLICATION_REJECTED",
+      "status": "SENT",
+      "attempts": 1,
+      "sentAt": "2026-09-12T18:07:52.910Z",
+      "failureReason": null
+    },
+    {
+      "id": 2,
+      "created_at": "2026-09-12T18:07:52.914Z",
+      "recipient": "+91-9876543210",
+      "channel": "SMS",
+      "template": "APPLICATION_REJECTED",
+      "status": "SENT",
+      "attempts": 1,
+      "sentAt": "2026-09-12T18:07:52.914Z",
+      "failureReason": null
+    },
+    {
+      "id": 3,
+      "created_at": "2026-09-12T18:07:52.922Z",
+      "recipient": "+91-9876543210",
+      "channel": "WHATSAPP",
+      "template": "APPLICATION_REJECTED",
+      "status": "SENT",
+      "attempts": 1,
+      "sentAt": "2026-09-12T18:07:52.922Z",
+      "failureReason": null
+    },
+    {
+      "id": 4,
+      "created_at": "2026-09-12T18:08:19.767Z",
+      "recipient": "customer@eseva.gov.in",
+      "channel": "EMAIL",
+      "template": "STATUS_UPDATE",
+      "status": "SENT",
+      "attempts": 1,
+      "sentAt": "2026-09-12T18:08:19.767Z",
+      "failureReason": null
+    },
+    {
+      "id": 5,
+      "created_at": "2026-09-12T18:08:19.772Z",
+      "recipient": "+91-9876543210",
+      "channel": "SMS",
+      "template": "STATUS_UPDATE",
+      "status": "SENT",
+      "attempts": 1,
+      "sentAt": "2026-09-12T18:08:19.772Z",
+      "failureReason": null
+    },
+    {
+      "id": 6,
+      "created_at": "2026-09-12T18:08:19.775Z",
+      "recipient": "+91-9876543210",
+      "channel": "WHATSAPP",
+      "template": "STATUS_UPDATE",
+      "status": "SENT",
+      "attempts": 1,
+      "sentAt": "2026-09-12T18:08:19.775Z",
+      "failureReason": null
+    },
+    {
+      "id": 7,
+      "created_at": "2026-09-12T18:12:46.951Z",
+      "recipient": "hariraj@gmail.com",
+      "channel": "EMAIL",
+      "template": "APPLICATION_SUBMITTED",
+      "status": "SENT",
+      "attempts": 1,
+      "sentAt": "2026-09-12T18:12:46.951Z",
+      "failureReason": null
+    },
+    {
+      "id": 8,
+      "created_at": "2026-09-12T18:12:46.954Z",
+      "recipient": "9003454109",
+      "channel": "SMS",
+      "template": "APPLICATION_SUBMITTED",
+      "status": "SENT",
+      "attempts": 1,
+      "sentAt": "2026-09-12T18:12:46.954Z",
+      "failureReason": null
+    },
+    {
+      "id": 9,
+      "created_at": "2026-09-12T18:12:46.957Z",
+      "recipient": "9003454109",
+      "channel": "WHATSAPP",
+      "template": "APPLICATION_SUBMITTED",
+      "status": "SENT",
+      "attempts": 1,
+      "sentAt": "2026-09-12T18:12:46.957Z",
+      "failureReason": null
+    },
+    {
+      "id": 10,
+      "created_at": "2026-09-12T18:16:39.782Z",
+      "recipient": "hariraj@gmail.com",
+      "channel": "EMAIL",
+      "template": "STATUS_UPDATE",
+      "status": "SENT",
+      "attempts": 1,
+      "sentAt": "2026-09-12T18:16:39.782Z",
+      "failureReason": null
+    },
+    {
+      "id": 11,
+      "created_at": "2026-09-12T18:16:39.786Z",
+      "recipient": "9003454109",
+      "channel": "SMS",
+      "template": "STATUS_UPDATE",
+      "status": "SENT",
+      "attempts": 1,
+      "sentAt": "2026-09-12T18:16:39.786Z",
+      "failureReason": null
+    },
+    {
+      "id": 12,
+      "created_at": "2026-09-12T18:16:39.789Z",
+      "recipient": "9003454109",
+      "channel": "WHATSAPP",
+      "template": "STATUS_UPDATE",
+      "status": "SENT",
+      "attempts": 1,
+      "sentAt": "2026-09-12T18:16:39.789Z",
+      "failureReason": null
+    },
+    {
+      "id": 13,
+      "created_at": "2026-09-13T07:42:42.819Z",
+      "recipient": "hariraj2005.m@gmail.com",
+      "channel": "EMAIL",
+      "template": "APPLICATION_SUBMITTED",
+      "status": "SIMULATED",
+      "attempts": 1,
+      "sentAt": "2026-09-13T07:42:42.819Z",
+      "failureReason": null
+    },
+    {
+      "id": 14,
+      "created_at": "2026-09-13T07:42:42.820Z",
+      "recipient": "9003454109",
+      "channel": "SMS",
+      "template": "APPLICATION_SUBMITTED",
+      "status": "SENT",
+      "attempts": 1,
+      "sentAt": "2026-09-13T07:42:42.820Z",
+      "failureReason": null
+    },
+    {
+      "id": 15,
+      "created_at": "2026-09-13T07:42:42.821Z",
+      "recipient": "9003454109",
+      "channel": "WHATSAPP",
+      "template": "APPLICATION_SUBMITTED",
+      "status": "SENT",
+      "attempts": 1,
+      "sentAt": "2026-09-13T07:42:42.821Z",
+      "failureReason": null
     }
   ]
 }
