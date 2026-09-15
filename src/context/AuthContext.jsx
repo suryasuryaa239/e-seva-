@@ -25,29 +25,32 @@ export const AuthProvider = ({ children }) => {
             if (!data.isAdmin) {
               setUser(data);
               localStorage.setItem('eseva_saved_user', JSON.stringify(data));
-            }
-          } else {
-            const savedUser = localStorage.getItem('eseva_saved_user');
-            if (savedUser) {
-              try {
-                setUser(JSON.parse(savedUser));
-              } catch (_) {
-                localStorage.removeItem('eseva_user_token');
-                localStorage.removeItem('token');
-                setUserToken(null);
-              }
             } else {
+              setUser(null);
+              setUserToken(null);
               localStorage.removeItem('eseva_user_token');
               localStorage.removeItem('token');
-              setUserToken(null);
+              localStorage.removeItem('eseva_saved_user');
             }
+          } else {
+            // Token is invalid or expired: clear session completely to allow manual login
+            localStorage.removeItem('eseva_user_token');
+            localStorage.removeItem('token');
+            localStorage.removeItem('eseva_saved_user');
+            setUserToken(null);
+            setUser(null);
           }
         } catch (e) {
-          const savedUser = localStorage.getItem('eseva_saved_user');
-          if (savedUser) {
-            try { setUser(JSON.parse(savedUser)); } catch (_) {}
-          }
+          console.error('Auth verification error:', e);
+          localStorage.removeItem('eseva_user_token');
+          localStorage.removeItem('token');
+          localStorage.removeItem('eseva_saved_user');
+          setUserToken(null);
+          setUser(null);
         }
+      } else {
+        setUser(null);
+        setUserToken(null);
       }
 
       if (adminTok) {

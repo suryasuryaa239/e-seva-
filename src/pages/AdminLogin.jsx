@@ -8,8 +8,8 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 
 export default function AdminLogin() {
-  const [email, setEmail] = useState('admin@eseva.gov.in');
-  const [password, setPassword] = useState('AdminSecret123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -45,7 +45,7 @@ export default function AdminLogin() {
   };
 
   const [showForgotModal, setShowForgotModal] = useState(false);
-  const [forgotEmail, setForgotEmail] = useState('admin@eseva.gov.in');
+  const [forgotEmail, setForgotEmail] = useState('');
   const [forgotToken, setForgotToken] = useState('');
   const [newAdminPass, setNewAdminPass] = useState('');
   const [forgotStep, setForgotStep] = useState(1);

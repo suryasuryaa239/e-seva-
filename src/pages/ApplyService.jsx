@@ -10,6 +10,7 @@ import Breadcrumbs from '../components/Breadcrumbs';
 import CameraCaptureModal from '../components/CameraCaptureModal';
 import ReceiptModal from '../components/ReceiptModal';
 import { getServiceDefinition, DEFAULT_SERVICES_MAP, getLocalizedService } from '../data/servicesCatalogData';
+import { getLocalizedSectionTitle, getLocalizedFieldLabel, getLocalizedOption, getLocalizedPlaceholder, getLocalizedDocName } from '../utils/localizationHelpers';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -127,13 +128,7 @@ export default function ApplyService() {
 
   // Sync logged-in user session profile details to applicant form state
   useEffect(() => {
-    let activeUser = user || admin;
-    if (!activeUser) {
-      try {
-        const savedUser = localStorage.getItem('eseva_saved_user');
-        if (savedUser) activeUser = JSON.parse(savedUser);
-      } catch (e) {}
-    }
+    const activeUser = user || admin;
 
     if (activeUser) {
       setApplicantInfo(prev => ({
@@ -915,93 +910,102 @@ export default function ApplyService() {
                         <span>{t.customInputsTitle}</span>
                       </h4>
 
-                      {Object.entries(groupedFields).map(([secTitle, secFields], sIdx) => (
-                        <div key={sIdx} className="space-y-4 bg-slate-50 p-6 rounded-2xl border border-slate-200/80">
-                          <h5 className="text-xs font-extrabold text-slate-500 uppercase tracking-wider border-b border-slate-200/80 pb-2">
-                            {secTitle}
-                          </h5>
+                      {Object.entries(groupedFields).map(([secTitle, secFields], sIdx) => {
+                        const localizedSecTitle = getLocalizedSectionTitle(secTitle, lang);
+                        return (
+                          <div key={sIdx} className="space-y-4 bg-slate-50 p-6 rounded-2xl border border-slate-200/80">
+                            <h5 className="text-xs font-extrabold text-slate-500 uppercase tracking-wider border-b border-slate-200/80 pb-2">
+                              {localizedSecTitle}
+                            </h5>
 
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            {secFields.filter(isFieldVisible).map((f, fIdx) => {
-                              const key = f.field_name || f.name;
-                              const fType = (f.field_type || f.type || 'text').toLowerCase();
-                              const fLabel = f.field_label || f.label || key;
-                              const hasErr = errors[key];
-                              const isTextArea = fType === 'textarea';
-                              const isSelect = fType === 'select';
-                              const isRadio = fType === 'radio';
-                              const isCheckbox = fType === 'checkbox';
-                              const optionsList = parseOptions(f.options_json || f.options || f.field_options);
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                              {secFields.filter(isFieldVisible).map((f, fIdx) => {
+                                const key = f.field_name || f.name;
+                                const fType = (f.field_type || f.type || 'text').toLowerCase();
+                                const rawLabel = f.field_label || f.label || key;
+                                const fLabel = getLocalizedFieldLabel(rawLabel, lang);
+                                const hasErr = errors[key];
+                                const isTextArea = fType === 'textarea';
+                                const isSelect = fType === 'select';
+                                const isRadio = fType === 'radio';
+                                const isCheckbox = fType === 'checkbox';
+                                const optionsList = parseOptions(f.options_json || f.options || f.field_options);
+                                const placeholderText = getLocalizedPlaceholder(f.placeholder, rawLabel, lang);
 
-                              return (
-                                <div key={fIdx} className={isTextArea ? 'sm:col-span-2' : ''}>
-                                  <label className="block text-xs font-extrabold text-slate-800 mb-1.5">
-                                    {fLabel} {(f.is_required !== false && f.required !== false) && <span className="text-rose-500">*</span>}
-                                  </label>
-
-                                  {isSelect ? (
-                                    <select
-                                      value={fieldValues[key] || ''}
-                                      onChange={e => handleInputChange(key, e.target.value)}
-                                      className={`w-full px-4 py-3 bg-white border ${hasErr ? 'border-rose-500 bg-rose-50' : 'border-slate-200'} rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-[#0b192c]`}
-                                    >
-                                      <option value="">-- {lang === 'ta' ? 'தேர்ந்தெடுக்கவும்' : 'Select'} {fLabel} --</option>
-                                      {optionsList.map((opt, oIdx) => (
-                                        <option key={oIdx} value={opt}>{opt}</option>
-                                      ))}
-                                    </select>
-                                  ) : isRadio ? (
-                                    <div className="flex flex-wrap gap-4 py-1.5">
-                                      {optionsList.map((opt, oIdx) => (
-                                        <label key={oIdx} className="inline-flex items-center space-x-2 text-xs font-medium text-slate-700 cursor-pointer">
-                                          <input
-                                            type="radio"
-                                            name={key}
-                                            value={opt}
-                                            checked={fieldValues[key] === opt}
-                                            onChange={e => handleInputChange(key, e.target.value)}
-                                            className="text-orange-500 focus:ring-orange-500"
-                                          />
-                                          <span>{opt}</span>
-                                        </label>
-                                      ))}
-                                    </div>
-                                  ) : isCheckbox ? (
-                                    <label className="inline-flex items-center space-x-2 text-xs font-medium text-slate-700 cursor-pointer py-1">
-                                      <input
-                                        type="checkbox"
-                                        checked={!!fieldValues[key]}
-                                        onChange={e => handleInputChange(key, e.target.checked)}
-                                        className="text-orange-500 focus:ring-orange-500 rounded"
-                                      />
-                                      <span>{f.helpText || (lang === 'ta' ? 'நான் இந்த அறிவிப்பை ஒப்புக்கொள்கிறேன்' : 'I agree to this declaration')}</span>
+                                return (
+                                  <div key={fIdx} className={isTextArea ? 'sm:col-span-2' : ''}>
+                                    <label className="block text-xs font-extrabold text-slate-800 mb-1.5">
+                                      {fLabel} {(f.is_required !== false && f.required !== false) && <span className="text-rose-500">*</span>}
                                     </label>
-                                  ) : isTextArea ? (
-                                    <textarea
-                                      rows={3}
-                                      placeholder={f.placeholder}
-                                      value={fieldValues[key] || ''}
-                                      onChange={e => handleInputChange(key, e.target.value)}
-                                      className={`w-full px-4 py-3 bg-white border ${hasErr ? 'border-rose-500 bg-rose-50' : 'border-slate-200'} rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-[#0b192c]`}
-                                    />
-                                  ) : (
-                                    <input
-                                      type={fType === 'date' ? 'date' : fType === 'number' ? 'number' : 'text'}
-                                      placeholder={f.placeholder}
-                                      value={fieldValues[key] || ''}
-                                      onChange={e => handleInputChange(key, e.target.value)}
-                                      className={`w-full px-4 py-3 bg-white border ${hasErr ? 'border-rose-500 bg-rose-50' : 'border-slate-200'} rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-[#0b192c]`}
-                                    />
-                                  )}
 
-                                  {f.helpText && <p className="text-[11px] text-slate-500 mt-1 font-normal">{f.helpText}</p>}
-                                  {hasErr && <p className="text-[11px] text-rose-600 font-bold mt-1">{hasErr}</p>}
-                                </div>
-                              );
-                            })}
+                                    {isSelect ? (
+                                      <select
+                                        value={fieldValues[key] || ''}
+                                        onChange={e => handleInputChange(key, e.target.value)}
+                                        className={`w-full px-4 py-3 bg-white border ${hasErr ? 'border-rose-500 bg-rose-50' : 'border-slate-200'} rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-[#0b192c]`}
+                                      >
+                                        <option value="">
+                                          {lang === 'ta' ? `-- ${fLabel} தேர்ந்தெடுக்கவும் --` : `-- Select ${fLabel} --`}
+                                        </option>
+                                        {optionsList.map((opt, oIdx) => (
+                                          <option key={oIdx} value={opt}>
+                                            {getLocalizedOption(opt, lang)}
+                                          </option>
+                                        ))}
+                                      </select>
+                                    ) : isRadio ? (
+                                      <div className="flex flex-wrap gap-4 py-1.5">
+                                        {optionsList.map((opt, oIdx) => (
+                                          <label key={oIdx} className="inline-flex items-center space-x-2 text-xs font-medium text-slate-700 cursor-pointer">
+                                            <input
+                                              type="radio"
+                                              name={key}
+                                              value={opt}
+                                              checked={fieldValues[key] === opt}
+                                              onChange={e => handleInputChange(key, e.target.value)}
+                                              className="text-orange-500 focus:ring-orange-500"
+                                            />
+                                            <span>{getLocalizedOption(opt, lang)}</span>
+                                          </label>
+                                        ))}
+                                      </div>
+                                    ) : isCheckbox ? (
+                                      <label className="inline-flex items-center space-x-2 text-xs font-medium text-slate-700 cursor-pointer py-1">
+                                        <input
+                                          type="checkbox"
+                                          checked={!!fieldValues[key]}
+                                          onChange={e => handleInputChange(key, e.target.checked)}
+                                          className="text-orange-500 focus:ring-orange-500 rounded"
+                                        />
+                                        <span>{f.helpText || (lang === 'ta' ? 'நான் இந்த அறிவிப்பை ஒப்புக்கொள்கிறேன்' : 'I agree to this declaration')}</span>
+                                      </label>
+                                    ) : isTextArea ? (
+                                      <textarea
+                                        rows={3}
+                                        placeholder={placeholderText}
+                                        value={fieldValues[key] || ''}
+                                        onChange={e => handleInputChange(key, e.target.value)}
+                                        className={`w-full px-4 py-3 bg-white border ${hasErr ? 'border-rose-500 bg-rose-50' : 'border-slate-200'} rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-[#0b192c]`}
+                                      />
+                                    ) : (
+                                      <input
+                                        type={fType === 'date' ? 'date' : fType === 'number' ? 'number' : 'text'}
+                                        placeholder={placeholderText}
+                                        value={fieldValues[key] || ''}
+                                        onChange={e => handleInputChange(key, e.target.value)}
+                                        className={`w-full px-4 py-3 bg-white border ${hasErr ? 'border-rose-500 bg-rose-50' : 'border-slate-200'} rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-[#0b192c]`}
+                                      />
+                                    )}
+
+                                    {f.helpText && <p className="text-[11px] text-slate-500 mt-1 font-normal">{f.helpText}</p>}
+                                    {hasErr && <p className="text-[11px] text-rose-600 font-bold mt-1">{hasErr}</p>}
+                                  </div>
+                                );
+                              })}
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   )}
 
@@ -1074,6 +1078,7 @@ export default function ApplyService() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {service.documents.map((doc, idx) => {
                         const docName = doc.document_name || doc.name;
+                        const displayDocName = getLocalizedDocName(docName, lang);
                         const currentFile = files[docName];
                         const hasErr = errors[`doc_${docName}`];
                         const maxMB = doc.max_file_size || 5;
@@ -1101,7 +1106,7 @@ export default function ApplyService() {
                             <div className="flex items-center justify-between gap-2">
                               <span className="text-xs font-extrabold text-slate-900 flex items-center gap-1.5 min-w-0">
                                 <FileText className="w-4 h-4 text-orange-500 shrink-0" />
-                                <span className="truncate">{docName}</span>
+                                <span className="truncate">{displayDocName}</span>
                               </span>
                               <span className={`text-[10px] font-extrabold px-2.5 py-0.5 rounded-md uppercase shrink-0 ${
                                 doc.is_required !== false && doc.required !== false ? 'bg-amber-100 text-amber-800 border border-amber-200' : 'bg-slate-200 text-slate-700'
@@ -1345,11 +1350,12 @@ export default function ApplyService() {
                           {uniqueCustomEntries.map(([k, v], idx) => {
                             const fDef = service.fields ? service.fields.find(f => (f.field_name || f.name) === k) : null;
                             const rawLabel = fDef ? (fDef.field_label || fDef.label || k) : k.replace(/_/g, ' ');
-                            const cleanLabel = rawLabel.charAt(0).toUpperCase() + rawLabel.slice(1).toLowerCase();
+                            const cleanLabel = getLocalizedFieldLabel(rawLabel, lang);
+                            const valDisplay = getLocalizedOption(String(v), lang);
                             return (
                               <div key={idx} className="bg-white p-4 rounded-xl border border-slate-200/70 shadow-2xs space-y-2">
                                 <span className="text-slate-500 block text-[11px] font-medium tracking-normal capitalize leading-tight">{cleanLabel}:</span>
-                                <span className="font-semibold text-slate-900 block text-xs sm:text-sm leading-relaxed pt-0.5">{String(v)}</span>
+                                <span className="font-semibold text-slate-900 block text-xs sm:text-sm leading-relaxed pt-0.5">{valDisplay}</span>
                               </div>
                             );
                           })}
@@ -1393,6 +1399,7 @@ export default function ApplyService() {
                       return (
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           {docList.map((dName, idx) => {
+                            const displayDocName = getLocalizedDocName(dName, lang);
                             // Match file object from files state
                             const normDName = dName.toLowerCase().replace(/[^a-z0-9]+/g, '');
                             const fileKey = Object.keys(files).find(k => 
@@ -1405,7 +1412,7 @@ export default function ApplyService() {
                                 <div key={idx} className="p-4 bg-white rounded-2xl border border-slate-200/80 flex items-center justify-between">
                                   <span className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
                                     <FileText className="w-4 h-4 text-slate-400" />
-                                    <span>{dName}</span>
+                                    <span>{displayDocName}</span>
                                   </span>
                                   <span className="text-[10px] font-extrabold text-amber-700 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-lg">
                                     {lang === 'ta' ? 'பதிவேற்றப்படவில்லை' : 'Not Uploaded'}
@@ -1444,7 +1451,7 @@ export default function ApplyService() {
                                 <div className="flex items-center justify-between gap-2">
                                   <span className="text-xs font-semibold text-slate-800 flex items-center gap-1.5 truncate">
                                     <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                                    <span className="truncate">{dName}</span>
+                                    <span className="truncate">{displayDocName}</span>
                                   </span>
                                   {fileSize && (
                                     <span className="text-[10px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200/80 px-2 py-0.5 rounded-md shrink-0 font-mono">

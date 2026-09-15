@@ -177,8 +177,12 @@ export default function ServiceDetails() {
           <div className="lg:col-span-2 bg-white rounded-3xl p-8 sm:p-10 border border-slate-200/90 shadow-sm space-y-6 relative overflow-hidden">
             
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 pb-6 border-b border-slate-100">
-              <div className="w-16 h-16 rounded-2xl bg-orange-50 border border-orange-100 flex items-center justify-center shrink-0">
-                {getCategoryIcon(service.category_slug)}
+              <div className="w-16 h-16 rounded-2xl bg-orange-50 border border-orange-100 flex items-center justify-center shrink-0 overflow-hidden shadow-xs">
+                {service.image_url ? (
+                  <img src={service.image_url} alt={service.name} className="w-full h-full object-cover" />
+                ) : (
+                  getCategoryIcon(service.category_slug)
+                )}
               </div>
 
               <div className="space-y-1.5 flex-1">

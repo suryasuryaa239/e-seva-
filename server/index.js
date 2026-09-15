@@ -653,7 +653,16 @@ app.get('/api/services', (req, res) => {
 // Get Single Service Details (including custom form fields & document requirements)
 app.get('/api/services/:idOrSlug', (req, res) => {
   const param = req.params.idOrSlug;
-  const service = db.get('services', s => s.slug === param || String(s.id) === param);
+  const normParam = String(param).toLowerCase().trim().replace(/[^a-z0-9]/g, '');
+
+  let service = db.get('services', s => s.slug === param || String(s.id) === param);
+  if (!service) {
+    service = db.get('services', s => {
+      const normSlug = String(s.slug || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+      return normSlug === normParam || normSlug.includes(normParam) || normParam.includes(normSlug);
+    });
+  }
+
   if (!service) return res.status(404).json({ error: 'Service not found' });
 
   const category = db.get('categories', c => c.id === service.category_id);
@@ -665,8 +674,8 @@ app.get('/api/services/:idOrSlug', (req, res) => {
   res.json({
     ...service,
     name: cleanName,
-    category_name: category ? category.name : '',
-    category_slug: category ? category.slug : '',
+    category_name: category ? category.name : (service.category_name || ''),
+    category_slug: category ? category.slug : (service.category_slug || ''),
     fields,
     documents
   });
@@ -2236,10 +2245,28 @@ app.delete(['/api/admin/users/:id', '/api/admin/customers/:id'], authenticateAdm
 });
 
 // Admin Services & Categories Management
-app.post('/api/admin/services', authenticateAdmin, (req, res) => {
+app.post('/api/admin/services', authenticateAdmin, upload.any(), (req, res) => {
   try {
-    const { category_id, category_name, name, description, eligibility, processing_info, processing_time, fee, total_fee, govt_fee, fields, documents } = req.body;
+    let { category_id, category_name, name, description, eligibility, processing_info, processing_time, fee, total_fee, govt_fee, fields, documents, image_url_input, image_url: bodyImageUrl } = req.body;
     if ((!category_id && !category_name) || !name) return res.status(400).json({ error: 'Category and Service Name required' });
+
+    let image_url = (image_url_input || bodyImageUrl || '').trim();
+    if (req.file) {
+      image_url = `/api/documents/preview-file/${req.file.filename}`;
+    } else if (req.files && req.files.length > 0) {
+      const imgFile = req.files.find(f => f.fieldname === 'image' || f.mimetype.startsWith('image/')) || req.files[0];
+      if (imgFile) image_url = `/api/documents/preview-file/${imgFile.filename}`;
+    }
+
+    let parsedFields = fields;
+    if (typeof fields === 'string') {
+      try { parsedFields = JSON.parse(fields); } catch (e) {}
+    }
+
+    let parsedDocs = documents;
+    if (typeof documents === 'string') {
+      try { parsedDocs = JSON.parse(documents); } catch (e) {}
+    }
 
     let catId = Number(category_id);
     let cat = catId ? db.get('categories', c => c.id === catId) : null;
@@ -2277,12 +2304,13 @@ app.post('/api/admin/services', authenticateAdmin, (req, res) => {
       fee: serviceFee,
       total_fee: serviceFee,
       govt_fee: serviceFee,
+      image_url: image_url || 'https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=1200&auto=format&fit=crop',
       is_active: true,
       status: 'Active'
     });
 
-    if (fields && Array.isArray(fields) && fields.length > 0) {
-      fields.forEach((f, idx) => {
+    if (parsedFields && Array.isArray(parsedFields) && parsedFields.length > 0) {
+      parsedFields.forEach((f, idx) => {
         const label = f.field_label || f.name || f.label || `Field ${idx + 1}`;
         db.insert('service_fields', {
           service_id: service.id,
@@ -2314,8 +2342,8 @@ app.post('/api/admin/services', authenticateAdmin, (req, res) => {
       });
     }
 
-    if (documents && Array.isArray(documents) && documents.length > 0) {
-      documents.forEach(d => {
+    if (parsedDocs && Array.isArray(parsedDocs) && parsedDocs.length > 0) {
+      parsedDocs.forEach(d => {
         const docName = typeof d === 'string' ? d : (d.document_name || d.name);
         db.insert('service_documents', {
           service_id: service.id,
@@ -2344,7 +2372,7 @@ app.post('/api/admin/services', authenticateAdmin, (req, res) => {
 });
 
 // Admin Edit Service
-app.put('/api/admin/services/:id', authenticateAdmin, (req, res) => {
+app.put('/api/admin/services/:id', authenticateAdmin, upload.any(), (req, res) => {
   try {
     const sId = Number(req.params.id);
     const existing = db.get('services', s => s.id === sId);
@@ -2352,8 +2380,29 @@ app.put('/api/admin/services/:id', authenticateAdmin, (req, res) => {
       return res.status(404).json({ error: 'Service not found' });
     }
 
-    const { category_id, category_name, name, description, eligibility, processing_info, processing_time, fee, total_fee, govt_fee, is_active, status, fields, documents } = req.body;
+    let { category_id, category_name, name, description, eligibility, processing_info, processing_time, fee, total_fee, govt_fee, is_active, status, fields, documents, image_url_input, image_url: bodyImageUrl } = req.body;
     
+    let image_url = existing.image_url || '';
+    if (req.file) {
+      image_url = `/api/documents/preview-file/${req.file.filename}`;
+    } else if (req.files && req.files.length > 0) {
+      const imgFile = req.files.find(f => f.fieldname === 'image' || f.mimetype.startsWith('image/')) || req.files[0];
+      if (imgFile) image_url = `/api/documents/preview-file/${imgFile.filename}`;
+    } else if (image_url_input !== undefined || bodyImageUrl !== undefined) {
+      const inputVal = (image_url_input !== undefined ? image_url_input : bodyImageUrl) || '';
+      if (inputVal.trim()) image_url = inputVal.trim();
+    }
+
+    let parsedFields = fields;
+    if (typeof fields === 'string') {
+      try { parsedFields = JSON.parse(fields); } catch (e) {}
+    }
+
+    let parsedDocs = documents;
+    if (typeof documents === 'string') {
+      try { parsedDocs = JSON.parse(documents); } catch (e) {}
+    }
+
     let catId = category_id ? Number(category_id) : existing.category_id;
     let cat = db.get('categories', c => c.id === catId);
     if (!cat && category_name) {
@@ -2377,6 +2426,7 @@ app.put('/api/admin/services/:id', authenticateAdmin, (req, res) => {
       fee: serviceFee,
       total_fee: serviceFee,
       govt_fee: serviceFee,
+      image_url: image_url || existing.image_url || 'https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=1200&auto=format&fit=crop',
       is_active: is_active !== undefined ? is_active : (status === 'Inactive' ? false : existing.is_active),
       status: status || (is_active === false ? 'Inactive' : 'Active')
     });

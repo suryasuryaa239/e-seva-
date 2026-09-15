@@ -1430,6 +1430,678 @@ export const DEFAULT_SERVICES_MAP = {
       { name: 'Residence Proof', description: 'Ration Card / Electricity Bill / Bank Passbook', required: true },
       { name: 'Passport Photograph', description: 'Recent color photograph', required: true }
     ]
+  },
+
+  // -------------------------------------------------------------
+  // ALL 32 CATALOG SERVICE ALIASES & DYNAMIC FORMS
+  // -------------------------------------------------------------
+  'aadhaar-photo-biometric': {
+    id: 111,
+    category_name: 'Aadhaar Services',
+    category_slug: 'aadhaar-services',
+    name: 'Aadhaar Photo & Biometric Update',
+    slug: 'aadhaar-photo-biometric',
+    description: 'Update photo, fingerprints, and iris biometrics in official UIDAI database.',
+    eligibility: 'All Aadhaar cardholders seeking photo or biometric updates.',
+    processing_time: '3-5 Working Days',
+    fee: 100,
+    fields: [
+      { name: 'aadhaar_number', label: '12-Digit Aadhaar Number', type: 'text', placeholder: '1234 5678 9012', required: true },
+      { name: 'update_type', label: 'Biometric Update Type', type: 'select', options: ['Photo & Fingerprint Update', 'Mandatory Child Biometric (Age 5 or 15)', 'Iris Scan Update'], required: true },
+      { name: 'center_pincode', label: 'Preferred Center Pincode', type: 'text', placeholder: '600001', required: true }
+    ],
+    documents: [
+      { name: 'Aadhaar Card Copy', description: 'Copy of existing Aadhaar card', required: true },
+      { name: 'Passport Photograph', description: 'Recent passport photo', required: true }
+    ]
+  },
+  'aadhaar-pvc-card': {
+    id: 112,
+    category_name: 'Aadhaar Services',
+    category_slug: 'aadhaar-services',
+    name: 'Order Aadhaar PVC Smart Card',
+    slug: 'aadhaar-pvc-card',
+    description: 'Order durable, wallet-sized PVC Aadhaar card with secure QR code and hologram.',
+    eligibility: 'All Aadhaar cardholders.',
+    processing_time: '5-7 Working Days',
+    fee: 50,
+    fields: [
+      { name: 'aadhaar_number', label: '12-Digit Aadhaar Number', type: 'text', placeholder: '1234 5678 9012', required: true },
+      { name: 'delivery_address', label: 'Speed Post Delivery Address', type: 'textarea', placeholder: 'Door No, Street Name, Area, City', required: true },
+      { name: 'pincode', label: '6-Digit Pincode', type: 'text', placeholder: '600001', required: true }
+    ],
+    documents: [
+      { name: 'Aadhaar Card Copy', description: 'Copy of existing Aadhaar Card', required: true }
+    ]
+  },
+  'aadhaar-new-enrollment': {
+    id: 113,
+    category_name: 'Aadhaar Services',
+    category_slug: 'aadhaar-services',
+    name: 'New Aadhaar Enrollment Booking',
+    slug: 'aadhaar-new-enrollment',
+    description: 'Fresh UIDAI Aadhaar slot booking and documentation assistance.',
+    eligibility: 'Resident citizens without existing Aadhaar.',
+    processing_time: '15-30 Working Days',
+    fee: 0,
+    fields: [
+      { name: 'applicant_name', label: 'Full Name of Applicant', type: 'text', placeholder: 'Karthik Subramanian', required: true },
+      { name: 'dob', label: 'Date of Birth', type: 'date', required: true },
+      { name: 'gender', label: 'Gender', type: 'select', options: ['Male', 'Female', 'Transgender'], required: true },
+      { name: 'guardian_name', label: 'Father / Husband / Guardian Name', type: 'text', placeholder: 'Subramanian S', required: true }
+    ],
+    documents: [
+      { name: 'Identity Proof', description: 'Voter ID, Passport, or Birth Certificate', required: true },
+      { name: 'Address Proof', description: 'Ration Card, Electricity Bill, or Bank Passbook', required: true },
+      { name: 'Date of Birth Proof', description: 'Birth Certificate or School TC', required: true }
+    ]
+  },
+  'pan-card-correction': {
+    id: 205,
+    category_name: 'PAN Services',
+    category_slug: 'pan-services',
+    name: 'PAN Card Correction / Changes (Form 49A)',
+    slug: 'pan-card-correction',
+    description: 'Correction of Name, Date of Birth, Father Name, or Photo on PAN Card.',
+    eligibility: 'Existing PAN cardholders with valid proof of correction.',
+    processing_time: '7-15 Working Days',
+    fee: 110,
+    fields: [
+      { name: 'existing_pan', label: 'Existing 10-Digit PAN Number', type: 'text', placeholder: 'ABCDE1234F', required: true },
+      { name: 'correction_type', label: 'Correction Type Required', type: 'select', options: ['Name Correction', 'Date of Birth Correction', 'Father Name Change', 'Photo & Signature Update'], required: true },
+      { name: 'corrected_full_name', label: 'Corrected Full Name (as per proof)', type: 'text', placeholder: 'Karthik Subramanian', required: true },
+      { name: 'father_name', label: "Father's Full Name", type: 'text', placeholder: 'Subramanian S', required: true }
+    ],
+    documents: [
+      { name: 'Existing PAN Card Copy', description: 'Copy of existing PAN card', required: true },
+      { name: 'Proof of Correction Document', description: 'Aadhaar Card, Gazette Notification, or Passport', required: true },
+      { name: 'Passport Photograph', description: 'Recent passport photo', required: true }
+    ]
+  },
+  'pan-reprint-lost-damaged': {
+    id: 206,
+    category_name: 'PAN Services',
+    category_slug: 'pan-services',
+    name: 'Reprint Lost or Damaged PAN Card',
+    slug: 'pan-reprint-lost-damaged',
+    description: 'Reissue physical PAN card copy without changing existing data.',
+    eligibility: 'PAN cardholders with lost or damaged physical card.',
+    processing_time: '5-10 Working Days',
+    fee: 100,
+    fields: [
+      { name: 'pan_number', label: 'Existing 10-Digit PAN Number', type: 'text', placeholder: 'ABCDE1234F', required: true },
+      { name: 'reason', label: 'Reason for Reprint', type: 'select', options: ['Lost PAN Card', 'Damaged / Broken Physical Card', 'Physical Card Copy Required'], required: true },
+      { name: 'delivery_address', label: 'Card Dispatch Address', type: 'textarea', placeholder: 'Door No, Street Name, City, Pincode', required: true }
+    ],
+    documents: [
+      { name: 'Aadhaar Card Copy', description: 'Copy of Aadhaar Card linked with PAN', required: true },
+      { name: 'Copy of Lost PAN / FIR', description: 'Copy of lost PAN card or FIR acknowledgement', required: false }
+    ]
+  },
+  'new-pan-foreign-national': {
+    id: 207,
+    category_name: 'PAN Services',
+    category_slug: 'pan-services',
+    name: 'PAN Card for Foreign Nationals (Form 49AA)',
+    slug: 'new-pan-foreign-national',
+    description: 'New PAN allocation for non-citizens, NRIs, and foreign companies.',
+    eligibility: 'Foreign citizens or entities carrying out business in India.',
+    processing_time: '10-20 Working Days',
+    fee: 1020,
+    fields: [
+      { name: 'applicant_name', label: 'Full Name of Foreign Applicant', type: 'text', placeholder: 'Johnathan Doe', required: true },
+      { name: 'country', label: 'Country of Citizenship', type: 'text', placeholder: 'United States', required: true },
+      { name: 'passport_number', label: 'Passport Number', type: 'text', placeholder: 'A12345678', required: true }
+    ],
+    documents: [
+      { name: 'Foreign Passport Copy', description: 'Valid foreign passport with visa stamp', required: true },
+      { name: 'Overseas Bank Statement', description: 'Bank statement or OCI/PIO card copy', required: true }
+    ]
+  },
+  'minor-to-major-pan-update': {
+    id: 208,
+    category_name: 'PAN Services',
+    category_slug: 'pan-services',
+    name: 'Minor to Major PAN Card Update',
+    slug: 'minor-to-major-pan-update',
+    description: 'Update signature and photo on Minor PAN card upon turning 18 years old.',
+    eligibility: 'PAN holders who have recently attained 18 years of age.',
+    processing_time: '7-12 Working Days',
+    fee: 110,
+    fields: [
+      { name: 'existing_pan', label: 'Existing Minor PAN Number', type: 'text', placeholder: 'ABCDE1234F', required: true },
+      { name: 'dob', label: 'Date of Birth (Major Status)', type: 'date', required: true },
+      { name: 'father_name', label: "Father's Full Name", type: 'text', placeholder: 'Subramanian S', required: true }
+    ],
+    documents: [
+      { name: 'Existing Minor PAN Copy', description: 'Copy of Minor PAN card', required: true },
+      { name: 'Aadhaar Card Copy', description: 'Proof of turning 18', required: true },
+      { name: 'Passport Photograph', description: 'Recent photo & signature sample', required: true }
+    ]
+  },
+  'community-caste-certificate': {
+    id: 301,
+    category_name: 'Certificates',
+    category_slug: 'certificate-services',
+    name: 'Community / Caste Certificate Application',
+    slug: 'community-caste-certificate',
+    description: 'Official Revenue Department certificate certifying community status (BC / MBC / SC / ST).',
+    eligibility: 'Resident citizens of Tamil Nadu requiring community proof.',
+    processing_time: '7-12 Working Days',
+    fee: 60,
+    fields: [
+      { name: 'community_category', label: 'Community Category', type: 'select', options: ['BC - Backward Class', 'MBC - Most Backward Class', 'SC - Scheduled Caste', 'ST - Scheduled Tribe'], required: true },
+      { name: 'sub_caste', label: 'Specific Sub-Caste Name', type: 'text', placeholder: 'e.g. Nadar / Agamudayar / Adi Dravidar', required: true },
+      { name: 'father_caste', label: "Father's / Mother's Community", type: 'text', placeholder: 'Parent Community Name', required: true },
+      { name: 'tc_school', label: 'School / College Last Attended', type: 'text', placeholder: 'Government Higher Secondary School', required: true }
+    ],
+    documents: [
+      { name: 'Parent Community Certificate', description: "Copy of Father's or Mother's Community Certificate", required: true },
+      { name: 'School TC / Marksheet', description: 'Transfer Certificate mentioning caste', required: true },
+      { name: 'Smart Ration Card', description: 'Copy of Smart Ration Card', required: true },
+      { name: 'Aadhaar Card Copy', description: 'Copy of Aadhaar Card', required: true }
+    ]
+  },
+  'native-domicile-certificate': {
+    id: 302,
+    category_name: 'Certificates',
+    category_slug: 'certificate-services',
+    name: 'Native / Domicile Certificate Application',
+    slug: 'native-domicile-certificate',
+    description: 'Official proof verifying permanent domicile & native residence status in Tamil Nadu.',
+    eligibility: 'Permanent residents of Tamil Nadu.',
+    processing_time: '7-10 Working Days',
+    fee: 60,
+    fields: [
+      { name: 'years_residence', label: 'Years of Continuous Residence in TN', type: 'number', placeholder: 'e.g. 25', required: true },
+      { name: 'father_native_place', label: 'Ancestral Native Place / District', type: 'text', placeholder: 'Madurai', required: true },
+      { name: 'purpose', label: 'Purpose of Nativity Certificate', type: 'select', options: ['Higher Education Admission (TNEA/NEET)', 'Government Employment', 'Scholarship Scheme', 'Other'], required: true }
+    ],
+    documents: [
+      { name: '5-Year School Study Proof or Birth Certificate', description: 'Study certificates from 1st to 10th/12th std or Birth Certificate', required: true },
+      { name: 'Smart Ration Card / Property Tax', description: 'Address proof for native residence', required: true },
+      { name: 'Aadhaar Card Copy', description: 'Copy of Aadhaar Card', required: true }
+    ]
+  },
+  'no-male-child-certificate': {
+    id: 305,
+    category_name: 'Certificates',
+    category_slug: 'certificate-services',
+    name: 'No Male Child Certificate Application',
+    slug: 'no-male-child-certificate',
+    description: 'Revenue certificate issued to families having only female children for welfare schemes.',
+    eligibility: 'Parents with only female children and no male issue.',
+    processing_time: '7-10 Working Days',
+    fee: 60,
+    fields: [
+      { name: 'female_children_count', label: 'Number of Female Children', type: 'number', placeholder: '2', required: true },
+      { name: 'mother_name', label: "Mother's Full Name", type: 'text', placeholder: 'Lakshmi S', required: true },
+      { name: 'sterilization_status', label: 'Family Welfare Sterilization Done?', type: 'select', options: ['Yes - Certificate Available', 'No / Not Done'], required: true }
+    ],
+    documents: [
+      { name: 'Birth Certificates of Female Children', description: 'Copies of birth certificates of all daughters', required: true },
+      { name: 'Sterilization Certificate / Doctor Report', description: 'Sterilization proof or medical report', required: true },
+      { name: 'Parents Aadhaar & Ration Card', description: 'Parents identity and family card copy', required: true }
+    ]
+  },
+  'solvency-certificate': {
+    id: 307,
+    category_name: 'Certificates',
+    category_slug: 'certificate-services',
+    name: 'Solvency Certificate Application',
+    slug: 'solvency-certificate',
+    description: 'Financial stability certificate issued by Revenue Dept for contractors, tenders & bank guarantees.',
+    eligibility: 'Property owners seeking solvency validation.',
+    processing_time: '15-20 Working Days',
+    fee: 150,
+    fields: [
+      { name: 'property_value', label: 'Estimated Solvency Value in ₹', type: 'number', placeholder: '500000', required: true },
+      { name: 'survey_number', label: 'Property Survey No. & Village', type: 'text', placeholder: 'Survey No 124/2A, Adyar', required: true },
+      { name: 'purpose', label: 'Solvency Purpose', type: 'select', options: ['Government Contract Tender', 'Bank Guarantee', 'Liquor / Excise License', 'Court Bail Guarantee', 'Other'], required: true }
+    ],
+    documents: [
+      { name: 'Property Sale Deed / Title Deed', description: 'Registered property deed document copy', required: true },
+      { name: 'Encumbrance Certificate (EC)', description: 'Latest EC for 13 to 30 years', required: true },
+      { name: 'Engineer Valuation Report', description: 'Property valuation certificate by chartered engineer', required: true },
+      { name: 'Aadhaar & PAN Card Copy', description: 'Identity proof documents', required: true }
+    ]
+  },
+  'unmarried-certificate': {
+    id: 308,
+    category_name: 'Certificates',
+    category_slug: 'certificate-services',
+    name: 'Unmarried / Single Status Certificate',
+    slug: 'unmarried-certificate',
+    description: 'Revenue certificate certifying single status for visa, passport & employment requirements.',
+    eligibility: 'Unmarried citizens requiring official single status proof.',
+    processing_time: '5-7 Working Days',
+    fee: 60,
+    fields: [
+      { name: 'age', label: 'Current Age', type: 'number', placeholder: '26', required: true },
+      { name: 'purpose', label: 'Purpose of Certificate', type: 'select', options: ['Overseas Visa / Employment', 'Defense Forces Recruitment', 'Higher Education Abroad', 'Legal Declaration'], required: true },
+      { name: 'declaration', label: 'I declare that I have not been legally married', type: 'checkbox', required: true }
+    ],
+    documents: [
+      { name: 'Notarized Affidavit', description: 'Single status declaration executed before Notary Public', required: true },
+      { name: 'Passport / Voter ID Copy', description: 'Proof of identity', required: true },
+      { name: 'Aadhaar & Ration Card', description: 'Address and family proof', required: true }
+    ]
+  },
+  'land-subdivision-patta': {
+    id: 405,
+    category_name: 'Land & Revenue',
+    category_slug: 'land-patta-services',
+    name: 'Land Subdivision Patta Application',
+    slug: 'land-subdivision-patta',
+    description: 'Subdivision of land parcel and issuance of separate individual Patta.',
+    eligibility: 'Land owners purchasing a portion of survey land.',
+    processing_time: '30-45 Working Days',
+    fee: 200,
+    fields: [
+      { name: 'existing_patta_no', label: 'Existing Joint Patta Number', type: 'text', placeholder: '1245', required: true },
+      { name: 'survey_no', label: 'Survey Number & Sub Division', type: 'text', placeholder: '89/3B', required: true },
+      { name: 'extent_sqft', label: 'Subdivided Area Extent (Sq.Ft / Cents)', type: 'text', placeholder: '1200 Sq.Ft', required: true },
+      { name: 'taluk_village', label: 'Taluk and Village Name', type: 'text', placeholder: 'Tambaram, Velachery', required: true }
+    ],
+    documents: [
+      { name: 'Registered Sale Deed Document', description: 'Copy of registered deed', required: true },
+      { name: 'Existing Patta Copy', description: 'Copy of joint patta', required: true },
+      { name: 'FMB Field Map Sketch', description: 'Survey sketch copy', required: true },
+      { name: 'Aadhaar Card Copy', description: 'Owner identity proof', required: true }
+    ]
+  },
+  'trade-license-application': {
+    id: 504,
+    category_name: 'Business Services',
+    category_slug: 'business-services',
+    name: 'Municipal Trade License Application',
+    slug: 'trade-license-application',
+    description: 'Local corporation/municipality commercial shop and trade license.',
+    eligibility: 'Business owners operating commercial establishments.',
+    processing_time: '10-15 Working Days',
+    fee: 500,
+    fields: [
+      { name: 'trade_name', label: 'Business / Shop Trade Name', type: 'text', placeholder: 'Sri Krishna Supermarket', required: true },
+      { name: 'trade_category', label: 'Category of Trade', type: 'select', options: ['Grocery / Retail Shop', 'Hotel / Restaurant / Eatery', 'Hardware / Electricals', 'Workshop / Manufacturing', 'IT / Office Establishment'], required: true },
+      { name: 'shop_address', label: 'Commercial Shop Address', type: 'textarea', placeholder: 'No 45, Main Road, Chennai', required: true },
+      { name: 'premises_type', label: 'Premises Ownership', type: 'select', options: ['Rented / Leased Premises', 'Self Owned Property'], required: true }
+    ],
+    documents: [
+      { name: 'Rental Agreement / Property Tax Receipt', description: 'Occupancy proof for commercial shop', required: true },
+      { name: 'Identity & Address Proof of Owner', description: 'Aadhaar & PAN card copy', required: true },
+      { name: 'NOC / Fire Safety Certificate', description: 'No objection certificate if applicable', required: false }
+    ]
+  },
+  'permanent-driving-licence': {
+    id: 602,
+    category_name: 'Driving & Vehicle',
+    category_slug: 'driving-vehicle-services',
+    name: 'Permanent Driving Licence (DL) Slot Booking',
+    slug: 'permanent-driving-licence',
+    description: 'Book RTO driving test appointment for permanent driving licence.',
+    eligibility: 'Holders of valid LLR completed 30 days after issue.',
+    processing_time: '7-15 Working Days',
+    fee: 300,
+    fields: [
+      { name: 'llr_number', label: 'Existing LLR Number', type: 'text', placeholder: 'TN01/LLR/2026/12345', required: true },
+      { name: 'llr_issue_date', label: 'LLR Issue Date', type: 'date', required: true },
+      { name: 'vehicle_class', label: 'Vehicle Class Category', type: 'select', options: ['Motor Cycle With Gear (MCWG)', 'Motor Cycle Without Gear (MCWOG)', 'Light Motor Vehicle - Car (LMV)', 'MCWG + LMV (Two & Four Wheeler)'], required: true },
+      { name: 'rto_office', label: 'Assigned RTO Office Location', type: 'text', placeholder: 'RTO Chennai South (TN-07)', required: true }
+    ],
+    documents: [
+      { name: 'Valid LLR Copy', description: 'Original LLR copy', required: true },
+      { name: 'Aadhaar Card Copy', description: 'Identity and address proof', required: true },
+      { name: 'Medical Fitness Form 1A', description: 'Doctor medical certificate', required: true }
+    ]
+  },
+  'dl-renewal-application': {
+    id: 603,
+    category_name: 'Driving & Vehicle',
+    category_slug: 'driving-vehicle-services',
+    name: 'Driving Licence (DL) Renewal Application',
+    slug: 'dl-renewal-application',
+    description: 'Online renewal assistance for expired driving licence.',
+    eligibility: 'Driving licence holders whose DL is expired or expiring within 1 year.',
+    processing_time: '7-10 Working Days',
+    fee: 250,
+    fields: [
+      { name: 'dl_number', label: 'Existing Driving Licence Number', type: 'text', placeholder: 'TN0120150012345', required: true },
+      { name: 'dl_expiry_date', label: 'DL Expiry Date', type: 'date', required: true },
+      { name: 'blood_group', label: 'Blood Group', type: 'select', options: ['O+ Positive', 'O- Negative', 'A+ Positive', 'A- Negative', 'B+ Positive', 'B- Negative', 'AB+ Positive', 'AB- Negative'], required: true }
+    ],
+    documents: [
+      { name: 'Original Expired DL Copy', description: 'Copy of existing driving licence', required: true },
+      { name: 'Aadhaar Card Copy', description: 'Address and identity proof', required: true },
+      { name: 'Medical Certificate Form 1A', description: 'Medical fitness form (mandatory for age > 40)', required: true }
+    ]
+  },
+  'vehicle-rc-transfer': {
+    id: 604,
+    category_name: 'Driving & Vehicle',
+    category_slug: 'driving-vehicle-services',
+    name: 'Vehicle RC Ownership Transfer Application',
+    slug: 'vehicle-rc-transfer',
+    description: 'Transfer vehicle registration certificate ownership to buyer upon sale.',
+    eligibility: 'Buyers or sellers of secondhand motorized vehicles.',
+    processing_time: '15-20 Working Days',
+    fee: 450,
+    fields: [
+      { name: 'vehicle_reg_no', label: 'Vehicle Registration Number', type: 'text', placeholder: 'TN07AB1234', required: true },
+      { name: 'seller_name', label: 'Seller / Original Owner Name', type: 'text', placeholder: 'Ramesh K', required: true },
+      { name: 'buyer_name', label: 'Buyer / New Owner Name', type: 'text', placeholder: 'Karthik S', required: true },
+      { name: 'transfer_reason', label: 'Ownership Transfer Reason', type: 'select', options: ['Vehicle Sale / Purchase', 'Inheritance / Succession', 'Public Auction Transfer'], required: true }
+    ],
+    documents: [
+      { name: 'Original RC Smart Card', description: 'Original Registration Certificate', required: true },
+      { name: 'Form 29 & Form 30', description: 'Notice & Application for transfer of ownership signed by seller', required: true },
+      { name: 'Valid Insurance & PUC Certificate', description: 'Vehicle insurance and pollution certificate copy', required: true },
+      { name: 'Buyer Aadhaar Card Copy', description: 'New owner address and identity proof', required: true }
+    ]
+  },
+  'ration-smart-card-member-update': {
+    id: 701,
+    category_name: 'Ration Card',
+    category_slug: 'ration-card-services',
+    name: 'Smart Ration Card Family Member Add / Remove',
+    slug: 'ration-smart-card-member-update',
+    description: 'Add newborn baby, spouse after marriage, or remove deceased/separated member.',
+    eligibility: 'Smart Ration Card holders.',
+    processing_time: '7-12 Working Days',
+    fee: 50,
+    fields: [
+      { name: 'ration_card_no', label: 'Smart Ration Card Number', type: 'text', placeholder: '331234567890', required: true },
+      { name: 'action_type', label: 'Member Modification Type', type: 'select', options: ['Add New Family Member (Child / Spouse)', 'Remove Existing Member (Marriage / Separation / Death)', 'Name / Relationship Correction'], required: true },
+      { name: 'member_name', label: 'Full Name of Member to Add / Remove', type: 'text', placeholder: 'Anitha K', required: true },
+      { name: 'relationship', label: 'Relationship with Head of Family', type: 'select', options: ['Spouse (Wife / Husband)', 'Son', 'Daughter', 'Father', 'Mother', 'Daughter-in-law'], required: true }
+    ],
+    documents: [
+      { name: 'Smart Ration Card Copy', description: 'Copy of existing smart card', required: true },
+      { name: 'Birth Certificate / Marriage Certificate', description: 'Proof for adding member', required: true },
+      { name: 'Deletion Certificate / Death Certificate', description: 'Proof for removing member (if applicable)', required: false },
+      { name: 'Aadhaar Card of Member', description: 'Aadhaar copy of member being added', required: true }
+    ]
+  },
+  'ration-family-head-change': {
+    id: 703,
+    category_name: 'Ration Card',
+    category_slug: 'ration-card-services',
+    name: 'Smart Ration Card Head of Family Change',
+    slug: 'ration-family-head-change',
+    description: 'Change head of family due to death of head or family consensus.',
+    eligibility: 'Family members listed on Smart Ration Card.',
+    processing_time: '7-10 Working Days',
+    fee: 50,
+    fields: [
+      { name: 'ration_card_no', label: 'Smart Ration Card Number', type: 'text', placeholder: '331234567890', required: true },
+      { name: 'current_head_name', label: 'Current Head of Family Name', type: 'text', placeholder: 'Subramanian S', required: true },
+      { name: 'new_head_name', label: 'New Head of Family Name', type: 'text', placeholder: 'Karthik Subramanian', required: true },
+      { name: 'reason', label: 'Reason for Change', type: 'select', options: ['Death of Previous Head', 'Old Age / Voluntary Family Decision', 'Family Separation'], required: true }
+    ],
+    documents: [
+      { name: 'Smart Ration Card Copy', description: 'Copy of existing card', required: true },
+      { name: 'Death Certificate of Previous Head', description: 'Mandatory if previous head is deceased', required: false },
+      { name: 'New Head Aadhaar & Photo', description: 'Identity proof and photo of new head', required: true }
+    ]
+  },
+  'ration-address-fps-change': {
+    id: 704,
+    category_name: 'Ration Card',
+    category_slug: 'ration-card-services',
+    name: 'Smart Ration Card Address & Fair Price Shop Transfer',
+    slug: 'ration-address-fps-change',
+    description: 'Transfer ration shop and address within or across districts in Tamil Nadu.',
+    eligibility: 'Ration cardholders relocating residential address.',
+    processing_time: '7-10 Working Days',
+    fee: 50,
+    fields: [
+      { name: 'ration_card_no', label: 'Smart Ration Card Number', type: 'text', placeholder: '331234567890', required: true },
+      { name: 'new_address', label: 'New Residential Address', type: 'textarea', placeholder: 'Door No, Street Name, Area, City', required: true },
+      { name: 'new_fps_code', label: 'Preferred New Fair Price Shop (FPS) Name/Code', type: 'text', placeholder: 'FPS Shop Code No 07AB12', required: false }
+    ],
+    documents: [
+      { name: 'Smart Ration Card Copy', description: 'Copy of existing card', required: true },
+      { name: 'New Address Proof', description: 'Rental Agreement, EB Bill, or Property Tax Receipt', required: true },
+      { name: 'Aadhaar Card Copy', description: 'Aadhaar copy of Head of Family', required: true }
+    ]
+  },
+  'new-voter-registration-form-6': {
+    id: 801,
+    category_name: 'Voter Services',
+    category_slug: 'voter-services',
+    name: 'New Voter ID Registration (Form 6)',
+    slug: 'new-voter-registration-form-6',
+    description: 'Fresh voter enrollment for Indian citizens attaining 18 years of age.',
+    eligibility: 'Indian citizens aged 18 years or above.',
+    processing_time: '15-30 Working Days',
+    fee: 0,
+    fields: [
+      { name: 'assembly_constituency', label: 'Assembly Constituency Name / No.', type: 'text', placeholder: 'Velachery (Constituency No 26)', required: true },
+      { name: 'dob', label: 'Date of Birth', type: 'date', required: true },
+      { name: 'gender', label: 'Gender', type: 'select', options: ['Male', 'Female', 'Third Gender'], required: true },
+      { name: 'relative_name', label: "Father's / Mother's / Husband's Name", type: 'text', placeholder: 'Subramanian S', required: true }
+    ],
+    documents: [
+      { name: 'Age Proof', description: 'Birth Certificate, School TC, Aadhaar, or PAN Card', required: true },
+      { name: 'Residence Proof', description: 'Ration Card, Passport, EB Bill, or Bank Passbook', required: true },
+      { name: 'Passport Photograph', description: 'Recent color passport photograph', required: true }
+    ]
+  },
+  'voter-address-correction-form-8': {
+    id: 802,
+    category_name: 'Voter Services',
+    category_slug: 'voter-services',
+    name: 'Voter ID Address Change & Correction (Form 8)',
+    slug: 'voter-address-correction-form-8',
+    description: 'Correction of name, DOB, address, or constituency transfer in Voter EPIC card.',
+    eligibility: 'Registered voters needing data updates.',
+    processing_time: '10-20 Working Days',
+    fee: 25,
+    fields: [
+      { name: 'epic_no', label: '10-Character Voter EPIC Number', type: 'text', placeholder: 'ABC1234567', required: true },
+      { name: 'correction_type', label: 'Modification Type', type: 'select', options: ['Address Shift (Within or Outside Constituency)', 'Name / DOB Correction', 'Photograph Replacement', 'Replacement EPIC Card'], required: true },
+      { name: 'new_address', label: 'New Address / Corrected Information', type: 'textarea', placeholder: 'Door No, Street, City, Pincode', required: true }
+    ],
+    documents: [
+      { name: 'Voter EPIC Card Copy', description: 'Copy of existing voter ID', required: true },
+      { name: 'Valid New Address Proof', description: 'Aadhaar Card, Passport, or EB Bill', required: true }
+    ]
+  },
+  'voter-aadhaar-linking-form-6b': {
+    id: 803,
+    category_name: 'Voter Services',
+    category_slug: 'voter-services',
+    name: 'Voter ID Aadhaar Linking (Form 6B)',
+    slug: 'voter-aadhaar-linking-form-6b',
+    description: 'Link 12-digit Aadhaar number with Voter EPIC card for authentication.',
+    eligibility: 'All registered voters holding Aadhaar.',
+    processing_time: '3-7 Working Days',
+    fee: 0,
+    fields: [
+      { name: 'epic_no', label: '10-Character Voter EPIC Number', type: 'text', placeholder: 'ABC1234567', required: true },
+      { name: 'aadhaar_number', label: '12-Digit Aadhaar Number', type: 'text', placeholder: '1234 5678 9012', required: true },
+      { name: 'mobile_number', label: 'Linked Mobile Number', type: 'phone', placeholder: '9876543210', required: true }
+    ],
+    documents: [
+      { name: 'Voter EPIC Card Copy', description: 'Copy of voter card', required: true },
+      { name: 'Aadhaar Card Copy', description: 'Copy of Aadhaar card', required: true }
+    ]
+  },
+  'epic-digital-download': {
+    id: 804,
+    category_name: 'Voter Services',
+    category_slug: 'voter-services',
+    name: 'Download Digital e-EPIC Voter Card',
+    slug: 'epic-digital-download',
+    description: 'Download official PDF copy of Voter ID card.',
+    eligibility: 'Voters registered with unique mobile number on ECI portal.',
+    processing_time: 'Instant / 1 Hour',
+    fee: 25,
+    fields: [
+      { name: 'epic_no', label: '10-Character Voter EPIC Number', type: 'text', placeholder: 'ABC1234567', required: true },
+      { name: 'mobile_number', label: 'Registered Mobile Number', type: 'phone', placeholder: '9876543210', required: true }
+    ],
+    documents: []
+  },
+  'replacement-voter-card': {
+    id: 805,
+    category_name: 'Voter Services',
+    category_slug: 'voter-services',
+    name: 'Order Replacement PVC Voter Card',
+    slug: 'replacement-voter-card',
+    description: 'Reissue physical plastic Voter ID card for lost or damaged EPIC card.',
+    eligibility: 'Registered voters with lost or damaged Voter card.',
+    processing_time: '10-15 Working Days',
+    fee: 50,
+    fields: [
+      { name: 'epic_no', label: '10-Character Voter EPIC Number', type: 'text', placeholder: 'ABC1234567', required: true },
+      { name: 'reason', label: 'Reason for Replacement', type: 'select', options: ['Lost Voter ID Card', 'Damaged / Mutilated Card', 'Faded Photograph / Old Format'], required: true },
+      { name: 'delivery_address', label: 'Delivery Address', type: 'textarea', placeholder: 'Door No, Street Name, Area, City', required: true }
+    ],
+    documents: [
+      { name: 'Aadhaar Card Copy', description: 'Copy of Aadhaar card', required: true },
+      { name: 'FIR Copy / Damaged Card', description: 'Police acknowledgement for lost card or damaged card copy', required: false }
+    ]
+  },
+  'nri-voter-registration-form-6a': {
+    id: 806,
+    category_name: 'Voter Services',
+    category_slug: 'voter-services',
+    name: 'Overseas NRI Voter Registration (Form 6A)',
+    slug: 'nri-voter-registration-form-6a',
+    description: 'Voter registration for non-resident Indian citizens residing abroad.',
+    eligibility: 'Indian passport holders living abroad.',
+    processing_time: '15-30 Working Days',
+    fee: 0,
+    fields: [
+      { name: 'passport_number', label: 'Indian Passport Number', type: 'text', placeholder: 'Z1234567', required: true },
+      { name: 'overseas_address', label: 'Overseas Address Abroad', type: 'textarea', placeholder: 'Building No, Street, City, Country', required: true },
+      { name: 'native_constituency', label: 'Native Assembly Constituency in India', type: 'text', placeholder: 'Mylapore', required: true }
+    ],
+    documents: [
+      { name: 'Indian Passport Copy', description: 'Passport bio pages with valid visa stamp', required: true },
+      { name: 'Native Indian Residence Proof', description: 'Proof of address in India', required: true }
+    ]
+  },
+  'electoral-roll-search': {
+    id: 807,
+    category_name: 'Voter Services',
+    category_slug: 'voter-services',
+    name: 'Electoral Roll Name Search & Verification',
+    slug: 'electoral-roll-search',
+    description: 'Verify voter name inclusion in current voter list and find polling station details.',
+    eligibility: 'All citizens.',
+    processing_time: 'Instant',
+    fee: 0,
+    fields: [
+      { name: 'voter_name', label: 'Full Name of Voter', type: 'text', placeholder: 'Karthik Subramanian', required: true },
+      { name: 'district', label: 'District Name', type: 'text', placeholder: 'Chennai', required: true },
+      { name: 'relative_name', label: "Father's / Husband's Name", type: 'text', placeholder: 'Subramanian S', required: true }
+    ],
+    documents: []
+  },
+  'voter-deletion-objection-form-7': {
+    id: 808,
+    category_name: 'Voter Services',
+    category_slug: 'voter-services',
+    name: 'Voter Deletion & Objection (Form 7)',
+    slug: 'voter-deletion-objection-form-7',
+    description: 'Application for deletion of deceased or shifted voter name from electoral roll.',
+    eligibility: 'Registered voters in the constituency.',
+    processing_time: '15-25 Working Days',
+    fee: 0,
+    fields: [
+      { name: 'objector_epic', label: 'Objector EPIC Number', type: 'text', placeholder: 'ABC1234567', required: true },
+      { name: 'target_epic', label: 'EPIC Number to be Deleted / Shifted', type: 'text', placeholder: 'XYZ9876543', required: true },
+      { name: 'reason', label: 'Deletion Reason', type: 'select', options: ['Deceased Person', 'Permanently Shifted Residence', 'Duplicate Entry'], required: true }
+    ],
+    documents: [
+      { name: 'Death Certificate / Shifting Proof', description: 'Supporting document for deletion', required: true }
+    ]
+  },
+  'electricity-eb-name-transfer': {
+    id: 901,
+    category_name: 'Utility Services',
+    category_slug: 'utility-services',
+    name: 'TNEB Electricity Bill Name Transfer',
+    slug: 'electricity-eb-name-transfer',
+    description: 'Transfer TNEB service connection name to new property purchaser or legal heir.',
+    eligibility: 'New property owners or legal heirs.',
+    processing_time: '15-20 Working Days',
+    fee: 300,
+    fields: [
+      { name: 'consumer_number', label: 'TNEB Consumer / Service Number', type: 'text', placeholder: '07-123-456-789', required: true },
+      { name: 'previous_owner', label: 'Previous EB Account Owner Name', type: 'text', placeholder: 'Ramesh K', required: true },
+      { name: 'new_owner', label: 'New EB Account Owner Name', type: 'text', placeholder: 'Karthik S', required: true },
+      { name: 'transfer_type', label: 'Name Transfer Category', type: 'select', options: ['Property Purchase / Sale Deed', 'Legal Heir Transfer (Death of Owner)', 'Gift Deed / Settlement'], required: true }
+    ],
+    documents: [
+      { name: 'Sale Deed / Property Tax Receipt', description: 'Property ownership proof document', required: true },
+      { name: 'Latest Paid EB Bill Copy', description: 'Copy of recent electricity bill paid receipt', required: true },
+      { name: 'Previous Owner NOC / Death Certificate', description: 'NOC from previous owner or death certificate', required: true }
+    ]
+  },
+  'new-eb-electricity-connection': {
+    id: 902,
+    category_name: 'Utility Services',
+    category_slug: 'utility-services',
+    name: 'New TNEB Electricity Connection Booking',
+    slug: 'new-eb-electricity-connection',
+    description: 'Apply for fresh domestic, commercial, or industrial TNEB electricity connection.',
+    eligibility: 'Property owners or authorized tenants.',
+    processing_time: '15-30 Working Days',
+    fee: 500,
+    fields: [
+      { name: 'tariff_category', label: 'Tariff Category Required', type: 'select', options: ['Domestic (1-Phase / 3-Phase)', 'Commercial / Shop', 'Industrial', 'Agricultural Power'], required: true },
+      { name: 'load_kw', label: 'Required Connected Load in kW', type: 'number', placeholder: '5', required: true },
+      { name: 'property_address', label: 'Premises Installation Address', type: 'textarea', placeholder: 'Door No, Street Name, City', required: true }
+    ],
+    documents: [
+      { name: 'Property Ownership / Patta Copy', description: 'Sale deed, Patta, or Rent Deed', required: true },
+      { name: 'Building Plan Approval / Tax Receipt', description: 'Local body approval or property tax receipt', required: true },
+      { name: 'Aadhaar Card Copy', description: 'Applicant identity proof', required: true }
+    ]
+  },
+  'property-tax-assessment': {
+    id: 903,
+    category_name: 'Utility Services',
+    category_slug: 'utility-services',
+    name: 'Property Tax Assessment & Name Transfer',
+    slug: 'property-tax-assessment',
+    description: 'New property tax assessment, door number allotment, and owner name transfer.',
+    eligibility: 'Property owners in Municipal Corporations / Town Panchayats.',
+    processing_time: '15-30 Working Days',
+    fee: 250,
+    fields: [
+      { name: 'property_type', label: 'Property Type', type: 'select', options: ['Residential Flat / House', 'Vacant Land', 'Commercial Building / Shop'], required: true },
+      { name: 'plinth_area_sqft', label: 'Total Plinth Area in Sq.Ft', type: 'number', placeholder: '1250', required: true },
+      { name: 'survey_door_no', label: 'Survey No. / Door No.', type: 'text', placeholder: 'Door 14, Survey 45/2', required: true }
+    ],
+    documents: [
+      { name: 'Registered Sale Deed / Patta Copy', description: 'Title deed copy', required: true },
+      { name: 'Approved Building Plan', description: 'Local corporation approved plan', required: true },
+      { name: 'Aadhaar Card Copy', description: 'Owner identity proof', required: true }
+    ]
+  },
+  'police-clearance-certificate-pcc': {
+    id: 1004,
+    category_name: 'Passport Services',
+    category_slug: 'passport-services',
+    name: 'Police Clearance Certificate (PCC) Passport',
+    slug: 'police-clearance-certificate-pcc',
+    description: 'PCC application assistance for emigration, employment, and foreign residence visas.',
+    eligibility: 'Valid Indian Passport holders.',
+    processing_time: '7-14 Working Days',
+    fee: 500,
+    fields: [
+      { name: 'passport_number', label: 'Valid Indian Passport Number', type: 'text', placeholder: 'Z1234567', required: true },
+      { name: 'passport_issue_date', label: 'Passport Issue Date', type: 'date', required: true },
+      { name: 'country_applying_for', label: 'Country Requiring PCC', type: 'select', options: ['United States (USA)', 'Canada', 'United Kingdom (UK)', 'Australia', 'United Arab Emirates (UAE)', 'Singapore', 'Other'], required: true }
+    ],
+    documents: [
+      { name: 'Indian Passport Original & Copy', description: 'Copy of first and last pages of passport', required: true },
+      { name: 'Present Address Proof', description: 'Aadhaar Card, Election Card, or Bank Statement', required: true },
+      { name: 'Visa / Employment Offer Letter', description: 'Copy of visa appointment or job offer', required: true }
+    ]
   }
 };
 
@@ -2041,23 +2713,51 @@ export function getServiceDefinition(param, lang = 'en') {
     if (DEFAULT_SERVICES_MAP[p]) {
       srv = DEFAULT_SERVICES_MAP[p];
     } else {
-      const altKey = Object.keys(DEFAULT_SERVICES_MAP).find(key => key.includes(p) || p.includes(key));
-      if (altKey) {
-        srv = DEFAULT_SERVICES_MAP[altKey];
+      // 1. Try by numeric ID match
+      const idMatch = Object.values(DEFAULT_SERVICES_MAP).find(s => String(s.id) === p);
+      if (idMatch) {
+        srv = idMatch;
       } else {
-        srv = {
-          id: 999,
-          category_name: 'Digital E-Service',
-          category_slug: 'general-services',
-          name: p.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
-          slug: p,
-          description: 'Official digital e-governance service application facilitation desk online.',
-          eligibility: 'Resident citizens holding valid identity and address proof documents.',
-          processing_time: '3-7 Working Days',
-          fee: 60,
-          fields: [],
-          documents: []
-        };
+        // 2. Try by normalized slug string match
+        const normP = p.replace(/[^a-z0-9]/g, '');
+        const altKey = Object.keys(DEFAULT_SERVICES_MAP).find(key => {
+          const normKey = key.replace(/[^a-z0-9]/g, '');
+          return normKey === normP || normKey.includes(normP) || normP.includes(normKey);
+        });
+
+        if (altKey) {
+          srv = DEFAULT_SERVICES_MAP[altKey];
+        } else {
+          // 3. Fallback to complete standard dynamic form for unknown services
+          srv = {
+            id: 999,
+            category_name: 'Digital E-Service',
+            category_slug: 'general-services',
+            name: p.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
+            slug: p,
+            description: 'Official digital e-governance service application facilitation desk online.',
+            eligibility: 'Resident citizens holding valid identity and address proof documents.',
+            processing_time: '3-7 Working Days',
+            fee: 60,
+            fields: [
+              { name: 'full_name', label: 'Full Name of Applicant', type: 'text', placeholder: 'Karthik Subramanian', required: true },
+              { name: 'dob', label: 'Date of Birth', type: 'date', required: true },
+              { name: 'gender', label: 'Gender', type: 'select', options: ['Male', 'Female', 'Transgender'], required: true },
+              { name: 'guardian_name', label: 'Father / Husband / Guardian Name', type: 'text', placeholder: 'Subramanian S', required: true },
+              { name: 'mobile_number', label: 'Mobile Number', type: 'phone', placeholder: '9876543210', required: true },
+              { name: 'email', label: 'Email Address', type: 'email', placeholder: 'user@example.com', required: false },
+              { name: 'address', label: 'Residential Address', type: 'textarea', placeholder: 'Door No, Street Name, Village/City', required: true },
+              { name: 'district', label: 'District', type: 'text', placeholder: 'Chennai', required: true },
+              { name: 'state', label: 'State', type: 'text', placeholder: 'Tamil Nadu', required: true },
+              { name: 'pincode', label: '6-Digit Pincode', type: 'text', placeholder: '600001', required: true },
+              { name: 'service_remarks', label: 'Specific Service Application Details / Remarks', type: 'textarea', placeholder: 'Enter specific details required for this application', required: false }
+            ],
+            documents: [
+              { name: 'Identity Proof', description: 'Aadhaar Card, Voter ID, PAN Card, or Passport', required: true },
+              { name: 'Address Proof', description: 'Smart Ration Card, Electricity Bill, or Bank Passbook', required: true }
+            ]
+          };
+        }
       }
     }
   }

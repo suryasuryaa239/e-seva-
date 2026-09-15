@@ -385,6 +385,9 @@ export default function AdminDashboard() {
     description: '',
     fee: 60,
     processing_time: '2-3 Business Days',
+    image_url_input: '',
+    image_file: null,
+    image_preview: '',
     documents: ['Aadhaar Card Copy', 'Passport Size Photo'],
     newDocInput: '',
     fields: [
@@ -415,23 +418,28 @@ export default function AdminDashboard() {
 
     setCreatingService(true);
     try {
+      const formData = new FormData();
+      formData.append('name', newServiceForm.name.trim());
+      if (!newServiceForm.is_custom_category && newServiceForm.category_id) {
+        formData.append('category_id', newServiceForm.category_id);
+      }
+      formData.append('category_name', finalCategoryName);
+      formData.append('description', newServiceForm.description);
+      formData.append('fee', Number(newServiceForm.fee) || 60);
+      formData.append('processing_time', newServiceForm.processing_time);
+      formData.append('image_url_input', newServiceForm.image_url_input || '');
+      formData.append('documents', JSON.stringify(newServiceForm.documents));
+      formData.append('fields', JSON.stringify(newServiceForm.fields));
+      if (newServiceForm.image_file) {
+        formData.append('image', newServiceForm.image_file);
+      }
+
       const res = await fetch('/api/admin/services', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
           Authorization: `Bearer ${adminToken}`
         },
-        body: JSON.stringify({
-          name: newServiceForm.name.trim(),
-          category_id: newServiceForm.is_custom_category ? null : newServiceForm.category_id,
-          category_name: finalCategoryName,
-          description: newServiceForm.description,
-          fee: Number(newServiceForm.fee) || 60,
-          total_fee: Number(newServiceForm.fee) || 60,
-          processing_time: newServiceForm.processing_time,
-          documents: newServiceForm.documents,
-          fields: newServiceForm.fields
-        })
+        body: formData
       });
 
       const data = await res.json();
@@ -447,6 +455,9 @@ export default function AdminDashboard() {
           description: '',
           fee: 60,
           processing_time: '2-3 Business Days',
+          image_url_input: '',
+          image_file: null,
+          image_preview: '',
           documents: ['Aadhaar Card Copy', 'Passport Size Photo'],
           newDocInput: '',
           fields: [
@@ -495,6 +506,9 @@ export default function AdminDashboard() {
       fee: srv.total_fee || srv.govt_fee || srv.fee || 60,
       processing_time: srv.processing_time || '2-3 Business Days',
       status: srv.status || (srv.is_active !== false ? 'Active' : 'Inactive'),
+      image_url_input: srv.image_url || '',
+      image_file: null,
+      image_preview: srv.image_url || '',
       documents: docs,
       newDocInput: '',
       fields: fields,
@@ -513,24 +527,27 @@ export default function AdminDashboard() {
 
     setSavingEditService(true);
     try {
+      const formData = new FormData();
+      formData.append('name', editingServiceForm.name.trim());
+      formData.append('category_name', editingServiceForm.category_name);
+      formData.append('description', editingServiceForm.description);
+      formData.append('fee', Number(editingServiceForm.fee) || 60);
+      formData.append('processing_time', editingServiceForm.processing_time);
+      formData.append('status', editingServiceForm.status);
+      formData.append('is_active', editingServiceForm.status === 'Active');
+      formData.append('image_url_input', editingServiceForm.image_url_input || '');
+      formData.append('documents', JSON.stringify(editingServiceForm.documents));
+      formData.append('fields', JSON.stringify(editingServiceForm.fields));
+      if (editingServiceForm.image_file) {
+        formData.append('image', editingServiceForm.image_file);
+      }
+
       const res = await fetch(`/api/admin/services/${editingServiceForm.id}`, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json',
           Authorization: `Bearer ${adminToken}`
         },
-        body: JSON.stringify({
-          name: editingServiceForm.name.trim(),
-          category_name: editingServiceForm.category_name,
-          description: editingServiceForm.description,
-          fee: Number(editingServiceForm.fee) || 60,
-          total_fee: Number(editingServiceForm.fee) || 60,
-          processing_time: editingServiceForm.processing_time,
-          status: editingServiceForm.status,
-          is_active: editingServiceForm.status === 'Active',
-          documents: editingServiceForm.documents,
-          fields: editingServiceForm.fields
-        })
+        body: formData
       });
 
       const data = await res.json();
@@ -2080,8 +2097,12 @@ export default function AdminDashboard() {
                         <tr key={srv.id} className="hover:bg-slate-50/80 transition-colors">
                           <td className="py-4 px-4">
                             <div className="flex items-center space-x-3">
-                              <div className="w-9 h-9 rounded-xl bg-orange-500/10 text-orange-600 font-black flex items-center justify-center text-sm shadow-sm">
-                                <Grid className="w-4 h-4" />
+                              <div className="w-10 h-10 rounded-xl bg-orange-500/10 text-orange-600 font-black flex items-center justify-center text-sm shadow-sm overflow-hidden shrink-0 border border-slate-200">
+                                {srv.image_url ? (
+                                  <img src={srv.image_url} alt={srv.name} className="w-full h-full object-cover" />
+                                ) : (
+                                  <Grid className="w-4 h-4" />
+                                )}
                               </div>
                               <div>
                                 <div className="font-extrabold text-slate-900 text-sm">{srv.name}</div>
@@ -5530,6 +5551,73 @@ export default function AdminDashboard() {
                     className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl p-3 outline-none focus:border-orange-500 font-medium"
                   />
                 </div>
+
+                {/* Service Image / Banner Option */}
+                <div className="space-y-3 pt-1 border-t border-slate-100">
+                  <div className="flex items-center justify-between">
+                    <label className="font-bold text-slate-900 flex items-center space-x-1.5">
+                      <ImageIcon className="w-4 h-4 text-orange-500" />
+                      <span>Service Banner Image / Icon (Optional)</span>
+                    </label>
+                    <span className="text-[10px] text-slate-400 font-mono">Upload File or Provide URL</span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <span className="text-[11px] font-bold text-slate-600 block">1. Upload Image File</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file) {
+                            const previewUrl = URL.createObjectURL(file);
+                            setNewServiceForm(prev => ({
+                              ...prev,
+                              image_file: file,
+                              image_preview: previewUrl
+                            }));
+                          }
+                        }}
+                        className="w-full bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded-xl px-3 py-2 outline-none file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-[#0b192c] file:text-white hover:file:bg-orange-600 cursor-pointer"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <span className="text-[11px] font-bold text-slate-600 block">2. Or Paste Image URL</span>
+                      <input
+                        type="url"
+                        placeholder="https://images.unsplash.com/photo-..."
+                        value={newServiceForm.image_url_input || ''}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setNewServiceForm(prev => ({
+                            ...prev,
+                            image_url_input: val,
+                            image_preview: val || (prev.image_file ? URL.createObjectURL(prev.image_file) : '')
+                          }));
+                        }}
+                        className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3.5 py-2.5 outline-none focus:border-orange-500 font-medium"
+                      />
+                    </div>
+                  </div>
+
+                  {newServiceForm.image_preview && (
+                    <div className="relative w-full h-28 bg-slate-100 rounded-2xl border border-slate-200 overflow-hidden group">
+                      <img src={newServiceForm.image_preview} alt="Service Banner Preview" className="w-full h-full object-cover" />
+                      <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <button
+                          type="button"
+                          onClick={() => setNewServiceForm(prev => ({ ...prev, image_file: null, image_url_input: '', image_preview: '' }))}
+                          className="px-3 py-1.5 bg-rose-600 text-white rounded-xl text-xs font-bold shadow-md hover:bg-rose-700 transition-colors flex items-center space-x-1 cursor-pointer"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                          <span>Remove Image</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Required Documents */}
@@ -5786,6 +5874,73 @@ export default function AdminDashboard() {
                     onChange={(e) => setEditingServiceForm({ ...editingServiceForm, description: e.target.value })}
                     className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl p-3 outline-none focus:border-amber-500 font-medium"
                   />
+                </div>
+
+                {/* Service Image / Banner Option */}
+                <div className="space-y-3 pt-1 border-t border-slate-100">
+                  <div className="flex items-center justify-between">
+                    <label className="font-bold text-slate-900 flex items-center space-x-1.5">
+                      <ImageIcon className="w-4 h-4 text-amber-600" />
+                      <span>Service Banner Image / Icon (Optional)</span>
+                    </label>
+                    <span className="text-[10px] text-slate-400 font-mono">Upload File or Provide URL</span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <span className="text-[11px] font-bold text-slate-600 block">1. Upload Image File</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file) {
+                            const previewUrl = URL.createObjectURL(file);
+                            setEditingServiceForm(prev => ({
+                              ...prev,
+                              image_file: file,
+                              image_preview: previewUrl
+                            }));
+                          }
+                        }}
+                        className="w-full bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded-xl px-3 py-2 outline-none file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-[#0b192c] file:text-white hover:file:bg-amber-600 cursor-pointer"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <span className="text-[11px] font-bold text-slate-600 block">2. Or Paste Image URL</span>
+                      <input
+                        type="url"
+                        placeholder="https://images.unsplash.com/photo-..."
+                        value={editingServiceForm.image_url_input || ''}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setEditingServiceForm(prev => ({
+                            ...prev,
+                            image_url_input: val,
+                            image_preview: val || (prev.image_file ? URL.createObjectURL(prev.image_file) : '')
+                          }));
+                        }}
+                        className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3.5 py-2.5 outline-none focus:border-amber-500 font-medium"
+                      />
+                    </div>
+                  </div>
+
+                  {editingServiceForm.image_preview && (
+                    <div className="relative w-full h-28 bg-slate-100 rounded-2xl border border-slate-200 overflow-hidden group">
+                      <img src={editingServiceForm.image_preview} alt="Service Banner Preview" className="w-full h-full object-cover" />
+                      <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <button
+                          type="button"
+                          onClick={() => setEditingServiceForm(prev => ({ ...prev, image_file: null, image_url_input: '', image_preview: '' }))}
+                          className="px-3 py-1.5 bg-rose-600 text-white rounded-xl text-xs font-bold shadow-md hover:bg-rose-700 transition-colors flex items-center space-x-1 cursor-pointer"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                          <span>Remove Image</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
