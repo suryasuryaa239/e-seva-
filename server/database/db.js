@@ -36,8 +36,10 @@ class TiDBSupportedDatabase {
   async init() {
     this.data = { ...initialTables };
     try {
-      if (fs.existsSync(DB_FILE)) {
-        const raw = fs.readFileSync(DB_FILE, 'utf8');
+      const tmpFile = path.join('/tmp', 'db_data.json');
+      const targetFile = (process.env.VERCEL && fs.existsSync(tmpFile)) ? tmpFile : DB_FILE;
+      if (fs.existsSync(targetFile)) {
+        const raw = fs.readFileSync(targetFile, 'utf8');
         this.data = { ...initialTables, ...JSON.parse(raw) };
       }
     } catch (err) {
