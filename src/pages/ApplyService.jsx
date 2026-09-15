@@ -4,10 +4,11 @@ import {
   ShieldAlert, FileText, Upload, CheckCircle2, ArrowRight, ArrowLeft,
   AlertCircle, Lock, Info, Save, Edit3, Check, FileCheck, UserCheck, Clock, Download,
   Phone, Mail, HelpCircle, Shield, Sparkles, Building, CreditCard, QrCode, Building2, Wallet,
-  Copy, Printer, ExternalLink, User, Camera, Eye, X, Maximize2
+  Copy, Printer, ExternalLink, User, Camera, Eye, X, Maximize2, ShieldCheck
 } from 'lucide-react';
 import Breadcrumbs from '../components/Breadcrumbs';
 import CameraCaptureModal from '../components/CameraCaptureModal';
+import ReceiptModal from '../components/ReceiptModal';
 import { getServiceDefinition, DEFAULT_SERVICES_MAP, getLocalizedService } from '../data/servicesCatalogData';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -18,15 +19,34 @@ export default function ApplyService() {
   const { slug, serviceId } = useParams();
   const serviceParam = slug || serviceId;
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const draftIdParam = searchParams.get('draftId');
+  const stepParam = searchParams.get('step');
 
   const [service, setService] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Wizard Step State (1: Details, 2: Documents, 3: Review, 4: Payment, 5: Success/Submitted)
-  const [currentStep, setCurrentStep] = useState(1);
+  // Wizard Step State with URL searchParam and SessionStorage persistence (1: Details, 2: Documents, 3: Review, 4: Payment, 5: Success)
+  const savedStep = serviceParam ? sessionStorage.getItem(`eseva_step_${serviceParam}`) : null;
+  const initialStep = stepParam ? parseInt(stepParam, 10) : (savedStep ? parseInt(savedStep, 10) : 1);
+  const [currentStep, setCurrentStep] = useState(!isNaN(initialStep) && initialStep >= 1 && initialStep <= 5 ? initialStep : 1);
+
+  // Central Step Changer to ensure URL and SessionStorage stay in sync on refresh
+  const changeStep = (nextStep) => {
+    const validStep = Math.min(Math.max(nextStep, 1), 5);
+    setCurrentStep(validStep);
+    if (serviceParam) {
+      sessionStorage.setItem(`eseva_step_${serviceParam}`, validStep);
+    }
+    setSearchParams(prev => {
+      const nextParams = new URLSearchParams(prev);
+      nextParams.set('step', validStep);
+      return nextParams;
+    }, { replace: true });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const [paymentMethod, setPaymentMethod] = useState('upi');
 
   // Application Draft Reference
@@ -49,12 +69,35 @@ export default function ApplyService() {
 
   const [fieldValues, setFieldValues] = useState({});
   const [files, setFiles] = useState({});
+
+  // Form Data Session Storage Auto-Cache for seamless browser reloads
+  useEffect(() => {
+    if (!serviceParam) return;
+    try {
+      const cached = sessionStorage.getItem(`eseva_form_${serviceParam}`);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed.applicantInfo) setApplicantInfo(prev => ({ ...prev, ...parsed.applicantInfo }));
+        if (parsed.fieldValues) setFieldValues(prev => ({ ...prev, ...parsed.fieldValues }));
+      }
+    } catch (e) {}
+  }, [serviceParam]);
+
+  useEffect(() => {
+    if (!serviceParam) return;
+    try {
+      sessionStorage.setItem(`eseva_form_${serviceParam}`, JSON.stringify({ applicantInfo, fieldValues }));
+    } catch (e) {}
+  }, [applicantInfo, fieldValues, serviceParam]);
   
   // Camera Capture Modal State
   const [cameraModalOpen, setCameraModalOpen] = useState(false);
   const [activeCameraDoc, setActiveCameraDoc] = useState(null);
+  const [activeCameraMaxMB, setActiveCameraMaxMB] = useState(5);
   // Document Preview Modal State
   const [previewModalDoc, setPreviewModalDoc] = useState(null);
+  // Receipt Preview & Print Modal State
+  const [showReceiptModal, setShowReceiptModal] = useState(false);
   
   // Validation Errors State
   const [errors, setErrors] = useState({});
@@ -126,11 +169,11 @@ export default function ApplyService() {
 
         setDraftId(data.id);
 
-        // 1. Restore Saved Wizard Step
-        if (data.current_step) {
+        // 1. Restore Saved Wizard Step if not explicitly set in URL
+        if (data.current_step && !stepParam) {
           const stepNum = parseInt(data.current_step, 10);
           if (!isNaN(stepNum) && stepNum >= 1 && stepNum <= 4) {
-            setCurrentStep(stepNum);
+            changeStep(stepNum);
           }
         }
 
@@ -204,16 +247,9 @@ export default function ApplyService() {
               restoredApplicantInfo[normKey] = val;
             }
 
-            // Always store under rawKey, lowerKey, label, and fieldName so all custom inputs find their value
-            restoredFields[rawKey] = val;
-            if (fv.field_label) restoredFields[fv.field_label] = val;
-            if (fv.field_name) restoredFields[fv.field_name] = val;
-            if (fv.field_id && fieldIdToNameMap[fv.field_id]) {
-              restoredFields[fieldIdToNameMap[fv.field_id]] = val;
-            }
-            if (normKey) {
-              restoredFields[normKey] = val;
-            }
+            // Store under primary field name/label
+            const primaryKey = fv.field_name || fv.field_label || rawKey;
+            restoredFields[primaryKey] = val;
           });
 
           if (Object.keys(restoredApplicantInfo).length > 0) {
@@ -222,6 +258,37 @@ export default function ApplyService() {
 
           if (Object.keys(restoredFields).length > 0) {
             setFieldValues(prev => ({ ...prev, ...restoredFields }));
+          }
+        }
+
+        // 4. Restore Uploaded Draft Documents
+        if (Array.isArray(data.documents) && data.documents.length > 0) {
+          const restoredDocs = {};
+          const serviceDocNames = service && Array.isArray(service.documents) 
+            ? service.documents.map(d => d.document_name || d.name) 
+            : [];
+
+          data.documents.forEach(doc => {
+            const rawName = doc.document_name;
+            if (!rawName) return;
+
+            // Normalize match with service document name list if available
+            const matchedName = serviceDocNames.find(sdName => {
+              const normSd = sdName.toLowerCase().replace(/[^a-z0-9]+/g, '');
+              const normRaw = rawName.toLowerCase().replace(/[^a-z0-9]+/g, '');
+              return normSd === normRaw || normSd.includes(normRaw) || normRaw.includes(normSd);
+            }) || rawName;
+
+            restoredDocs[matchedName] = {
+              name: doc.original_filename || doc.document_name || 'Uploaded Document',
+              size: doc.file_size || 0,
+              url: doc.file_path,
+              isExisting: true
+            };
+          });
+
+          if (Object.keys(restoredDocs).length > 0) {
+            setFiles(prev => ({ ...prev, ...restoredDocs }));
           }
         }
       } catch (err) {
@@ -451,6 +518,17 @@ export default function ApplyService() {
       formData.append('current_step', currentStep || 1);
       formData.append('field_values', JSON.stringify({ ...applicantInfo, ...fieldValues }));
 
+      // Attach file uploads to draft if any
+      const docMetadataMap = {};
+      Object.entries(files).forEach(([docName, fileObj]) => {
+        if (fileObj && fileObj instanceof File) {
+          const safeKey = `doc_${docName.toLowerCase().replace(/[^a-z0-9]+/g, '_')}`;
+          formData.append(safeKey, fileObj);
+          docMetadataMap[safeKey] = docName;
+        }
+      });
+      formData.append('doc_metadata', JSON.stringify(docMetadataMap));
+
       const token = localStorage.getItem('token') || localStorage.getItem('eseva_user_token');
       const headers = {};
       if (token && token !== 'null' && token !== 'undefined') {
@@ -500,12 +578,15 @@ export default function ApplyService() {
       formData.append('field_values', JSON.stringify({ ...applicantInfo, ...fieldValues }));
 
       // Attach file uploads
+      const docMetadataMap = {};
       Object.entries(files).forEach(([docName, fileObj]) => {
-        if (fileObj) {
+        if (fileObj && fileObj instanceof File) {
           const safeKey = `doc_${docName.toLowerCase().replace(/[^a-z0-9]+/g, '_')}`;
           formData.append(safeKey, fileObj);
+          docMetadataMap[safeKey] = docName;
         }
       });
+      formData.append('doc_metadata', JSON.stringify(docMetadataMap));
 
       const token = localStorage.getItem('token');
       const headers = {};
@@ -744,422 +825,202 @@ export default function ApplyService() {
           </div>
         )}
 
-        {/* MAIN APPLICATION TWO-COLUMN LAYOUT */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-          
-          {/* LEFT / MAIN AREA (2 COLS) */}
-          <div className="lg:col-span-2 space-y-8">
+        {/* MAIN APPLICATION TWO-COLUMN LAYOUT (STEPS 1 TO 4) */}
+        {currentStep < 5 && (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
             
-            {/* STEP 01: APPLICANT DETAILS & CUSTOM FIELDS */}
-            {currentStep === 1 && (
-              <div className="bg-white rounded-3xl p-8 border border-slate-200/90 shadow-sm space-y-6">
-                
-                <div className="border-b pb-4 border-slate-100 flex items-center justify-between">
-                  <h3 className="font-heading font-extrabold text-lg text-slate-900 flex items-center gap-2">
-                    <UserCheck className="w-5 h-5 text-orange-500" />
-                    <span>{t.applicantInformation}</span>
-                  </h3>
-                  <span className="text-xs text-slate-400 font-bold">* {t.requiredFieldsNotice}</span>
-                </div>
-
-                {/* PRIMARY APPLICANT CONTACT & IDENTIFICATION (FOR TRACKING & NOTIFICATIONS) */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <div>
-                    <label className="block text-xs font-extrabold text-slate-700 mb-1.5">
-                      {t.fullName || t.fullNameLabel || (lang === 'ta' ? 'விண்ணப்பதாரர் பெயர்' : 'Full Name')} <span className="text-rose-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="user_name"
-                      placeholder={lang === 'ta' ? 'எ.கா. கார்த்திக் சுப்பிரமணியன்' : 'e.g. Karthik Subramanian'}
-                      value={applicantInfo.user_name}
-                      onChange={handleApplicantChange}
-                      className={`w-full px-4 py-3 bg-slate-50 border ${errors.user_name ? 'border-rose-500 bg-rose-50/50' : 'border-slate-200'} rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-[#0b192c] focus:bg-white transition-all`}
-                    />
-                    {errors.user_name && <p className="text-[11px] text-rose-600 font-bold mt-1">{errors.user_name}</p>}
+            {/* LEFT / MAIN AREA (2 COLS) */}
+            <div className="lg:col-span-2 space-y-8">
+              
+              {/* STEP 01: APPLICANT DETAILS & CUSTOM FIELDS */}
+              {currentStep === 1 && (
+                <div className="bg-white rounded-3xl p-8 border border-slate-200/90 shadow-sm space-y-6">
+                  
+                  <div className="border-b pb-4 border-slate-100 flex items-center justify-between">
+                    <h3 className="font-heading font-extrabold text-lg text-slate-900 flex items-center gap-2">
+                      <UserCheck className="w-5 h-5 text-orange-500" />
+                      <span>{t.applicantInformation}</span>
+                    </h3>
+                    <span className="text-xs text-slate-400 font-bold">* {t.requiredFieldsNotice}</span>
                   </div>
 
-                  <div>
-                    <label className="block text-xs font-extrabold text-slate-700 mb-1.5">
-                      {t.mobileNumber || t.mobileLabel || (lang === 'ta' ? 'கைபேசி / மொபைல் எண்' : 'Mobile Number')} <span className="text-rose-500">*</span>
-                    </label>
-                    <input
-                      type="tel"
-                      name="user_phone"
-                      placeholder="e.g. 9876543210"
-                      value={applicantInfo.user_phone}
-                      onChange={handleApplicantChange}
-                      className={`w-full px-4 py-3 bg-slate-50 border ${errors.user_phone ? 'border-rose-500 bg-rose-50/50' : 'border-slate-200'} rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-[#0b192c] focus:bg-white transition-all`}
-                    />
-                    {errors.user_phone && <p className="text-[11px] text-rose-600 font-bold mt-1">{errors.user_phone}</p>}
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-extrabold text-slate-700 mb-1.5">
-                      {t.emailAddress || t.emailLabel || (lang === 'ta' ? 'மின்னஞ்சல் முகவரி' : 'Email Address')} <span className="text-rose-500">*</span>
-                    </label>
-                    <input
-                      type="email"
-                      name="user_email"
-                      placeholder="e.g. karthik@example.com"
-                      value={applicantInfo.user_email}
-                      onChange={handleApplicantChange}
-                      className={`w-full px-4 py-3 bg-slate-50 border ${errors.user_email ? 'border-rose-500 bg-rose-50/50' : 'border-slate-200'} rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-[#0b192c] focus:bg-white transition-all`}
-                    />
-                    {errors.user_email && <p className="text-[11px] text-rose-600 font-bold mt-1">{errors.user_email}</p>}
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-extrabold text-slate-700 mb-1.5">
-                      {lang === 'ta' ? 'ஆதார் எண்' : 'Aadhaar Number'} <span className="text-rose-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="aadhaar_no"
-                      placeholder="e.g. 9876 5432 1098"
-                      value={applicantInfo.aadhaar_no}
-                      onChange={handleApplicantChange}
-                      className={`w-full px-4 py-3 bg-slate-50 border ${errors.aadhaar_no ? 'border-rose-500 bg-rose-50/50' : 'border-slate-200'} rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-[#0b192c] focus:bg-white transition-all`}
-                    />
-                    {errors.aadhaar_no && <p className="text-[11px] text-rose-600 font-bold mt-1">{errors.aadhaar_no}</p>}
-                  </div>
-                </div>
-
-                {/* DYNAMIC SERVICE SPECIFIC FIELDS */}
-                {Object.keys(groupedFields).length > 0 && (
-                  <div className="pt-6 border-t border-slate-100 space-y-6">
-                    <h4 className="font-heading font-extrabold text-base text-slate-900 flex items-center gap-2">
-                      <FileText className="w-4 h-4 text-orange-500" />
-                      <span>{t.customInputsTitle}</span>
-                    </h4>
-
-                    {Object.entries(groupedFields).map(([secTitle, secFields], sIdx) => (
-                      <div key={sIdx} className="space-y-4 bg-slate-50 p-6 rounded-2xl border border-slate-200/80">
-                        <h5 className="text-xs font-extrabold text-slate-500 uppercase tracking-wider border-b border-slate-200/80 pb-2">
-                          {secTitle}
-                        </h5>
-
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          {secFields.filter(isFieldVisible).map((f, fIdx) => {
-                            const key = f.field_name || f.name;
-                            const fType = (f.field_type || f.type || 'text').toLowerCase();
-                            const fLabel = f.field_label || f.label || key;
-                            const hasErr = errors[key];
-                            const isTextArea = fType === 'textarea';
-                            const isSelect = fType === 'select';
-                            const isRadio = fType === 'radio';
-                            const isCheckbox = fType === 'checkbox';
-                            const optionsList = parseOptions(f.options_json || f.options || f.field_options);
-
-                            return (
-                              <div key={fIdx} className={isTextArea ? 'sm:col-span-2' : ''}>
-                                <label className="block text-xs font-extrabold text-slate-800 mb-1.5">
-                                  {fLabel} {(f.is_required !== false && f.required !== false) && <span className="text-rose-500">*</span>}
-                                </label>
-
-                                {isSelect ? (
-                                  <select
-                                    value={fieldValues[key] || ''}
-                                    onChange={e => handleInputChange(key, e.target.value)}
-                                    className={`w-full px-4 py-3 bg-white border ${hasErr ? 'border-rose-500 bg-rose-50' : 'border-slate-200'} rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-[#0b192c]`}
-                                  >
-                                    <option value="">-- {lang === 'ta' ? 'தேர்ந்தெடுக்கவும்' : 'Select'} {fLabel} --</option>
-                                    {optionsList.map((opt, oIdx) => (
-                                      <option key={oIdx} value={opt}>{opt}</option>
-                                    ))}
-                                  </select>
-                                ) : isRadio ? (
-                                  <div className="flex flex-wrap gap-4 py-1.5">
-                                    {optionsList.map((opt, oIdx) => (
-                                      <label key={oIdx} className="inline-flex items-center space-x-2 text-xs font-medium text-slate-700 cursor-pointer">
-                                        <input
-                                          type="radio"
-                                          name={key}
-                                          value={opt}
-                                          checked={fieldValues[key] === opt}
-                                          onChange={e => handleInputChange(key, e.target.value)}
-                                          className="text-orange-500 focus:ring-orange-500"
-                                        />
-                                        <span>{opt}</span>
-                                      </label>
-                                    ))}
-                                  </div>
-                                ) : isCheckbox ? (
-                                  <label className="inline-flex items-center space-x-2 text-xs font-medium text-slate-700 cursor-pointer py-1">
-                                    <input
-                                      type="checkbox"
-                                      checked={!!fieldValues[key]}
-                                      onChange={e => handleInputChange(key, e.target.checked)}
-                                      className="text-orange-500 focus:ring-orange-500 rounded"
-                                    />
-                                    <span>{f.helpText || (lang === 'ta' ? 'நான் இந்த அறிவிப்பை ஒப்புக்கொள்கிறேன்' : 'I agree to this declaration')}</span>
-                                  </label>
-                                ) : isTextArea ? (
-                                  <textarea
-                                    rows={3}
-                                    placeholder={f.placeholder}
-                                    value={fieldValues[key] || ''}
-                                    onChange={e => handleInputChange(key, e.target.value)}
-                                    className={`w-full px-4 py-3 bg-white border ${hasErr ? 'border-rose-500 bg-rose-50' : 'border-slate-200'} rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-[#0b192c]`}
-                                  />
-                                ) : (
-                                  <input
-                                    type={fType === 'date' ? 'date' : fType === 'number' ? 'number' : 'text'}
-                                    placeholder={f.placeholder}
-                                    value={fieldValues[key] || ''}
-                                    onChange={e => handleInputChange(key, e.target.value)}
-                                    className={`w-full px-4 py-3 bg-white border ${hasErr ? 'border-rose-500 bg-rose-50' : 'border-slate-200'} rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-[#0b192c]`}
-                                  />
-                                )}
-
-                                {f.helpText && <p className="text-[11px] text-slate-500 mt-1 font-normal">{f.helpText}</p>}
-                                {hasErr && <p className="text-[11px] text-rose-600 font-bold mt-1">{hasErr}</p>}
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* VERIFY DETAILS TRUST NOTICE */}
-                <div className="bg-orange-50/70 border border-orange-200/80 p-4 rounded-2xl flex items-start space-x-3 text-xs text-orange-900 font-medium">
-                  <Info className="w-5 h-5 text-orange-600 shrink-0 mt-0.5" />
-                  <div>
-                    <span className="font-extrabold text-orange-950">{t.verifyNoticeTitle} </span>
-                    {t.verifyNoticeText}
-                  </div>
-                </div>
-
-                {/* BOTTOM ACTION AREA */}
-                <div className="pt-6 border-t border-slate-100 flex items-center justify-between gap-4">
-                  <button
-                    type="button"
-                    onClick={handleSaveDraft}
-                    disabled={savingDraft}
-                    className="px-5 py-3.5 bg-slate-100 hover:bg-slate-200/80 text-slate-700 font-bold text-xs rounded-xl border border-slate-200/80 flex items-center gap-2 transition-colors"
-                  >
-                    <Save className="w-4 h-4 text-orange-500" />
-                    <span>{savingDraft ? t.savingDraftText : t.saveDraftBtn}</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={handleNextStep}
-                    className="px-8 py-3.5 bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-xs sm:text-sm rounded-xl shadow-xs transition-colors flex items-center gap-2 group/btn"
-                  >
-                    <span>{t.continueToDocuments}</span>
-                    <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
-                  </button>
-                </div>
-
-              </div>
-            )}
-
-            {/* STEP 02: REQUIRED DOCUMENTS UPLOAD */}
-            {currentStep === 2 && (
-              <div className="bg-white rounded-3xl p-8 border border-slate-200/90 shadow-sm space-y-6">
-                
-                <div className="border-b pb-4 border-slate-100 flex items-center justify-between">
-                  <h3 className="font-heading font-extrabold text-lg text-slate-900 flex items-center gap-2">
-                    <Upload className="w-5 h-5 text-emerald-600" />
-                    <span>{t.uploadDocsStepTitle}</span>
-                  </h3>
-                  <span className="text-xs text-slate-400 font-bold">PDF, JPG, PNG ({t.maxFileSizeText})</span>
-                </div>
-
-                {/* COMPACT APPLICATION SUMMARY CARD */}
-                <div className="p-5 bg-slate-900 text-white rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm border border-slate-800">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
-                      <span>{lang === 'ta' ? 'குறிப்பு எண்:' : 'Ref ID:'}</span>
-                      <span className="text-orange-400 font-mono">{draftId ? `APP-DRAFT-${draftId.toString().padStart(4, '0')}` : 'APP-REF-2026'}</span>
+                  {/* PRIMARY APPLICANT CONTACT & IDENTIFICATION (FOR TRACKING & NOTIFICATIONS) */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div>
+                      <label className="block text-xs font-extrabold text-slate-700 mb-1.5">
+                        {t.fullName || t.fullNameLabel || (lang === 'ta' ? 'விண்ணப்பதாரர் பெயர்' : 'Full Name')} <span className="text-rose-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        name="user_name"
+                        placeholder={lang === 'ta' ? 'எ.கா. கார்த்திக் சுப்பிரமணியன்' : 'e.g. Karthik Subramanian'}
+                        value={applicantInfo.user_name}
+                        onChange={handleApplicantChange}
+                        className={`w-full px-4 py-3 bg-slate-50 border ${errors.user_name ? 'border-rose-500 bg-rose-50/50' : 'border-slate-200'} rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-[#0b192c] focus:bg-white transition-all`}
+                      />
+                      {errors.user_name && <p className="text-[11px] text-rose-600 font-bold mt-1">{errors.user_name}</p>}
                     </div>
-                    <h4 className="font-extrabold text-sm text-white">{service.name}</h4>
-                    <p className="text-xs text-slate-300 font-normal">
-                      {lang === 'ta' ? 'விண்ணப்பதாரர்:' : 'Applicant:'} <span className="font-bold text-white">{applicantInfo.user_name || 'Karthik S.'}</span>
-                    </p>
+
+                    <div>
+                      <label className="block text-xs font-extrabold text-slate-700 mb-1.5">
+                        {t.mobileNumber || t.mobileLabel || (lang === 'ta' ? 'கைபேசி / மொபைல் எண்' : 'Mobile Number')} <span className="text-rose-500">*</span>
+                      </label>
+                      <input
+                        type="tel"
+                        name="user_phone"
+                        placeholder="e.g. 9876543210"
+                        value={applicantInfo.user_phone}
+                        onChange={handleApplicantChange}
+                        className={`w-full px-4 py-3 bg-slate-50 border ${errors.user_phone ? 'border-rose-500 bg-rose-50/50' : 'border-slate-200'} rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-[#0b192c] focus:bg-white transition-all`}
+                      />
+                      {errors.user_phone && <p className="text-[11px] text-rose-600 font-bold mt-1">{errors.user_phone}</p>}
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-extrabold text-slate-700 mb-1.5">
+                        {t.emailAddress || t.emailLabel || (lang === 'ta' ? 'மின்னஞ்சல் முகவரி' : 'Email Address')} <span className="text-rose-500">*</span>
+                      </label>
+                      <input
+                        type="email"
+                        name="user_email"
+                        placeholder="e.g. karthik@example.com"
+                        value={applicantInfo.user_email}
+                        onChange={handleApplicantChange}
+                        className={`w-full px-4 py-3 bg-slate-50 border ${errors.user_email ? 'border-rose-500 bg-rose-50/50' : 'border-slate-200'} rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-[#0b192c] focus:bg-white transition-all`}
+                      />
+                      {errors.user_email && <p className="text-[11px] text-rose-600 font-bold mt-1">{errors.user_email}</p>}
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-extrabold text-slate-700 mb-1.5">
+                        {lang === 'ta' ? 'ஆதார் எண்' : 'Aadhaar Number'} <span className="text-rose-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        name="aadhaar_no"
+                        placeholder="e.g. 9876 5432 1098"
+                        value={applicantInfo.aadhaar_no}
+                        onChange={handleApplicantChange}
+                        className={`w-full px-4 py-3 bg-slate-50 border ${errors.aadhaar_no ? 'border-rose-500 bg-rose-50/50' : 'border-slate-200'} rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-[#0b192c] focus:bg-white transition-all`}
+                      />
+                      {errors.aadhaar_no && <p className="text-[11px] text-rose-600 font-bold mt-1">{errors.aadhaar_no}</p>}
+                    </div>
                   </div>
-                  <div className="bg-slate-800 border border-slate-700 px-3.5 py-1.5 rounded-xl text-right">
-                    <div className="text-[10px] text-slate-400 uppercase font-extrabold">{lang === 'ta' ? 'நிலை' : 'Status'}</div>
-                    <div className="text-xs font-bold text-orange-400">{lang === 'ta' ? 'ஆவணங்கள் நிலுவையில் (படி 2/4)' : 'Documents Pending (Step 2 of 4)'}</div>
-                  </div>
-                </div>
 
-                {/* REQUIRED DOCUMENTS GRID */}
-                {service.documents && service.documents.length > 0 ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {service.documents.map((doc, idx) => {
-                      const docName = doc.document_name || doc.name;
-                      const currentFile = files[docName];
-                      const hasErr = errors[`doc_${docName}`];
-                      const maxMB = doc.max_file_size || 5;
+                  {/* DYNAMIC SERVICE SPECIFIC FIELDS */}
+                  {Object.keys(groupedFields).length > 0 && (
+                    <div className="pt-6 border-t border-slate-100 space-y-6">
+                      <h4 className="font-heading font-extrabold text-base text-slate-900 flex items-center gap-2">
+                        <FileText className="w-4 h-4 text-orange-500" />
+                        <span>{t.customInputsTitle}</span>
+                      </h4>
 
-                      const handleFileDrop = (e) => {
-                        e.preventDefault();
-                        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-                          processSelectedFile(docName, e.dataTransfer.files[0], maxMB);
-                        }
-                      };
+                      {Object.entries(groupedFields).map(([secTitle, secFields], sIdx) => (
+                        <div key={sIdx} className="space-y-4 bg-slate-50 p-6 rounded-2xl border border-slate-200/80">
+                          <h5 className="text-xs font-extrabold text-slate-500 uppercase tracking-wider border-b border-slate-200/80 pb-2">
+                            {secTitle}
+                          </h5>
 
-                      return (
-                        <div 
-                          key={idx}
-                          onDragOver={e => e.preventDefault()}
-                          onDrop={handleFileDrop}
-                          className={`p-5 rounded-2xl border-2 border-dashed transition-all ${
-                            currentFile 
-                              ? 'bg-emerald-50/50 border-emerald-300' 
-                              : hasErr 
-                              ? 'bg-rose-50/50 border-rose-300' 
-                              : 'bg-slate-50 border-slate-200 hover:border-orange-400 hover:bg-slate-100/60'
-                          } space-y-3`}
-                        >
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs font-extrabold text-slate-900 flex items-center gap-1.5">
-                              <FileText className="w-4 h-4 text-orange-500" />
-                              <span>{docName}</span>
-                            </span>
-                            <span className={`text-[10px] font-extrabold px-2.5 py-0.5 rounded-md uppercase ${
-                              doc.is_required !== false && doc.required !== false ? 'bg-amber-100 text-amber-800 border border-amber-200' : 'bg-slate-200 text-slate-700'
-                            }`}>
-                              {doc.is_required !== false && doc.required !== false ? t.requiredTag : t.optionalTag}
-                            </span>
-                          </div>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            {secFields.filter(isFieldVisible).map((f, fIdx) => {
+                              const key = f.field_name || f.name;
+                              const fType = (f.field_type || f.type || 'text').toLowerCase();
+                              const fLabel = f.field_label || f.label || key;
+                              const hasErr = errors[key];
+                              const isTextArea = fType === 'textarea';
+                              const isSelect = fType === 'select';
+                              const isRadio = fType === 'radio';
+                              const isCheckbox = fType === 'checkbox';
+                              const optionsList = parseOptions(f.options_json || f.options || f.field_options);
 
-                          <p className="text-[11px] text-slate-500 font-normal leading-relaxed">
-                            {doc.description || (lang === 'ta' ? 'தெளிவான ஸ்கேன் நகல் அல்லது புகைப்பட சான்றைப் பதிவேற்றவும்' : 'Upload clear scanned copy or photo proof')}
-                          </p>
-
-                          <div className="text-[10px] text-slate-400 font-bold flex items-center gap-2">
-                            <span className="bg-slate-200/60 px-2 py-0.5 rounded text-slate-600">PDF, JPG, PNG</span>
-                            <span>{lang === 'ta' ? `அதிகபட்சம் ${maxMB}MB` : `Max ${maxMB}MB`}</span>
-                          </div>
-
-                          {!currentFile ? (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
-                              <label className="block w-full py-3.5 px-3 bg-orange-50 hover:bg-orange-100/80 border-2 border-dashed border-orange-300 rounded-xl text-center cursor-pointer transition-colors shadow-xs group/up">
-                                <span className="text-xs font-black text-orange-600 flex items-center justify-center gap-1.5 group-hover/up:scale-105 transition-transform">
-                                  <Upload className="w-4 h-4 text-orange-600" />
-                                  <span>{t.selectFileBtn || (lang === 'ta' ? 'கோப்பை பதிவேற்ற' : 'Upload File')}</span>
-                                </span>
-                                <input
-                                  type="file"
-                                  accept=".pdf,.jpg,.jpeg,.png"
-                                  onChange={e => e.target.files[0] && processSelectedFile(docName, e.target.files[0], maxMB)}
-                                  className="hidden"
-                                />
-                              </label>
-
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setActiveCameraDoc(docName);
-                                  setActiveCameraMaxMB(maxMB);
-                                  setCameraModalOpen(true);
-                                }}
-                                className="w-full py-3.5 px-3 bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-xs hover:shadow border border-slate-800 group/cam"
-                              >
-                                <Camera className="w-4 h-4 text-orange-400 group-hover/cam:scale-110 transition-transform" />
-                                <span>{t.takePhotoBtn || (lang === 'ta' ? 'நேரலை கேமரா' : 'Live Camera')}</span>
-                              </button>
-                            </div>
-                          ) : (
-                            <div className="p-3.5 bg-white rounded-xl border border-emerald-200 shadow-xs space-y-2">
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center space-x-2 truncate">
-                                  <CheckCircle2 className="w-4.5 h-4.5 text-emerald-600 shrink-0" />
-                                  <span className="text-xs font-bold text-slate-800 truncate">{currentFile.name}</span>
-                                </div>
-                                <span className="text-[10px] font-extrabold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-md">
-                                  {(currentFile.size / (1024 * 1024)).toFixed(2)} MB
-                                </span>
-                              </div>
-
-                              <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
-                                <span className="text-[10px] font-bold text-emerald-700 flex items-center gap-1">
-                                  <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                                  <span>{t.uploadedSuccessfully}</span>
-                                </span>
-                                <div className="flex items-center space-x-2">
-                                  <label className="text-[11px] font-bold text-orange-600 hover:underline cursor-pointer">
-                                    {t.replaceBtn}
-                                    <input
-                                      type="file"
-                                      accept=".pdf,.jpg,.jpeg,.png"
-                                      onChange={e => e.target.files[0] && processSelectedFile(docName, e.target.files[0], maxMB)}
-                                      className="hidden"
-                                    />
+                              return (
+                                <div key={fIdx} className={isTextArea ? 'sm:col-span-2' : ''}>
+                                  <label className="block text-xs font-extrabold text-slate-800 mb-1.5">
+                                    {fLabel} {(f.is_required !== false && f.required !== false) && <span className="text-rose-500">*</span>}
                                   </label>
-                                  <span className="text-slate-300">|</span>
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      setActiveCameraDoc(docName);
-                                      setActiveCameraMaxMB(maxMB);
-                                      setCameraModalOpen(true);
-                                    }}
-                                    className="text-[11px] font-bold text-blue-600 hover:underline flex items-center gap-0.5"
-                                  >
-                                    <Camera className="w-3 h-3" />
-                                    <span>{lang === 'ta' ? 'கேமரா' : 'Camera'}</span>
-                                  </button>
-                                  <span className="text-slate-300">|</span>
-                                  <button
-                                    type="button"
-                                    onClick={() => setFiles(prev => ({ ...prev, [docName]: null }))}
-                                    className="text-[11px] font-bold text-rose-600 hover:underline"
-                                  >
-                                    {t.removeBtn}
-                                  </button>
+
+                                  {isSelect ? (
+                                    <select
+                                      value={fieldValues[key] || ''}
+                                      onChange={e => handleInputChange(key, e.target.value)}
+                                      className={`w-full px-4 py-3 bg-white border ${hasErr ? 'border-rose-500 bg-rose-50' : 'border-slate-200'} rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-[#0b192c]`}
+                                    >
+                                      <option value="">-- {lang === 'ta' ? 'தேர்ந்தெடுக்கவும்' : 'Select'} {fLabel} --</option>
+                                      {optionsList.map((opt, oIdx) => (
+                                        <option key={oIdx} value={opt}>{opt}</option>
+                                      ))}
+                                    </select>
+                                  ) : isRadio ? (
+                                    <div className="flex flex-wrap gap-4 py-1.5">
+                                      {optionsList.map((opt, oIdx) => (
+                                        <label key={oIdx} className="inline-flex items-center space-x-2 text-xs font-medium text-slate-700 cursor-pointer">
+                                          <input
+                                            type="radio"
+                                            name={key}
+                                            value={opt}
+                                            checked={fieldValues[key] === opt}
+                                            onChange={e => handleInputChange(key, e.target.value)}
+                                            className="text-orange-500 focus:ring-orange-500"
+                                          />
+                                          <span>{opt}</span>
+                                        </label>
+                                      ))}
+                                    </div>
+                                  ) : isCheckbox ? (
+                                    <label className="inline-flex items-center space-x-2 text-xs font-medium text-slate-700 cursor-pointer py-1">
+                                      <input
+                                        type="checkbox"
+                                        checked={!!fieldValues[key]}
+                                        onChange={e => handleInputChange(key, e.target.checked)}
+                                        className="text-orange-500 focus:ring-orange-500 rounded"
+                                      />
+                                      <span>{f.helpText || (lang === 'ta' ? 'நான் இந்த அறிவிப்பை ஒப்புக்கொள்கிறேன்' : 'I agree to this declaration')}</span>
+                                    </label>
+                                  ) : isTextArea ? (
+                                    <textarea
+                                      rows={3}
+                                      placeholder={f.placeholder}
+                                      value={fieldValues[key] || ''}
+                                      onChange={e => handleInputChange(key, e.target.value)}
+                                      className={`w-full px-4 py-3 bg-white border ${hasErr ? 'border-rose-500 bg-rose-50' : 'border-slate-200'} rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-[#0b192c]`}
+                                    />
+                                  ) : (
+                                    <input
+                                      type={fType === 'date' ? 'date' : fType === 'number' ? 'number' : 'text'}
+                                      placeholder={f.placeholder}
+                                      value={fieldValues[key] || ''}
+                                      onChange={e => handleInputChange(key, e.target.value)}
+                                      className={`w-full px-4 py-3 bg-white border ${hasErr ? 'border-rose-500 bg-rose-50' : 'border-slate-200'} rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-[#0b192c]`}
+                                    />
+                                  )}
+
+                                  {f.helpText && <p className="text-[11px] text-slate-500 mt-1 font-normal">{f.helpText}</p>}
+                                  {hasErr && <p className="text-[11px] text-rose-600 font-bold mt-1">{hasErr}</p>}
                                 </div>
-                              </div>
-                            </div>
-                          )}
-
-                          {hasErr && (
-                            <p className="text-[11px] text-rose-600 font-bold flex items-center gap-1">
-                              <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                              <span>{hasErr}</span>
-                            </p>
-                          )}
+                              );
+                            })}
+                          </div>
                         </div>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <div className="p-6 bg-slate-50 text-center rounded-2xl text-slate-600 text-xs font-medium">
-                    {lang === 'ta' ? 'இந்த சேவைக்கு ஆவணங்கள் பதிவேற்ற வேண்டிய அவசியமில்லை.' : 'No document uploads required for this service. Click continue to review.'}
-                  </div>
-                )}
+                      ))}
+                    </div>
+                  )}
 
-                {/* INFORMATION NOTICE CARD */}
-                <div className="bg-orange-50/70 border border-orange-200/80 p-4 rounded-2xl flex items-start space-x-3 text-xs text-orange-900 font-medium">
-                  <Info className="w-5 h-5 text-orange-600 shrink-0 mt-0.5" />
-                  <div>
-                    <span className="font-extrabold text-orange-950">{t.docNoticeTitle} </span>
-                    {t.docNoticeText}
+                  {/* VERIFY DETAILS TRUST NOTICE */}
+                  <div className="bg-orange-50/70 border border-orange-200/80 p-4 rounded-2xl flex items-start space-x-3 text-xs text-orange-900 font-medium">
+                    <Info className="w-5 h-5 text-orange-600 shrink-0 mt-0.5" />
+                    <div>
+                      <span className="font-extrabold text-orange-950">{t.verifyNoticeTitle} </span>
+                      {t.verifyNoticeText}
+                    </div>
                   </div>
-                </div>
 
-                {/* BOTTOM ACTIONS */}
-                <div className="pt-6 border-t border-slate-100 flex items-center justify-between gap-4">
-                  <button
-                    type="button"
-                    onClick={handlePrevStep}
-                    className="px-5 py-3.5 bg-slate-100 hover:bg-slate-200/80 text-slate-700 font-bold text-xs rounded-xl flex items-center gap-2 border border-slate-200/80"
-                  >
-                    <ArrowLeft className="w-4 h-4" />
-                    <span>{t.backToDetails}</span>
-                  </button>
-
-                  <div className="flex items-center gap-3">
+                  {/* BOTTOM ACTION AREA */}
+                  <div className="pt-6 border-t border-slate-100 flex items-center justify-between gap-4">
                     <button
                       type="button"
                       onClick={handleSaveDraft}
                       disabled={savingDraft}
-                      className="px-4 py-3.5 bg-slate-100 hover:bg-slate-200/80 text-slate-700 font-bold text-xs rounded-xl border border-slate-200/80 flex items-center gap-2 transition-colors"
+                      className="px-5 py-3.5 bg-slate-100 hover:bg-slate-200/80 text-slate-700 font-bold text-xs rounded-xl border border-slate-200/80 flex items-center gap-2 transition-colors"
                     >
                       <Save className="w-4 h-4 text-orange-500" />
                       <span>{savingDraft ? t.savingDraftText : t.saveDraftBtn}</span>
@@ -1170,553 +1031,840 @@ export default function ApplyService() {
                       onClick={handleNextStep}
                       className="px-8 py-3.5 bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-xs sm:text-sm rounded-xl shadow-xs transition-colors flex items-center gap-2 group/btn"
                     >
-                      <span>{t.continueToReview}</span>
+                      <span>{t.continueToDocuments}</span>
                       <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                     </button>
                   </div>
+
                 </div>
+              )}
 
-              </div>
-            )}
-
-            {/* STEP 03: APPLICATION REVIEW & SUBMISSION */}
-            {currentStep === 3 && (
-              <div className="bg-white rounded-3xl p-8 border border-slate-200/90 shadow-sm space-y-6">
-                
-                <div className="border-b pb-4 border-slate-100 flex items-center justify-between">
-                  <h3 className="font-heading font-extrabold text-lg text-slate-900 flex items-center gap-2">
-                    <FileCheck className="w-5 h-5 text-orange-500" />
-                    <span>{t.reviewStepTitle}</span>
-                  </h3>
-                  <span className="text-xs text-slate-400 font-bold">{t.finalVerificationTag}</span>
-                </div>
-
-                {/* APPLICANT SUMMARY */}
-                <div className="p-6 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-3">
-                  <div className="flex items-center justify-between border-b pb-3 border-slate-200/80">
-                    <h4 className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">{t.applicantDetailsTitle}</h4>
-                    <button
-                      onClick={() => setCurrentStep(1)}
-                      className="text-xs font-bold text-orange-600 hover:underline flex items-center gap-1"
-                    >
-                      <Edit3 className="w-3.5 h-3.5" />
-                      <span>{lang === 'ta' ? 'திருத்த' : 'Edit'}</span>
-                    </button>
+              {/* STEP 02: REQUIRED DOCUMENTS UPLOAD */}
+              {currentStep === 2 && (
+                <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
+                  
+                  <div className="border-b pb-4 border-slate-100 flex items-center justify-between gap-2">
+                    <h3 className="font-heading font-extrabold text-base sm:text-lg text-slate-900 flex items-center gap-2">
+                      <Upload className="w-5 h-5 text-emerald-600" />
+                      <span>{t.uploadDocsStepTitle}</span>
+                    </h3>
+                    <span className="text-[11px] sm:text-xs text-slate-400 font-bold shrink-0">PDF, JPG, PNG ({t.maxFileSizeText})</span>
                   </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-medium">
-                    <div>
-                      <span className="text-slate-400 block text-[10px] font-extrabold uppercase">{t.fullName}</span>
-                      <span className="font-bold text-slate-900">{applicantInfo.user_name || 'N/A'}</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-400 block text-[10px] font-extrabold uppercase">{t.mobileNumber}</span>
-                      <span className="font-bold text-slate-900">{applicantInfo.user_phone || 'N/A'}</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-400 block text-[10px] font-extrabold uppercase">{t.emailAddress}</span>
-                      <span className="font-bold text-slate-900">{applicantInfo.user_email || 'N/A'}</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-400 block text-[10px] font-extrabold uppercase">{t.districtLabel} / {t.stateLabel}</span>
-                      <span className="font-bold text-slate-900">{applicantInfo.district ? `${applicantInfo.district}, ${applicantInfo.state}` : applicantInfo.state}</span>
-                    </div>
-                  </div>
-                </div>
 
-                {/* DYNAMIC FIELD VALUES SUMMARY */}
-                {Object.keys(fieldValues).length > 0 && (
-                  <div className="p-6 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-3">
-                    <div className="flex items-center justify-between border-b pb-3 border-slate-200/80">
-                      <h4 className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">{t.customInputsTitle}</h4>
-                      <button
-                        onClick={() => setCurrentStep(1)}
-                        className="text-xs font-bold text-orange-600 hover:underline flex items-center gap-1"
-                      >
-                        <Edit3 className="w-3.5 h-3.5" />
-                        <span>{lang === 'ta' ? 'திருத்த' : 'Edit'}</span>
-                      </button>
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                      {Object.entries(fieldValues).map(([k, v], idx) => {
-                        const fDef = service.fields ? service.fields.find(f => (f.field_name || f.name) === k) : null;
-                        const label = fDef ? (fDef.field_label || fDef.label || k) : k.replace(/_/g, ' ');
-                        return (
-                          <div key={idx} className="bg-white p-3 rounded-xl border border-slate-200/80">
-                            <span className="text-slate-400 block text-[10px] font-extrabold uppercase">{label}:</span>
-                            <span className="font-bold text-slate-900">{v ? String(v) : (lang === 'ta' ? 'வழங்கப்படவில்லை' : 'Not Provided')}</span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-
-                {/* UPLOADED DOCUMENTS SUMMARY WITH VISUAL PREVIEWS */}
-                <div className="p-6 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-4">
-                  <div className="flex items-center justify-between border-b pb-3 border-slate-200/80">
-                    <div>
-                      <h4 className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">{t.uploadedDocumentsTitle}</h4>
-                      <p className="text-[11px] text-slate-400 font-normal mt-0.5">
-                        {lang === 'ta' ? 'பதிவேற்றப்பட்ட சான்று ஆவணங்களின் சரிபார்ப்பு முன்னோட்டம்' : 'Visual inspection of uploaded proof documents'}
+                  {/* COMPACT APPLICATION SUMMARY CARD */}
+                  <div className="p-5 bg-slate-900 text-white rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm border border-slate-800">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
+                        <span>{lang === 'ta' ? 'குறிப்பு எண்:' : 'Ref ID:'}</span>
+                        <span className="text-orange-400 font-mono">{draftId ? `APP-DRAFT-${draftId.toString().padStart(4, '0')}` : 'APP-REF-2026'}</span>
+                      </div>
+                      <h4 className="font-extrabold text-sm text-white">{service.name}</h4>
+                      <p className="text-xs text-slate-300 font-normal">
+                        {lang === 'ta' ? 'விண்ணப்பதாரர்:' : 'Applicant:'} <span className="font-bold text-white">{applicantInfo.user_name || 'Karthik S.'}</span>
                       </p>
                     </div>
-                    <button
-                      onClick={() => setCurrentStep(2)}
-                      className="text-xs font-bold text-orange-600 hover:text-orange-700 bg-orange-50 hover:bg-orange-100 border border-orange-200 px-3 py-1.5 rounded-lg flex items-center gap-1 transition-colors"
-                    >
-                      <Edit3 className="w-3.5 h-3.5" />
-                      <span>{lang === 'ta' ? 'ஆவணங்களை மாற்ற / திருத்த' : 'Edit / Replace Docs'}</span>
-                    </button>
+                    <div className="bg-slate-800 border border-slate-700 px-3.5 py-1.5 rounded-xl text-right">
+                      <div className="text-[10px] text-slate-400 uppercase font-extrabold">{lang === 'ta' ? 'நிலை' : 'Status'}</div>
+                      <div className="text-xs font-bold text-orange-400">{lang === 'ta' ? 'ஆவணங்கள் நிலுவையில் (படி 2/4)' : 'Documents Pending (Step 2 of 4)'}</div>
+                    </div>
                   </div>
 
-                  {Object.keys(files).length > 0 ? (
+                  {/* REQUIRED DOCUMENTS GRID */}
+                  {service.documents && service.documents.length > 0 ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {Object.entries(files).map(([dName, fObj], idx) => {
-                        if (!fObj) {
-                          return (
-                            <div key={idx} className="p-4 bg-white rounded-xl border border-slate-200 flex items-center justify-between">
-                              <span className="text-xs font-bold text-slate-700">{dName}</span>
-                              <span className="text-xs font-bold text-amber-600 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-md">
-                                {lang === 'ta' ? 'பதிவேற்றப்படவில்லை' : 'Not Uploaded'}
-                              </span>
-                            </div>
-                          );
-                        }
+                      {service.documents.map((doc, idx) => {
+                        const docName = doc.document_name || doc.name;
+                        const currentFile = files[docName];
+                        const hasErr = errors[`doc_${docName}`];
+                        const maxMB = doc.max_file_size || 5;
 
-                        let isImage = false;
-                        let isPdf = false;
-                        let previewUrl = null;
-                        let fileName = fObj.name || 'document';
-                        let fileSize = fObj.size ? `${(fObj.size / (1024 * 1024)).toFixed(2)} MB` : '';
-
-                        if (fObj instanceof File || fObj instanceof Blob) {
-                          isImage = fObj.type ? fObj.type.startsWith('image/') : /\.(jpg|jpeg|png|webp|gif)$/i.test(fObj.name);
-                          isPdf = fObj.type === 'application/pdf' || /\.pdf$/i.test(fObj.name);
-                          if (isImage) {
-                            previewUrl = URL.createObjectURL(fObj);
+                        const handleFileDrop = (e) => {
+                          e.preventDefault();
+                          if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                            processSelectedFile(docName, e.dataTransfer.files[0], maxMB);
                           }
-                        } else if (typeof fObj === 'string') {
-                          isImage = fObj.startsWith('data:image/') || /\.(jpg|jpeg|png|webp|gif)$/i.test(fObj);
-                          isPdf = fObj.endsWith('.pdf');
-                          previewUrl = fObj;
-                        }
+                        };
 
                         return (
-                          <div key={idx} className="p-4 bg-white rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-md transition-all space-y-3">
-                            <div className="flex items-center justify-between">
-                              <span className="text-xs font-black text-slate-900 flex items-center gap-1.5 truncate">
-                                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                                <span className="truncate">{dName}</span>
+                          <div 
+                            key={idx}
+                            onDragOver={e => e.preventDefault()}
+                            onDrop={handleFileDrop}
+                            className={`p-4 sm:p-5 rounded-2xl border-2 border-dashed transition-all ${
+                              currentFile 
+                                ? 'bg-emerald-50/50 border-emerald-300' 
+                                : hasErr 
+                                ? 'bg-rose-50/50 border-rose-300' 
+                                : 'bg-slate-50 border-slate-200 hover:border-orange-400 hover:bg-slate-100/60'
+                            } space-y-3 overflow-hidden`}
+                          >
+                            <div className="flex items-center justify-between gap-2">
+                              <span className="text-xs font-extrabold text-slate-900 flex items-center gap-1.5 min-w-0">
+                                <FileText className="w-4 h-4 text-orange-500 shrink-0" />
+                                <span className="truncate">{docName}</span>
                               </span>
-                              {fileSize && (
-                                <span className="text-[10px] font-extrabold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md shrink-0">
-                                  {fileSize}
-                                </span>
-                              )}
+                              <span className={`text-[10px] font-extrabold px-2.5 py-0.5 rounded-md uppercase shrink-0 ${
+                                doc.is_required !== false && doc.required !== false ? 'bg-amber-100 text-amber-800 border border-amber-200' : 'bg-slate-200 text-slate-700'
+                              }`}>
+                                {doc.is_required !== false && doc.required !== false ? t.requiredTag : t.optionalTag}
+                              </span>
                             </div>
 
-                            {/* THUMBNAIL BOX */}
-                            <div className="relative group/thumb rounded-xl overflow-hidden bg-slate-100 border border-slate-200/80 flex items-center justify-center min-h-[140px] max-h-[180px]">
-                              {isImage && previewUrl ? (
-                                <>
-                                  <img 
-                                    src={previewUrl} 
-                                    alt={dName} 
-                                    className="w-full h-36 object-cover group-hover/thumb:scale-105 transition-transform duration-300"
+                            <p className="text-[11px] text-slate-500 font-normal leading-relaxed">
+                              {doc.description || (lang === 'ta' ? 'தெளிவான ஸ்கேன் நகல் அல்லது புகைப்பட சான்றைப் பதிவேற்றவும்' : 'Upload clear scanned copy or photo proof')}
+                            </p>
+
+                            <div className="text-[10px] text-slate-400 font-bold flex items-center gap-2">
+                              <span className="bg-slate-200/60 px-2 py-0.5 rounded text-slate-600">PDF, JPG, PNG</span>
+                              <span>{lang === 'ta' ? `அதிகபட்சம் ${maxMB}MB` : `Max ${maxMB}MB`}</span>
+                            </div>
+
+                            {!currentFile ? (
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                                <label className="block w-full py-3 px-2 bg-orange-50 hover:bg-orange-100/80 border-2 border-dashed border-orange-300 rounded-xl text-center cursor-pointer transition-colors shadow-xs group/up">
+                                  <span className="text-xs font-black text-orange-600 flex items-center justify-center gap-1.5 group-hover/up:scale-105 transition-transform">
+                                    <Upload className="w-4 h-4 text-orange-600" />
+                                    <span>{t.selectFileBtn || (lang === 'ta' ? 'கோப்பை பதிவேற்ற' : 'Upload File')}</span>
+                                  </span>
+                                  <input
+                                    type="file"
+                                    accept=".pdf,.jpg,.jpeg,.png"
+                                    onChange={e => e.target.files[0] && processSelectedFile(docName, e.target.files[0], maxMB)}
+                                    className="hidden"
                                   />
-                                  <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover/thumb:opacity-100 transition-opacity flex items-center justify-center gap-2 backdrop-blur-xs">
-                                    <button
-                                      type="button"
-                                      onClick={() => setPreviewModalDoc({ title: dName, url: previewUrl, isPdf: false, fileName })}
-                                      className="px-3.5 py-2 bg-white text-slate-900 font-extrabold text-xs rounded-xl shadow-lg flex items-center gap-1.5 hover:bg-orange-500 hover:text-white transition-all transform hover:scale-105"
-                                    >
-                                      <Eye className="w-4 h-4" />
-                                      <span>{lang === 'ta' ? 'பெரிதாக்குக' : 'Zoom Preview'}</span>
-                                    </button>
-                                  </div>
-                                </>
-                              ) : isPdf ? (
-                                <div className="p-4 text-center space-y-2">
-                                  <div className="w-12 h-12 bg-rose-100 text-rose-600 rounded-xl flex items-center justify-center mx-auto border border-rose-200">
-                                    <FileText className="w-6 h-6" />
-                                  </div>
-                                  <div className="text-xs font-extrabold text-slate-800 truncate max-w-[200px] mx-auto">{fileName}</div>
-                                  <span className="inline-block text-[10px] font-black uppercase text-rose-700 bg-rose-50 border border-rose-200 px-2.5 py-0.5 rounded-md">PDF Document</span>
-                                </div>
-                              ) : (
-                                <div className="p-4 text-center space-y-2">
-                                  <div className="w-12 h-12 bg-emerald-100 text-emerald-700 rounded-xl flex items-center justify-center mx-auto border border-emerald-200">
-                                    <CheckCircle2 className="w-6 h-6" />
-                                  </div>
-                                  <div className="text-xs font-extrabold text-slate-800 truncate max-w-[200px] mx-auto">{fileName}</div>
-                                </div>
-                              )}
-                            </div>
+                                </label>
 
-                            <div className="flex items-center justify-between text-[11px] pt-1">
-                              <span className="text-slate-500 font-medium truncate max-w-[160px]">{fileName}</span>
-                              {isImage && previewUrl && (
                                 <button
                                   type="button"
-                                  onClick={() => setPreviewModalDoc({ title: dName, url: previewUrl, isPdf: false, fileName })}
-                                  className="font-extrabold text-orange-600 hover:text-orange-700 flex items-center gap-1 hover:underline shrink-0"
+                                  onClick={() => {
+                                    setActiveCameraDoc(docName);
+                                    setActiveCameraMaxMB(maxMB);
+                                    setCameraModalOpen(true);
+                                  }}
+                                  className="w-full py-3 px-2 bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-xs hover:shadow border border-slate-800 group/cam"
                                 >
-                                  <Eye className="w-3.5 h-3.5" />
-                                  <span>{lang === 'ta' ? 'காண்க' : 'View'}</span>
+                                  <Camera className="w-4 h-4 text-orange-400 group-hover/cam:scale-110 transition-transform" />
+                                  <span>{t.takePhotoBtn || (lang === 'ta' ? 'நேரலை கேமரா' : 'Live Camera')}</span>
                                 </button>
-                              )}
-                            </div>
+                              </div>
+                            ) : (
+                              <div className="p-3.5 bg-white rounded-2xl border border-emerald-300 shadow-xs space-y-3 overflow-hidden">
+                                <div className="flex items-start justify-between gap-2 border-b border-emerald-100 pb-2.5">
+                                  <div className="flex items-center space-x-2 min-w-0 flex-1">
+                                    <div className="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                                      <CheckCircle2 className="w-4 h-4" />
+                                    </div>
+                                    <div className="min-w-0 flex-1">
+                                      <div className="text-xs font-bold text-slate-800 truncate leading-snug">{currentFile.name}</div>
+                                      <div className="text-[10px] text-emerald-700 font-extrabold flex items-center gap-1 mt-0.5">
+                                        <span>{t.uploadedSuccessfully}</span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <span className="text-[10px] font-black bg-emerald-100/80 text-emerald-800 px-2 py-0.5 rounded-md shrink-0 font-mono">
+                                    {(currentFile.size / (1024 * 1024)).toFixed(2)} MB
+                                  </span>
+                                </div>
+
+                                {/* ACTION PILL BUTTONS */}
+                                <div className="flex items-center flex-wrap gap-1.5 pt-0.5">
+                                  <label className="px-2.5 py-1 bg-orange-50 hover:bg-orange-100 text-orange-700 font-extrabold text-[11px] rounded-lg border border-orange-200/80 cursor-pointer flex items-center gap-1 transition-colors shrink-0">
+                                    <Upload className="w-3 h-3 text-orange-600" />
+                                    <span>{t.replaceBtn}</span>
+                                    <input
+                                      type="file"
+                                      accept=".pdf,.jpg,.jpeg,.png"
+                                      onChange={e => e.target.files[0] && processSelectedFile(docName, e.target.files[0], maxMB)}
+                                      className="hidden"
+                                    />
+                                  </label>
+
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setActiveCameraDoc(docName);
+                                      setActiveCameraMaxMB(maxMB);
+                                      setCameraModalOpen(true);
+                                    }}
+                                    className="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 font-extrabold text-[11px] rounded-lg border border-blue-200/80 flex items-center gap-1 transition-colors shrink-0"
+                                  >
+                                    <Camera className="w-3 h-3 text-blue-600" />
+                                    <span>{lang === 'ta' ? 'கேமரா' : 'Camera'}</span>
+                                  </button>
+
+                                  <button
+                                    type="button"
+                                    onClick={() => setFiles(prev => ({ ...prev, [docName]: null }))}
+                                    className="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 font-extrabold text-[11px] rounded-lg border border-rose-200/80 flex items-center gap-1 transition-colors shrink-0"
+                                  >
+                                    <X className="w-3 h-3 text-rose-600" />
+                                    <span>{t.removeBtn}</span>
+                                  </button>
+                                </div>
+                              </div>
+                            )}
+
+                            {hasErr && (
+                              <p className="text-[11px] text-rose-600 font-bold flex items-center gap-1">
+                                <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                                <span>{hasErr}</span>
+                              </p>
+                            )}
                           </div>
                         );
                       })}
                     </div>
                   ) : (
-                    <div className="p-4 bg-white rounded-xl border border-slate-200 text-center text-xs font-medium text-slate-500">
-                      {lang === 'ta' ? 'ஆவணங்கள் பதிவேற்றப்படவில்லை.' : 'No documents uploaded yet.'}
+                    <div className="p-6 bg-slate-50 text-center rounded-2xl text-slate-600 text-xs font-medium">
+                      {lang === 'ta' ? 'இந்த சேவைக்கு ஆவணங்கள் பதிவேற்ற வேண்டிய அவசியமில்லை.' : 'No document uploads required for this service. Click continue to review.'}
                     </div>
                   )}
-                </div>
 
-                {/* FEE BREAKDOWN CARD */}
-                <div className="p-6 bg-orange-50/60 border border-orange-200/90 rounded-2xl space-y-3">
-                  <div className="flex items-center justify-between border-b border-orange-200 pb-3">
-                    <h4 className="text-xs font-extrabold text-orange-950 uppercase tracking-wider">{t.feeBreakdownTitle}</h4>
-                    <span className="text-[10px] font-extrabold text-orange-700 bg-orange-100 px-2 py-0.5 rounded-md">
-                      {service.fee === 0 ? t.freeFacilitation : t.serviceFeeLabel}
-                    </span>
-                  </div>
-
-                  <div className="space-y-2 text-xs text-slate-700 font-medium">
-                    <div className="flex justify-between">
-                      <span>{t.serviceFeeLabel} ({service.name}):</span>
-                      <span className="font-bold">₹{service.fee || 0}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>{lang === 'ta' ? 'சேவை மைய பரிசீலனை:' : 'Facilitation Desk Review:'}</span>
-                      <span className="font-bold text-emerald-600">₹0 ({t.freeFacilitation})</span>
-                    </div>
-                    <div className="flex justify-between pt-2 border-t border-orange-200 font-extrabold text-slate-900 text-sm">
-                      <span>{t.totalPayableLabel}:</span>
-                      <span className="text-orange-600 text-base font-black">₹{service.fee || 0}</span>
+                  {/* INFORMATION NOTICE CARD */}
+                  <div className="bg-orange-50/70 border border-orange-200/80 p-4 rounded-2xl flex items-start space-x-3 text-xs text-orange-900 font-medium">
+                    <Info className="w-5 h-5 text-orange-600 shrink-0 mt-0.5" />
+                    <div>
+                      <span className="font-extrabold text-orange-950">{t.docNoticeTitle} </span>
+                      {t.docNoticeText}
                     </div>
                   </div>
+
+                  {/* BOTTOM ACTIONS */}
+                  <div className="pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+                    <button
+                      type="button"
+                      onClick={handlePrevStep}
+                      className="px-5 py-3.5 bg-slate-100 hover:bg-slate-200/80 text-slate-700 font-bold text-xs rounded-xl flex items-center gap-2 border border-slate-200/80"
+                    >
+                      <ArrowLeft className="w-4 h-4" />
+                      <span>{t.backToDetails}</span>
+                    </button>
+
+                    <div className="flex items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={handleSaveDraft}
+                        disabled={savingDraft}
+                        className="px-4 py-3.5 bg-slate-100 hover:bg-slate-200/80 text-slate-700 font-bold text-xs rounded-xl border border-slate-200/80 flex items-center gap-2 transition-colors"
+                      >
+                        <Save className="w-4 h-4 text-orange-500" />
+                        <span>{savingDraft ? t.savingDraftText : t.saveDraftBtn}</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={handleNextStep}
+                        className="px-8 py-3.5 bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-xs sm:text-sm rounded-xl shadow-xs transition-colors flex items-center gap-2 group/btn"
+                      >
+                        <span>{t.continueToReview}</span>
+                        <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                      </button>
+                    </div>
+                  </div>
+
                 </div>
+              )}
 
-                {/* SUBMISSION ACTIONS */}
-                <div className="pt-6 border-t border-slate-100 flex items-center justify-between gap-4">
-                  <button
-                    type="button"
-                    onClick={handlePrevStep}
-                    className="px-5 py-3.5 bg-slate-100 hover:bg-slate-200/80 text-slate-700 font-bold text-xs rounded-xl flex items-center gap-2 border border-slate-200/80"
-                  >
-                    <ArrowLeft className="w-4 h-4" />
-                    <span>{t.backToDocuments}</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setCurrentStep(4);
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }}
-                    className="px-8 py-3.5 bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-xs sm:text-sm rounded-xl shadow-xs transition-colors flex items-center gap-2 group/btn"
-                  >
-                    <span>{t.continueToPayment}</span>
-                    <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
-                  </button>
-                </div>
-
-              </div>
-            )}
-
-            {/* STEP 04: PAYMENT METHOD SELECTION & ORDER SUMMARY */}
-            {currentStep === 4 && (
-              <div className="bg-white rounded-3xl p-8 border border-slate-200/90 shadow-sm space-y-6">
-                
-                <div className="border-b pb-4 border-slate-100 flex items-center justify-between">
-                  <h3 className="font-heading font-extrabold text-lg text-slate-900 flex items-center gap-2">
-                    <CreditCard className="w-5 h-5 text-orange-500" />
-                    <span>{lang === 'ta' ? 'படி 04: கட்டண முறையைத் தேர்ந்தெடுத்து சமர்ப்பிக்கவும்' : 'Step 04: Select Payment Method & Submit'}</span>
-                  </h3>
-                  <span className="text-xs text-slate-400 font-bold">{lang === 'ta' ? '256-பிட் பாதுகாப்பு நுழைவாயில்' : '256-Bit Encrypted Gateway'}</span>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* STEP 03: APPLICATION REVIEW & SUBMISSION */}
+              {currentStep === 3 && (
+                <div className="bg-white rounded-3xl p-8 border border-slate-200/90 shadow-sm space-y-6">
                   
-                  {/* PAYMENT METHODS LIST */}
+                  <div className="border-b pb-4 border-slate-100 flex items-center justify-between">
+                    <h3 className="font-heading font-extrabold text-lg text-slate-900 flex items-center gap-2">
+                      <FileCheck className="w-5 h-5 text-orange-500" />
+                      <span>{t.reviewStepTitle}</span>
+                    </h3>
+                    <span className="text-xs text-slate-400 font-bold">{t.finalVerificationTag}</span>
+                  </div>
+
+                  {/* APPLICANT SUMMARY */}
+                  <div className="p-6 bg-slate-50/80 rounded-2xl border border-slate-200/70 space-y-4">
+                    <div className="flex items-center justify-between border-b pb-3 border-slate-200/70">
+                      <h4 className="text-xs font-bold text-slate-700 tracking-tight">{t.applicantDetailsTitle}</h4>
+                      <button
+                        onClick={() => setCurrentStep(1)}
+                        className="text-xs font-semibold text-orange-600 hover:text-orange-700 bg-white hover:bg-orange-50 border border-orange-200/80 px-3 py-1.5 rounded-lg flex items-center gap-1 transition-colors shadow-2xs"
+                      >
+                        <Edit3 className="w-3.5 h-3.5" />
+                        <span>{lang === 'ta' ? 'திருத்த' : 'Edit'}</span>
+                      </button>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
+                      <div className="bg-white p-4 rounded-xl border border-slate-200/70 shadow-2xs space-y-2">
+                        <span className="text-slate-500 block text-[11px] font-medium tracking-normal capitalize leading-tight">{t.fullName}</span>
+                        <span className="font-semibold text-slate-900 text-xs sm:text-sm block pt-0.5">{applicantInfo.user_name || 'N/A'}</span>
+                      </div>
+                      <div className="bg-white p-4 rounded-xl border border-slate-200/70 shadow-2xs space-y-2">
+                        <span className="text-slate-500 block text-[11px] font-medium tracking-normal capitalize leading-tight">{t.mobileNumber}</span>
+                        <span className="font-semibold text-slate-900 text-xs sm:text-sm block font-mono pt-0.5">{applicantInfo.user_phone || 'N/A'}</span>
+                      </div>
+                      <div className="bg-white p-4 rounded-xl border border-slate-200/70 shadow-2xs space-y-2">
+                        <span className="text-slate-500 block text-[11px] font-medium tracking-normal capitalize leading-tight">{t.emailAddress}</span>
+                        <span className="font-semibold text-slate-900 text-xs sm:text-sm block truncate pt-0.5">{applicantInfo.user_email || 'N/A'}</span>
+                      </div>
+                      <div className="bg-white p-4 rounded-xl border border-slate-200/70 shadow-2xs space-y-2">
+                        <span className="text-slate-500 block text-[11px] font-medium tracking-normal capitalize leading-tight">{t.districtLabel} / {t.stateLabel}</span>
+                        <span className="font-semibold text-slate-900 text-xs sm:text-sm block pt-0.5">{applicantInfo.district ? `${applicantInfo.district}, ${applicantInfo.state}` : applicantInfo.state}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* DYNAMIC FIELD VALUES SUMMARY (DEDUPLICATED) */}
+                  {(() => {
+                    const standardApplicantKeys = [
+                      'user_name', 'full_name', 'applicant_name', 'name',
+                      'user_email', 'email', 'email_address',
+                      'user_phone', 'mobile', 'mobile_number', 'phone',
+                      'aadhaar_no', 'aadhaar_number', '12-digit aadhaar number',
+                      'address', 'residential_address',
+                      'district', 'state', 'pincode', 'pin_code', '6-digit pin code',
+                      'dob', 'gender'
+                    ];
+
+                    const uniqueCustomEntries = Object.entries(fieldValues).filter(([k, v]) => {
+                      if (v === undefined || v === null || v === '') return false;
+                      const normK = k.toLowerCase().trim();
+                      return !standardApplicantKeys.includes(normK);
+                    });
+
+                    if (uniqueCustomEntries.length === 0) return null;
+
+                    return (
+                      <div className="p-6 bg-slate-50/80 rounded-2xl border border-slate-200/70 space-y-4">
+                        <div className="flex items-center justify-between border-b pb-3 border-slate-200/70">
+                          <h4 className="text-xs font-bold text-slate-700 tracking-tight">{t.customInputsTitle}</h4>
+                          <button
+                            onClick={() => setCurrentStep(1)}
+                            className="text-xs font-semibold text-orange-600 hover:text-orange-700 bg-white hover:bg-orange-50 border border-orange-200/80 px-3 py-1.5 rounded-lg flex items-center gap-1 transition-colors shadow-2xs"
+                          >
+                            <Edit3 className="w-3.5 h-3.5" />
+                            <span>{lang === 'ta' ? 'திருத்த' : 'Edit'}</span>
+                          </button>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                          {uniqueCustomEntries.map(([k, v], idx) => {
+                            const fDef = service.fields ? service.fields.find(f => (f.field_name || f.name) === k) : null;
+                            const rawLabel = fDef ? (fDef.field_label || fDef.label || k) : k.replace(/_/g, ' ');
+                            const cleanLabel = rawLabel.charAt(0).toUpperCase() + rawLabel.slice(1).toLowerCase();
+                            return (
+                              <div key={idx} className="bg-white p-4 rounded-xl border border-slate-200/70 shadow-2xs space-y-2">
+                                <span className="text-slate-500 block text-[11px] font-medium tracking-normal capitalize leading-tight">{cleanLabel}:</span>
+                                <span className="font-semibold text-slate-900 block text-xs sm:text-sm leading-relaxed pt-0.5">{String(v)}</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })()}
+
+                  {/* UPLOADED DOCUMENTS SUMMARY WITH VISUAL PREVIEWS */}
+                  <div className="p-6 bg-slate-50/80 rounded-2xl border border-slate-200/70 space-y-4">
+                    <div className="flex items-center justify-between border-b pb-3 border-slate-200/70">
+                      <div>
+                        <h4 className="text-xs font-bold text-slate-700 tracking-tight">{t.uploadedDocumentsTitle}</h4>
+                        <p className="text-[11px] text-slate-500 font-normal mt-0.5">
+                          {lang === 'ta' ? 'பதிவேற்றப்பட்ட சான்று ஆவணங்களின் சரிபார்ப்பு முன்னோட்டம்' : 'Visual inspection of uploaded proof documents'}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => setCurrentStep(2)}
+                        className="text-xs font-semibold text-orange-600 hover:text-orange-700 bg-white hover:bg-orange-50 border border-orange-200/80 px-3 py-1.5 rounded-lg flex items-center gap-1 transition-colors shadow-2xs"
+                      >
+                        <Edit3 className="w-3.5 h-3.5" />
+                        <span>{lang === 'ta' ? 'ஆவணங்களை மாற்ற / திருத்த' : 'Edit / Replace Docs'}</span>
+                      </button>
+                    </div>
+
+                    {(() => {
+                      // Filter to only display official service documents to prevent duplicate ghost cards
+                      const docList = (service && service.documents && service.documents.length > 0)
+                        ? service.documents.map(d => d.document_name || d.name)
+                        : Object.keys(files);
+
+                      if (docList.length === 0) {
+                        return (
+                          <div className="p-4 bg-white rounded-xl border border-slate-200 text-center text-xs font-medium text-slate-500">
+                            {lang === 'ta' ? 'ஆவணங்கள் எதுவும் தேவைப்படவில்லை.' : 'No documents required.'}
+                          </div>
+                        );
+                      }
+
+                      return (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          {docList.map((dName, idx) => {
+                            // Match file object from files state
+                            const normDName = dName.toLowerCase().replace(/[^a-z0-9]+/g, '');
+                            const fileKey = Object.keys(files).find(k => 
+                              k === dName || k.toLowerCase().replace(/[^a-z0-9]+/g, '') === normDName
+                            );
+                            const fObj = fileKey ? files[fileKey] : null;
+
+                            if (!fObj) {
+                              return (
+                                <div key={idx} className="p-4 bg-white rounded-2xl border border-slate-200/80 flex items-center justify-between">
+                                  <span className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                                    <FileText className="w-4 h-4 text-slate-400" />
+                                    <span>{dName}</span>
+                                  </span>
+                                  <span className="text-[10px] font-extrabold text-amber-700 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-lg">
+                                    {lang === 'ta' ? 'பதிவேற்றப்படவில்லை' : 'Not Uploaded'}
+                                  </span>
+                                </div>
+                              );
+                            }
+
+                            let isImage = false;
+                            let isPdf = false;
+                            let previewUrl = null;
+                            let fileName = 'document';
+                            let fileSize = '';
+
+                            if (fObj instanceof File || fObj instanceof Blob) {
+                              fileName = fObj.name || 'document';
+                              fileSize = fObj.size ? `${(fObj.size / (1024 * 1024)).toFixed(2)} MB` : '';
+                              isImage = fObj.type ? fObj.type.startsWith('image/') : /\.(jpg|jpeg|png|webp|gif)$/i.test(fObj.name);
+                              isPdf = fObj.type === 'application/pdf' || /\.pdf$/i.test(fObj.name);
+                              if (isImage) previewUrl = URL.createObjectURL(fObj);
+                            } else if (typeof fObj === 'string') {
+                              fileName = fObj.split('/').pop() || 'document';
+                              previewUrl = fObj;
+                              isImage = fObj.startsWith('data:image/') || /\.(jpg|jpeg|png|webp|gif)$/i.test(fObj);
+                              isPdf = fObj.endsWith('.pdf');
+                            } else if (typeof fObj === 'object') {
+                              fileName = fObj.name || 'document';
+                              fileSize = fObj.size ? `${(fObj.size / (1024 * 1024)).toFixed(2)} MB` : '';
+                              previewUrl = fObj.url || null;
+                              isImage = previewUrl ? (/\.(jpg|jpeg|png|webp|gif)$/i.test(fileName) || /\.(jpg|jpeg|png|webp|gif)$/i.test(previewUrl) || previewUrl.includes('preview-file')) : true;
+                              isPdf = previewUrl ? (/\.pdf$/i.test(fileName) || /\.pdf$/i.test(previewUrl)) : false;
+                            }
+
+                            return (
+                              <div key={idx} className="p-4 bg-white rounded-2xl border border-slate-200/80 shadow-2xs hover:shadow-md transition-all space-y-3">
+                                <div className="flex items-center justify-between gap-2">
+                                  <span className="text-xs font-semibold text-slate-800 flex items-center gap-1.5 truncate">
+                                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                                    <span className="truncate">{dName}</span>
+                                  </span>
+                                  {fileSize && (
+                                    <span className="text-[10px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200/80 px-2 py-0.5 rounded-md shrink-0 font-mono">
+                                      {fileSize}
+                                    </span>
+                                  )}
+                                </div>
+
+                                {/* THUMBNAIL BOX WITH ZOOM PREVIEW */}
+                                <div className="relative group/thumb rounded-xl overflow-hidden bg-slate-900 border border-slate-800 flex items-center justify-center min-h-[140px] max-h-[180px]">
+                                  {isImage && previewUrl ? (
+                                    <>
+                                      <img 
+                                        src={previewUrl} 
+                                        alt={dName} 
+                                        className="w-full h-36 object-cover group-hover/thumb:scale-105 transition-transform duration-300"
+                                      />
+                                      <div className="absolute inset-0 bg-slate-950/60 opacity-0 group-hover/thumb:opacity-100 transition-opacity flex items-center justify-center gap-2 backdrop-blur-xs">
+                                        <button
+                                          type="button"
+                                          onClick={() => setPreviewModalDoc({ title: dName, url: previewUrl, isPdf: false, fileName })}
+                                          className="px-3.5 py-2 bg-white text-slate-900 font-extrabold text-xs rounded-xl shadow-lg flex items-center gap-1.5 hover:bg-orange-500 hover:text-white transition-all transform hover:scale-105"
+                                        >
+                                          <Eye className="w-4 h-4" />
+                                          <span>{lang === 'ta' ? 'பெரிதாக்குக' : 'Zoom Preview'}</span>
+                                        </button>
+                                      </div>
+                                    </>
+                                  ) : isPdf ? (
+                                    <div className="p-4 text-center space-y-2">
+                                      <div className="w-12 h-12 bg-rose-100 text-rose-600 rounded-xl flex items-center justify-center mx-auto border border-rose-200">
+                                        <FileText className="w-6 h-6" />
+                                      </div>
+                                      <div className="text-xs font-extrabold text-slate-800 truncate max-w-[200px] mx-auto">{fileName}</div>
+                                      <span className="inline-block text-[10px] font-black uppercase text-rose-700 bg-rose-50 border border-rose-200 px-2.5 py-0.5 rounded-md">PDF Document</span>
+                                    </div>
+                                  ) : (
+                                    <div className="p-4 text-center space-y-2">
+                                      <div className="w-12 h-12 bg-emerald-100 text-emerald-700 rounded-xl flex items-center justify-center mx-auto border border-emerald-200">
+                                        <CheckCircle2 className="w-6 h-6" />
+                                      </div>
+                                      <div className="text-xs font-extrabold text-slate-800 truncate max-w-[200px] mx-auto">{fileName}</div>
+                                    </div>
+                                  )}
+                                </div>
+
+                                <div className="flex items-center justify-between text-[11px] pt-1">
+                                  <span className="text-slate-500 font-medium truncate max-w-[160px]">{fileName}</span>
+                                  {previewUrl && (
+                                    <button
+                                      type="button"
+                                      onClick={() => setPreviewModalDoc({ title: dName, url: previewUrl, isPdf, fileName })}
+                                      className="font-extrabold text-orange-600 hover:text-orange-700 flex items-center gap-1 hover:underline shrink-0"
+                                    >
+                                      <Eye className="w-3.5 h-3.5" />
+                                      <span>{lang === 'ta' ? 'பெரிதாக்குக' : 'Zoom Preview'}</span>
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      );
+                    })()}
+                  </div>
+
+                  {/* FEE BREAKDOWN CARD */}
+                  <div className="p-6 bg-orange-50/60 border border-orange-200/90 rounded-2xl space-y-3">
+                    <div className="flex items-center justify-between border-b border-orange-200 pb-3">
+                      <h4 className="text-xs font-extrabold text-orange-950 uppercase tracking-wider">{t.feeBreakdownTitle}</h4>
+                      <span className="text-[10px] font-extrabold text-orange-700 bg-orange-100 px-2 py-0.5 rounded-md">
+                        {service.fee === 0 ? t.freeFacilitation : t.serviceFeeLabel}
+                      </span>
+                    </div>
+
+                    <div className="space-y-2 text-xs text-slate-700 font-medium">
+                      <div className="flex justify-between">
+                        <span>{t.serviceFeeLabel} ({service.name}):</span>
+                        <span className="font-bold">₹{service.fee || 0}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>{lang === 'ta' ? 'சேவை மைய பரிசீலனை:' : 'Facilitation Desk Review:'}</span>
+                        <span className="font-bold text-emerald-600">₹0 ({t.freeFacilitation})</span>
+                      </div>
+                      <div className="flex justify-between pt-2 border-t border-orange-200 font-extrabold text-slate-900 text-sm">
+                        <span>{t.totalPayableLabel}:</span>
+                        <span className="text-orange-600 text-base font-black">₹{service.fee || 0}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* SUBMISSION ACTIONS */}
+                  <div className="pt-6 border-t border-slate-100 flex items-center justify-between gap-4">
+                    <button
+                      type="button"
+                      onClick={handlePrevStep}
+                      className="px-5 py-3.5 bg-slate-100 hover:bg-slate-200/80 text-slate-700 font-bold text-xs rounded-xl flex items-center gap-2 border border-slate-200/80"
+                    >
+                      <ArrowLeft className="w-4 h-4" />
+                      <span>{t.backToDocuments}</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setCurrentStep(4);
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }}
+                      className="px-8 py-3.5 bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-xs sm:text-sm rounded-xl shadow-xs transition-colors flex items-center gap-2 group/btn"
+                    >
+                      <span>{t.continueToPayment}</span>
+                      <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                    </button>
+                  </div>
+
+                </div>
+              )}
+
+              {/* STEP 04: PAYMENT METHOD SELECTION & ORDER SUMMARY */}
+              {currentStep === 4 && (
+                <div className="bg-white rounded-3xl p-6 sm:p-10 border border-slate-200/80 shadow-sm space-y-8">
+                  
+                  {/* STEP HEADER BANNER */}
+                  <div className="bg-slate-900 text-white rounded-2xl p-6 sm:p-8 flex items-center justify-between gap-4 shadow-md">
+                    <div className="space-y-1">
+                      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/20 border border-orange-500/30 text-orange-400 text-xs font-semibold">
+                        <CreditCard className="w-3.5 h-3.5" />
+                        <span>{lang === 'ta' ? 'படி 04 / 04 - கட்டண முறை' : 'Step 04 / 04 — Payment Checkout'}</span>
+                      </div>
+                      <h3 className="font-heading font-bold text-xl sm:text-2xl text-white tracking-tight pt-1">
+                        {lang === 'ta' ? 'கட்டணத்தைச் செலுத்தி விண்ணப்பத்தைச் சமர்ப்பிக்கவும்' : 'Complete Payment & Submit Application'}
+                      </h3>
+                    </div>
+                  </div>
+
+                  {/* HORIZONTAL PAYMENT MODE TABS */}
                   <div className="space-y-4">
-                    <h4 className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">{t.selectPaymentOption}</h4>
-                    
-                    <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-sm font-bold text-slate-900 tracking-tight">{t.selectPaymentOption}</h4>
+                      <span className="text-xs font-medium text-slate-400">{lang === 'ta' ? 'விருப்பமான முறையை சொடுக்கவும்' : 'Click to select payment mode'}</span>
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                       {/* UPI */}
-                      <label 
+                      <div
                         onClick={() => setPaymentMethod('upi')}
-                        className={`p-4 rounded-2xl border-2 cursor-pointer transition-all flex items-start justify-between ${
-                          paymentMethod === 'upi' ? 'border-orange-500 bg-orange-50/40 shadow-xs' : 'border-slate-200 bg-slate-50 hover:border-slate-300'
+                        className={`p-4 rounded-2xl border transition-all cursor-pointer text-center space-y-2.5 relative ${
+                          paymentMethod === 'upi'
+                            ? 'border-orange-500 bg-orange-50/50 ring-2 ring-orange-500/20 shadow-xs'
+                            : 'border-slate-200/90 bg-white hover:border-slate-300 hover:bg-slate-50/50'
                         }`}
                       >
-                        <div className="flex items-start space-x-3">
-                          <div className={`p-2.5 rounded-xl ${paymentMethod === 'upi' ? 'bg-orange-500 text-white' : 'bg-slate-200 text-slate-700'}`}>
-                            <QrCode className="w-5 h-5" />
-                          </div>
-                          <div>
-                            <div className="text-xs font-extrabold text-slate-900 flex items-center gap-2">
-                              <span>{t.upiPaymentTitle}</span>
-                              <span className="text-[10px] font-extrabold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-md uppercase">{lang === 'ta' ? 'வேகமானது' : 'Fastest'}</span>
-                            </div>
-                            <p className="text-[11px] text-slate-500 mt-0.5">{t.upiPaymentSub}</p>
-                          </div>
+                        <div className={`w-10 h-10 rounded-xl mx-auto flex items-center justify-center transition-colors ${
+                          paymentMethod === 'upi' ? 'bg-orange-500 text-white' : 'bg-slate-100 text-slate-600'
+                        }`}>
+                          <QrCode className="w-5 h-5" />
                         </div>
-                        <input
-                          type="radio"
-                          name="payment_method"
-                          checked={paymentMethod === 'upi'}
-                          onChange={() => setPaymentMethod('upi')}
-                          className="mt-1 text-orange-500 focus:ring-orange-500"
-                        />
-                      </label>
+                        <div>
+                          <div className="text-xs font-bold text-slate-900">{t.upiPaymentTitle}</div>
+                          <span className="inline-block text-[10px] font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full mt-1 border border-emerald-200/60">
+                            {lang === 'ta' ? 'வேகமானது' : 'Fastest'}
+                          </span>
+                        </div>
+                      </div>
 
                       {/* CARD */}
-                      <label 
+                      <div
                         onClick={() => setPaymentMethod('card')}
-                        className={`p-4 rounded-2xl border-2 cursor-pointer transition-all flex items-start justify-between ${
-                          paymentMethod === 'card' ? 'border-orange-500 bg-orange-50/40 shadow-xs' : 'border-slate-200 bg-slate-50 hover:border-slate-300'
+                        className={`p-4 rounded-2xl border transition-all cursor-pointer text-center space-y-2.5 relative ${
+                          paymentMethod === 'card'
+                            ? 'border-orange-500 bg-orange-50/50 ring-2 ring-orange-500/20 shadow-xs'
+                            : 'border-slate-200/90 bg-white hover:border-slate-300 hover:bg-slate-50/50'
                         }`}
                       >
-                        <div className="flex items-start space-x-3">
-                          <div className={`p-2.5 rounded-xl ${paymentMethod === 'card' ? 'bg-orange-500 text-white' : 'bg-slate-200 text-slate-700'}`}>
-                            <CreditCard className="w-5 h-5" />
-                          </div>
-                          <div>
-                            <div className="text-xs font-extrabold text-slate-900">{t.cardPaymentTitle}</div>
-                            <p className="text-[11px] text-slate-500 mt-0.5">{t.cardPaymentSub}</p>
-                          </div>
+                        <div className={`w-10 h-10 rounded-xl mx-auto flex items-center justify-center transition-colors ${
+                          paymentMethod === 'card' ? 'bg-orange-500 text-white' : 'bg-slate-100 text-slate-600'
+                        }`}>
+                          <CreditCard className="w-5 h-5" />
                         </div>
-                        <input
-                          type="radio"
-                          name="payment_method"
-                          checked={paymentMethod === 'card'}
-                          onChange={() => setPaymentMethod('card')}
-                          className="mt-1 text-orange-500 focus:ring-orange-500"
-                        />
-                      </label>
+                        <div>
+                          <div className="text-xs font-bold text-slate-900">{t.cardPaymentTitle}</div>
+                          <span className="inline-block text-[10px] font-medium text-slate-500 mt-1">Visa, Mastercard</span>
+                        </div>
+                      </div>
 
                       {/* NET BANKING */}
-                      <label 
+                      <div
                         onClick={() => setPaymentMethod('netbanking')}
-                        className={`p-4 rounded-2xl border-2 cursor-pointer transition-all flex items-start justify-between ${
-                          paymentMethod === 'netbanking' ? 'border-orange-500 bg-orange-50/40 shadow-xs' : 'border-slate-200 bg-slate-50 hover:border-slate-300'
+                        className={`p-4 rounded-2xl border transition-all cursor-pointer text-center space-y-2.5 relative ${
+                          paymentMethod === 'netbanking'
+                            ? 'border-orange-500 bg-orange-50/50 ring-2 ring-orange-500/20 shadow-xs'
+                            : 'border-slate-200/90 bg-white hover:border-slate-300 hover:bg-slate-50/50'
                         }`}
                       >
-                        <div className="flex items-start space-x-3">
-                          <div className={`p-2.5 rounded-xl ${paymentMethod === 'netbanking' ? 'bg-orange-500 text-white' : 'bg-slate-200 text-slate-700'}`}>
-                            <Building2 className="w-5 h-5" />
-                          </div>
-                          <div>
-                            <div className="text-xs font-extrabold text-slate-900">{t.netbankingTitle}</div>
-                            <p className="text-[11px] text-slate-500 mt-0.5">{t.netbankingSub}</p>
-                          </div>
+                        <div className={`w-10 h-10 rounded-xl mx-auto flex items-center justify-center transition-colors ${
+                          paymentMethod === 'netbanking' ? 'bg-orange-500 text-white' : 'bg-slate-100 text-slate-600'
+                        }`}>
+                          <Building2 className="w-5 h-5" />
                         </div>
-                        <input
-                          type="radio"
-                          name="payment_method"
-                          checked={paymentMethod === 'netbanking'}
-                          onChange={() => setPaymentMethod('netbanking')}
-                          className="mt-1 text-orange-500 focus:ring-orange-500"
-                        />
-                      </label>
+                        <div>
+                          <div className="text-xs font-bold text-slate-900">{t.netbankingTitle}</div>
+                          <span className="inline-block text-[10px] font-medium text-slate-500 mt-1">50+ Banks</span>
+                        </div>
+                      </div>
 
                       {/* WALLET */}
-                      <label 
+                      <div
                         onClick={() => setPaymentMethod('wallet')}
-                        className={`p-4 rounded-2xl border-2 cursor-pointer transition-all flex items-start justify-between ${
-                          paymentMethod === 'wallet' ? 'border-orange-500 bg-orange-50/40 shadow-xs' : 'border-slate-200 bg-slate-50 hover:border-slate-300'
+                        className={`p-4 rounded-2xl border transition-all cursor-pointer text-center space-y-2.5 relative ${
+                          paymentMethod === 'wallet'
+                            ? 'border-orange-500 bg-orange-50/50 ring-2 ring-orange-500/20 shadow-xs'
+                            : 'border-slate-200/90 bg-white hover:border-slate-300 hover:bg-slate-50/50'
                         }`}
                       >
-                        <div className="flex items-start space-x-3">
-                          <div className={`p-2.5 rounded-xl ${paymentMethod === 'wallet' ? 'bg-orange-500 text-white' : 'bg-slate-200 text-slate-700'}`}>
-                            <Wallet className="w-5 h-5" />
-                          </div>
-                          <div>
-                            <div className="text-xs font-extrabold text-slate-900">{t.walletTitle}</div>
-                            <p className="text-[11px] text-slate-500 mt-0.5">{t.walletSub}</p>
-                          </div>
+                        <div className={`w-10 h-10 rounded-xl mx-auto flex items-center justify-center transition-colors ${
+                          paymentMethod === 'wallet' ? 'bg-orange-500 text-white' : 'bg-slate-100 text-slate-600'
+                        }`}>
+                          <Wallet className="w-5 h-5" />
                         </div>
-                        <input
-                          type="radio"
-                          name="payment_method"
-                          checked={paymentMethod === 'wallet'}
-                          onChange={() => setPaymentMethod('wallet')}
-                          className="mt-1 text-orange-500 focus:ring-orange-500"
-                        />
-                      </label>
-                    </div>
-                  </div>
-
-                  {/* ORDER / PAYMENT SUMMARY */}
-                  <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200/80 space-y-4 flex flex-col justify-between">
-                    <div className="space-y-4">
-                      <h4 className="text-xs font-extrabold text-slate-500 uppercase tracking-wider border-b border-slate-200 pb-2">{t.orderSummaryTitle}</h4>
-                      
-                      <div className="space-y-2.5 text-xs">
-                        <div className="flex justify-between text-slate-600">
-                          <span>{lang === 'ta' ? 'சேவை பெயர்:' : 'Service Name:'}</span>
-                          <span className="font-bold text-slate-900">{service.name}</span>
-                        </div>
-                        <div className="flex justify-between text-slate-600">
-                          <span>{t.fullName}:</span>
-                          <span className="font-bold text-slate-900">{applicantInfo.user_name || 'Karthik S.'}</span>
-                        </div>
-                        <div className="flex justify-between text-slate-600">
-                          <span>{t.serviceFeeLabel}:</span>
-                          <span className="font-bold text-slate-900">₹{service.fee || 0}</span>
-                        </div>
-                        <div className="flex justify-between text-slate-600">
-                          <span>{lang === 'ta' ? 'சேவை மைய பரிசீலனை:' : 'Desk Facilitation Review:'}</span>
-                          <span className="font-bold text-emerald-600">₹0 ({t.freeFacilitation})</span>
-                        </div>
-                        <div className="flex justify-between text-slate-600">
-                          <span>{lang === 'ta' ? 'வரிகள் & GST:' : 'Applicable Taxes & GST:'}</span>
-                          <span className="font-bold text-slate-900">{lang === 'ta' ? 'உள்ளடக்கம்' : 'Included'}</span>
-                        </div>
-                      </div>
-
-                      <div className="pt-3 border-t border-slate-200 flex items-center justify-between bg-white p-4 rounded-xl border border-slate-200">
                         <div>
-                          <div className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">{t.finalAmountPayable}</div>
-                          <div className="text-2xl font-black text-orange-600">
-                            {service.fee === 0 ? (lang === 'ta' ? 'இலவசம்' : 'FREE') : `₹${service.fee}`}
-                          </div>
+                          <div className="text-xs font-bold text-slate-900">{t.walletTitle}</div>
+                          <span className="inline-block text-[10px] font-medium text-slate-500 mt-1">Paytm, PhonePe</span>
                         </div>
-                        <span className="text-[10px] font-extrabold bg-orange-100 text-orange-800 px-2.5 py-1 rounded-md uppercase">
-                          {lang === 'ta' ? 'இப்போது செலுத்தவும்' : 'Payable Now'}
-                        </span>
                       </div>
-                    </div>
-
-                    {/* SECURITY NOTICE BANNER */}
-                    <div className="bg-slate-200/60 p-3 rounded-xl text-[11px] text-slate-600 font-medium flex items-center gap-2 border border-slate-300/50">
-                      <Lock className="w-4 h-4 text-orange-600 shrink-0" />
-                      <span>{lang === 'ta' ? 'தொடர்வதற்கு முன் கட்டணத் தொகையை சரிபார்க்கவும்.' : 'Please verify the payment amount before proceeding.'}</span>
                     </div>
                   </div>
 
+                  {/* EXECUTIVE ORDER INVOICE SUMMARY BOX */}
+                  <div className="bg-slate-50/90 rounded-2xl p-6 sm:p-8 border border-slate-200/80 space-y-6">
+                    <div className="flex items-center justify-between border-b pb-4 border-slate-200/80">
+                      <h4 className="text-sm font-bold text-slate-900 tracking-tight flex items-center gap-2">
+                        <FileCheck className="w-4 h-4 text-orange-500" />
+                        <span>{t.orderSummaryTitle}</span>
+                      </h4>
+                      <span className="text-xs font-semibold text-emerald-800 bg-emerald-100/70 border border-emerald-200 px-3 py-1 rounded-full">
+                        {lang === 'ta' ? 'சரிபார்க்கப்பட்டது' : 'Verified Order'}
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                      <div className="bg-white p-4 rounded-xl border border-slate-200/70 space-y-1.5 shadow-2xs">
+                        <span className="text-[11px] font-medium text-slate-500 block">{lang === 'ta' ? 'சேவை பெயர்' : 'Service Name'}</span>
+                        <span className="font-semibold text-slate-900 text-xs sm:text-sm block truncate">{service.name}</span>
+                      </div>
+
+                      <div className="bg-white p-4 rounded-xl border border-slate-200/70 space-y-1.5 shadow-2xs">
+                        <span className="text-[11px] font-medium text-slate-500 block">{t.fullName}</span>
+                        <span className="font-semibold text-slate-900 text-xs sm:text-sm block truncate">{applicantInfo.user_name || 'N/A'}</span>
+                      </div>
+
+                      <div className="bg-white p-4 rounded-xl border border-slate-200/70 space-y-1.5 shadow-2xs">
+                        <span className="text-[11px] font-medium text-slate-500 block">{t.serviceFeeLabel}</span>
+                        <span className="font-semibold text-slate-900 text-xs sm:text-sm block font-mono">₹{service.fee || 0}</span>
+                      </div>
+
+                      <div className="bg-white p-4 rounded-xl border border-slate-200/70 space-y-1.5 shadow-2xs">
+                        <span className="text-[11px] font-medium text-slate-500 block">{lang === 'ta' ? 'வரிகள் & GST' : 'Applicable Taxes'}</span>
+                        <span className="font-semibold text-emerald-600 text-xs sm:text-sm block">{lang === 'ta' ? 'உள்ளடக்கம் (GST Free)' : 'Included'}</span>
+                      </div>
+                    </div>
+
+                    {/* HERO PAYMENT ACTION STRIP */}
+                    <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+                      <div className="space-y-1 text-center sm:text-left">
+                        <span className="text-xs font-medium text-slate-500 block">{t.finalAmountPayable}</span>
+                        <div className="text-3xl font-extrabold text-orange-600 tracking-tight font-heading">
+                          {service.fee === 0 ? (lang === 'ta' ? 'இலவசம்' : 'FREE') : `₹${service.fee}`}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <div className="text-right hidden sm:block">
+                          <span className="block text-xs font-bold text-slate-800">{lang === 'ta' ? 'பாதுகாப்பான செலுத்துகை' : 'Instant & Secure'}</span>
+                          <span className="block text-[11px] text-slate-400 font-medium">{lang === 'ta' ? 'உடனடி உறுதிப்படுத்தல்' : 'Instant Confirmation'}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* BOTTOM PAYMENT ACTIONS */}
+                  <div className="pt-6 border-t border-slate-100 flex items-center justify-between gap-4">
+                    <button
+                      type="button"
+                      onClick={handlePrevStep}
+                      className="px-5 py-3.5 bg-slate-100 hover:bg-slate-200/70 text-slate-700 font-semibold text-xs rounded-xl flex items-center gap-2 border border-slate-200/80 transition-colors"
+                    >
+                      <ArrowLeft className="w-4 h-4" />
+                      <span>{t.backToReview}</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={handleSubmit}
+                      disabled={submitting}
+                      className="px-7 py-3.5 bg-orange-500 hover:bg-orange-600 active:scale-[0.99] text-white font-bold text-xs sm:text-sm rounded-xl shadow-xs transition-all flex items-center gap-2"
+                    >
+                      {submitting ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                          <span>{lang === 'ta' ? 'கட்டணம் மற்றும் விண்ணப்பம் செயலாக்கப்படுகிறது...' : 'Processing Payment & Application...'}</span>
+                        </>
+                      ) : service.fee > 0 ? (
+                        <>
+                          <span>{lang === 'ta' ? `₹${service.fee} செலுத்தி விண்ணப்பத்தை சமர்ப்பிக்கவும்` : `Proceed to Pay ₹${service.fee} & Submit Application`}</span>
+                          <Lock className="w-4 h-4" />
+                        </>
+                      ) : (
+                        <>
+                          <span>{t.submitFreeApp}</span>
+                          <CheckCircle2 className="w-4 h-4" />
+                        </>
+                      )}
+                    </button>
+                  </div>
+
                 </div>
+              )}
 
-                {/* BOTTOM PAYMENT ACTIONS */}
-                <div className="pt-6 border-t border-slate-100 flex items-center justify-between gap-4">
-                  <button
-                    type="button"
-                    onClick={handlePrevStep}
-                    className="px-5 py-3.5 bg-slate-100 hover:bg-slate-200/80 text-slate-700 font-bold text-xs rounded-xl flex items-center gap-2 border border-slate-200/80"
-                  >
-                    <ArrowLeft className="w-4 h-4" />
-                    <span>{t.backToReview}</span>
-                  </button>
+            </div>
 
-                  <button
-                    type="button"
-                    onClick={handleSubmit}
-                    disabled={submitting}
-                    className="px-8 py-3.5 bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-xs sm:text-sm rounded-xl shadow-xs transition-colors flex items-center gap-2"
-                  >
-                    {submitting ? (
-                      <>
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                        <span>{lang === 'ta' ? 'கட்டணம் மற்றும் விண்ணப்பம் செயலாக்கப்படுகிறது...' : 'Processing Payment & Application...'}</span>
-                      </>
-                    ) : service.fee > 0 ? (
-                      <>
-                        <span>{lang === 'ta' ? `₹${service.fee} செலுத்தி விண்ணப்பத்தை சமர்ப்பிக்கவும்` : `Proceed to Pay ₹${service.fee} & Submit Application`}</span>
-                        <Lock className="w-4 h-4" />
-                      </>
-                    ) : (
-                      <>
-                        <span>{t.submitFreeApp}</span>
-                        <CheckCircle2 className="w-4 h-4" />
-                      </>
-                    )}
-                  </button>
-                </div>
-
-              </div>
-            )}
-
-          </div>
-
-          {/* RIGHT SIDEBAR — APPLICATION SUMMARY & HELP CARD (1 COL) */}
-          <div className="space-y-6 sticky top-8">
-            
-            {/* APPLICATION SUMMARY CARD */}
-            <div className="bg-white rounded-3xl p-6 border border-slate-200/90 shadow-sm space-y-4">
-              <h3 className="font-heading font-extrabold text-base text-slate-900 border-b pb-3 border-slate-100">
-                {lang === 'ta' ? 'விண்ணப்ப சுருக்கம்' : 'Application Summary'}
-              </h3>
-
-              <div className="space-y-3 text-xs">
-                <div>
-                  <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">{lang === 'ta' ? 'சேவை' : 'Service'}</span>
-                  <span className="font-extrabold text-slate-900 text-sm">{service.name}</span>
-                </div>
-
-                <div>
-                  <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">{t.categoriesTitle}</span>
-                  <span className="font-bold text-orange-600">{service.category_name}</span>
-                </div>
-
-                <div className="flex items-center justify-between pt-2 border-t border-slate-100">
-                  <span className="text-slate-500 font-medium">{t.serviceFeeLabel}:</span>
-                  <span className="font-black text-orange-600 text-base">
-                    {service.fee === 0 ? (lang === 'ta' ? 'இலவசம்' : 'FREE') : `₹${service.fee}`}
+            {/* RIGHT SIDEBAR — APPLICATION SUMMARY & HELP CARD (1 COL) */}
+            <div className="space-y-6 sticky top-8">
+              
+              {/* APPLICATION SUMMARY CARD */}
+              <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-sm space-y-5">
+                <div className="flex items-center justify-between border-b pb-3.5 border-slate-100">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center border border-orange-100">
+                      <FileText className="w-4 h-4" />
+                    </div>
+                    <h3 className="font-heading font-extrabold text-base text-slate-900">
+                      {lang === 'ta' ? 'விண்ணப்ப சுருக்கம்' : 'Application Summary'}
+                    </h3>
+                  </div>
+                  <span className="text-[10px] font-bold text-orange-600 bg-orange-50/80 border border-orange-200/60 px-2.5 py-1 rounded-full">
+                    {lang === 'ta' ? 'விவரங்கள்' : 'Overview'}
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-500 font-medium">{t.processingTimeLabel}:</span>
-                  <span className="font-bold text-slate-900">{service.processing_time || (lang === 'ta' ? '3-5 வேலை நாட்கள்' : '3-5 Working Days')}</span>
+                <div className="space-y-4 text-xs">
+                  <div className="bg-slate-50/80 p-3.5 rounded-2xl border border-slate-200/70 space-y-1">
+                    <span className="text-[11px] font-medium text-slate-500 block">{lang === 'ta' ? 'தேர்ந்தெடுக்கப்பட்ட சேவை' : 'Selected Service'}</span>
+                    <span className="font-semibold text-slate-900 text-xs sm:text-sm block leading-snug">{service.name}</span>
+                  </div>
+
+                  <div className="bg-slate-50/80 p-3.5 rounded-2xl border border-slate-200/70 space-y-1">
+                    <span className="text-[11px] font-medium text-slate-500 block">{t.categoriesTitle}</span>
+                    <span className="font-semibold text-orange-600 block">{service.category_name}</span>
+                  </div>
+
+                  <div className="pt-2 space-y-3">
+                    <div className="flex items-center justify-between py-1.5 border-b border-slate-100">
+                      <span className="text-slate-500 font-medium">{t.serviceFeeLabel}:</span>
+                      <span className="font-bold text-orange-600 text-sm font-mono">
+                        {service.fee === 0 ? (lang === 'ta' ? 'இலவசம்' : 'FREE') : `₹${service.fee}`}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-between py-1.5 border-b border-slate-100">
+                      <span className="text-slate-500 font-medium">{t.processingTimeLabel}:</span>
+                      <span className="font-semibold text-slate-900">{service.processing_time || (lang === 'ta' ? '3-5 வேலை நாட்கள்' : '3-5 Working Days')}</span>
+                    </div>
+
+                    <div className="flex items-center justify-between py-1.5">
+                      <span className="text-slate-500 font-medium">{lang === 'ta' ? 'தேவையான சான்றுகள்:' : 'Required Proofs:'}</span>
+                      <span className="font-semibold text-slate-900">{service.documents ? service.documents.length : 1} {lang === 'ta' ? 'ஆவணம்(கள்)' : 'File(s)'}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* NEED HELP CARD */}
+              <div className="bg-[#0b192c] text-white rounded-3xl p-6 space-y-5 shadow-lg border border-slate-800 relative overflow-hidden">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                  <div className="flex items-center gap-2 text-orange-400 font-semibold text-xs tracking-wide">
+                    <HelpCircle className="w-4 h-4 shrink-0 text-orange-400" />
+                    <span>{lang === 'ta' ? 'உதவி தேவையா?' : 'Need Assistance?'}</span>
+                  </div>
+                  <span className="text-[10px] font-medium text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded-full border border-emerald-800/80">
+                    {lang === 'ta' ? 'ஆன்லைன் 24/7' : 'Online Support'}
+                  </span>
+                </div>
+                
+                <div className="space-y-1.5">
+                  <h4 className="font-heading font-extrabold text-base text-white">
+                    {lang === 'ta' ? 'விண்ணப்ப உதவி மையம்' : 'Application Help Desk'}
+                  </h4>
+                  <p className="text-slate-400 text-xs font-normal leading-relaxed">
+                    {lang === 'ta' ? 'ஆவணங்கள் அல்லது விண்ணப்பப் படிகள் குறித்து ஏதேனும் சந்தேகம் உள்ளதா? உதவி மையத்தைத் தொடர்பு கொள்ளவும்.' : 'Have questions regarding required documents or application steps? Contact our support team.'}
+                  </p>
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-500 font-medium">{lang === 'ta' ? 'தேவையான சான்றுகள்:' : 'Required Proofs:'}</span>
-                  <span className="font-bold text-slate-900">{service.documents ? service.documents.length : 1} {lang === 'ta' ? 'கோப்பு(கள்)' : 'File(s)'}</span>
-                </div>
-              </div>
-            </div>
+                <div className="space-y-2.5 pt-2 text-xs">
+                  <div className="bg-slate-900/90 border border-slate-800 p-3 rounded-2xl flex items-center justify-between">
+                    <div className="flex items-center gap-2.5 text-slate-300 font-medium">
+                      <Phone className="w-4 h-4 text-orange-400 shrink-0" />
+                      <span className="font-mono font-semibold text-white">1800-425-3738</span>
+                    </div>
+                    <span className="text-[10px] text-slate-400 font-medium">{lang === 'ta' ? 'கட்டணமில்லா சேவை' : 'Toll-Free'}</span>
+                  </div>
 
-            {/* NEED HELP CARD */}
-            <div className="bg-[#0b192c] text-white rounded-3xl p-6 space-y-4 shadow-sm">
-              <div className="flex items-center gap-2 text-orange-400 font-extrabold text-xs uppercase tracking-wider">
-                <HelpCircle className="w-4 h-4" />
-                <span>{lang === 'ta' ? 'உதவி தேவையா?' : 'Need Assistance?'}</span>
-              </div>
-              <h4 className="font-heading font-extrabold text-lg text-white">
-                {lang === 'ta' ? 'விண்ணப்ப உதவி மையம்' : 'Application Help Desk'}
-              </h4>
-              <p className="text-slate-300 text-xs font-normal leading-relaxed">
-                {lang === 'ta' ? 'தேவையான ஆவணங்கள் அல்லது விண்ணப்பப் படிகள் குறித்து கேள்விகள் உள்ளதா? எங்கள் ஆதரவுக் குழுவைத் தொடர்பு கொள்ளவும்.' : 'Have questions regarding required documents or application steps? Contact our support team.'}
-              </p>
-              <div className="space-y-2 pt-2 border-t border-slate-800 text-xs">
-                <div className="flex items-center gap-2 text-slate-300 font-medium">
-                  <Phone className="w-3.5 h-3.5 text-orange-400" />
-                  <span>1800-425-3738</span>
-                </div>
-                <div className="flex items-center gap-2 text-slate-300 font-medium">
-                  <Mail className="w-3.5 h-3.5 text-orange-400" />
-                  <span>support@e-seva.portal</span>
+                  <div className="bg-slate-900/90 border border-slate-800 p-3 rounded-2xl flex items-center gap-2.5 text-slate-300 font-medium">
+                    <Mail className="w-4 h-4 text-orange-400 shrink-0" />
+                    <span className="text-xs text-white">support@eseva.gov.in</span>
+                  </div>
                 </div>
               </div>
+
             </div>
 
           </div>
+        )}
 
-        </div>
-
-        {/* STEP 05: SUCCESS & PAYMENT CONFIRMATION SCREEN */}
+        {/* STEP 05: SUCCESS & PAYMENT CONFIRMATION SCREEN (STANDALONE FULL-WIDTH DASHBOARD) */}
         {currentStep === 5 && submittedApp && (
-          <div className="max-w-3xl mx-auto space-y-6">
+          <div className="max-w-4xl mx-auto space-y-6">
             
             {/* 1. SUCCESS HERO CARD */}
-            <div className="bg-white rounded-3xl p-8 sm:p-10 border border-slate-200/90 shadow-xl text-center space-y-4">
+            <div className="bg-white rounded-3xl p-8 sm:p-10 border border-slate-200/90 shadow-md text-center space-y-4">
               <div className="w-20 h-20 bg-emerald-100/80 text-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-inner border border-emerald-200/80 ring-8 ring-emerald-50">
                 <CheckCircle2 className="w-10 h-10 text-emerald-600" />
               </div>
@@ -1780,37 +1928,43 @@ export default function ApplyService() {
               </div>
             </div>
 
-            {/* 3. PAYMENT CONFIRMATION CARD */}
-            <div className="bg-white rounded-3xl p-6 border border-slate-200/90 shadow-sm space-y-4">
-              <h3 className="font-heading font-extrabold text-sm text-slate-900 flex items-center justify-between border-b pb-3 border-slate-100">
+            {/* 3. PAYMENT CONFIRMATION CARD (SPACIOUS LABELS & VALUES) */}
+            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-5">
+              <h3 className="font-heading font-extrabold text-base text-slate-900 flex items-center justify-between border-b pb-4 border-slate-100">
                 <span className="flex items-center gap-2">
-                  <CreditCard className="w-4 h-4 text-orange-500" />
+                  <CreditCard className="w-5 h-5 text-orange-500" />
                   <span>{t.paymentConfirmationTitle}</span>
                 </span>
-                <span className="text-[11px] font-extrabold bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full border border-emerald-200 flex items-center gap-1">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                <span className="text-[11px] font-bold bg-emerald-50 text-emerald-700 px-3.5 py-1 rounded-full border border-emerald-200 flex items-center gap-1.5">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                   <span>{t.paidStatusTag}</span>
                 </span>
               </h3>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
-                <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
-                  <span className="text-slate-400 block text-[10px] font-extrabold uppercase">{t.paidAmountLabel}</span>
-                  <span className="font-black text-slate-900 text-sm">₹{submittedApp.amount || service.fee || 50}</span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
+                <div className="bg-slate-50/80 p-4 rounded-2xl border border-slate-200/70 space-y-1.5">
+                  <span className="text-slate-500 block text-[11px] font-medium leading-tight mb-1">{t.paidAmountLabel}</span>
+                  <span className="font-extrabold text-slate-900 text-sm sm:text-base font-mono block">₹{submittedApp.amount || service.fee || 50}</span>
                 </div>
-                <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
-                  <span className="text-slate-400 block text-[10px] font-extrabold uppercase">{lang === 'ta' ? 'கட்டண நிலை' : 'Payment Status'}</span>
-                  <span className="font-bold text-emerald-600">{lang === 'ta' ? 'வெற்றிகரமானது' : 'Successful'}</span>
+
+                <div className="bg-slate-50/80 p-4 rounded-2xl border border-slate-200/70 space-y-1.5">
+                  <span className="text-slate-500 block text-[11px] font-medium leading-tight mb-1">{lang === 'ta' ? 'கட்டண நிலை' : 'Payment Status'}</span>
+                  <span className="font-bold text-emerald-600 text-sm flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span>{lang === 'ta' ? 'வெற்றிகரமானது' : 'Successful'}</span>
+                  </span>
                 </div>
-                <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
-                  <span className="text-slate-400 block text-[10px] font-extrabold uppercase">{t.transactionRefLabel}</span>
-                  <span className="font-mono font-bold text-slate-900 truncate block">
+
+                <div className="bg-slate-50/80 p-4 rounded-2xl border border-slate-200/70 space-y-1.5">
+                  <span className="text-slate-500 block text-[11px] font-medium leading-tight mb-1">{t.transactionRefLabel}</span>
+                  <span className="font-mono font-bold text-slate-900 text-xs sm:text-sm truncate block">
                     {submittedApp.payment_transaction_id || `TXN-${Date.now().toString().slice(-8)}`}
                   </span>
                 </div>
-                <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
-                  <span className="text-slate-400 block text-[10px] font-extrabold uppercase">{t.dateTimeLabel}</span>
-                  <span className="font-bold text-slate-800">
+
+                <div className="bg-slate-50/80 p-4 rounded-2xl border border-slate-200/70 space-y-1.5">
+                  <span className="text-slate-500 block text-[11px] font-medium leading-tight mb-1">{t.dateTimeLabel}</span>
+                  <span className="font-bold text-slate-800 text-xs sm:text-sm block">
                     {new Date(submittedApp.submitted_at || Date.now()).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
                   </span>
                 </div>
@@ -1818,38 +1972,41 @@ export default function ApplyService() {
             </div>
 
             {/* 4. DYNAMIC APPLICATION SUMMARY CARD */}
-            <div className="bg-white rounded-3xl p-6 border border-slate-200/90 shadow-sm space-y-4">
-              <h3 className="font-heading font-extrabold text-sm text-slate-900 border-b pb-3 border-slate-100 flex items-center gap-2">
-                <FileText className="w-4 h-4 text-orange-500" />
+            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-5">
+              <h3 className="font-heading font-extrabold text-base text-slate-900 border-b pb-4 border-slate-100 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-orange-500" />
                 <span>{lang === 'ta' ? 'விண்ணப்ப சுருக்கம்' : 'Application Summary'}</span>
               </h3>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
-                <div>
-                  <span className="text-slate-400 block text-[10px] font-extrabold uppercase">{lang === 'ta' ? 'சேவை பெயர்' : 'Service Name'}</span>
-                  <span className="font-bold text-slate-900">{service.name}</span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
+                <div className="bg-slate-50/80 p-4 rounded-2xl border border-slate-200/70 space-y-1.5">
+                  <span className="text-slate-500 block text-[11px] font-medium mb-1">{lang === 'ta' ? 'சேவை பெயர்' : 'Service Name'}</span>
+                  <span className="font-bold text-slate-900 text-xs sm:text-sm block leading-snug">{service.name}</span>
                 </div>
-                <div>
-                  <span className="text-slate-400 block text-[10px] font-extrabold uppercase">{t.fullName}</span>
-                  <span className="font-bold text-slate-900">{applicantInfo.user_name || submittedApp.user_name || 'Karthik S.'}</span>
+
+                <div className="bg-slate-50/80 p-4 rounded-2xl border border-slate-200/70 space-y-1.5">
+                  <span className="text-slate-500 block text-[11px] font-medium mb-1">{t.fullName}</span>
+                  <span className="font-bold text-slate-900 text-xs sm:text-sm block truncate">{applicantInfo.user_name || submittedApp.user_name || 'Karthik S.'}</span>
                 </div>
-                <div>
-                  <span className="text-slate-400 block text-[10px] uppercase font-bold">{lang === 'ta' ? 'விண்ணப்பித்த தேதி' : 'Application Date'}</span>
-                  <span className="font-bold text-slate-900">
+
+                <div className="bg-slate-50/80 p-4 rounded-2xl border border-slate-200/70 space-y-1.5">
+                  <span className="text-slate-500 block text-[11px] font-medium mb-1">{lang === 'ta' ? 'விண்ணப்பித்த தேதி' : 'Application Date'}</span>
+                  <span className="font-bold text-slate-900 text-xs sm:text-sm block">
                     {new Date(submittedApp.submitted_at || Date.now()).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
                   </span>
                 </div>
-                <div>
-                  <span className="text-slate-400 block text-[10px] uppercase font-bold">{lang === 'ta' ? 'தற்போதைய நிலை' : 'Current Status'}</span>
-                  <span className="font-bold text-blue-600">{submittedApp.status || 'SUBMITTED'}</span>
+
+                <div className="bg-slate-50/80 p-4 rounded-2xl border border-slate-200/70 space-y-1.5">
+                  <span className="text-slate-500 block text-[11px] font-medium mb-1">{lang === 'ta' ? 'தற்போதைய நிலை' : 'Current Status'}</span>
+                  <span className="font-bold text-blue-600 text-xs sm:text-sm block">{submittedApp.status || 'SUBMITTED'}</span>
                 </div>
               </div>
             </div>
 
             {/* 5. WHAT'S NEXT? 3-STEP VISUAL WORKFLOW */}
-            <div className="bg-white rounded-3xl p-6 border border-slate-200/90 shadow-sm space-y-4">
-              <h3 className="font-heading font-extrabold text-sm text-slate-900 border-b pb-3 border-slate-100 flex items-center gap-2">
-                <Clock className="w-4 h-4 text-orange-500" />
+            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-5">
+              <h3 className="font-heading font-extrabold text-base text-slate-900 border-b pb-4 border-slate-100 flex items-center gap-2">
+                <Clock className="w-5 h-5 text-orange-500" />
                 <span>{t.whatsNextTitle}</span>
               </h3>
 
@@ -1906,7 +2063,7 @@ export default function ApplyService() {
 
               <button
                 type="button"
-                onClick={() => window.print()}
+                onClick={() => setShowReceiptModal(true)}
                 className="w-full sm:w-auto px-6 py-3.5 bg-white hover:bg-slate-50 text-slate-800 font-extrabold text-xs rounded-xl transition-colors flex items-center justify-center gap-2 border border-slate-200 shadow-xs"
               >
                 <Printer className="w-4 h-4 text-slate-600" />
@@ -1927,6 +2084,105 @@ export default function ApplyService() {
             </div>
 
           </div>
+        )}
+
+        {/* LIVE CAMERA CAPTURE MODAL */}
+        <CameraCaptureModal
+          isOpen={cameraModalOpen}
+          onClose={() => setCameraModalOpen(false)}
+          onCapture={(capturedFile) => {
+            if (activeCameraDoc && capturedFile) {
+              processSelectedFile(activeCameraDoc, capturedFile, activeCameraMaxMB);
+            }
+          }}
+          documentName={activeCameraDoc}
+          lang={lang}
+        />
+
+        {/* FULLSCREEN DOCUMENT ZOOM PREVIEW MODAL */}
+        {previewModalDoc && (
+          <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200 font-sans">
+            <div className="bg-white rounded-3xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden border border-slate-700/50">
+              
+              {/* MODAL HEADER */}
+              <div className="px-6 py-4 bg-[#0b192c] text-white flex items-center justify-between border-b border-slate-800">
+                <div className="flex items-center space-x-3">
+                  <div className="w-9 h-9 bg-orange-500/20 text-orange-400 rounded-xl flex items-center justify-center border border-orange-500/30">
+                    <Eye className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-heading font-extrabold text-sm text-white">{previewModalDoc.title}</h3>
+                    <p className="text-[10px] text-slate-400 font-medium">{previewModalDoc.fileName || 'Proof Document'}</p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setPreviewModalDoc(null)}
+                  className="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* MODAL BODY PREVIEW AREA */}
+              <div className="p-6 overflow-y-auto flex-1 bg-slate-950 flex items-center justify-center min-h-[300px]">
+                {previewModalDoc.url ? (
+                  <img
+                    src={previewModalDoc.url}
+                    alt={previewModalDoc.title}
+                    className="max-w-full max-h-[65vh] object-contain rounded-xl shadow-2xl border border-slate-800"
+                  />
+                ) : (
+                  <div className="text-center text-slate-400 text-xs py-10 font-medium">
+                    {lang === 'ta' ? 'முன்னோட்டம் கிடைக்கவில்லை' : 'Preview Unavailable'}
+                  </div>
+                )}
+              </div>
+
+              {/* MODAL FOOTER */}
+              <div className="px-6 py-4 bg-slate-900 text-white flex items-center justify-between border-t border-slate-800">
+                <div className="text-xs text-slate-400 font-medium flex items-center gap-1.5">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  <span>{lang === 'ta' ? 'சரிபார்க்கப்பட்ட சான்று ஆவணம்' : 'Verified Proof Document'}</span>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  {previewModalDoc.url && (
+                    <a
+                      href={previewModalDoc.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-xl transition-colors flex items-center gap-1.5"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" />
+                      <span>{lang === 'ta' ? 'புதிய தாவலில் திறக்க' : 'Open Full Tab'}</span>
+                    </a>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={() => setPreviewModalDoc(null)}
+                    className="px-5 py-2 bg-orange-500 hover:bg-orange-600 text-white text-xs font-extrabold rounded-xl transition-colors shadow-xs"
+                  >
+                    {lang === 'ta' ? 'மூடுக' : 'Close'}
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        )}
+
+        {/* OFFICIAL E-SEVA RECEIPT PREVIEW & PRINT MODAL */}
+        {showReceiptModal && (
+          <ReceiptModal
+            application={submittedApp}
+            service={service}
+            applicantInfo={applicantInfo}
+            fieldValues={details?.field_values || Object.entries(fieldValues).map(([k, v]) => ({ field_name: k, field_label: k, value: v }))}
+            onClose={() => setShowReceiptModal(false)}
+          />
         )}
 
         {/* LIVE CAMERA CAPTURE MODAL */}

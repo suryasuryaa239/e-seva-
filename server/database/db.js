@@ -57,7 +57,7 @@ class TiDBSupportedDatabase {
     try {
       const conn = await pool.getConnection();
       try {
-        const tables = ['users', 'admins', 'categories', 'services', 'applications', 'payments', 'contact_messages', 'career_applications', 'notifications'];
+        const tables = ['users', 'admins', 'categories', 'services', 'applications', 'payments', 'contact_messages', 'career_applications', 'notifications', 'application_documents', 'application_field_values'];
         for (const tbl of tables) {
           try {
             const [rows] = await conn.query(`SELECT * FROM ${tbl}`);
@@ -127,7 +127,7 @@ class TiDBSupportedDatabase {
 
   async persistInsertToTiDB(tableName, row) {
     try {
-      const allowedTables = ['users', 'admins', 'categories', 'services', 'applications', 'payments', 'contact_messages', 'career_applications', 'notifications'];
+      const allowedTables = ['users', 'admins', 'categories', 'services', 'applications', 'payments', 'contact_messages', 'career_applications', 'notifications', 'application_documents', 'application_field_values'];
       if (!allowedTables.includes(tableName)) return;
 
       const keys = Object.keys(row).filter(k => k !== 'id');
@@ -166,7 +166,7 @@ class TiDBSupportedDatabase {
 
   async persistUpdateToTiDB(tableName, id, updates) {
     try {
-      const allowedTables = ['users', 'admins', 'categories', 'services', 'applications', 'payments', 'contact_messages', 'career_applications', 'notifications'];
+      const allowedTables = ['users', 'admins', 'categories', 'services', 'applications', 'payments', 'contact_messages', 'career_applications', 'notifications', 'application_documents', 'application_field_values'];
       if (!allowedTables.includes(tableName) || !id) return;
 
       const keys = Object.keys(updates);

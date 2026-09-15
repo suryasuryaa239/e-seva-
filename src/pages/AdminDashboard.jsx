@@ -4412,25 +4412,86 @@ export default function AdminDashboard() {
                   </div>
                 </div>
 
-                {/* 2. Submitted Dynamic Service Fields */}
-                <div className="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-sm space-y-3">
-                  <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center space-x-2 border-b border-slate-100 pb-2.5">
-                    <FileText className="w-4 h-4 text-orange-500" />
-                    <span>Submitted Service Application Values</span>
-                  </h4>
-                  {appDetails.field_values && appDetails.field_values.length > 0 ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                      {appDetails.field_values.map((fv) => (
-                        <div key={fv.id} className="p-3 bg-slate-50 rounded-xl border border-slate-200">
-                          <span className="text-slate-500 block font-medium">{fv.field_label}</span>
-                          <span className="font-bold text-slate-900">{fv.value}</span>
+                {/* 2. Submitted Dynamic Service Fields (Deduplicated & Clean Spaced) */}
+                {(() => {
+                  const formatFieldLabel = (label, name) => {
+                    let raw = label || name || '';
+                    if (!raw) return 'Field';
+                    const labelMap = {
+                      'user_name': 'Full Name',
+                      'full_name': 'Full Name',
+                      'user_phone': 'Mobile Number',
+                      'mobile': 'Mobile Number',
+                      'mobile_number': 'Mobile Number',
+                      'user_email': 'Email Address',
+                      'email': 'Email Address',
+                      'dob': 'Date of Birth',
+                      'gender': 'Gender',
+                      'district': 'District',
+                      'state': 'State',
+                      'pincode': 'PIN Code',
+                      'aadhaar_no': 'Aadhaar Number',
+                      'address': 'Address'
+                    };
+                    const lower = raw.trim().toLowerCase().replace(/:$/, '');
+                    if (labelMap[lower]) return labelMap[lower];
+                    let cleaned = raw.replace(/:$/, '').replace(/_/g, ' ').trim();
+                    return cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+                  };
+
+                  const seenNormalizedKeys = new Set();
+                  const validFieldValues = [];
+
+                  (appDetails.field_values || []).forEach(fv => {
+                    if (!fv) return;
+                    const rawKey = (fv.field_name || fv.field_label || '').trim();
+                    const val = fv.value;
+                    if (!rawKey) return;
+
+                    const normKey = rawKey.toLowerCase().replace(/[^a-z0-9]/g, '');
+                    const baseKeysToIgnore = ['username', 'fullname', 'userphone', 'mobile', 'mobilenumber', 'useremail', 'email'];
+                    if (baseKeysToIgnore.includes(normKey)) return;
+
+                    if (val === undefined || val === null) return;
+                    const strVal = String(val).trim();
+                    if (!strVal || strVal === 'N/A' || strVal === 'null' || strVal === 'undefined') return;
+
+                    if (seenNormalizedKeys.has(normKey)) return;
+                    seenNormalizedKeys.add(normKey);
+
+                    validFieldValues.push({
+                      field_name: fv.field_name,
+                      field_label: fv.field_label || fv.field_name,
+                      value: strVal
+                    });
+                  });
+
+                  return (
+                    <div className="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-sm space-y-4">
+                      <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center space-x-2 border-b border-slate-100 pb-2.5">
+                        <FileText className="w-4 h-4 text-orange-500" />
+                        <span>Submitted Service Application Values</span>
+                      </h4>
+
+                      {validFieldValues.length > 0 ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                          {validFieldValues.map((fv, idx) => (
+                            <div key={idx} className="bg-slate-50/80 p-4 rounded-xl border border-slate-200/80 space-y-2 hover:border-slate-300 transition-all shadow-2xs">
+                              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
+                                {formatFieldLabel(fv.field_label, fv.field_name)}
+                              </span>
+                              <span className="font-extrabold text-slate-900 text-sm block leading-snug break-words">
+                                {fv.value}
+                              </span>
+                            </div>
+                          ))}
                         </div>
-                      ))}
+                      ) : (
+                        <p className="text-xs text-slate-500 font-medium">No additional dynamic form fields submitted.</p>
+                      )}
                     </div>
-                  ) : (
-                    <p className="text-xs text-slate-500">No dynamic form fields submitted.</p>
-                  )}
-                </div>
+                  );
+                })()}
 
                 {/* 3. Uploaded Documents & Verification Desk */}
                 <div className="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-sm space-y-3">
@@ -4568,9 +4629,8 @@ export default function AdminDashboard() {
                         className="w-full bg-slate-50 text-slate-900 text-xs rounded-xl px-3 py-2.5 border border-slate-300 outline-none font-bold"
                       >
                         <option value="Pending">Pending Verification</option>
-                        <option value="UNDER_REVIEW">Under Review</option>
+                        <option value="Under Review">Under Review</option>
                         <option value="Processing">In Processing</option>
-                        <option value="ACTION_REQUIRED">Action Required (Query)</option>
                         <option value="Approved">Approved</option>
                         <option value="Completed">Completed</option>
                         <option value="Rejected">Rejected</option>

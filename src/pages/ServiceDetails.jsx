@@ -267,7 +267,7 @@ export default function ServiceDetails() {
                 <Check className="w-4 h-4 text-emerald-600 shrink-0" /> {lang === 'ta' ? 'சரிபார்க்கப்பட்ட ஆவணங்கள் ஆய்வு மையம்' : 'Verified Document Review Desk'}
               </div>
               <div className="flex items-center gap-2">
-                <Check className="w-4 h-4 text-emerald-600 shrink-0" /> {lang === 'ta' ? '256-பிட் SSL பாதுகாக்கப்பட்ட தளம்' : '256-bit SSL Encrypted Portal'}
+                <Check className="w-4 h-4 text-emerald-600 shrink-0" /> {lang === 'ta' ? 'பாதுகாக்கப்பட்ட அரசாங்க இ-சேவை தளம்' : 'Official Secure Digital Portal'}
               </div>
             </div>
           </div>

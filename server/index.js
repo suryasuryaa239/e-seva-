@@ -762,6 +762,53 @@ app.post('/api/applications/draft', submitRateLimiter, upload.any(), async (req,
       }
     }
 
+    // Save/Update Uploaded Draft Documents
+    if (req.files && req.files.length > 0) {
+      let docMetadata = {};
+      if (req.body.doc_metadata) {
+        try {
+          docMetadata = typeof req.body.doc_metadata === 'string' ? JSON.parse(req.body.doc_metadata) : req.body.doc_metadata;
+        } catch (e) {}
+      }
+
+      const serviceDocs = db.all('service_documents', d => d.service_id === service.id);
+
+      req.files.forEach(file => {
+        let targetDocName = docMetadata[file.fieldname];
+
+        if (!targetDocName) {
+          const docName = file.fieldname.replace('doc_', '').replace(/_/g, ' ');
+          const matchedServiceDoc = serviceDocs.find(sd => {
+            const dName = sd.document_name || sd.name || '';
+            const normDName = dName.toLowerCase().replace(/[^a-z0-9]+/g, '');
+            const normDocName = docName.toLowerCase().replace(/[^a-z0-9]+/g, '');
+            return normDName.includes(normDocName) || normDocName.includes(normDName);
+          });
+          targetDocName = matchedServiceDoc ? (matchedServiceDoc.document_name || matchedServiceDoc.name) : docName;
+        }
+
+        // Delete existing document for this name before inserting new update
+        db.delete('application_documents', d => d.application_id === application.id && (
+          d.document_name === targetDocName || 
+          (d.document_name && d.document_name.toLowerCase().replace(/[^a-z0-9]+/g, '') === targetDocName.toLowerCase().replace(/[^a-z0-9]+/g, ''))
+        ));
+
+        db.insert('application_documents', {
+          application_id: application.id,
+          service_document_id: null,
+          document_name: targetDocName,
+          original_filename: file.originalname,
+          stored_filename: file.filename,
+          file_type: file.mimetype,
+          file_size: file.size,
+          file_path: `/api/documents/preview-file/${file.filename}`,
+          uploaded_by: userId || 'Guest User',
+          uploaded_at: new Date().toISOString(),
+          verification_status: 'Pending Verification'
+        });
+      });
+    }
+
     res.json({
       message: 'Draft application saved successfully',
       application_id: application.id,
@@ -2023,9 +2070,12 @@ app.get('/api/admin/applications', authenticateAdmin, (req, res) => {
 // Admin Update Application Status & Remarks
 app.put('/api/admin/applications/:id/status', authenticateAdmin, (req, res) => {
   const appId = Number(req.params.id);
-  const { status, admin_remarks } = req.body;
+  let { status, admin_remarks } = req.body;
 
-  const validStatuses = ['Pending', 'Processing', 'Approved', 'Completed', 'Rejected'];
+  if (status === 'UNDER_REVIEW') status = 'Under Review';
+  if (status === 'In Process' || status === 'IN_PROCESS') status = 'Processing';
+
+  const validStatuses = ['Pending', 'Under Review', 'Processing', 'Approved', 'Completed', 'Rejected'];
   if (!status || !validStatuses.includes(status)) {
     return res.status(400).json({ error: `Status must be one of: ${validStatuses.join(', ')}` });
   }

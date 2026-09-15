@@ -5,6 +5,7 @@ import {
   UserCheck, FileCheck, Download, History, MessageSquare, ExternalLink, Award, Copy, Check, Printer, DollarSign
 } from 'lucide-react';
 import CertificatePrint from '../components/CertificatePrint';
+import ReceiptModal from '../components/ReceiptModal';
 import StatusBadge from '../components/StatusBadge';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -17,7 +18,36 @@ export default function ApplicationDetailView() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showCertModal, setShowCertModal] = useState(false);
+  const [showReceiptModal, setShowReceiptModal] = useState(false);
   const [copiedAppId, setCopiedAppId] = useState(false);
+
+  const formatFieldLabel = (label, name) => {
+    let raw = label || name || '';
+    if (!raw) return 'Field';
+
+    const labelMap = {
+      'user_name': 'Full Name',
+      'full_name': 'Full Name',
+      'user_phone': 'Mobile Number',
+      'mobile': 'Mobile Number',
+      'mobile_number': 'Mobile Number',
+      'user_email': 'Email Address',
+      'email': 'Email Address',
+      'dob': 'Date of Birth',
+      'gender': 'Gender',
+      'district': 'District',
+      'state': 'State',
+      'pincode': 'PIN Code',
+      'aadhaar_no': 'Aadhaar Number',
+      'address': 'Address'
+    };
+
+    const lower = raw.trim().toLowerCase().replace(/:$/, '');
+    if (labelMap[lower]) return labelMap[lower];
+
+    let cleaned = raw.replace(/:$/, '').replace(/_/g, ' ').trim();
+    return cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+  };
 
   useEffect(() => {
     fetchApplicationDetails();
@@ -161,8 +191,8 @@ export default function ApplicationDetailView() {
             )}
 
             <button
-              onClick={() => window.print()}
-              className="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black text-xs rounded-xl shadow-md transition-all flex items-center space-x-2"
+              onClick={() => setShowReceiptModal(true)}
+              className="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black text-xs rounded-xl shadow-md transition-all flex items-center space-x-2 cursor-pointer"
             >
               <Printer className="w-4 h-4" />
               <span>{t.downloadPrintReceipt}</span>
@@ -214,46 +244,89 @@ export default function ApplicationDetailView() {
                 <span>{t.applicantInfoSection}</span>
               </h3>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200">
-                  <span className="text-slate-500 block font-medium">{t.fullName}</span>
-                  <span className="font-bold text-slate-900 text-sm">{details.user_name || 'N/A'}</span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
+                <div className="bg-slate-50/80 p-4 rounded-xl border border-slate-200/80 space-y-2 shadow-2xs">
+                  <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">{t.fullName}</span>
+                  <span className="font-extrabold text-slate-900 text-sm block truncate">{details.user_name || 'N/A'}</span>
                 </div>
-                <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200">
-                  <span className="text-slate-500 block font-medium">{t.mobileNumber}</span>
-                  <span className="font-bold text-slate-900 text-sm">{details.user_phone || 'N/A'}</span>
+                <div className="bg-slate-50/80 p-4 rounded-xl border border-slate-200/80 space-y-2 shadow-2xs">
+                  <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">{t.mobileNumber}</span>
+                  <span className="font-extrabold text-slate-900 text-sm block font-mono">{details.user_phone || 'N/A'}</span>
                 </div>
-                <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200">
-                  <span className="text-slate-500 block font-medium">{t.emailAddress}</span>
-                  <span className="font-bold text-slate-900 text-sm truncate block">{details.user_email || 'N/A'}</span>
+                <div className="bg-slate-50/80 p-4 rounded-xl border border-slate-200/80 space-y-2 shadow-2xs">
+                  <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">{t.emailAddress}</span>
+                  <span className="font-extrabold text-slate-900 text-sm block truncate">{details.user_email || 'N/A'}</span>
                 </div>
-                <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200">
-                  <span className="text-slate-500 block font-medium">{t.totalFeeLabel}</span>
-                  <span className="font-bold text-emerald-600 text-sm">₹{details.total_fee || 0}</span>
+                <div className="bg-slate-50/80 p-4 rounded-xl border border-slate-200/80 space-y-2 shadow-2xs">
+                  <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">{t.totalFeeLabel}</span>
+                  <span className="font-extrabold text-emerald-600 text-sm block font-mono">₹{details.total_fee || 0}</span>
                 </div>
               </div>
             </div>
 
-            {/* Section 2: Submitted Dynamic Service Fields */}
-            <div className="bg-white rounded-3xl p-6 border border-slate-200/90 shadow-sm space-y-4">
-              <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider border-b pb-3 border-slate-100 flex items-center space-x-2">
-                <FileText className="w-4 h-4 text-orange-500" />
-                <span>Submitted Dynamic Form Values</span>
-              </h3>
+            {/* Section 2: Submitted Application Details */}
+            {(() => {
+              const seenNormalizedKeys = new Set();
+              const validFieldValues = [];
 
-              {details.field_values && details.field_values.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                  {details.field_values.map((fv, idx) => (
-                    <div key={idx} className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200 space-y-1">
-                      <span className="text-slate-500 font-semibold block">{fv.field_label || fv.field_name}:</span>
-                      <span className="font-bold text-slate-900">{fv.value || 'N/A'}</span>
+              (details.field_values || []).forEach(fv => {
+                if (!fv) return;
+                const rawKey = (fv.field_name || fv.field_label || '').trim();
+                const val = fv.value;
+
+                if (!rawKey) return;
+
+                // Normalized key for strict deduplication (lowercase, letters/digits only)
+                const normKey = rawKey.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+                // 1. Exclude base fields already shown in Applicant Information section above
+                const baseKeysToIgnore = ['username', 'fullname', 'userphone', 'mobile', 'mobilenumber', 'useremail', 'email'];
+                if (baseKeysToIgnore.includes(normKey)) return;
+
+                // 2. Exclude empty or "N/A" / "null" values
+                if (val === undefined || val === null) return;
+                const strVal = String(val).trim();
+                if (!strVal || strVal === 'N/A' || strVal === 'null' || strVal === 'undefined') return;
+
+                // 3. Deduplicate: Skip if we have already rendered this normalized field!
+                if (seenNormalizedKeys.has(normKey)) return;
+                seenNormalizedKeys.add(normKey);
+
+                validFieldValues.push({
+                  field_name: fv.field_name,
+                  field_label: fv.field_label || fv.field_name,
+                  value: strVal
+                });
+              });
+
+              return (
+                <div className="bg-white rounded-3xl p-6 border border-slate-200/90 shadow-sm space-y-4">
+                  <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider border-b pb-3 border-slate-100 flex items-center space-x-2">
+                    <FileText className="w-4 h-4 text-orange-500" />
+                    <span>{lang === 'ta' ? 'சமர்ப்பிக்கப்பட்ட சேவை விவரங்கள்' : 'Submitted Service Details'}</span>
+                  </h3>
+
+                  {validFieldValues.length > 0 ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                      {validFieldValues.map((fv, idx) => (
+                        <div key={idx} className="bg-slate-50/80 p-4 rounded-xl border border-slate-200/80 space-y-2 hover:border-slate-300 transition-all shadow-2xs">
+                          <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
+                            {formatFieldLabel(fv.field_label, fv.field_name)}
+                          </span>
+                          <span className="font-extrabold text-slate-900 text-sm block leading-snug break-words">
+                            {fv.value}
+                          </span>
+                        </div>
+                      ))}
                     </div>
-                  ))}
+                  ) : (
+                    <p className="text-xs text-slate-500 font-medium">
+                      {lang === 'ta' ? 'கூடுதல் சேவை விவரங்கள் எதுவும் பதிவு செய்யப்படவில்லை.' : 'No additional service particulars logged.'}
+                    </p>
+                  )}
                 </div>
-              ) : (
-                <p className="text-xs text-slate-500">No dynamic form values logged for this entry.</p>
-              )}
-            </div>
+              );
+            })()}
 
             {/* Section 3: Uploaded Documents */}
             <div className="bg-white rounded-3xl p-6 border border-slate-200/90 shadow-sm space-y-4">
@@ -447,6 +520,14 @@ export default function ApplicationDetailView() {
           <CertificatePrint
             application={details}
             onClose={() => setShowCertModal(false)}
+          />
+        )}
+
+        {/* Receipt Print Modal */}
+        {showReceiptModal && (
+          <ReceiptModal
+            application={details}
+            onClose={() => setShowReceiptModal(false)}
           />
         )}
 

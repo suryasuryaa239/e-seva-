@@ -81,19 +81,19 @@ export default function Footer() {
             <h4 className="font-heading font-extrabold text-orange-400 text-xs tracking-widest uppercase border-b border-slate-800 pb-2">
               {t.services || (lang === 'ta' ? 'சேவைகள்' : 'Services')}
             </h4>
-            <ul className="space-y-2 text-slate-400 font-normal">
-              <li><Link to="/services/aadhaar" className="hover:text-white hover:translate-x-0.5 inline-block transition-all">{t.catAadhaar}</Link></li>
-              <li><Link to="/services/pan-services" className="hover:text-white hover:translate-x-0.5 inline-block transition-all">{t.catPan}</Link></li>
-              <li><Link to="/services/voter" className="hover:text-white hover:translate-x-0.5 inline-block transition-all">{t.catVoter}</Link></li>
-              <li><Link to="/services/certificates" className="hover:text-white hover:translate-x-0.5 inline-block transition-all">{t.catCertificate}</Link></li>
-              <li><Link to="/services/land" className="hover:text-white hover:translate-x-0.5 inline-block transition-all">{t.catLandPatta}</Link></li>
-              <li><Link to="/services/passport" className="hover:text-white hover:translate-x-0.5 inline-block transition-all">{t.catPassport}</Link></li>
-              <li><Link to="/services/driving-licence" className="hover:text-white hover:translate-x-0.5 inline-block transition-all">{t.catDriving}</Link></li>
-              <li><Link to="/services/vehicle" className="hover:text-white hover:translate-x-0.5 inline-block transition-all">{t.catVehicle}</Link></li>
-              <li className="pt-1">
-                <Link to="/services" className="text-orange-400 font-bold hover:text-orange-300 inline-flex items-center gap-1 transition-colors">
+            <ul className="space-y-3 text-slate-300 font-normal">
+              <li><Link to="/services/aadhaar" className="hover:text-white hover:translate-x-1 inline-flex items-center gap-2 transition-all group"><span className="w-1.5 h-1.5 rounded-full bg-orange-500/60 group-hover:bg-orange-400"></span><span>{t.catAadhaar}</span></Link></li>
+              <li><Link to="/services/pan-services" className="hover:text-white hover:translate-x-1 inline-flex items-center gap-2 transition-all group"><span className="w-1.5 h-1.5 rounded-full bg-orange-500/60 group-hover:bg-orange-400"></span><span>{t.catPan}</span></Link></li>
+              <li><Link to="/services/voter" className="hover:text-white hover:translate-x-1 inline-flex items-center gap-2 transition-all group"><span className="w-1.5 h-1.5 rounded-full bg-orange-500/60 group-hover:bg-orange-400"></span><span>{t.catVoter}</span></Link></li>
+              <li><Link to="/services/certificates" className="hover:text-white hover:translate-x-1 inline-flex items-center gap-2 transition-all group"><span className="w-1.5 h-1.5 rounded-full bg-orange-500/60 group-hover:bg-orange-400"></span><span>{t.catCertificate}</span></Link></li>
+              <li><Link to="/services/land" className="hover:text-white hover:translate-x-1 inline-flex items-center gap-2 transition-all group"><span className="w-1.5 h-1.5 rounded-full bg-orange-500/60 group-hover:bg-orange-400"></span><span>{t.catLandPatta}</span></Link></li>
+              <li><Link to="/services/passport" className="hover:text-white hover:translate-x-1 inline-flex items-center gap-2 transition-all group"><span className="w-1.5 h-1.5 rounded-full bg-orange-500/60 group-hover:bg-orange-400"></span><span>{t.catPassport}</span></Link></li>
+              <li><Link to="/services/driving-licence" className="hover:text-white hover:translate-x-1 inline-flex items-center gap-2 transition-all group"><span className="w-1.5 h-1.5 rounded-full bg-orange-500/60 group-hover:bg-orange-400"></span><span>{t.catDriving}</span></Link></li>
+              <li><Link to="/services/vehicle" className="hover:text-white hover:translate-x-1 inline-flex items-center gap-2 transition-all group"><span className="w-1.5 h-1.5 rounded-full bg-orange-500/60 group-hover:bg-orange-400"></span><span>{t.catVehicle}</span></Link></li>
+              <li className="pt-1.5">
+                <Link to="/services" className="text-orange-400 font-bold hover:text-orange-300 inline-flex items-center gap-1.5 transition-colors">
                   <span>{t.viewAllServices ? t.viewAllServices.replace(' →', '') : (lang === 'ta' ? 'அனைத்து சேவைகளையும் பார்க்க' : 'View All Services')}</span>
-                  <ArrowRight className="w-3 h-3" />
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
               </li>
             </ul>
@@ -104,14 +104,14 @@ export default function Footer() {
             <h4 className="font-heading font-extrabold text-orange-400 text-xs tracking-widest uppercase border-b border-slate-800 pb-2">
               {t.quickLinks || (lang === 'ta' ? 'முக்கிய இணைப்புகள்' : 'Quick Links')}
             </h4>
-            <ul className="space-y-2 text-slate-400 font-normal">
-              <li><Link to="/" className="hover:text-white hover:translate-x-0.5 inline-block transition-all">{t.home}</Link></li>
-              <li><Link to="/services" className="hover:text-white hover:translate-x-0.5 inline-block transition-all">{t.allServices}</Link></li>
-              <li><Link to="/about" className="hover:text-white hover:translate-x-0.5 inline-block transition-all">{t.aboutUs}</Link></li>
-              <li><Link to="/contact" className="hover:text-white hover:translate-x-0.5 inline-block transition-all">{t.contactUs}</Link></li>
-              <li><Link to="/track" className="hover:text-white hover:translate-x-0.5 inline-block transition-all">{t.trackAppNav}</Link></li>
-              <li><Link to="/login" className="hover:text-white hover:translate-x-0.5 inline-block transition-all">{t.login}</Link></li>
-              <li><Link to="/register" className="hover:text-white hover:translate-x-0.5 inline-block transition-all">{t.registerNav}</Link></li>
+            <ul className="space-y-3 text-slate-300 font-normal">
+              <li><Link to="/" className="hover:text-white hover:translate-x-1 inline-flex items-center gap-2 transition-all group"><span className="w-1.5 h-1.5 rounded-full bg-orange-500/60 group-hover:bg-orange-400"></span><span>{t.home}</span></Link></li>
+              <li><Link to="/services" className="hover:text-white hover:translate-x-1 inline-flex items-center gap-2 transition-all group"><span className="w-1.5 h-1.5 rounded-full bg-orange-500/60 group-hover:bg-orange-400"></span><span>{t.allServices}</span></Link></li>
+              <li><Link to="/about" className="hover:text-white hover:translate-x-1 inline-flex items-center gap-2 transition-all group"><span className="w-1.5 h-1.5 rounded-full bg-orange-500/60 group-hover:bg-orange-400"></span><span>{t.aboutUs}</span></Link></li>
+              <li><Link to="/contact" className="hover:text-white hover:translate-x-1 inline-flex items-center gap-2 transition-all group"><span className="w-1.5 h-1.5 rounded-full bg-orange-500/60 group-hover:bg-orange-400"></span><span>{t.contactUs}</span></Link></li>
+              <li><Link to="/track" className="hover:text-white hover:translate-x-1 inline-flex items-center gap-2 transition-all group"><span className="w-1.5 h-1.5 rounded-full bg-orange-500/60 group-hover:bg-orange-400"></span><span>{t.trackAppNav}</span></Link></li>
+              <li><Link to="/login" className="hover:text-white hover:translate-x-1 inline-flex items-center gap-2 transition-all group"><span className="w-1.5 h-1.5 rounded-full bg-orange-500/60 group-hover:bg-orange-400"></span><span>{t.login}</span></Link></li>
+              <li><Link to="/register" className="hover:text-white hover:translate-x-1 inline-flex items-center gap-2 transition-all group"><span className="w-1.5 h-1.5 rounded-full bg-orange-500/60 group-hover:bg-orange-400"></span><span>{t.registerNav}</span></Link></li>
             </ul>
           </div>
 

@@ -26,9 +26,9 @@ export default function TopBar() {
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
-          <span className="flex items-center gap-1 text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded-md border border-emerald-800/80 text-[10px] sm:text-xs font-semibold tracking-wide">
-            <ShieldCheck className="w-3 h-3" />
-            <span>256-bit SSL</span>
+          <span className="flex items-center gap-1 text-emerald-400 bg-emerald-950/60 px-2.5 py-0.5 rounded-full border border-emerald-800/60 text-[10px] sm:text-xs font-medium">
+            <ShieldCheck className="w-3.5 h-3.5" />
+            <span>{lang === 'ta' ? 'பாதுகாக்கப்பட்ட அரசு சேவைத் தளம்' : 'Official Digital Portal'}</span>
           </span>
         </div>
       </div>
