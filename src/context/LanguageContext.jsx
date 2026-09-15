@@ -176,6 +176,12 @@ export const translations = {
     dashProfileSettings: "Profile Settings",
     dashAccountSettings: "Account Settings",
     dashNotifications: "Notifications",
+    totalSubmitted: "Total Applications",
+    inProcessing: "Under Processing",
+    approvedApps: "Completed Services",
+    myRecentApplications: "Recent Applications",
+    profileSettings: "Profile Settings",
+    noApplicationsFound: "No Applications Found",
 
     // 12. LOGIN / REGISTER
     authWelcomeBack: "Welcome Back",
@@ -306,7 +312,6 @@ export const translations = {
     tryAgainBtn: "Try Again",
 
     // STEP 6 ALL SERVICES & SERVICE DETAILS TRANSLATIONS
-    allServices: "All Services",
     findServiceSubtitle: "Find the service you need",
     allCategoriesFilter: "All Categories",
     categoriesTitle: "Categories",
@@ -321,10 +326,8 @@ export const translations = {
     tryChangingSearch: "Try changing your search or filters.",
     serviceDetailsTitle: "Service Details",
     aboutThisService: "About this service",
-    serviceFeeLabel: "Service Fee",
     processingTimeLabel: "Processing Time",
     requiredDocumentsTitle: "Required Documents",
-    howItWorksTitle: "How It Works",
     eligibilityTitle: "Eligibility",
     importantInformationTitle: "Important Information",
     backToServicesBtn: "Back to Services",
@@ -654,6 +657,12 @@ export const translations = {
     dashProfileSettings: "சுயவிவர அமைப்புகள்",
     dashAccountSettings: "கணக்கு அமைப்புகள்",
     dashNotifications: "அறிவிப்புகள்",
+    totalSubmitted: "மொத்த விண்ணப்பங்கள்",
+    inProcessing: "பரிசீலனையில் உள்ளவை",
+    approvedApps: "நிறைவு பெற்றவை",
+    myRecentApplications: "சமீபத்திய விண்ணப்பங்கள்",
+    profileSettings: "சுயவிவர அமைப்புகள்",
+    noApplicationsFound: "விண்ணப்பங்கள் எதுவும் கிடைக்கவில்லை",
 
     // 12. LOGIN / REGISTER
     authWelcomeBack: "மீண்டும் வரவேற்கிறோம்",
@@ -784,7 +793,6 @@ export const translations = {
     tryAgainBtn: "மீண்டும் முயற்சிக்கவும்",
 
     // STEP 6 ALL SERVICES & SERVICE DETAILS TRANSLATIONS
-    allServices: "அனைத்து சேவைகள்",
     findServiceSubtitle: "உங்களுக்குத் தேவையான சேவையைத் தேடுங்கள்",
     allCategoriesFilter: "அனைத்து வகைகள்",
     categoriesTitle: "சேவை வகைகள்",
@@ -799,10 +807,8 @@ export const translations = {
     tryChangingSearch: "உங்கள் தேடல் அல்லது வடிகட்டிகளை மாற்றிப் பார்க்கவும்.",
     serviceDetailsTitle: "சேவை விவரங்கள்",
     aboutThisService: "இந்த சேவையைப் பற்றி",
-    serviceFeeLabel: "சேவை கட்டணம்",
     processingTimeLabel: "செயலாக்க நேரம்",
     requiredDocumentsTitle: "தேவையான ஆவணங்கள்",
-    howItWorksTitle: "எப்படி செயல்படுகிறது",
     eligibilityTitle: "தகுதி",
     importantInformationTitle: "முக்கிய தகவல்",
     backToServicesBtn: "சேவைகளுக்குத் திரும்பவும்",

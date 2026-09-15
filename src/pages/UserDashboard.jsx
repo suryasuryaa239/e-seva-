@@ -106,7 +106,9 @@ export default function UserDashboard() {
       <div className="min-h-[70vh] bg-slate-50 py-12 px-4 flex items-center justify-center font-sans">
         <div className="bg-white rounded-3xl shadow-xl p-8 text-center max-w-sm w-full space-y-4 border border-slate-200">
           <div className="w-12 h-12 border-4 border-[#0b192c] border-t-orange-500 rounded-full animate-spin mx-auto"></div>
-          <p className="text-slate-700 font-extrabold text-xs">Loading citizen dashboard...</p>
+          <p className="text-slate-700 font-extrabold text-xs">
+            {lang === 'ta' ? 'டாஷ்போர்டு ஏற்றப்படுகிறது...' : 'Loading citizen dashboard...'}
+          </p>
         </div>
       </div>
     );
@@ -131,7 +133,7 @@ export default function UserDashboard() {
           <div className="space-y-2 relative z-10">
             <div className="inline-flex items-center space-x-2 px-3.5 py-1 bg-slate-800/90 text-orange-400 text-[10px] font-black rounded-full border border-slate-700 uppercase tracking-widest">
               <ShieldCheck className="w-3.5 h-3.5 text-orange-400" />
-              <span>{t.govTag || 'VERIFIED CITIZEN ACCOUNT'}</span>
+              <span>{t.govTag || (lang === 'ta' ? 'தமிழ்நாடு அரசு மின்னணு இ-சேவை மையம்' : 'VERIFIED CITIZEN ACCOUNT')}</span>
             </div>
             <h1 className="text-2xl sm:text-4xl font-black text-white tracking-tight">
               {t.welcomeUser} <span className="text-orange-400">{user?.name || (lang === 'ta' ? 'குடிமகன்' : 'Citizen')}</span>
@@ -376,9 +378,9 @@ export default function UserDashboard() {
                       </div>
 
                       <div>
-                        <h4 className="font-black text-slate-900 text-sm">{app.service_name || 'Digital Service'}</h4>
+                        <h4 className="font-black text-slate-900 text-sm">{app.service_name || (lang === 'ta' ? 'மின்னணு சேவை' : 'Digital Service')}</h4>
                         <span className="text-[11px] text-slate-500 font-mono">
-                          Logged: {new Date(app.created_at || app.submitted_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                          {lang === 'ta' ? 'சமர்ப்பிக்கப்பட்ட தேதி: ' : 'Logged: '}{new Date(app.created_at || app.submitted_at).toLocaleDateString(lang === 'ta' ? 'ta-IN' : 'en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
                         </span>
                       </div>
 
