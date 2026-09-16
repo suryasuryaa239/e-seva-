@@ -18,6 +18,7 @@ export default function Login() {
   const [isRegister, setIsRegister] = useState(location.pathname === '/register');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [acceptTerms, setAcceptTerms] = useState(true);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -408,6 +409,31 @@ export default function Login() {
                 >
                   {lang === 'ta' ? 'விவரங்களை நிரப்பு' : 'Fill Demo Details'}
                 </button>
+              </div>
+            )}
+
+            {/* TERMS AND CONDITIONS CHECKBOX FOR REGISTRATION */}
+            {isRegister && (
+              <div className="flex items-start space-x-2 pt-1 pb-1">
+                <input
+                  type="checkbox"
+                  id="acceptTerms"
+                  required
+                  checked={acceptTerms}
+                  onChange={(e) => setAcceptTerms(e.target.checked)}
+                  className="mt-0.5 w-3.5 h-3.5 rounded text-orange-500 focus:ring-orange-400 border-slate-300 cursor-pointer"
+                />
+                <label htmlFor="acceptTerms" className="text-[11px] text-slate-600 font-medium leading-tight">
+                  {lang === 'ta' ? (
+                    <>
+                      நான் <Link to="/terms" target="_blank" className="text-orange-600 font-bold underline hover:text-orange-700">சேவை விதிகளையும் நிபந்தனைகளையும் (Terms & Conditions)</Link> மற்றும் <Link to="/privacy" target="_blank" className="text-orange-600 font-bold underline hover:text-orange-700">தனியுரிமைக் கொள்கையையும்</Link> ஒப்புக்கொள்கிறேன்.
+                    </>
+                  ) : (
+                    <>
+                      I agree to the <Link to="/terms" target="_blank" className="text-orange-600 font-bold underline hover:text-orange-700">Terms & Conditions</Link> and <Link to="/privacy" target="_blank" className="text-orange-600 font-bold underline hover:text-orange-700">Privacy Policy</Link>.
+                    </>
+                  )}
+                </label>
               </div>
             )}
 
