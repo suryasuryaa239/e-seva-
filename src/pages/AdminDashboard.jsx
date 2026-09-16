@@ -155,6 +155,56 @@ export default function AdminDashboard() {
     }
   };
 
+  // Site Settings & Payment Notice Configuration State
+  const [siteSettingsForm, setSiteSettingsForm] = useState({
+    payment_notice_ta: '',
+    payment_notice_en: '',
+    payment_terms_enabled: true
+  });
+  const [savingSiteSettings, setSavingSiteSettings] = useState(false);
+
+  const fetchSiteSettings = async () => {
+    try {
+      const res = await fetch('/api/settings');
+      if (res.ok) {
+        const data = await res.json();
+        setSiteSettingsForm({
+          payment_notice_ta: data.payment_notice_ta || '',
+          payment_notice_en: data.payment_notice_en || '',
+          payment_terms_enabled: data.payment_terms_enabled !== false
+        });
+      }
+    } catch (e) {
+      console.error('Fetch settings error:', e);
+    }
+  };
+
+  const handleSaveSiteSettings = async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    setSavingSiteSettings(true);
+    try {
+      const token = getAuthToken();
+      const res = await fetch('/api/admin/settings', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(siteSettingsForm)
+      });
+      const data = await res.json();
+      if (res.ok) {
+        addToast('Payment Terms & Notice Settings saved successfully!', 'success');
+      } else {
+        addToast(data.error || 'Failed to save site settings', 'error');
+      }
+    } catch (e) {
+      addToast('Failed to save site settings', 'error');
+    } finally {
+      setSavingSiteSettings(false);
+    }
+  };
+
   const openAddBannerModal = () => {
     setEditingBanner(null);
     setBannerForm({
@@ -334,6 +384,7 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     fetchCategories();
+    fetchSiteSettings();
   }, []);
 
   const handleCreateCategorySubmit = async (e) => {
@@ -3628,6 +3679,7 @@ export default function AdminDashboard() {
                 {[
                   { id: 'profile', label: 'Profile Details', icon: User },
                   { id: 'security', label: 'Security & Password', icon: Key },
+                  { id: 'payment_notice', label: 'Payment Notice & Terms', icon: ShieldAlert },
                   { id: 'notifications', label: 'Notification Preferences', icon: Bell },
                   { id: 'audit', label: 'System Audit Logs', icon: History }
                 ].map((tab) => {
@@ -3944,6 +3996,91 @@ export default function AdminDashboard() {
                       </div>
                     ))}
                   </div>
+                </div>
+              )}
+
+              {/* SUB-TAB 5: PAYMENT NOTICE & TERMS SETTINGS */}
+              {activeSettingsTab === 'payment_notice' && (
+                <div className="bg-white p-6 rounded-3xl border border-slate-200/90 shadow-sm space-y-6">
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+                    <div>
+                      <h4 className="font-extrabold text-base text-slate-900">Payment Terms & Official Checkout Notice Settings</h4>
+                      <p className="text-xs text-slate-500">Configure the popup notice message and mandatory Terms checkbox displayed to citizens before payment.</p>
+                    </div>
+                    <span className="text-xs font-bold text-orange-600 bg-orange-50 px-3 py-1 rounded-xl border border-orange-200">
+                      Checkout Governance
+                    </span>
+                  </div>
+
+                  <form onSubmit={handleSaveSiteSettings} className="space-y-5 max-w-3xl">
+                    <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <label className="text-xs font-bold text-slate-900 flex items-center space-x-2">
+                          <ShieldAlert className="w-4 h-4 text-orange-600" />
+                          <span>Enable Checkout Notice Modal & Terms Checkbox</span>
+                        </label>
+                        <button
+                          type="button"
+                          onClick={() => setSiteSettingsForm(prev => ({ ...prev, payment_terms_enabled: !prev.payment_terms_enabled }))}
+                          className={`w-11 h-6 rounded-full transition-colors relative flex-shrink-0 cursor-pointer ${
+                            siteSettingsForm.payment_terms_enabled ? 'bg-orange-600' : 'bg-slate-300'
+                          }`}
+                        >
+                          <span
+                            className={`w-4 h-4 bg-white rounded-full absolute top-1 transition-transform ${
+                              siteSettingsForm.payment_terms_enabled ? 'right-1' : 'left-1'
+                            }`}
+                          />
+                        </button>
+                      </div>
+                      <p className="text-[11px] text-slate-500 leading-relaxed">
+                        When enabled, citizens must agree to Terms & Conditions and view this dynamic official notice modal before completing payment step in Apply Service flow.
+                      </p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-slate-800 block">
+                        Tamil Notice Message (தமிழ் அறிவிப்பு செய்தி)
+                      </label>
+                      <textarea
+                        rows={4}
+                        value={siteSettingsForm.payment_notice_ta}
+                        onChange={(e) => setSiteSettingsForm({ ...siteSettingsForm, payment_notice_ta: e.target.value })}
+                        placeholder="ஆன்லைன் கட்டணம் செலுத்துவதற்கு முன் உங்கள் விண்ணப்பப் படிவம் மற்றும் சான்று ஆவணங்கள் அனைத்தும் சரியானவை என்பதைச் சரிபார்க்கவும்."
+                        className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-xs rounded-2xl p-4 focus:border-orange-500 focus:bg-white outline-none font-medium leading-relaxed"
+                      />
+                      <p className="text-[10px] text-slate-400">Displayed to users browsing in Tamil (தமிழ்) language mode.</p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-slate-800 block">
+                        English Notice Message (English Notice Message)
+                      </label>
+                      <textarea
+                        rows={4}
+                        value={siteSettingsForm.payment_notice_en}
+                        onChange={(e) => setSiteSettingsForm({ ...siteSettingsForm, payment_notice_en: e.target.value })}
+                        placeholder="Please verify that all your application form inputs and uploaded proof documents are clear and authentic before proceeding to payment."
+                        className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-xs rounded-2xl p-4 focus:border-orange-500 focus:bg-white outline-none font-medium leading-relaxed"
+                      />
+                      <p className="text-[10px] text-slate-400">Displayed to users browsing in English language mode.</p>
+                    </div>
+
+                    <div className="pt-2">
+                      <button
+                        type="submit"
+                        disabled={savingSiteSettings}
+                        className="px-7 py-3 bg-orange-600 hover:bg-orange-700 text-white font-extrabold text-xs rounded-xl shadow-md transition-all flex items-center space-x-2 disabled:opacity-50 cursor-pointer"
+                      >
+                        {savingSiteSettings ? (
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <Save className="w-4 h-4" />
+                        )}
+                        <span>{savingSiteSettings ? 'Saving Settings...' : 'Save Payment Notice Settings'}</span>
+                      </button>
+                    </div>
+                  </form>
                 </div>
               )}
 

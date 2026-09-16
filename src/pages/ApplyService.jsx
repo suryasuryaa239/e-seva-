@@ -49,6 +49,22 @@ export default function ApplyService() {
   };
 
   const [paymentMethod, setPaymentMethod] = useState('upi');
+  const [paymentTermsAccepted, setPaymentTermsAccepted] = useState(false);
+  const [noticeModalOpen, setNoticeModalOpen] = useState(false);
+  const [siteSettings, setSiteSettings] = useState({
+    payment_notice_ta: "முக்கிய கட்டண அறிவிப்பு: ஆன்லைன் கட்டணம் செலுத்துவதற்கு முன் உங்கள் விண்ணப்பப் படிவம் மற்றும் சான்று ஆவணங்கள் அனைத்தும் சரியானவை என்பதைச் சரிபார்க்கவும். அதிகாரி பரிசீலனை தொடங்கிய பின்னர் சேவைக் கட்டணம் திரும்ப வழங்கப்படாது.",
+    payment_notice_en: "Important Payment Notice: Please verify that all your application form inputs and uploaded proof documents are clear and authentic before proceeding to payment. Service facilitation charges are non-refundable once desk review has commenced.",
+    payment_terms_enabled: true
+  });
+
+  useEffect(() => {
+    fetch('/api/settings')
+      .then(res => res.json())
+      .then(data => {
+        if (data) setSiteSettings(prev => ({ ...prev, ...data }));
+      })
+      .catch(() => {});
+  }, []);
 
   // Application Draft Reference
   const [draftId, setDraftId] = useState(draftIdParam || null);
@@ -1732,6 +1748,28 @@ export default function ApplyService() {
                     </div>
                   </div>
 
+                  {/* PAYMENT TERMS AND CONDITIONS ACCEPTANCE CHECKBOX */}
+                  <div className="p-4 bg-orange-50/70 border border-orange-200/90 rounded-2xl flex items-start space-x-3">
+                    <input
+                      type="checkbox"
+                      id="paymentTermsCheck"
+                      checked={paymentTermsAccepted}
+                      onChange={(e) => setPaymentTermsAccepted(e.target.checked)}
+                      className="mt-0.5 w-4 h-4 rounded text-orange-600 focus:ring-orange-500 border-orange-300 cursor-pointer shrink-0"
+                    />
+                    <label htmlFor="paymentTermsCheck" className="text-xs text-slate-800 font-bold leading-relaxed cursor-pointer select-none">
+                      {lang === 'ta' ? (
+                        <>
+                          நான் <Link to="/terms" target="_blank" className="text-orange-600 underline hover:text-orange-700">சேவை விதிகளையும் நிபந்தனைகளையும் (Terms & Conditions)</Link> மற்றும் <Link to="/privacy" target="_blank" className="text-orange-600 underline hover:text-orange-700">தனியுரிமைக் கொள்கையையும்</Link> வாசித்து முழுமையாக ஏற்றுக்கொள்கிறேன்.
+                        </>
+                      ) : (
+                        <>
+                          I have read and agree to the <Link to="/terms" target="_blank" className="text-orange-600 underline hover:text-orange-700">Terms & Conditions</Link> and <Link to="/privacy" target="_blank" className="text-orange-600 underline hover:text-orange-700">Privacy Policy</Link>.
+                        </>
+                      )}
+                    </label>
+                  </div>
+
                   {/* BOTTOM PAYMENT ACTIONS */}
                   <div className="pt-6 border-t border-slate-100 flex items-center justify-between gap-4">
                     <button
@@ -1745,9 +1783,20 @@ export default function ApplyService() {
 
                     <button
                       type="button"
-                      onClick={handleSubmit}
-                      disabled={submitting}
-                      className="px-7 py-3.5 bg-orange-500 hover:bg-orange-600 active:scale-[0.99] text-white font-bold text-xs sm:text-sm rounded-xl shadow-xs transition-all flex items-center gap-2"
+                      onClick={() => {
+                        if (!paymentTermsAccepted) return;
+                        if (siteSettings?.payment_terms_enabled !== false) {
+                          setNoticeModalOpen(true);
+                        } else {
+                          handleSubmit();
+                        }
+                      }}
+                      disabled={submitting || !paymentTermsAccepted}
+                      className={`px-7 py-3.5 text-white font-bold text-xs sm:text-sm rounded-xl shadow-xs transition-all flex items-center gap-2 ${
+                        !paymentTermsAccepted || submitting
+                          ? 'bg-slate-300 text-slate-500 cursor-not-allowed shadow-none'
+                          : 'bg-orange-500 hover:bg-orange-600 active:scale-[0.99] cursor-pointer'
+                      }`}
                     >
                       {submitting ? (
                         <>
@@ -2279,6 +2328,78 @@ export default function ApplyService() {
             </div>
           </div>
         )}
+
+      {/* ADMIN PAYMENT NOTICE POPUP MODAL */}
+      {noticeModalOpen && (
+        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto font-sans animate-in fade-in duration-150">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-200 relative space-y-5 my-8">
+            
+            <div className="flex items-start justify-between border-b border-slate-100 pb-4">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-2xl bg-orange-50 text-orange-600 border border-orange-200 flex items-center justify-center shrink-0">
+                  <AlertCircle className="w-5 h-5 text-orange-600" />
+                </div>
+                <div>
+                  <h3 className="font-heading font-extrabold text-base text-slate-900">
+                    {lang === 'ta' ? 'அதிகாரி கட்டண அறிவிப்பு' : 'Official Payment Verification Notice'}
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    {lang === 'ta' ? 'கட்டணம் செலுத்துவதற்கு முன் கவனிக்க வேண்டிய முக்கிய விவரங்கள்' : 'Important operational guidelines before payment submission'}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setNoticeModalOpen(false)}
+                className="p-1.5 rounded-xl text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* ADMIN NOTICE MESSAGE CARD */}
+            <div className="p-4 bg-orange-50/80 border border-orange-200/90 rounded-2xl text-slate-800 text-xs sm:text-sm font-medium leading-relaxed space-y-2">
+              <div className="font-extrabold text-orange-950 text-xs flex items-center gap-1.5">
+                <Info className="w-4 h-4 text-orange-600 shrink-0" />
+                <span>{lang === 'ta' ? 'அரசு சேவை அறிவிப்பு:' : 'Official Notice:'}</span>
+              </div>
+              <p className="whitespace-pre-wrap leading-relaxed text-slate-800">
+                {lang === 'ta'
+                  ? (siteSettings?.payment_notice_ta || "ஆன்லைன் கட்டணம் செலுத்துவதற்கு முன் உங்கள் விண்ணப்பப் படிவம் மற்றும் சான்று ஆவணங்கள் அனைத்தும் சரியானவை என்பதைச் சரிபார்க்கவும்.")
+                  : (siteSettings?.payment_notice_en || "Please verify that all your application form inputs and uploaded proof documents are clear and authentic before proceeding to payment.")}
+              </p>
+            </div>
+
+            {/* POPUP ACTIONS */}
+            <div className="flex flex-col sm:flex-row items-center justify-end gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setNoticeModalOpen(false)}
+                className="w-full sm:w-auto px-5 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-colors cursor-pointer"
+              >
+                {lang === 'ta' ? 'ரத்து செய்க' : 'Cancel'}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setNoticeModalOpen(false);
+                  handleSubmit();
+                }}
+                disabled={submitting}
+                className="w-full sm:w-auto px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-xs rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+              >
+                {submitting ? (
+                  <RefreshCw className="w-4 h-4 animate-spin text-white" />
+                ) : (
+                  <CheckCircle2 className="w-4 h-4 text-white" />
+                )}
+                <span>{lang === 'ta' ? 'ஒப்புக்கொண்டு கட்டணம் செலுத்தத் தொடரவும்' : 'Accept & Proceed to Pay'}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       </div>
     </div>

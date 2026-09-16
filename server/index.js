@@ -194,6 +194,52 @@ const verifyResourceOwnership = (appRecord, user) => {
 };
 
 // ==========================================
+// 0. SITE SETTINGS & PAYMENT NOTICES ENDPOINTS
+// ==========================================
+const DEFAULT_SITE_SETTINGS = {
+  payment_notice_ta: "முக்கிய கட்டண அறிவிப்பு: ஆன்லைன் கட்டணம் செலுத்துவதற்கு முன் உங்கள் விண்ணப்பப் படிவம் மற்றும் சான்று ஆவணங்கள் அனைத்தும் சரியானவை என்பதைச் சரிபார்க்கவும். அதிகாரி பரிசீலனை தொடங்கிய பின்னர் சேவைக் கட்டணம் திரும்ப வழங்கப்படாது.",
+  payment_notice_en: "Important Payment Notice: Please verify that all your application form inputs and uploaded proof documents are clear and authentic before proceeding to payment. Service facilitation charges are non-refundable once desk review has commenced.",
+  payment_terms_enabled: true
+};
+
+app.get('/api/settings', (req, res) => {
+  try {
+    const list = db.all('site_settings');
+    if (list && list.length > 0) {
+      return res.json({ ...DEFAULT_SITE_SETTINGS, ...list[0] });
+    }
+    res.json(DEFAULT_SITE_SETTINGS);
+  } catch (err) {
+    res.json(DEFAULT_SITE_SETTINGS);
+  }
+});
+
+app.put('/api/admin/settings', authenticateAdmin, (req, res) => {
+  try {
+    const { payment_notice_ta, payment_notice_en, payment_terms_enabled } = req.body;
+    const list = db.all('site_settings');
+
+    const updateData = {
+      payment_notice_ta: payment_notice_ta !== undefined ? payment_notice_ta : DEFAULT_SITE_SETTINGS.payment_notice_ta,
+      payment_notice_en: payment_notice_en !== undefined ? payment_notice_en : DEFAULT_SITE_SETTINGS.payment_notice_en,
+      payment_terms_enabled: payment_terms_enabled !== undefined ? Boolean(payment_terms_enabled) : true,
+      updated_at: new Date().toISOString()
+    };
+
+    if (list && list.length > 0) {
+      db.update('site_settings', item => item.id === list[0].id, updateData);
+    } else {
+      db.insert('site_settings', { id: 1, ...updateData });
+    }
+
+    const current = db.all('site_settings')[0] || updateData;
+    res.json({ message: 'Site & payment settings updated successfully', settings: current });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to update site settings: ' + err.message });
+  }
+});
+
+// ==========================================
 // 1. AUTHENTICATION ENDPOINTS
 // ==========================================
 
