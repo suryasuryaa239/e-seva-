@@ -1513,11 +1513,28 @@ export default function AdminDashboard() {
 
                               {/* Document Name & File */}
                               <td className="py-4 px-4 sm:px-6">
-                                <div className="space-y-0.5">
-                                  <span className="font-extrabold text-slate-900 block text-xs">{doc.document_name}</span>
-                                  <span className="text-[10px] text-slate-400 font-mono block truncate max-w-[180px]">
-                                    {doc.file_name}
-                                  </span>
+                                <div className="flex items-center gap-3">
+                                  {doc.file_path && (doc.file_type?.startsWith('image/') || /\.(jpg|jpeg|png|webp|jfif|bmp)$/i.test(doc.file_path || doc.file_name || '')) ? (
+                                    <button
+                                      type="button"
+                                      onClick={() => setSelectedDocForPreview(doc)}
+                                      className="relative shrink-0 group rounded-lg overflow-hidden border border-slate-200 cursor-pointer shadow-2xs"
+                                      title="Click to preview photo"
+                                    >
+                                      <img
+                                        src={doc.file_path.startsWith('http') || doc.file_path.startsWith('data:') ? doc.file_path : `/api/documents/${doc.id}/preview`}
+                                        alt={doc.document_name}
+                                        className="w-10 h-10 object-cover group-hover:scale-110 transition-transform"
+                                        onError={(e) => { e.target.style.display = 'none'; }}
+                                      />
+                                    </button>
+                                  ) : null}
+                                  <div className="space-y-0.5 min-w-0">
+                                    <span className="font-extrabold text-slate-900 block text-xs truncate max-w-[200px]">{doc.document_name}</span>
+                                    <span className="text-[10px] text-slate-400 font-mono block truncate max-w-[180px]">
+                                      {doc.file_name}
+                                    </span>
+                                  </div>
                                 </div>
                               </td>
 
@@ -4688,7 +4705,7 @@ export default function AdminDashboard() {
 
                               <div className="flex items-center space-x-2">
                                 <a
-                                  href={`/api/documents/${doc.id}/preview`}
+                                  href={doc.file_path && (doc.file_path.startsWith('http') || doc.file_path.startsWith('data:')) ? doc.file_path : `/api/documents/${doc.id}/preview`}
                                   target="_blank"
                                   rel="noreferrer"
                                   className="px-3 py-1.5 bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold rounded-lg border border-slate-300 flex items-center space-x-1"
@@ -4704,6 +4721,28 @@ export default function AdminDashboard() {
                                 </a>
                               </div>
                             </div>
+
+                            {doc.file_path && (doc.file_type?.startsWith('image/') || /\.(jpg|jpeg|png|webp|jfif|bmp)$/i.test(doc.file_path || doc.original_filename || doc.file_name || '')) && (
+                              <div className="pt-2 border-t border-slate-100 flex items-center gap-3">
+                                <a
+                                  href={doc.file_path.startsWith('http') || doc.file_path.startsWith('data:') ? doc.file_path : `/api/documents/${doc.id}/preview`}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="group relative block rounded-lg overflow-hidden border border-slate-200 shadow-2xs shrink-0"
+                                >
+                                  <img
+                                    src={doc.file_path.startsWith('http') || doc.file_path.startsWith('data:') ? doc.file_path : `/api/documents/${doc.id}/preview`}
+                                    alt={doc.document_name}
+                                    className="w-16 h-16 object-cover group-hover:scale-105 transition-transform"
+                                    onError={(e) => { e.target.style.display = 'none'; }}
+                                  />
+                                  <span className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-[10px] font-black transition-opacity">
+                                    View
+                                  </span>
+                                </a>
+                                <span className="text-[11px] text-slate-500">Click image thumbnail to inspect full resolution document proof</span>
+                              </div>
+                            )}
                           </div>
                         );
                       })}
@@ -6413,7 +6452,7 @@ export default function AdminDashboard() {
 
               <div className="flex items-center space-x-2">
                 <a
-                  href={`/api/documents/${selectedDocForPreview.id}/preview`}
+                  href={selectedDocForPreview.file_path && (selectedDocForPreview.file_path.startsWith('http') || selectedDocForPreview.file_path.startsWith('data:')) ? selectedDocForPreview.file_path : `/api/documents/${selectedDocForPreview.id}/preview`}
                   target="_blank"
                   rel="noreferrer"
                   className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl flex items-center gap-1 transition-colors"
@@ -6431,12 +6470,44 @@ export default function AdminDashboard() {
             </div>
 
             {/* Document Preview Frame */}
-            <div className="flex-1 bg-slate-900 rounded-2xl overflow-hidden border border-slate-200 min-h-[450px] relative flex items-center justify-center">
-              <iframe
-                src={`/api/documents/${selectedDocForPreview.id}/preview`}
-                className="w-full h-[500px] border-none rounded-2xl bg-white"
-                title="Document Preview"
-              />
+            <div className="flex-1 bg-slate-950 rounded-2xl overflow-hidden border border-slate-800 min-h-[450px] relative flex items-center justify-center p-4">
+              {(() => {
+                const previewUrl = selectedDocForPreview.file_path && (selectedDocForPreview.file_path.startsWith('http') || selectedDocForPreview.file_path.startsWith('data:'))
+                  ? selectedDocForPreview.file_path
+                  : `/api/documents/${selectedDocForPreview.id}/preview`;
+
+                const isImage = (
+                  (selectedDocForPreview.file_type && selectedDocForPreview.file_type.startsWith('image/')) ||
+                  (selectedDocForPreview.original_filename && /\.(jpg|jpeg|png|webp|jfif|bmp|gif|heic|heif)$/i.test(selectedDocForPreview.original_filename)) ||
+                  (selectedDocForPreview.stored_filename && /\.(jpg|jpeg|png|webp|jfif|bmp|gif|heic|heif)$/i.test(selectedDocForPreview.stored_filename)) ||
+                  (selectedDocForPreview.file_path && /\.(jpg|jpeg|png|webp|jfif|bmp|gif|heic|heif)$/i.test(selectedDocForPreview.file_path)) ||
+                  (selectedDocForPreview.file_path && selectedDocForPreview.file_path.startsWith('data:image'))
+                );
+
+                if (isImage) {
+                  return (
+                    <div className="flex flex-col items-center justify-center w-full h-full space-y-2">
+                      <img
+                        src={previewUrl}
+                        alt={selectedDocForPreview.document_name}
+                        className="max-h-[460px] max-w-full object-contain rounded-xl shadow-2xl border border-slate-700 bg-black/40"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = `/api/documents/${selectedDocForPreview.id}/preview`;
+                        }}
+                      />
+                    </div>
+                  );
+                }
+
+                return (
+                  <iframe
+                    src={previewUrl}
+                    className="w-full h-[500px] border-none rounded-xl bg-white"
+                    title="Document Preview"
+                  />
+                );
+              })()}
             </div>
 
             {/* Footer */}

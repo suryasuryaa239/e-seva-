@@ -10,6 +10,7 @@ import { db } from './database/db.js';
 import PaymentService from './paymentService.js';
 import NotificationService from './notificationService.js';
 import { initCronJobs } from './cronJobs.js';
+import { uploadToBackblaze } from './utils/b2Storage.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -110,8 +111,30 @@ app.use(cors({
 app.use(express.json());
 // Serve root static assets from public directory (images, logos, category icons)
 app.use(express.static(path.join(__dirname, '../public')));
-// DO NOT SERVE UNPROTECTED PUBLIC UPLOADS
-// Documents must be accessed via authenticated preview/download endpoints.
+
+// Uploaded Documents Redirect & Stream Handler
+app.get('/uploads/:filename', (req, res) => {
+  const filename = path.basename(req.params.filename);
+  const doc = db.get('application_documents', d => d.stored_filename === filename || (d.file_path && d.file_path.includes(filename)));
+  if (doc && doc.file_path) {
+    if (doc.file_path.startsWith('http://') || doc.file_path.startsWith('https://')) {
+      return res.redirect(doc.file_path);
+    }
+    if (doc.file_path.startsWith('data:')) {
+      const parts = doc.file_path.split(',');
+      const mimeMatch = parts[0].match(/:(.*?);/);
+      const mime = mimeMatch ? mimeMatch[1] : (doc.file_type || 'image/jpeg');
+      const buffer = Buffer.from(parts[1], 'base64');
+      res.setHeader('Content-Type', mime);
+      return res.send(buffer);
+    }
+  }
+  const localFile = path.join(uploadsDir, filename);
+  if (fs.existsSync(localFile)) {
+    return res.sendFile(localFile);
+  }
+  res.status(404).json({ error: 'File not found' });
+});
 
 // Simple In-Memory Rate Limiter
 const rateLimitMap = new Map();
@@ -877,41 +900,59 @@ app.post('/api/applications/draft', submitRateLimiter, upload.any(), async (req,
 
       const serviceDocs = db.all('service_documents', d => d.service_id === service.id);
 
-      req.files.forEach(file => {
+      for (const file of req.files) {
         let targetDocName = docMetadata[file.fieldname];
 
-        if (!targetDocName) {
-          const docName = file.fieldname.replace('doc_', '').replace(/_/g, ' ');
-          const matchedServiceDoc = serviceDocs.find(sd => {
-            const dName = sd.document_name || sd.name || '';
-            const normDName = dName.toLowerCase().replace(/[^a-z0-9]+/g, '');
-            const normDocName = docName.toLowerCase().replace(/[^a-z0-9]+/g, '');
-            return normDName.includes(normDocName) || normDocName.includes(normDName);
+          if (!targetDocName) {
+            const docName = file.fieldname.replace('doc_', '').replace(/_/g, ' ');
+            const matchedServiceDoc = serviceDocs.find(sd => {
+              const dName = sd.document_name || sd.name || '';
+              const normDName = dName.toLowerCase().replace(/[^a-z0-9]+/g, '');
+              const normDocName = docName.toLowerCase().replace(/[^a-z0-9]+/g, '');
+              return normDName.includes(normDocName) || normDocName.includes(normDName);
+            });
+            targetDocName = matchedServiceDoc ? (matchedServiceDoc.document_name || matchedServiceDoc.name) : docName;
+          }
+
+          let uploadedUrl = `/api/documents/preview-file/${file.filename}`;
+          try {
+            const buffer = file.buffer || (file.path && fs.existsSync(file.path) ? fs.readFileSync(file.path) : null);
+            if (buffer) {
+              const b2Result = await uploadToBackblaze({
+                buffer,
+                originalname: file.originalname,
+                mimetype: file.mimetype,
+                filename: file.filename
+              });
+              if (b2Result && b2Result.url) {
+                uploadedUrl = b2Result.url;
+              }
+            }
+          } catch (b2Err) {
+            console.warn('[B2 Upload Draft Warning]:', b2Err.message);
+          }
+
+          // Delete existing document for this name before inserting new update
+          db.delete('application_documents', d => d.application_id === application.id && (
+            d.document_name === targetDocName || 
+            (d.document_name && d.document_name.toLowerCase().replace(/[^a-z0-9]+/g, '') === targetDocName.toLowerCase().replace(/[^a-z0-9]+/g, ''))
+          ));
+
+          db.insert('application_documents', {
+            application_id: application.id,
+            service_document_id: null,
+            document_name: targetDocName,
+            original_filename: file.originalname,
+            stored_filename: file.filename,
+            file_type: file.mimetype,
+            file_size: file.size,
+            file_path: uploadedUrl,
+            uploaded_by: userId || 'Guest User',
+            uploaded_at: new Date().toISOString(),
+            verification_status: 'Pending Verification'
           });
-          targetDocName = matchedServiceDoc ? (matchedServiceDoc.document_name || matchedServiceDoc.name) : docName;
         }
-
-        // Delete existing document for this name before inserting new update
-        db.delete('application_documents', d => d.application_id === application.id && (
-          d.document_name === targetDocName || 
-          (d.document_name && d.document_name.toLowerCase().replace(/[^a-z0-9]+/g, '') === targetDocName.toLowerCase().replace(/[^a-z0-9]+/g, ''))
-        ));
-
-        db.insert('application_documents', {
-          application_id: application.id,
-          service_document_id: null,
-          document_name: targetDocName,
-          original_filename: file.originalname,
-          stored_filename: file.filename,
-          file_type: file.mimetype,
-          file_size: file.size,
-          file_path: `/api/documents/preview-file/${file.filename}`,
-          uploaded_by: userId || 'Guest User',
-          uploaded_at: new Date().toISOString(),
-          verification_status: 'Pending Verification'
-        });
-      });
-    }
+      }
 
     res.json({
       message: 'Draft application saved successfully',
@@ -970,7 +1011,7 @@ app.post('/api/applications', submitRateLimiter, upload.any(), async (req, res) 
       if (matchedUser) userId = matchedUser.id;
     }
 
-    const submissionResult = db.transaction(() => {
+    const submissionResult = await db.transaction(async () => {
       let application = null;
       if (draft_id) {
         application = db.get('applications', a => String(a.id) === String(draft_id) || a.application_number === draft_id);
@@ -1039,13 +1080,31 @@ app.post('/api/applications', submitRateLimiter, upload.any(), async (req, res) 
 
       // Save Uploaded Documents
       if (req.files && req.files.length > 0) {
-        req.files.forEach(file => {
+        for (const file of req.files) {
           const docName = file.fieldname.replace('doc_', '').replace(/_/g, ' ');
           const serviceDocs = db.all('service_documents', d => d.service_id === service.id);
           const matchedServiceDoc = serviceDocs.find(sd => {
             const dName = sd.document_name || sd.name || '';
             return dName.toLowerCase().includes(docName.toLowerCase()) || docName.toLowerCase().includes(dName.toLowerCase());
           });
+
+          let uploadedUrl = `/api/documents/preview-file/${file.filename}`;
+          try {
+            const buffer = file.buffer || (file.path && fs.existsSync(file.path) ? fs.readFileSync(file.path) : null);
+            if (buffer) {
+              const b2Result = await uploadToBackblaze({
+                buffer,
+                originalname: file.originalname,
+                mimetype: file.mimetype,
+                filename: file.filename
+              });
+              if (b2Result && b2Result.url) {
+                uploadedUrl = b2Result.url;
+              }
+            }
+          } catch (uploadErr) {
+            console.warn('[B2 Upload Submit Warning]:', uploadErr.message);
+          }
 
           const docRecord = db.insert('application_documents', {
             application_id: application.id,
@@ -1055,7 +1114,7 @@ app.post('/api/applications', submitRateLimiter, upload.any(), async (req, res) 
             stored_filename: file.filename,
             file_type: file.mimetype,
             file_size: file.size,
-            file_path: `/api/documents/preview-file/${file.filename}`,
+            file_path: uploadedUrl,
             uploaded_by: userId || 'Guest User',
             uploaded_at: new Date().toISOString(),
             verification_status: 'Pending Verification',
@@ -1065,7 +1124,7 @@ app.post('/api/applications', submitRateLimiter, upload.any(), async (req, res) 
           });
 
           logDocumentAudit(application.id, docRecord.id, 'Uploaded', user_name || 'Applicant', 'User', `Uploaded ${file.originalname}`);
-        });
+        }
       }
 
       // Save Payment Entry
@@ -1630,6 +1689,22 @@ app.get('/api/documents/:id/preview', optionalAuthenticateToken, (req, res) => {
   const doc = db.get('application_documents', d => d.id === docId);
   const appRecord = doc ? db.get('applications', a => a.id === doc.application_id) : null;
 
+  if (doc && doc.file_path) {
+    if (doc.file_path.startsWith('http://') || doc.file_path.startsWith('https://')) {
+      return res.redirect(doc.file_path);
+    }
+    if (doc.file_path.startsWith('data:')) {
+      const parts = doc.file_path.split(',');
+      const mimeMatch = parts[0].match(/:(.*?);/);
+      const mime = mimeMatch ? mimeMatch[1] : (doc.file_type || 'image/jpeg');
+      const b64Data = parts[1];
+      const buffer = Buffer.from(b64Data, 'base64');
+      res.setHeader('Content-Type', mime);
+      res.setHeader('Content-Disposition', `inline; filename="${doc.original_filename || doc.document_name || 'document'}"`);
+      return res.send(buffer);
+    }
+  }
+
   if (doc && doc.stored_filename) {
     const absolutePath = path.join(uploadsDir, doc.stored_filename);
     if (fs.existsSync(absolutePath)) {
@@ -1647,8 +1722,22 @@ app.get('/api/documents/:id/preview', optionalAuthenticateToken, (req, res) => {
 // Secure Document File Stream Endpoint (Internal / Authorized)
 app.get('/api/documents/preview-file/:filename', optionalAuthenticateToken, (req, res) => {
   const filename = path.basename(req.params.filename);
-  const doc = db.get('application_documents', d => d.stored_filename === filename || d.file_path && d.file_path.includes(filename));
+  const doc = db.get('application_documents', d => d.stored_filename === filename || (d.file_path && d.file_path.includes(filename)));
   const appRecord = doc ? db.get('applications', a => a.id === doc.application_id) : null;
+
+  if (doc && doc.file_path) {
+    if (doc.file_path.startsWith('http://') || doc.file_path.startsWith('https://')) {
+      return res.redirect(doc.file_path);
+    }
+    if (doc.file_path.startsWith('data:')) {
+      const parts = doc.file_path.split(',');
+      const mimeMatch = parts[0].match(/:(.*?);/);
+      const mime = mimeMatch ? mimeMatch[1] : (doc.file_type || 'image/jpeg');
+      const buffer = Buffer.from(parts[1], 'base64');
+      res.setHeader('Content-Type', mime);
+      return res.send(buffer);
+    }
+  }
 
   const absolutePath = path.join(uploadsDir, filename);
   if (fs.existsSync(absolutePath)) {
@@ -1671,6 +1760,10 @@ app.get('/api/documents/:id/download', optionalAuthenticateToken, (req, res) => 
     return res.status(403).json({ error: 'Access denied to this document' });
   }
 
+  if (doc.file_path && (doc.file_path.startsWith('http://') || doc.file_path.startsWith('https://'))) {
+    return res.redirect(doc.file_path);
+  }
+
   const absolutePath = path.join(uploadsDir, doc.stored_filename || path.basename(doc.file_path));
   if (!fs.existsSync(absolutePath)) {
     return res.status(404).json({ error: 'Physical document file missing on server' });
@@ -1680,7 +1773,7 @@ app.get('/api/documents/:id/download', optionalAuthenticateToken, (req, res) => 
 });
 
 // Replace Document File (for DRAFT or REJECTED state)
-app.post('/api/documents/:id/replace', authenticateToken, upload.single('file'), (req, res) => {
+app.post('/api/documents/:id/replace', authenticateToken, upload.single('file'), async (req, res) => {
   const docId = Number(req.params.id);
   const doc = db.get('application_documents', d => d.id === docId);
   if (!doc) return res.status(404).json({ error: 'Document record not found' });
@@ -1691,6 +1784,24 @@ app.post('/api/documents/:id/replace', authenticateToken, upload.single('file'),
   }
 
   if (!req.file) return res.status(400).json({ error: 'No replacement file uploaded' });
+
+  let uploadedUrl = `/api/documents/preview-file/${req.file.filename}`;
+  try {
+    const buffer = req.file.buffer || (req.file.path && fs.existsSync(req.file.path) ? fs.readFileSync(req.file.path) : null);
+    if (buffer) {
+      const b2Result = await uploadToBackblaze({
+        buffer,
+        originalname: req.file.originalname,
+        mimetype: req.file.mimetype,
+        filename: req.file.filename
+      });
+      if (b2Result && b2Result.url) {
+        uploadedUrl = b2Result.url;
+      }
+    }
+  } catch (e) {
+    console.warn('[B2 Replace Warning]:', e.message);
+  }
 
   if (doc.stored_filename) {
     const oldPath = path.join(uploadsDir, doc.stored_filename);
@@ -1704,7 +1815,7 @@ app.post('/api/documents/:id/replace', authenticateToken, upload.single('file'),
     stored_filename: req.file.filename,
     file_type: req.file.mimetype,
     file_size: req.file.size,
-    file_path: `/api/documents/preview-file/${req.file.filename}`,
+    file_path: uploadedUrl,
     verification_status: 'Pending Verification',
     rejection_reason: null,
     uploaded_at: new Date().toISOString()
@@ -2785,7 +2896,7 @@ app.post('/api/careers', upload.single('resume'), (req, res) => {
 // ==========================================
 
 // User Document Re-upload Endpoint (for Action Required / Rejected status)
-app.post('/api/applications/:id/reupload-document', upload.single('file'), (req, res) => {
+app.post('/api/applications/:id/reupload-document', upload.single('file'), async (req, res) => {
   const appId = Number(req.params.id);
   const { document_name } = req.body;
   if (!req.file || !document_name) {
@@ -2795,6 +2906,24 @@ app.post('/api/applications/:id/reupload-document', upload.single('file'), (req,
   const appRecord = db.get('applications', a => a.id === appId);
   if (!appRecord) return res.status(404).json({ error: 'Application not found' });
 
+  let uploadedUrl = `/api/documents/preview-file/${req.file.filename}`;
+  try {
+    const buffer = req.file.buffer || (req.file.path && fs.existsSync(req.file.path) ? fs.readFileSync(req.file.path) : null);
+    if (buffer) {
+      const b2Result = await uploadToBackblaze({
+        buffer,
+        originalname: req.file.originalname,
+        mimetype: req.file.mimetype,
+        filename: req.file.filename
+      });
+      if (b2Result && b2Result.url) {
+        uploadedUrl = b2Result.url;
+      }
+    }
+  } catch (e) {
+    console.warn('[B2 Reupload Warning]:', e.message);
+  }
+
   const existingDoc = db.get('application_documents', d => d.application_id === appId && d.document_name === document_name);
 
   if (existingDoc) {
@@ -2803,7 +2932,7 @@ app.post('/api/applications/:id/reupload-document', upload.single('file'), (req,
       stored_filename: req.file.filename,
       file_type: req.file.mimetype,
       file_size: req.file.size,
-      file_path: `/uploads/${req.file.filename}`,
+      file_path: uploadedUrl,
       verification_status: 'Pending Verification',
       rejection_reason: null,
       uploaded_at: new Date().toISOString()
@@ -2816,7 +2945,7 @@ app.post('/api/applications/:id/reupload-document', upload.single('file'), (req,
       stored_filename: req.file.filename,
       file_type: req.file.mimetype,
       file_size: req.file.size,
-      file_path: `/uploads/${req.file.filename}`,
+      file_path: uploadedUrl,
       verification_status: 'Pending Verification',
       rejection_reason: null,
       uploaded_at: new Date().toISOString()

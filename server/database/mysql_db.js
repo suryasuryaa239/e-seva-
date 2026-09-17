@@ -160,6 +160,40 @@ export async function initializeDatabaseSchema() {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
 
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS application_documents (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        application_id INT,
+        service_document_id INT,
+        document_name VARCHAR(255),
+        original_filename VARCHAR(255),
+        stored_filename VARCHAR(255),
+        file_type VARCHAR(100),
+        file_size INT,
+        file_path TEXT,
+        uploaded_by VARCHAR(255),
+        uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        verification_status VARCHAR(50) DEFAULT 'Pending Verification',
+        verified_by VARCHAR(255),
+        verified_at TIMESTAMP NULL,
+        rejection_reason TEXT,
+        admin_notes TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `);
+
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS application_field_values (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        application_id INT,
+        field_id INT,
+        field_label VARCHAR(255),
+        value TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `);
+
     console.log('✅ [TiDB CLOUD] Database Schema Tables initialized successfully!');
   } catch (error) {
     console.error('❌ [TiDB CLOUD DB ERROR]', error);

@@ -223,10 +223,10 @@ class TiDBSupportedDatabase {
     return `${prefix}-${String(nextSeq).padStart(6, '0')}`;
   }
 
-  transaction(fn) {
+  async transaction(fn) {
     const snapshot = JSON.parse(JSON.stringify(this.data));
     try {
-      const result = fn();
+      const result = await fn();
       this.saveLocal();
       return result;
     } catch (err) {
