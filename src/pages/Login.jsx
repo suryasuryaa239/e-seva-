@@ -7,6 +7,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { useLanguage } from '../context/LanguageContext';
+import { sanitizePhone, formatAadhaar } from '../utils/formFormatters';
 
 export default function Login() {
   const location = useLocation();
@@ -298,8 +299,10 @@ export default function Login() {
                         type="tel"
                         required
                         placeholder="10-digit mobile"
+                        maxLength={10}
+                        inputMode="numeric"
                         value={formData.phone}
-                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                        onChange={(e) => setFormData({ ...formData, phone: sanitizePhone(e.target.value) })}
                         className="w-full bg-slate-50/70 text-slate-900 text-xs font-medium rounded-lg pl-9 pr-3 py-2 border border-slate-200 focus:border-[#0f172a] focus:bg-white focus:ring-2 focus:ring-[#0f172a]/10 outline-none transition-all"
                       />
                     </div>
@@ -333,8 +336,10 @@ export default function Login() {
                       <input
                         type="text"
                         placeholder="12-digit Aadhaar"
+                        maxLength={14}
+                        inputMode="numeric"
                         value={formData.aadhaar_no}
-                        onChange={(e) => setFormData({ ...formData, aadhaar_no: e.target.value })}
+                        onChange={(e) => setFormData({ ...formData, aadhaar_no: formatAadhaar(e.target.value) })}
                         className="w-full bg-slate-50/70 text-slate-900 text-xs font-mono font-medium rounded-lg pl-9 pr-3 py-2 border border-slate-200 focus:border-[#0f172a] focus:bg-white focus:ring-2 focus:ring-[#0f172a]/10 outline-none transition-all"
                       />
                     </div>

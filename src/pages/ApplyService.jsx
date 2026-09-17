@@ -10,6 +10,10 @@ import Breadcrumbs from '../components/Breadcrumbs';
 import CameraCaptureModal from '../components/CameraCaptureModal';
 import ReceiptModal from '../components/ReceiptModal';
 import { optimizeAndValidateDocument, ACCEPTED_INPUT_TYPES } from '../utils/imageOptimizer';
+import { 
+  sanitizePhone, formatAadhaar, cleanAadhaar, sanitizePincode, 
+  formatPAN, formatVoterID, sanitizeRationCard, getFieldConstraints 
+} from '../utils/formFormatters';
 import { getServiceDefinition, DEFAULT_SERVICES_MAP, getLocalizedService } from '../data/servicesCatalogData';
 import { getLocalizedSectionTitle, getLocalizedFieldLabel, getLocalizedOption, getLocalizedPlaceholder, getLocalizedDocName } from '../utils/localizationHelpers';
 import { useLanguage } from '../context/LanguageContext';
@@ -390,14 +394,31 @@ export default function ApplyService() {
   };
 
   const handleApplicantChange = (e) => {
-    const { name, value } = e.target;
+    const { name } = e.target;
+    let { value } = e.target;
+
+    if (name === 'user_phone') {
+      value = sanitizePhone(value);
+    } else if (name === 'aadhaar_no') {
+      value = formatAadhaar(value);
+    } else if (name === 'pincode') {
+      value = sanitizePincode(value);
+    }
+
     setApplicantInfo(prev => ({ ...prev, [name]: value }));
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: null }));
     }
   };
 
-  const handleInputChange = (fieldName, val) => {
+  const handleInputChange = (fieldName, rawVal, fieldDef = {}) => {
+    let val = rawVal;
+    if (typeof val === 'string') {
+      const constraints = getFieldConstraints(fieldDef.name || fieldDef.field_name ? fieldDef : { field_name: fieldName });
+      if (constraints.format) {
+        val = constraints.format(val);
+      }
+    }
     setFieldValues(prev => ({ ...prev, [fieldName]: val }));
     if (errors[fieldName]) {
       setErrors(prev => ({ ...prev, [fieldName]: null }));
@@ -464,28 +485,53 @@ export default function ApplyService() {
     if (!applicantInfo.user_name.trim()) {
       errs.user_name = lang === 'ta' ? 'உங்கள் முழுப் பெயரை உள்ளிடவும்.' : 'Please enter your full name.';
     }
-    if (!applicantInfo.user_phone.trim()) {
+
+    // Mobile Phone Validation (Strictly 10 digits)
+    const cleanPhone = (applicantInfo.user_phone || '').replace(/\D/g, '');
+    if (!cleanPhone) {
       errs.user_phone = lang === 'ta' ? 'உங்கள் மொபைல் எண்ணை உள்ளிடவும்.' : 'Please enter your mobile number.';
-    } else if (!/^\d{10}$/.test(applicantInfo.user_phone.trim())) {
-      errs.user_phone = lang === 'ta' ? 'செல்லுபடியாகும் 10-இலக்க மொபைல் எண்ணை உள்ளிடவும்.' : 'Please enter a valid 10-digit mobile number.';
+    } else if (cleanPhone.length !== 10) {
+      errs.user_phone = lang === 'ta' ? 'மொபைல் எண் சரியாக 10 இலக்கங்களாக இருக்க வேண்டும்.' : 'Mobile number must be exactly 10 digits.';
     }
+
+    // Email Validation
     if (!applicantInfo.user_email.trim()) {
       errs.user_email = lang === 'ta' ? 'உங்கள் மின்னஞ்சல் முகவரியை உள்ளிடவும்.' : 'Please enter your email address.';
     } else if (!/\S+@\S+\.\S+/.test(applicantInfo.user_email.trim())) {
       errs.user_email = lang === 'ta' ? 'செல்லுபடியாகும் மின்னஞ்சல் முகவரியை உள்ளிடவும்.' : 'Please enter a valid email address.';
     }
-    if (applicantInfo.pincode && !/^\d{6}$/.test(applicantInfo.pincode.trim())) {
+
+    // Aadhaar Validation (Strictly 12 digits)
+    const rawAadhaar = cleanAadhaar(applicantInfo.aadhaar_no);
+    if (!rawAadhaar) {
+      errs.aadhaar_no = lang === 'ta' ? 'உங்கள் 12-இலக்க ஆதார் எண்ணை உள்ளிடவும்.' : 'Please enter your 12-digit Aadhaar number.';
+    } else if (rawAadhaar.length !== 12) {
+      errs.aadhaar_no = lang === 'ta' ? 'ஆதார் எண் சரியாக 12 இலக்கங்களாக இருக்க வேண்டும்.' : 'Aadhaar number must be exactly 12 digits.';
+    }
+
+    // Pincode Validation (Strictly 6 digits if provided)
+    if (applicantInfo.pincode && sanitizePincode(applicantInfo.pincode).length !== 6) {
       errs.pincode = lang === 'ta' ? 'செல்லுபடியாகும் 6-இலக்க அஞ்சல் குறியீட்டை உள்ளிடவும்.' : 'Please enter a valid 6-digit pincode.';
     }
 
+    // Dynamic Custom Service Fields Validation
     if (service && service.fields) {
       service.fields.forEach(f => {
-        if (isFieldVisible(f) && (f.is_required !== false && f.required !== false)) {
+        if (isFieldVisible(f)) {
           const key = f.field_name || f.name;
           const val = fieldValues[key];
-          if (!val || String(val).trim() === '') {
-            const fLabel = f.field_label || f.label;
+          const fLabel = f.field_label || f.label || key;
+          const isRequired = f.is_required !== false && f.required !== false;
+          const constraints = getFieldConstraints(f);
+
+          if (isRequired && (!val || String(val).trim() === '')) {
             errs[key] = lang === 'ta' ? `${fLabel} உள்ளிடவும்.` : `Please enter ${fLabel}.`;
+          } else if (val && String(val).trim() !== '' && constraints.validate) {
+            if (!constraints.validate(val)) {
+              errs[key] = constraints.errorMsg
+                ? (lang === 'ta' ? constraints.errorMsg.ta : constraints.errorMsg.en)
+                : (lang === 'ta' ? `${fLabel} சரியான வடிவத்தில் இல்லை.` : `${fLabel} is invalid.`);
+            }
           }
         }
       });
@@ -905,6 +951,8 @@ export default function ApplyService() {
                         type="tel"
                         name="user_phone"
                         placeholder="e.g. 9876543210"
+                        maxLength={10}
+                        inputMode="numeric"
                         value={applicantInfo.user_phone}
                         onChange={handleApplicantChange}
                         className={`w-full px-4 py-3 bg-slate-50 border ${errors.user_phone ? 'border-rose-500 bg-rose-50/50' : 'border-slate-200'} rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-[#0b192c] focus:bg-white transition-all`}
@@ -935,6 +983,8 @@ export default function ApplyService() {
                         type="text"
                         name="aadhaar_no"
                         placeholder="e.g. 9876 5432 1098"
+                        maxLength={14}
+                        inputMode="numeric"
                         value={applicantInfo.aadhaar_no}
                         onChange={handleApplicantChange}
                         className={`w-full px-4 py-3 bg-slate-50 border ${errors.aadhaar_no ? 'border-rose-500 bg-rose-50/50' : 'border-slate-200'} rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-[#0b192c] focus:bg-white transition-all`}
@@ -1029,13 +1079,21 @@ export default function ApplyService() {
                                         className={`w-full px-4 py-3 bg-white border ${hasErr ? 'border-rose-500 bg-rose-50' : 'border-slate-200'} rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-[#0b192c]`}
                                       />
                                     ) : (
-                                      <input
-                                        type={fType === 'date' ? 'date' : fType === 'number' ? 'number' : 'text'}
-                                        placeholder={placeholderText}
-                                        value={fieldValues[key] || ''}
-                                        onChange={e => handleInputChange(key, e.target.value)}
-                                        className={`w-full px-4 py-3 bg-white border ${hasErr ? 'border-rose-500 bg-rose-50' : 'border-slate-200'} rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-[#0b192c]`}
-                                      />
+                                      (() => {
+                                        const constraints = getFieldConstraints(f);
+                                        return (
+                                          <input
+                                            type={fType === 'date' ? 'date' : 'text'}
+                                            placeholder={constraints.placeholder || placeholderText}
+                                            maxLength={constraints.maxLength}
+                                            inputMode={constraints.inputMode}
+                                            style={constraints.style}
+                                            value={fieldValues[key] || ''}
+                                            onChange={e => handleInputChange(key, e.target.value, f)}
+                                            className={`w-full px-4 py-3 bg-white border ${hasErr ? 'border-rose-500 bg-rose-50' : 'border-slate-200'} rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-[#0b192c]`}
+                                          />
+                                        );
+                                      })()
                                     )}
 
                                     {f.helpText && <p className="text-[11px] text-slate-500 mt-1 font-normal">{f.helpText}</p>}
