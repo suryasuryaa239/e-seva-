@@ -351,6 +351,27 @@ export default function ApplyService() {
       }
 
       // Check user session to prefill applicant info if logged in
+      const savedUserStr = localStorage.getItem('eseva_saved_user');
+      let cachedUserData = user;
+      if (!cachedUserData && savedUserStr) {
+        try {
+          cachedUserData = JSON.parse(savedUserStr);
+        } catch (e) {}
+      }
+      if (cachedUserData) {
+        setApplicantInfo(prev => ({
+          ...prev,
+          user_name: prev.user_name || cachedUserData.name || '',
+          user_email: prev.user_email || cachedUserData.email || '',
+          user_phone: prev.user_phone || cachedUserData.phone || cachedUserData.mobile || '',
+          aadhaar_no: prev.aadhaar_no || cachedUserData.aadhaar_no || '',
+          address: prev.address || cachedUserData.address || '',
+          district: prev.district || cachedUserData.district || '',
+          state: prev.state || cachedUserData.state || 'Tamil Nadu',
+          pincode: prev.pincode || cachedUserData.pincode || ''
+        }));
+      }
+
       const userTok = localStorage.getItem('eseva_user_token') || localStorage.getItem('token') || localStorage.getItem('eseva_admin_token');
       if (userTok) {
         try {
@@ -692,7 +713,8 @@ export default function ApplyService() {
 
   useEffect(() => {
     const token = userToken || localStorage.getItem('token') || localStorage.getItem('eseva_user_token');
-    if (!authLoading && !user && !token) {
+    const savedUser = localStorage.getItem('eseva_saved_user');
+    if (!authLoading && !user && !token && !savedUser) {
       addToast(
         lang === 'ta'
           ? 'சேவைகளுக்கு விண்ணப்பிக்க தயவுசெய்து முதலில் உள்நுழையவும்!'
@@ -716,7 +738,8 @@ export default function ApplyService() {
 
   // Authentication Guard: Redirecting if unauthenticated
   const hasToken = userToken || localStorage.getItem('token') || localStorage.getItem('eseva_user_token');
-  if (!user && !hasToken) {
+  const savedUser = localStorage.getItem('eseva_saved_user');
+  if (!user && !hasToken && !savedUser) {
     return (
       <div className="min-h-screen bg-slate-50 py-16 px-4 flex items-center justify-center font-sans">
         <div className="bg-white rounded-3xl shadow-xl p-8 sm:p-10 text-center max-w-md w-full space-y-6 border border-slate-200">

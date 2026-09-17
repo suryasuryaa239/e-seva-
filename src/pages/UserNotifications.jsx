@@ -20,7 +20,7 @@ export default function UserNotifications() {
   const fetchNotifications = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('token') || localStorage.getItem('eseva_user_token');
       if (!token) {
         navigate('/login?redirect=/notifications');
         return;

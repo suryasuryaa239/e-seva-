@@ -53,8 +53,9 @@ function RequireCitizenAuth({ children }) {
   const location = useLocation();
 
   const token = userToken || localStorage.getItem('token') || localStorage.getItem('eseva_user_token');
+  const savedUser = localStorage.getItem('eseva_saved_user');
 
-  if (loading) {
+  if (loading && !token && !savedUser) {
     return (
       <div className="min-h-screen bg-slate-50 py-16 px-4 flex items-center justify-center font-sans">
         <div className="bg-white rounded-3xl shadow-sm p-8 text-center max-w-sm w-full space-y-4 border border-slate-200">
@@ -65,7 +66,7 @@ function RequireCitizenAuth({ children }) {
     );
   }
 
-  if (!user && !token) {
+  if (!user && !token && !savedUser) {
     return <Navigate to={`/login?redirect=${encodeURIComponent(location.pathname)}`} replace />;
   }
 
@@ -76,8 +77,9 @@ function RequireAdminAuth({ children }) {
   const { admin, adminToken, loading } = useAuth();
 
   const token = adminToken || localStorage.getItem('eseva_admin_token') || localStorage.getItem('adminToken');
+  const savedAdmin = localStorage.getItem('eseva_saved_admin');
 
-  if (loading) {
+  if (loading && !token && !savedAdmin) {
     return (
       <div className="min-h-screen bg-[#0b192c] py-16 px-4 flex items-center justify-center font-sans text-white">
         <div className="bg-slate-800 rounded-3xl shadow-sm p-8 text-center max-w-sm w-full space-y-4 border border-slate-700">
@@ -88,7 +90,7 @@ function RequireAdminAuth({ children }) {
     );
   }
 
-  if (!admin || !token) {
+  if (!admin && !token && !savedAdmin) {
     return <Navigate to="/admin/login" replace />;
   }
 

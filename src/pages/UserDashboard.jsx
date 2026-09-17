@@ -27,34 +27,49 @@ export default function UserDashboard() {
       setLoading(true);
       setError(null);
 
-      const token = localStorage.getItem('token');
-      if (!token) {
+      const token = localStorage.getItem('token') || localStorage.getItem('eseva_user_token');
+      const savedUser = localStorage.getItem('eseva_saved_user');
+      if (!token && !savedUser) {
         navigate('/login?redirect=/dashboard');
         return;
       }
 
-      // Fetch User Info
-      const userRes = await fetch('/api/auth/me', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      let userData = null;
+      try {
+        if (savedUser) userData = JSON.parse(savedUser);
+      } catch (e) {}
 
-      if (!userRes.ok) {
-        localStorage.removeItem('token');
-        navigate('/login');
-        return;
+      if (userData) {
+        setUser(userData);
       }
 
-      const userData = await userRes.json();
-      setUser(userData);
+      if (token) {
+        // Fetch User Info
+        const userRes = await fetch('/api/auth/me', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
 
-      // Fetch User Applications
-      const appRes = await fetch('/api/applications/my', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+        if (userRes.ok) {
+          const freshData = await userRes.json();
+          setUser(freshData);
+          localStorage.setItem('eseva_saved_user', JSON.stringify(freshData));
+        } else if (userRes.status === 401 || userRes.status === 403) {
+          localStorage.removeItem('token');
+          localStorage.removeItem('eseva_user_token');
+          localStorage.removeItem('eseva_saved_user');
+          navigate('/login');
+          return;
+        }
 
-      if (appRes.ok) {
-        const appData = await appRes.json();
-        setApplications(appData || []);
+        // Fetch User Applications
+        const appRes = await fetch('/api/applications/my', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (appRes.ok) {
+          const appData = await appRes.json();
+          setApplications(appData || []);
+        }
       }
     } catch (err) {
       setError(err.message);

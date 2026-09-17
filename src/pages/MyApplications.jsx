@@ -40,7 +40,7 @@ export default function MyApplications() {
       if (!isSilent) setLoading(true);
       setError(null);
 
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('token') || localStorage.getItem('eseva_user_token');
       if (!token) {
         navigate('/login?redirect=/my-applications');
         return;
