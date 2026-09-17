@@ -116,20 +116,32 @@ export default function PanServicesCatalog() {
             <span>{lang === 'ta' ? 'PAN சேவை மைய பயன்பாட்டு போர்ட்டல்' : 'Official Facilitation & Application Assistance Portal'}</span>
           </div>
 
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div>
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+            <div className="space-y-2">
               <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
                 {lang === 'ta' ? 'PAN கார்டு சேவைகள் பட்டியல்' : 'PAN Services Portal & Application Facilitation'}
               </h1>
-              <p className="text-slate-300 text-sm mt-1 max-w-2xl">
+              <p className="text-slate-300 text-sm max-w-2xl leading-relaxed">
                 {lang === 'ta' ? 'புதிய PAN கார்டு (படிவம் 49A/49AA), பெயர் & பிறந்த தேதி திருத்தம், PAN-ஆதார் இணைப்பு மற்றும் e-PAN பதிவிறக்கம்.' : 'Apply for New PAN Card (Form 49A/49AA), Name & DOB Correction, PAN-Aadhaar Linking, Physical Card Reprint, and e-PAN Download with doorstep processing support.'}
               </p>
             </div>
 
-            <div className="bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/15 min-w-[240px]">
-              <div className="text-xs text-indigo-200 uppercase font-bold tracking-wider">{lang === 'ta' ? 'உதவி எண்' : 'Helpdesk Helpline'}</div>
-              <div className="text-lg font-extrabold text-white mt-0.5">1800-180-1961</div>
-              <div className="text-[11px] text-slate-300">{lang === 'ta' ? 'திங்கள் - சனி: காலை 9:00 - மாலை 7:00' : 'Mon - Sat: 9:00 AM to 7:00 PM'}</div>
+            <div className="flex flex-col sm:flex-row items-center gap-4 shrink-0">
+              {/* PAN Card Visual Mockup Frame */}
+              <div className="bg-white/10 backdrop-blur-md rounded-2xl p-2.5 border border-white/20 shadow-2xl flex items-center justify-center w-full sm:w-64 h-36 overflow-hidden group hover:border-indigo-400/50 transition-all">
+                <img 
+                  src="/pan_card.png" 
+                  alt="Income Tax Department Government of India PAN Card" 
+                  className="w-full h-full object-contain drop-shadow-2xl group-hover:scale-105 transition-transform duration-300 rounded-lg"
+                />
+              </div>
+
+              {/* Helpdesk Helpline */}
+              <div className="bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/15 min-w-[200px] w-full sm:w-auto shrink-0">
+                <div className="text-xs text-indigo-200 uppercase font-bold tracking-wider">{lang === 'ta' ? 'உதவி எண்' : 'Helpdesk Helpline'}</div>
+                <div className="text-lg font-extrabold text-white mt-0.5">1800-180-1961</div>
+                <div className="text-[11px] text-slate-300">{lang === 'ta' ? 'திங்கள் - சனி: காலை 9:00 - மாலை 7:00' : 'Mon - Sat: 9:00 AM to 7:00 PM'}</div>
+              </div>
             </div>
           </div>
 
@@ -286,6 +298,55 @@ export default function PanServicesCatalog() {
               <div className="w-6 h-6 rounded-full bg-indigo-600 text-white font-bold flex items-center justify-center text-xs">4</div>
               <div className="font-bold text-slate-800">Get Application ID</div>
               <div className="text-slate-600">Receive instant Acknowledgement Number & track status online.</div>
+            </div>
+          </div>
+        </div>
+
+        {/* PHYSICAL & DIGITAL PAN CARD SPECIFICATION HIGHLIGHT */}
+        <div className="bg-gradient-to-br from-indigo-950 via-slate-900 to-blue-950 text-white rounded-3xl p-6 sm:p-8 border border-indigo-500/30 shadow-xl overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
+            <div className="lg:col-span-5 flex justify-center">
+              <div className="relative group max-w-sm w-full bg-white/5 backdrop-blur-md p-3.5 rounded-2xl border border-white/15 shadow-2xl">
+                <img 
+                  src="/pan_card.png" 
+                  alt="Government of India Permanent Account Number PAN Card"
+                  className="w-full h-auto object-contain rounded-xl drop-shadow-2xl group-hover:scale-105 transition-transform duration-500"
+                />
+                <div className="mt-2.5 text-center text-[11px] text-indigo-200 font-semibold tracking-wide">
+                  {lang === 'ta' ? 'அங்கீகரிக்கப்பட்ட இந்திய அரசு PAN அட்டை மாதிரி' : 'Authorized Government of India PAN Card Specimen'}
+                </div>
+              </div>
+            </div>
+
+            <div className="lg:col-span-7 space-y-4">
+              <span className="inline-block text-[11px] font-extrabold text-indigo-300 uppercase tracking-widest bg-indigo-500/20 border border-indigo-400/30 px-3 py-1 rounded-full">
+                {lang === 'ta' ? 'அதிகாரப்பூர்வ PAN அட்டை வசதிகள்' : 'OFFICIAL PAN CARD FEATURES'}
+              </span>
+              <h3 className="text-xl sm:text-2xl font-black tracking-tight text-white">
+                {lang === 'ta' ? '10 இலக்க நிரந்தர கணக்கு எண் (Permanent Account Number)' : '10-Digit Alphanumeric Permanent Account Number'}
+              </h3>
+              <p className="text-slate-300 text-xs sm:text-sm leading-relaxed">
+                {lang === 'ta' 
+                  ? 'இந்திய வருமான வரித்துறையால் (Income Tax Department) வழங்கப்படுகின்ற இந்த PAN அட்டை, அனைத்து வங்கி கணக்குகள், நிதி பரிவர்த்தனைகள் மற்றும் வருமான வரிக் கணக்கு தாக்கல் செய்ய கட்டாயமானது. புதிய அட்டை, திருத்தம் மற்றும் மறுபதிப்பு சேவைகளை இ-சேவை மையம் மூலம் எளிதாகப் பெறுங்கள்.'
+                  : 'Issued by the Income Tax Department of India. Mandatory for opening bank accounts, major financial transactions, filing IT returns, and investments. Get your laminated PVC card and instant e-PAN PDF delivered.'}
+              </p>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2">
+                <div className="bg-white/10 border border-white/10 rounded-xl p-3 text-center">
+                  <div className="text-sm sm:text-base font-extrabold text-emerald-400">QR Code</div>
+                  <div className="text-[11px] text-slate-300 mt-0.5">{lang === 'ta' ? 'டிஜிட்டல் சரிபார்ப்பு' : 'Enhanced Security'}</div>
+                </div>
+                <div className="bg-white/10 border border-white/10 rounded-xl p-3 text-center">
+                  <div className="text-sm sm:text-base font-extrabold text-indigo-300">Hologram</div>
+                  <div className="text-[11px] text-slate-300 mt-0.5">{lang === 'ta' ? 'அரசு முத்திரை' : 'Govt ITD Emblem'}</div>
+                </div>
+                <div className="bg-white/10 border border-white/10 rounded-xl p-3 text-center col-span-2 sm:col-span-1">
+                  <div className="text-sm sm:text-base font-extrabold text-amber-300">Speed Post</div>
+                  <div className="text-[11px] text-slate-300 mt-0.5">{lang === 'ta' ? 'வீட்டுக்கே டெலிவரி' : 'Doorstep Dispatch'}</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

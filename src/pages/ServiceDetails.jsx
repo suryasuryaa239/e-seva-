@@ -180,6 +180,8 @@ export default function ServiceDetails() {
               <div className="w-16 h-16 rounded-2xl bg-orange-50 border border-orange-100 flex items-center justify-center shrink-0 overflow-hidden shadow-xs">
                 {service.image_url ? (
                   <img src={service.image_url} alt={service.name} className="w-full h-full object-cover" />
+                ) : (service.category_slug?.includes('pan') || service.slug?.includes('pan')) ? (
+                  <img src="/pan_card.png" alt={service.name} className="w-full h-full object-contain p-1" />
                 ) : (
                   getCategoryIcon(service.category_slug)
                 )}

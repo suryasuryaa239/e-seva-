@@ -763,6 +763,12 @@ export default function ApplyService() {
           </div>
 
           <div className="flex items-center gap-4 w-full md:w-auto">
+            {(service.category_slug === 'pan-services' || service.slug?.toLowerCase().includes('pan')) && (
+              <div className="hidden sm:flex w-24 h-14 rounded-2xl bg-white border border-slate-200/90 p-1.5 items-center justify-center shrink-0 shadow-xs">
+                <img src="/pan_card.png" alt="PAN Card" className="w-full h-full object-contain drop-shadow-xs" />
+              </div>
+            )}
+
             <div className="bg-slate-50 border border-slate-200/80 rounded-2xl px-5 py-3 text-center md:text-right min-w-[130px] flex-1 md:flex-initial">
               <div className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">{lang === 'ta' ? 'சேவை கட்டணம்' : 'Service Fee'}</div>
               <div className="text-2xl font-black text-orange-600">
