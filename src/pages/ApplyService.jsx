@@ -9,6 +9,7 @@ import {
 import Breadcrumbs from '../components/Breadcrumbs';
 import CameraCaptureModal from '../components/CameraCaptureModal';
 import ReceiptModal from '../components/ReceiptModal';
+import { optimizeAndValidateDocument, ACCEPTED_INPUT_TYPES } from '../utils/imageOptimizer';
 import { getServiceDefinition, DEFAULT_SERVICES_MAP, getLocalizedService } from '../data/servicesCatalogData';
 import { getLocalizedSectionTitle, getLocalizedFieldLabel, getLocalizedOption, getLocalizedPlaceholder, getLocalizedDocName } from '../utils/localizationHelpers';
 import { useLanguage } from '../context/LanguageContext';
@@ -115,6 +116,8 @@ export default function ApplyService() {
   const [previewModalDoc, setPreviewModalDoc] = useState(null);
   // Receipt Preview & Print Modal State
   const [showReceiptModal, setShowReceiptModal] = useState(false);
+  // Image & Document Optimization in-progress state per document
+  const [optimizingDocs, setOptimizingDocs] = useState({});
   
   // Validation Errors State
   const [errors, setErrors] = useState({});
@@ -408,24 +411,40 @@ export default function ApplyService() {
     }
   };
 
-  const processSelectedFile = (dName, selectedFile, maxLimitMB = 5) => {
+  const processSelectedFile = async (dName, selectedFile, maxLimitMB = 20) => {
     if (!selectedFile) return;
-    const validExts = ['.pdf', '.jpg', '.jpeg', '.png'];
-    const fileName = selectedFile.name || 'file.jpg';
-    const ext = '.' + fileName.split('.').pop().toLowerCase();
-    
-    if (!validExts.includes(ext)) {
-      setErrors(prev => ({ ...prev, [`doc_${dName}`]: lang === 'ta' ? 'கோப்பு வகை ஆதரிக்கப்படவில்லை. PDF, JPG, அல்லது PNG பதிவேற்றவும்.' : 'File type not supported. Upload PDF, JPG, or PNG.' }));
-      return;
-    }
 
-    if (selectedFile.size > maxLimitMB * 1024 * 1024) {
-      setErrors(prev => ({ ...prev, [`doc_${dName}`]: lang === 'ta' ? `கோப்பு அளவு ${maxLimitMB}MB வரம்பை விட அதிகமாக உள்ளது.` : `File size exceeds ${maxLimitMB}MB limit.` }));
-      return;
-    }
-
+    setOptimizingDocs(prev => ({ ...prev, [dName]: true }));
     setErrors(prev => ({ ...prev, [`doc_${dName}`]: null }));
-    handleFileChange(dName, selectedFile);
+
+    try {
+      const result = await optimizeAndValidateDocument(selectedFile, {
+        lang,
+        maxDimension: 1920,
+        quality: 0.85,
+        pdfMaxMB: 20
+      });
+
+      if (!result.success) {
+        setErrors(prev => ({ ...prev, [`doc_${dName}`]: result.error }));
+      } else {
+        const processedFile = result.file;
+        if (result.previewUrl) {
+          processedFile._previewUrl = result.previewUrl;
+        }
+        handleFileChange(dName, processedFile);
+      }
+    } catch (err) {
+      console.error('File optimization error:', err);
+      setErrors(prev => ({
+        ...prev,
+        [`doc_${dName}`]: lang === 'ta'
+          ? 'கோப்பை செயலாக்குவதில் பிழை ஏற்பட்டது. மீண்டும் முயற்சிக்கவும்.'
+          : 'Failed to process file. Please try again.'
+      }));
+    } finally {
+      setOptimizingDocs(prev => ({ ...prev, [dName]: false }));
+    }
   };
 
   // Dynamic Conditional Field Visibility Evaluation
@@ -1103,7 +1122,8 @@ export default function ApplyService() {
                         const displayDocName = getLocalizedDocName(docName, lang);
                         const currentFile = files[docName];
                         const hasErr = errors[`doc_${docName}`];
-                        const maxMB = doc.max_file_size || 5;
+                        const isOptimizing = optimizingDocs[docName];
+                        const maxMB = doc.max_file_size || 20;
 
                         const handleFileDrop = (e) => {
                           e.preventDefault();
@@ -1111,6 +1131,8 @@ export default function ApplyService() {
                             processSelectedFile(docName, e.dataTransfer.files[0], maxMB);
                           }
                         };
+
+                        const previewImgUrl = currentFile?._previewUrl || currentFile?.url;
 
                         return (
                           <div 
@@ -1142,11 +1164,16 @@ export default function ApplyService() {
                             </p>
 
                             <div className="text-[10px] text-slate-400 font-bold flex items-center gap-2">
-                              <span className="bg-slate-200/60 px-2 py-0.5 rounded text-slate-600">PDF, JPG, PNG</span>
-                              <span>{lang === 'ta' ? `அதிகபட்சம் ${maxMB}MB` : `Max ${maxMB}MB`}</span>
+                              <span className="bg-slate-200/60 px-2 py-0.5 rounded text-slate-600">JPG, PNG, WEBP, PDF</span>
+                              <span className="text-emerald-600 font-semibold">{lang === 'ta' ? 'தானாக சுருக்கப்படும் (Auto-Compress)' : 'Auto-Optimized'}</span>
                             </div>
 
-                            {!currentFile ? (
+                            {isOptimizing ? (
+                              <div className="p-4 bg-orange-50 border border-orange-200 rounded-xl flex items-center justify-center gap-2 text-xs font-bold text-orange-700">
+                                <RefreshCw className="w-4 h-4 animate-spin text-orange-600" />
+                                <span>{lang === 'ta' ? 'படம் உகப்பாக்கப்படுகிறது...' : 'Compressing & optimizing image...'}</span>
+                              </div>
+                            ) : !currentFile ? (
                               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
                                 <label className="block w-full py-3 px-2 bg-orange-50 hover:bg-orange-100/80 border-2 border-dashed border-orange-300 rounded-xl text-center cursor-pointer transition-colors shadow-xs group/up">
                                   <span className="text-xs font-black text-orange-600 flex items-center justify-center gap-1.5 group-hover/up:scale-105 transition-transform">
@@ -1155,7 +1182,8 @@ export default function ApplyService() {
                                   </span>
                                   <input
                                     type="file"
-                                    accept=".pdf,.jpg,.jpeg,.png"
+                                    accept={ACCEPTED_INPUT_TYPES}
+                                    onClick={e => { e.target.value = null; }}
                                     onChange={e => e.target.files[0] && processSelectedFile(docName, e.target.files[0], maxMB)}
                                     className="hidden"
                                   />
@@ -1176,11 +1204,24 @@ export default function ApplyService() {
                               </div>
                             ) : (
                               <div className="p-3.5 bg-white rounded-2xl border border-emerald-300 shadow-xs space-y-3 overflow-hidden">
-                                <div className="flex items-start justify-between gap-2 border-b border-emerald-100 pb-2.5">
-                                  <div className="flex items-center space-x-2 min-w-0 flex-1">
-                                    <div className="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
-                                      <CheckCircle2 className="w-4 h-4" />
-                                    </div>
+                                <div className="flex items-center justify-between gap-2 border-b border-emerald-100 pb-2.5">
+                                  <div className="flex items-center space-x-2.5 min-w-0 flex-1">
+                                    {previewImgUrl ? (
+                                      <img
+                                        src={previewImgUrl}
+                                        alt="Preview"
+                                        className="w-9 h-9 object-cover rounded-lg border border-emerald-200 shrink-0 cursor-pointer shadow-xs"
+                                        onClick={() => setPreviewModalDoc({
+                                          title: displayDocName,
+                                          fileName: currentFile.name,
+                                          url: previewImgUrl
+                                        })}
+                                      />
+                                    ) : (
+                                      <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                                        <CheckCircle2 className="w-4 h-4" />
+                                      </div>
+                                    )}
                                     <div className="min-w-0 flex-1">
                                       <div className="text-xs font-bold text-slate-800 truncate leading-snug">{currentFile.name}</div>
                                       <div className="text-[10px] text-emerald-700 font-extrabold flex items-center gap-1 mt-0.5">
@@ -1195,12 +1236,28 @@ export default function ApplyService() {
 
                                 {/* ACTION PILL BUTTONS */}
                                 <div className="flex items-center flex-wrap gap-1.5 pt-0.5">
+                                  {previewImgUrl && (
+                                    <button
+                                      type="button"
+                                      onClick={() => setPreviewModalDoc({
+                                        title: displayDocName,
+                                        fileName: currentFile.name,
+                                        url: previewImgUrl
+                                      })}
+                                      className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold text-[11px] rounded-lg border border-slate-200 flex items-center gap-1 transition-colors shrink-0"
+                                    >
+                                      <Eye className="w-3 h-3 text-slate-600" />
+                                      <span>{lang === 'ta' ? 'முன்னோட்டம்' : 'Preview'}</span>
+                                    </button>
+                                  )}
+
                                   <label className="px-2.5 py-1 bg-orange-50 hover:bg-orange-100 text-orange-700 font-extrabold text-[11px] rounded-lg border border-orange-200/80 cursor-pointer flex items-center gap-1 transition-colors shrink-0">
                                     <Upload className="w-3 h-3 text-orange-600" />
                                     <span>{t.replaceBtn}</span>
                                     <input
                                       type="file"
-                                      accept=".pdf,.jpg,.jpeg,.png"
+                                      accept={ACCEPTED_INPUT_TYPES}
+                                      onClick={e => { e.target.value = null; }}
                                       onChange={e => e.target.files[0] && processSelectedFile(docName, e.target.files[0], maxMB)}
                                       className="hidden"
                                     />
@@ -2245,94 +2302,6 @@ export default function ApplyService() {
             fieldValues={details?.field_values || Object.entries(fieldValues).map(([k, v]) => ({ field_name: k, field_label: k, value: v }))}
             onClose={() => setShowReceiptModal(false)}
           />
-        )}
-
-        {/* LIVE CAMERA CAPTURE MODAL */}
-        <CameraCaptureModal
-          isOpen={cameraModalOpen}
-          onClose={() => setCameraModalOpen(false)}
-          onCapture={(capturedFile) => {
-            if (activeCameraDoc && capturedFile) {
-              processSelectedFile(activeCameraDoc, capturedFile, activeCameraMaxMB);
-            }
-          }}
-          documentName={activeCameraDoc}
-          lang={lang}
-        />
-
-        {/* FULLSCREEN DOCUMENT ZOOM PREVIEW MODAL */}
-        {previewModalDoc && (
-          <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200 font-sans">
-            <div className="bg-white rounded-3xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden border border-slate-700/50">
-              
-              {/* MODAL HEADER */}
-              <div className="px-6 py-4 bg-[#0b192c] text-white flex items-center justify-between border-b border-slate-800">
-                <div className="flex items-center space-x-3">
-                  <div className="w-9 h-9 bg-orange-500/20 text-orange-400 rounded-xl flex items-center justify-center border border-orange-500/30">
-                    <Eye className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h3 className="font-heading font-extrabold text-sm text-white">{previewModalDoc.title}</h3>
-                    <p className="text-[10px] text-slate-400 font-medium">{previewModalDoc.fileName || 'Proof Document'}</p>
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => setPreviewModalDoc(null)}
-                  className="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              {/* MODAL BODY PREVIEW AREA */}
-              <div className="p-6 overflow-y-auto flex-1 bg-slate-950 flex items-center justify-center min-h-[300px]">
-                {previewModalDoc.url ? (
-                  <img
-                    src={previewModalDoc.url}
-                    alt={previewModalDoc.title}
-                    className="max-w-full max-h-[65vh] object-contain rounded-xl shadow-2xl border border-slate-800"
-                  />
-                ) : (
-                  <div className="text-center text-slate-400 text-xs py-10 font-medium">
-                    {lang === 'ta' ? 'முன்னோட்டம் கிடைக்கவில்லை' : 'Preview Unavailable'}
-                  </div>
-                )}
-              </div>
-
-              {/* MODAL FOOTER */}
-              <div className="px-6 py-4 bg-slate-900 text-white flex items-center justify-between border-t border-slate-800">
-                <div className="text-xs text-slate-400 font-medium flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                  <span>{lang === 'ta' ? 'சரிபார்க்கப்பட்ட சான்று ஆவணம்' : 'Verified Proof Document'}</span>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  {previewModalDoc.url && (
-                    <a
-                      href={previewModalDoc.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-xl transition-colors flex items-center gap-1.5"
-                    >
-                      <ExternalLink className="w-3.5 h-3.5" />
-                      <span>{lang === 'ta' ? 'புதிய தாவலில் திறக்க' : 'Open Full Tab'}</span>
-                    </a>
-                  )}
-
-                  <button
-                    type="button"
-                    onClick={() => setPreviewModalDoc(null)}
-                    className="px-5 py-2 bg-orange-500 hover:bg-orange-600 text-white text-xs font-extrabold rounded-xl transition-colors shadow-xs"
-                  >
-                    {lang === 'ta' ? 'மூடுக' : 'Close'}
-                  </button>
-                </div>
-              </div>
-
-            </div>
-          </div>
         )}
 
       {/* ADMIN PAYMENT NOTICE POPUP MODAL */}

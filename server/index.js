@@ -47,20 +47,21 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-  const allowedExts = ['.pdf', '.jpg', '.jpeg', '.png'];
-  const allowedMimes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
+  const allowedExts = ['.pdf', '.jpg', '.jpeg', '.png', '.webp', '.jfif', '.bmp', '.heic', '.heif'];
   const ext = path.extname(file.originalname).toLowerCase();
+  const isImage = file.mimetype && file.mimetype.startsWith('image/');
+  const isPdf = file.mimetype === 'application/pdf' || file.mimetype === 'application/x-pdf' || ext === '.pdf';
 
-  if (allowedExts.includes(ext) && allowedMimes.includes(file.mimetype)) {
+  if (allowedExts.includes(ext) || isImage || isPdf) {
     cb(null, true);
   } else {
-    cb(new Error('File type not supported. Allowed formats: PDF, JPG, PNG.'), false);
+    cb(new Error('File type not supported. Allowed formats: PDF, JPG, PNG, WEBP.'), false);
   }
 };
 
 const upload = multer({
   storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  limits: { fileSize: 25 * 1024 * 1024 }, // 25MB limit for documents & camera photos
   fileFilter: fileFilter
 });
 
@@ -3120,6 +3121,19 @@ app.use('/api', (req, res) => {
 // Global Error Handler Middleware
 app.use((err, req, res, next) => {
   console.error('[SERVER ERROR]', err.stack || err.message || err);
+
+  // Handle Multer upload errors gracefully with HTTP 400
+  if (err instanceof multer.MulterError) {
+    if (err.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({ error: 'File size too large. Maximum allowed size is 25MB.' });
+    }
+    return res.status(400).json({ error: `Upload error: ${err.message}` });
+  }
+
+  if (err.message && err.message.includes('File type not supported')) {
+    return res.status(400).json({ error: err.message });
+  }
+
   const statusCode = err.statusCode || err.status || 500;
   res.status(statusCode).json({
     error: err.message || 'An internal server error occurred',
