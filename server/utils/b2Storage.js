@@ -26,7 +26,8 @@ async function authorizeB2(keyId, applicationKey, bucketNameFromEnv) {
     method: 'GET',
     headers: {
       Authorization: `Basic ${credentials}`
-    }
+    },
+    signal: AbortSignal.timeout(5000)
   });
 
   if (!res.ok) {
@@ -47,7 +48,8 @@ async function authorizeB2(keyId, applicationKey, bucketNameFromEnv) {
           Authorization: data.authorizationToken,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ accountId: data.accountId })
+        body: JSON.stringify({ accountId: data.accountId }),
+        signal: AbortSignal.timeout(4000)
       });
       if (listRes.ok) {
         const listData = await listRes.json();
@@ -80,10 +82,9 @@ async function authorizeB2(keyId, applicationKey, bucketNameFromEnv) {
  * @returns {Promise<{ url: string, filename: string, source: string }>}
  */
 export async function uploadToBackblaze({ buffer, originalname, mimetype, filename }) {
-  const keyId = process.env.B2_KEY_ID || process.env.B2_APPLICATION_KEY_ID || process.env.AWS_ACCESS_KEY_ID;
-  const appKey = process.env.B2_APPLICATION_KEY || process.env.B2_APP_KEY || process.env.AWS_SECRET_ACCESS_KEY;
-  const bucketName = process.env.B2_BUCKET_NAME || process.env.AWS_BUCKET_NAME;
-  const s3Endpoint = process.env.B2_ENDPOINT || 's3.us-east-005.backblazeb2.com';
+  const keyId = (process.env.B2_KEY_ID || process.env.B2_APPLICATION_KEY_ID || process.env.AWS_ACCESS_KEY_ID || '').trim();
+  const appKey = (process.env.B2_APPLICATION_KEY || process.env.B2_APP_KEY || process.env.AWS_SECRET_ACCESS_KEY || '').trim();
+  const bucketName = (process.env.B2_BUCKET_NAME || process.env.AWS_BUCKET_NAME || '').trim();
 
   const cleanExt = path.extname(originalname || filename || '').toLowerCase() || '.jpg';
   const safeBase = (originalname || 'document').replace(/[^a-zA-Z0-9_-]/g, '_');
@@ -98,14 +99,15 @@ export async function uploadToBackblaze({ buffer, originalname, mimetype, filena
         throw new Error(`Bucket ID for bucket "${bucketName}" could not be resolved. Provide B2_BUCKET_ID in .env`);
       }
 
-      // Step 2: Get Upload URL
+      // Step 2: Get Upload URL (timeout 5s)
       const getUploadUrlRes = await fetch(`${auth.apiUrl}/b2api/v2/b2_get_upload_url`, {
         method: 'POST',
         headers: {
           Authorization: auth.authorizationToken,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ bucketId: auth.bucketId })
+        body: JSON.stringify({ bucketId: auth.bucketId }),
+        signal: AbortSignal.timeout(5000)
       });
 
       if (!getUploadUrlRes.ok) {
@@ -115,7 +117,7 @@ export async function uploadToBackblaze({ buffer, originalname, mimetype, filena
 
       const { uploadUrl, authorizationToken: uploadAuthToken } = await getUploadUrlRes.json();
 
-      // Step 3: Compute SHA1 and Upload File
+      // Step 3: Compute SHA1 and Upload File (timeout 6s)
       const sha1 = crypto.createHash('sha1').update(buffer).digest('hex');
       const uploadRes = await fetch(uploadUrl, {
         method: 'POST',
@@ -126,7 +128,8 @@ export async function uploadToBackblaze({ buffer, originalname, mimetype, filena
           'Content-Length': String(buffer.length),
           'X-Bz-Content-Sha1': sha1
         },
-        body: buffer
+        body: buffer,
+        signal: AbortSignal.timeout(6000)
       });
 
       if (!uploadRes.ok) {
@@ -135,10 +138,6 @@ export async function uploadToBackblaze({ buffer, originalname, mimetype, filena
       }
 
       const uploadedData = await uploadRes.json();
-
-      // Determine public download URL
-      // Format 1: https://<downloadUrl>/file/<bucketName>/<fileName>
-      // Format 2: https://<bucketName>.<s3Endpoint>/<fileName>
       const publicUrl = `${auth.downloadUrl}/file/${bucketName}/${encodeURIComponent(targetFileName)}`;
       console.log(`✅ [Backblaze B2] File successfully uploaded to cloud: ${publicUrl}`);
 
@@ -149,35 +148,37 @@ export async function uploadToBackblaze({ buffer, originalname, mimetype, filena
         source: 'backblaze_b2'
       };
     } catch (b2Err) {
-      console.error('❌ [Backblaze B2 Upload Error]:', b2Err.message);
-      console.warn('⚠️ Falling back to local / data URI fallback storage.');
+      console.warn('⚠️ [Backblaze B2 Notice]: Falling back to fast local/preview storage:', b2Err.message);
     }
-  } else {
-    console.log('ℹ️ [Backblaze B2] B2_KEY_ID, B2_APPLICATION_KEY, or B2_BUCKET_NAME not set in .env. Using resilient fallback.');
   }
 
-  // Graceful Fallback:
-  // If running locally, write to uploads folder; if image is < 4MB, also provide data URI so it works seamlessly on Vercel
+  // Graceful Local Fallback:
+  // Write to uploads folder if not already written by multer
   try {
     const uploadsDir = path.join(process.cwd(), 'uploads');
     if (!fs.existsSync(uploadsDir)) {
       fs.mkdirSync(uploadsDir, { recursive: true });
     }
     const localFilePath = path.join(uploadsDir, targetFileName);
-    fs.writeFileSync(localFilePath, buffer);
+    if (!fs.existsSync(localFilePath) && buffer) {
+      fs.writeFileSync(localFilePath, buffer);
+    }
   } catch (fsErr) {
     console.warn('[Storage Fallback File System Warning]:', fsErr.message);
   }
 
-  // If running in serverless environment (Vercel) without B2, use Data URL so image is 100% visible
-  if (process.env.VERCEL && buffer.length < 5 * 1024 * 1024 && (mimetype?.startsWith('image/') || cleanExt !== '.pdf')) {
-    const base64 = buffer.toString('base64');
-    const dataUri = `data:${mimetype || 'image/jpeg'};base64,${base64}`;
-    return {
-      url: dataUri,
-      filename: targetFileName,
-      source: 'data_uri'
-    };
+  // Also support /tmp/uploads on Vercel
+  if (process.env.VERCEL && buffer) {
+    try {
+      const tmpUploads = path.join('/tmp', 'uploads');
+      if (!fs.existsSync(tmpUploads)) {
+        fs.mkdirSync(tmpUploads, { recursive: true });
+      }
+      const tmpFilePath = path.join(tmpUploads, targetFileName);
+      if (!fs.existsSync(tmpFilePath)) {
+        fs.writeFileSync(tmpFilePath, buffer);
+      }
+    } catch (e) {}
   }
 
   return {

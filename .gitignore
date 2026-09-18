@@ -8,5 +8,9 @@ yarn-debug.log*
 yarn-error.log*
 server/uploads/temp/*
 !server/uploads/temp/.gitkeep
+server/uploads/*
+!server/uploads/.gitkeep
+uploads/*
+!uploads/.gitkeep
 .DS_Store
 Thumbs.db

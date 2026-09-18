@@ -30,6 +30,7 @@ const initialTables = {
 class TiDBSupportedDatabase {
   constructor() {
     this.data = { ...initialTables };
+    this._inTransaction = false;
     this.init();
   }
 
@@ -117,7 +118,9 @@ class TiDBSupportedDatabase {
       ...row
     };
     this.data[tableName].push(newRow);
-    this.saveLocal();
+    if (!this._inTransaction) {
+      this.saveLocal();
+    }
 
     // Async save to TiDB Cloud
     this.persistInsertToTiDB(tableName, newRow).catch(err => {
@@ -162,7 +165,7 @@ class TiDBSupportedDatabase {
       }
       return item;
     });
-    if (updatedCount > 0) this.saveLocal();
+    if (updatedCount > 0 && !this._inTransaction) this.saveLocal();
     return updatedCount;
   }
 
@@ -192,7 +195,9 @@ class TiDBSupportedDatabase {
     this.data[tableName] = this.data[tableName].filter(item => !filterFn(item));
     const removedCount = initialLen - this.data[tableName].length;
     if (removedCount > 0) {
-      this.saveLocal();
+      if (!this._inTransaction) {
+        this.saveLocal();
+      }
       itemsToDelete.forEach(item => {
         if (item.id) {
           pool.query(`DELETE FROM ${tableName} WHERE id = ?`, [item.id]).catch(() => {});
@@ -225,15 +230,22 @@ class TiDBSupportedDatabase {
 
   async transaction(fn) {
     const snapshot = JSON.parse(JSON.stringify(this.data));
+    this._inTransaction = true;
     try {
       const result = await fn();
+      this._inTransaction = false;
       this.saveLocal();
       return result;
     } catch (err) {
       this.data = snapshot;
+      this._inTransaction = false;
       this.saveLocal();
       throw err;
     }
+  }
+
+  read() {
+    return this.data;
   }
 
   reset() {

@@ -44,6 +44,8 @@ export default function AdminDashboard() {
   const [statusFilter, setStatusFilter] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
+  const [isLiveSyncing, setIsLiveSyncing] = useState(false);
+  const [lastSyncTime, setLastSyncTime] = useState(new Date());
 
   // Custom Delete Modal State
   const [deleteModalState, setDeleteModalState] = useState({
@@ -643,11 +645,14 @@ export default function AdminDashboard() {
   };
 
 
-  const fetchDashboardStats = async () => {
+  const fetchDashboardStats = async (isQuiet = false) => {
     if (!adminToken) return;
     try {
-      const res = await fetch('/api/admin/dashboard', {
-        headers: { Authorization: `Bearer ${adminToken}` }
+      const res = await fetch(`/api/admin/dashboard?_t=${Date.now()}`, {
+        headers: { 
+          Authorization: `Bearer ${adminToken}`,
+          'Cache-Control': 'no-cache'
+        }
       });
       if (res.ok) {
         const data = await res.json();
@@ -658,21 +663,45 @@ export default function AdminDashboard() {
     }
   };
 
-  const fetchApplications = async () => {
+  const fetchApplications = async (isQuiet = false) => {
     if (!adminToken) return;
     try {
-      let url = `/api/admin/applications?status=${statusFilter}`;
+      if (isQuiet) setIsLiveSyncing(true);
+      let url = `/api/admin/applications?status=${statusFilter}&_t=${Date.now()}`;
       if (searchQuery) url += `&search=${encodeURIComponent(searchQuery)}`;
 
       const res = await fetch(url, {
-        headers: { Authorization: `Bearer ${adminToken}` }
+        headers: { 
+          Authorization: `Bearer ${adminToken}`,
+          'Cache-Control': 'no-cache'
+        }
       });
       if (res.ok) {
         const data = await res.json();
-        setApplications(data);
+        setApplications(prev => {
+          // Detect newly submitted applications in background polling
+          if (isQuiet && prev && prev.length > 0 && data.length > prev.length) {
+            const prevIds = new Set(prev.map(a => String(a.id || a.application_number)));
+            const newApps = data.filter(a => !prevIds.has(String(a.id || a.application_number)));
+            if (newApps.length > 0) {
+              const latest = newApps[0];
+              addToast(
+                `🔔 New Application Received: ${latest.application_number} (${latest.service_name || 'Service'}) from ${latest.user_name || 'Citizen'}`,
+                'success',
+                6000
+              );
+            }
+          }
+          return data;
+        });
+        setLastSyncTime(new Date());
       }
     } catch (e) {
       console.error(e);
+    } finally {
+      if (isQuiet) {
+        setTimeout(() => setIsLiveSyncing(false), 800);
+      }
     }
   };
 
@@ -952,6 +981,32 @@ export default function AdminDashboard() {
     fetchApplications();
   }, [statusFilter, searchQuery]);
 
+  // Real-time Automatic Background Live Sync (every 5s and on tab focus)
+  useEffect(() => {
+    if (!admin || !adminToken) return;
+
+    const pollTimer = setInterval(() => {
+      fetchApplications(true);
+      fetchDashboardStats(true);
+    }, 5000);
+
+    const handleFocus = () => {
+      if (document.visibilityState === 'visible') {
+        fetchApplications(true);
+        fetchDashboardStats(true);
+      }
+    };
+
+    window.addEventListener('visibilitychange', handleFocus);
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      clearInterval(pollTimer);
+      window.removeEventListener('visibilitychange', handleFocus);
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, [admin, adminToken, statusFilter, searchQuery]);
+
   useEffect(() => {
     fetchAdminDocuments();
   }, [docStatusFilter, docSearchQuery]);
@@ -1176,6 +1231,20 @@ export default function AdminDashboard() {
         </div>
 
         <div className="flex items-center space-x-3 sm:space-x-4">
+          {/* Live Sync Status Indicator */}
+          <div 
+            className="hidden sm:flex items-center space-x-2 px-3 py-1.5 bg-emerald-950/40 border border-emerald-500/30 rounded-xl text-emerald-400 text-xs font-semibold shadow-xs"
+            title={`Auto-syncing every 5 seconds. Last synced: ${lastSyncTime.toLocaleTimeString()}`}
+          >
+            <span className="relative flex h-2 w-2">
+              <span className={`animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 ${isLiveSyncing ? 'opacity-90' : 'opacity-50'}`}></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            <span className="text-[11px] font-bold tracking-tight">
+              {isLiveSyncing ? 'Syncing...' : 'Live Sync'}
+            </span>
+          </div>
+
           <button
             onClick={() => {
               setLoading(true);
@@ -1188,7 +1257,7 @@ export default function AdminDashboard() {
                 fetchPayments()
               ]).then(() => setLoading(false));
             }}
-            className="p-2 text-slate-400 hover:text-white bg-slate-900 border border-slate-800 rounded-xl transition-colors hidden sm:flex items-center space-x-1.5 text-xs font-semibold"
+            className="p-2 text-slate-400 hover:text-white bg-slate-900 border border-slate-800 rounded-xl transition-colors hidden sm:flex items-center space-x-1.5 text-xs font-semibold cursor-pointer"
             title="Refresh Data"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-orange-400' : ''}`} />

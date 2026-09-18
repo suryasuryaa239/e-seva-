@@ -898,55 +898,66 @@ app.post('/api/applications/draft', submitRateLimiter, upload.any(), async (req,
         } catch (e) {}
       }
 
+      // Save Uploaded Documents in Parallel for Maximum Upload Speed
       const serviceDocs = db.all('service_documents', d => d.service_id === service.id);
 
-      for (const file of req.files) {
-        let targetDocName = docMetadata[file.fieldname];
+        const processedFiles = await Promise.all(
+          req.files.map(async (file) => {
+            let targetDocName = docMetadata[file.fieldname];
 
-          if (!targetDocName) {
-            const docName = file.fieldname.replace('doc_', '').replace(/_/g, ' ');
-            const matchedServiceDoc = serviceDocs.find(sd => {
-              const dName = sd.document_name || sd.name || '';
-              const normDName = dName.toLowerCase().replace(/[^a-z0-9]+/g, '');
-              const normDocName = docName.toLowerCase().replace(/[^a-z0-9]+/g, '');
-              return normDName.includes(normDocName) || normDocName.includes(normDName);
-            });
-            targetDocName = matchedServiceDoc ? (matchedServiceDoc.document_name || matchedServiceDoc.name) : docName;
-          }
-
-          let uploadedUrl = `/api/documents/preview-file/${file.filename}`;
-          try {
-            const buffer = file.buffer || (file.path && fs.existsSync(file.path) ? fs.readFileSync(file.path) : null);
-            if (buffer) {
-              const b2Result = await uploadToBackblaze({
-                buffer,
-                originalname: file.originalname,
-                mimetype: file.mimetype,
-                filename: file.filename
+            if (!targetDocName) {
+              const docName = file.fieldname.replace('doc_', '').replace(/_/g, ' ');
+              const matchedServiceDoc = serviceDocs.find(sd => {
+                const dName = sd.document_name || sd.name || '';
+                const normDName = dName.toLowerCase().replace(/[^a-z0-9]+/g, '');
+                const normDocName = docName.toLowerCase().replace(/[^a-z0-9]+/g, '');
+                return normDName.includes(normDocName) || normDocName.includes(normDName);
               });
-              if (b2Result && b2Result.url) {
-                uploadedUrl = b2Result.url;
-              }
+              targetDocName = matchedServiceDoc ? (matchedServiceDoc.document_name || matchedServiceDoc.name) : docName;
             }
-          } catch (b2Err) {
-            console.warn('[B2 Upload Draft Warning]:', b2Err.message);
-          }
 
+            let uploadedUrl = `/api/documents/preview-file/${file.filename}`;
+            try {
+              const buffer = file.buffer || (file.path && fs.existsSync(file.path) ? fs.readFileSync(file.path) : null);
+              if (buffer) {
+                const b2Result = await uploadToBackblaze({
+                  buffer,
+                  originalname: file.originalname,
+                  mimetype: file.mimetype,
+                  filename: file.filename
+                });
+                if (b2Result && b2Result.url) {
+                  uploadedUrl = b2Result.url;
+                }
+              }
+            } catch (b2Err) {
+              console.warn('[B2 Upload Draft Warning]:', b2Err.message);
+            }
+
+            return {
+              file,
+              targetDocName,
+              uploadedUrl
+            };
+          })
+        );
+
+        for (const item of processedFiles) {
           // Delete existing document for this name before inserting new update
           db.delete('application_documents', d => d.application_id === application.id && (
-            d.document_name === targetDocName || 
-            (d.document_name && d.document_name.toLowerCase().replace(/[^a-z0-9]+/g, '') === targetDocName.toLowerCase().replace(/[^a-z0-9]+/g, ''))
+            d.document_name === item.targetDocName || 
+            (d.document_name && d.document_name.toLowerCase().replace(/[^a-z0-9]+/g, '') === item.targetDocName.toLowerCase().replace(/[^a-z0-9]+/g, ''))
           ));
 
           db.insert('application_documents', {
             application_id: application.id,
             service_document_id: null,
-            document_name: targetDocName,
-            original_filename: file.originalname,
-            stored_filename: file.filename,
-            file_type: file.mimetype,
-            file_size: file.size,
-            file_path: uploadedUrl,
+            document_name: item.targetDocName,
+            original_filename: item.file.originalname,
+            stored_filename: item.file.filename,
+            file_type: item.file.mimetype,
+            file_size: item.file.size,
+            file_path: item.uploadedUrl,
             uploaded_by: userId || 'Guest User',
             uploaded_at: new Date().toISOString(),
             verification_status: 'Pending Verification'
@@ -1078,43 +1089,55 @@ app.post('/api/applications', submitRateLimiter, upload.any(), async (req, res) 
         });
       }
 
-      // Save Uploaded Documents
+      // Save Uploaded Documents in Parallel for Maximum Upload Speed
       if (req.files && req.files.length > 0) {
-        for (const file of req.files) {
-          const docName = file.fieldname.replace('doc_', '').replace(/_/g, ' ');
-          const serviceDocs = db.all('service_documents', d => d.service_id === service.id);
-          const matchedServiceDoc = serviceDocs.find(sd => {
-            const dName = sd.document_name || sd.name || '';
-            return dName.toLowerCase().includes(docName.toLowerCase()) || docName.toLowerCase().includes(dName.toLowerCase());
-          });
+        const serviceDocs = db.all('service_documents', d => d.service_id === service.id);
 
-          let uploadedUrl = `/api/documents/preview-file/${file.filename}`;
-          try {
-            const buffer = file.buffer || (file.path && fs.existsSync(file.path) ? fs.readFileSync(file.path) : null);
-            if (buffer) {
-              const b2Result = await uploadToBackblaze({
-                buffer,
-                originalname: file.originalname,
-                mimetype: file.mimetype,
-                filename: file.filename
-              });
-              if (b2Result && b2Result.url) {
-                uploadedUrl = b2Result.url;
+        const processedFiles = await Promise.all(
+          req.files.map(async (file) => {
+            const docName = file.fieldname.replace('doc_', '').replace(/_/g, ' ');
+            const matchedServiceDoc = serviceDocs.find(sd => {
+              const dName = sd.document_name || sd.name || '';
+              return dName.toLowerCase().includes(docName.toLowerCase()) || docName.toLowerCase().includes(dName.toLowerCase());
+            });
+
+            let uploadedUrl = `/api/documents/preview-file/${file.filename}`;
+            try {
+              const buffer = file.buffer || (file.path && fs.existsSync(file.path) ? fs.readFileSync(file.path) : null);
+              if (buffer) {
+                const b2Result = await uploadToBackblaze({
+                  buffer,
+                  originalname: file.originalname,
+                  mimetype: file.mimetype,
+                  filename: file.filename
+                });
+                if (b2Result && b2Result.url) {
+                  uploadedUrl = b2Result.url;
+                }
               }
+            } catch (uploadErr) {
+              console.warn('[B2 Upload Submit Warning]:', uploadErr.message);
             }
-          } catch (uploadErr) {
-            console.warn('[B2 Upload Submit Warning]:', uploadErr.message);
-          }
 
+            return {
+              file,
+              docName,
+              matchedServiceDoc,
+              uploadedUrl
+            };
+          })
+        );
+
+        for (const item of processedFiles) {
           const docRecord = db.insert('application_documents', {
             application_id: application.id,
-            service_document_id: matchedServiceDoc ? matchedServiceDoc.id : null,
-            document_name: matchedServiceDoc ? (matchedServiceDoc.document_name || matchedServiceDoc.name) : docName,
-            original_filename: file.originalname,
-            stored_filename: file.filename,
-            file_type: file.mimetype,
-            file_size: file.size,
-            file_path: uploadedUrl,
+            service_document_id: item.matchedServiceDoc ? item.matchedServiceDoc.id : null,
+            document_name: item.matchedServiceDoc ? (item.matchedServiceDoc.document_name || item.matchedServiceDoc.name) : item.docName,
+            original_filename: item.file.originalname,
+            stored_filename: item.file.filename,
+            file_type: item.file.mimetype,
+            file_size: item.file.size,
+            file_path: item.uploadedUrl,
             uploaded_by: userId || 'Guest User',
             uploaded_at: new Date().toISOString(),
             verification_status: 'Pending Verification',
@@ -1123,7 +1146,7 @@ app.post('/api/applications', submitRateLimiter, upload.any(), async (req, res) 
             rejection_reason: null
           });
 
-          logDocumentAudit(application.id, docRecord.id, 'Uploaded', user_name || 'Applicant', 'User', `Uploaded ${file.originalname}`);
+          logDocumentAudit(application.id, docRecord.id, 'Uploaded', user_name || 'Applicant', 'User', `Uploaded ${item.file.originalname}`);
         }
       }
 
@@ -1740,8 +1763,12 @@ app.get('/api/documents/preview-file/:filename', optionalAuthenticateToken, (req
   }
 
   const absolutePath = path.join(uploadsDir, filename);
+  const tmpPath = path.join('/tmp', 'uploads', filename);
   if (fs.existsSync(absolutePath)) {
     return res.sendFile(absolutePath);
+  }
+  if (fs.existsSync(tmpPath)) {
+    return res.sendFile(tmpPath);
   }
 
   // Fallback SVG Proof Renderer
@@ -2174,6 +2201,7 @@ app.get('/api/applications/my', authenticateToken, (req, res) => {
 
 // Get Single Application Full Detail View
 app.get('/api/applications/:id', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
   const appParam = req.params.id;
   const application = db.get('applications', a => String(a.id) === appParam || a.application_number === appParam);
   if (!application) return res.status(404).json({ error: 'Application not found' });
@@ -2203,6 +2231,7 @@ app.get('/api/applications/:id', (req, res) => {
 
 // Admin Dashboard Analytics Stats
 app.get('/api/admin/dashboard', authenticateAdmin, (req, res) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
   const applications = db.all('applications');
   const total = applications.length;
   const pending = applications.filter(a => a.status === 'Pending').length;
@@ -2246,6 +2275,7 @@ app.get('/api/admin/dashboard', authenticateAdmin, (req, res) => {
 
 // Admin All Applications (with search & status filters)
 app.get('/api/admin/applications', authenticateAdmin, (req, res) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
   const { status, search, category_id } = req.query;
   let applications = db.all('applications');
 
