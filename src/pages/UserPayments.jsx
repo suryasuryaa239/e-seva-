@@ -45,20 +45,24 @@ export default function UserPayments() {
   const handleRetryPayment = async (appId) => {
     try {
       setRetryingId(appId);
-      const token = localStorage.getItem('token');
-      const res = await fetch('/api/payments/retry', {
+      const token = localStorage.getItem('token') || localStorage.getItem('eseva_user_token');
+      const res = await fetch('/api/payments/phonepe/initiate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
         },
         body: JSON.stringify({ application_id: appId })
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Retry failed');
+      if (!res.ok || !data.success) throw new Error(data.error || 'PhonePe payment retry failed');
 
-      navigate(`/my-applications/${appId}`);
+      if (data.redirectUrl) {
+        window.location.href = data.redirectUrl;
+      } else {
+        navigate(`/my-applications/${appId}`);
+      }
     } catch (err) {
       alert(err.message);
     } finally {

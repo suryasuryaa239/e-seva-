@@ -689,6 +689,12 @@ export default function ApplyService() {
       const headers = {};
       if (token) headers.Authorization = `Bearer ${token}`;
 
+      const isPaidService = Number(service.fee) > 0;
+      if (isPaidService) {
+        formData.append('payment_pending', 'true');
+        formData.append('payment_method', 'PhonePe PG (UPI / Cards)');
+      }
+
       const res = await fetch('/api/applications', {
         method: 'POST',
         headers,
@@ -698,8 +704,32 @@ export default function ApplyService() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to submit application');
 
+      if (isPaidService && data.application_id) {
+        // Initiate PhonePe Payment
+        const payRes = await fetch('/api/payments/phonepe/initiate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {})
+          },
+          body: JSON.stringify({ application_id: data.application_id })
+        });
+
+        const payData = await payRes.json();
+        if (!payRes.ok || !payData.success) {
+          throw new Error(payData.error || 'Failed to initiate PhonePe payment session. Please try again.');
+        }
+
+        if (payData.redirectUrl) {
+          // Direct browser redirect to PhonePe checkout
+          window.location.href = payData.redirectUrl;
+          return;
+        }
+      }
+
+      // If free service, show success receipt step immediately
       setSubmittedApp(data);
-      setCurrentStep(5); // Jump to success step
+      setCurrentStep(5);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err) {
       setSubmitError(err.message);
@@ -1890,6 +1920,55 @@ export default function ApplyService() {
                         </div>
                       </div>
                     </div>
+
+                    {/* PHONEPE PAYMENT GATEWAY HIGHLIGHT */}
+                    {service.fee > 0 && (
+                      <div className="bg-gradient-to-br from-purple-50 via-white to-purple-50/40 p-5 rounded-2xl border border-purple-200/90 shadow-2xs space-y-4">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-purple-100 pb-3">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-[#5f259f] text-white flex items-center justify-center font-bold text-sm shadow-md ring-2 ring-purple-300">
+                              Pe
+                            </div>
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <span className="font-extrabold text-slate-900 text-sm">PhonePe Payment Gateway</span>
+                                <span className="text-[10px] font-black uppercase tracking-wider text-purple-700 bg-purple-100 px-2 py-0.5 rounded-full border border-purple-200">
+                                  Official Partner
+                                </span>
+                              </div>
+                              <p className="text-[11px] text-slate-500 font-medium">
+                                {lang === 'ta' ? 'அங்கீகரிக்கப்பட்ட நேரடி கட்டண தளம்' : 'Direct, Instant & 256-Bit Encrypted Payment'}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-1.5 text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-lg self-start sm:self-auto font-medium">
+                            <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                            <span>{lang === 'ta' ? 'பாதுகாப்பானது' : 'Verified Merchant'}</span>
+                          </div>
+                        </div>
+
+                        {/* Supported Payment Modes Chips */}
+                        <div className="space-y-1.5">
+                          <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block">
+                            {lang === 'ta' ? 'ஏற்றுக்கொள்ளப்படும் கட்டண முறைகள்' : 'Supported Payment Methods'}:
+                          </span>
+                          <div className="flex flex-wrap items-center gap-2 text-xs">
+                            <span className="px-2.5 py-1 bg-white border border-slate-200 rounded-lg font-bold text-slate-800 shadow-2xs">
+                              UPI (PhonePe, GPay, Paytm, BHIM)
+                            </span>
+                            <span className="px-2.5 py-1 bg-white border border-slate-200 rounded-lg font-bold text-slate-800 shadow-2xs">
+                              Scan & Pay (Dynamic QR)
+                            </span>
+                            <span className="px-2.5 py-1 bg-white border border-slate-200 rounded-lg font-bold text-slate-800 shadow-2xs">
+                              Debit & Credit Cards
+                            </span>
+                            <span className="px-2.5 py-1 bg-white border border-slate-200 rounded-lg font-bold text-slate-800 shadow-2xs">
+                              Net Banking (50+ Banks)
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* PAYMENT TERMS AND CONDITIONS ACCEPTANCE CHECKBOX */}
@@ -1945,11 +2024,11 @@ export default function ApplyService() {
                       {submitting ? (
                         <>
                           <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                          <span>{lang === 'ta' ? 'கட்டணம் மற்றும் விண்ணப்பம் செயலாக்கப்படுகிறது...' : 'Processing Payment & Application...'}</span>
+                          <span>{lang === 'ta' ? 'PhonePe-க்கு மாற்றப்படுகிறது...' : 'Redirecting to PhonePe...'}</span>
                         </>
                       ) : service.fee > 0 ? (
                         <>
-                          <span>{lang === 'ta' ? `₹${service.fee} செலுத்தி விண்ணப்பத்தை சமர்ப்பிக்கவும்` : `Proceed to Pay ₹${service.fee} & Submit Application`}</span>
+                          <span>{lang === 'ta' ? `PhonePe மூலம் ₹${service.fee} செலுத்துக` : `Pay ₹${service.fee} via PhonePe & Submit`}</span>
                           <Lock className="w-4 h-4" />
                         </>
                       ) : (

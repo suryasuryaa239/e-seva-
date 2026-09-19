@@ -23,6 +23,7 @@ import About from './pages/About';
 import Login from './pages/Login';
 import UserDashboard from './pages/UserDashboard';
 import UserPayments from './pages/UserPayments';
+import PaymentCallback from './pages/PaymentCallback';
 import Profile from './pages/Profile';
 import ForgotPassword from './pages/ForgotPassword';
 import AdminLogin from './pages/AdminLogin';
@@ -203,6 +204,7 @@ function AppContent() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/dashboard" element={<RequireCitizenAuth><UserDashboard /></RequireCitizenAuth>} />
           <Route path="/payments" element={<RequireCitizenAuth><UserPayments /></RequireCitizenAuth>} />
+          <Route path="/payment/callback" element={<PaymentCallback />} />
           <Route path="/profile" element={<RequireCitizenAuth><Profile /></RequireCitizenAuth>} />
           <Route path="/notifications" element={<RequireCitizenAuth><UserNotifications /></RequireCitizenAuth>} />
           <Route path="/profile/notifications" element={<RequireCitizenAuth><UserNotificationPreferences /></RequireCitizenAuth>} />

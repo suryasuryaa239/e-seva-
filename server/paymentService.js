@@ -1,27 +1,158 @@
 /**
  * Payment Service Abstraction Module
- * Supports production payment gateways (Razorpay, Stripe) and sandbox simulation mode.
- * Environment variables: PAYMENT_GATEWAY_KEY, PAYMENT_GATEWAY_SECRET, PAYMENT_WEBHOOK_SECRET
+ * Supports PhonePe Payment Gateway (v1 Hermes / Production & Sandbox)
+ * Environment variables: PHONEPE_MERCHANT_ID, PHONEPE_SALT_KEY, PHONEPE_SALT_INDEX, PHONEPE_HOST_URL
  */
 
 import crypto from 'crypto';
+
+const PHONEPE_MERCHANT_ID = process.env.PHONEPE_MERCHANT_ID || '';
+const PHONEPE_SALT_KEY = process.env.PHONEPE_SALT_KEY || '';
+const PHONEPE_SALT_INDEX = process.env.PHONEPE_SALT_INDEX || '1';
+const PHONEPE_ENV = process.env.PHONEPE_ENV || 'PROD';
+const PHONEPE_HOST_URL = process.env.PHONEPE_HOST_URL || (
+  PHONEPE_ENV === 'UAT' 
+    ? 'https://api-preprod.phonepe.com/apis/pg-sandbox' 
+    : 'https://api.phonepe.com/apis/hermes'
+);
 
 const GATEWAY_KEY = process.env.PAYMENT_GATEWAY_KEY || 'rzp_test_eseva_2026';
 const GATEWAY_SECRET = process.env.PAYMENT_GATEWAY_SECRET || 'secret_eseva_key_2026';
 
 class PaymentService {
   /**
-   * Create a server-side payment order
+   * Calculate PhonePe SHA256 checksum with salt index
+   */
+  static calculatePhonePeChecksum(dataString, endpoint, saltKey, saltIndex) {
+    const hash = crypto.createHash('sha256').update(dataString + endpoint + saltKey).digest('hex');
+    return `${hash}###${saltIndex}`;
+  }
+
+  /**
+   * Initiate PhonePe PG v1 Standard Checkout Payment Order
+   */
+  static async initiatePhonePePayment({
+    merchantTransactionId,
+    amount,
+    userId,
+    userPhone,
+    redirectUrl,
+    callbackUrl
+  }) {
+    const amountInPaise = Math.round(Number(amount) * 100);
+    const cleanPhone = (userPhone || '9999999999').replace(/\D/g, '').slice(-10);
+
+    const payload = {
+      merchantId: PHONEPE_MERCHANT_ID,
+      merchantTransactionId: merchantTransactionId,
+      merchantUserId: `USR_${userId || 'GUEST'}_${Date.now()}`.slice(0, 36),
+      amount: amountInPaise,
+      redirectUrl: redirectUrl,
+      redirectMode: 'REDIRECT',
+      callbackUrl: callbackUrl,
+      mobileNumber: cleanPhone,
+      paymentInstrument: {
+        type: 'PAY_PAGE'
+      }
+    };
+
+    const base64Payload = Buffer.from(JSON.stringify(payload)).toString('base64');
+    const endpoint = '/pg/v1/pay';
+    const checksum = PaymentService.calculatePhonePeChecksum(base64Payload, endpoint, PHONEPE_SALT_KEY, PHONEPE_SALT_INDEX);
+    const targetUrl = `${PHONEPE_HOST_URL}${endpoint}`;
+
+    try {
+      const response = await fetch(targetUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-VERIFY': checksum,
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          request: base64Payload
+        })
+      });
+
+      const responseData = await response.json();
+
+      if (responseData.success && responseData.data?.instrumentResponse?.redirectInfo?.url) {
+        return {
+          success: true,
+          merchantTransactionId,
+          redirectUrl: responseData.data.instrumentResponse.redirectInfo.url,
+          provider: 'PHONEPE',
+          data: responseData.data
+        };
+      } else {
+        console.warn('[PhonePe PG Initiation Warning]:', responseData);
+        return {
+          success: false,
+          code: responseData.code || 'PAYMENT_INITIATION_FAILED',
+          message: responseData.message || 'PhonePe Payment Gateway rejected payment order creation',
+          raw: responseData
+        };
+      }
+    } catch (err) {
+      console.error('[PhonePe Network / API Error]:', err);
+      throw new Error(`Failed to communicate with PhonePe Payment Gateway: ${err.message}`);
+    }
+  }
+
+  /**
+   * Query PhonePe Server-to-Server Payment Status
+   */
+  static async checkPhonePeStatus(merchantTransactionId) {
+    if (!merchantTransactionId) {
+      throw new Error('merchantTransactionId is required for PhonePe status check');
+    }
+
+    const endpoint = `/pg/v1/status/${PHONEPE_MERCHANT_ID}/${merchantTransactionId}`;
+    const hash = crypto.createHash('sha256').update(endpoint + PHONEPE_SALT_KEY).digest('hex');
+    const checksum = `${hash}###${PHONEPE_SALT_INDEX}`;
+    const targetUrl = `${PHONEPE_HOST_URL}${endpoint}`;
+
+    try {
+      const response = await fetch(targetUrl, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-VERIFY': checksum,
+          'X-MERCHANT-ID': PHONEPE_MERCHANT_ID,
+          'Accept': 'application/json'
+        }
+      });
+
+      const responseData = await response.json();
+      return responseData;
+    } catch (err) {
+      console.error('[PhonePe Status Verification Error]:', err);
+      throw new Error(`Failed to verify payment status with PhonePe: ${err.message}`);
+    }
+  }
+
+  /**
+   * Verify PhonePe S2S Webhook Checksum
+   */
+  static verifyPhonePeWebhookSignature({ base64Response, xVerifyHeader, saltKey = PHONEPE_SALT_KEY }) {
+    if (!base64Response || !xVerifyHeader) return false;
+    const expectedHash = crypto.createHash('sha256').update(base64Response + saltKey).digest('hex');
+    const receivedHash = xVerifyHeader.split('###')[0];
+    return expectedHash === receivedHash;
+  }
+
+  /**
+   * Create a server-side payment order (Legacy / Sandbox helper)
    */
   static async createOrder({ applicationId, userId, amount, currency = 'INR', serviceName }) {
     const paymentOrderId = `ORD-2026-${Math.floor(100000 + Math.random() * 900000)}`;
 
     return {
       success: true,
-      provider: 'RAZORPAY_SANDBOX',
-      key_id: GATEWAY_KEY,
+      provider: 'PHONEPE',
+      key_id: PHONEPE_MERCHANT_ID,
       order_id: paymentOrderId,
-      amount: amount * 100, // Amount in paise for INR
+      amount: Math.round(amount * 100), // Amount in paise for INR
       display_amount: amount,
       currency: currency,
       notes: {
@@ -33,7 +164,7 @@ class PaymentService {
   }
 
   /**
-   * Verify server-side payment signature
+   * Verify server-side payment signature (Legacy / Sandbox helper)
    */
   static verifyPaymentSignature({ orderId, paymentId, signature }) {
     if (!orderId || !paymentId) return false;
@@ -70,3 +201,4 @@ class PaymentService {
 }
 
 export default PaymentService;
+

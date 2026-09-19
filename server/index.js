@@ -1032,6 +1032,12 @@ app.post('/api/applications', submitRateLimiter, upload.any(), async (req, res) 
         ? application.application_number
         : db.generateNextApplicationNumber('ESV-2026');
 
+      const isFeeApplicable = Number(service.fee) > 0;
+      const paymentPendingRequested = Boolean(req.body.payment_pending === 'true' || req.body.payment_pending === true);
+      const isPendingPayment = isFeeApplicable && paymentPendingRequested;
+      const initialStatus = isPendingPayment ? 'PAYMENT_PENDING' : 'SUBMITTED';
+      const initialStep = isPendingPayment ? 4 : 5;
+
       if (application) {
         db.update('applications', a => a.id === application.id, {
           application_number: applicationNumber,
@@ -1039,10 +1045,13 @@ app.post('/api/applications', submitRateLimiter, upload.any(), async (req, res) 
           user_name: user_name.trim(),
           user_email: user_email.trim().toLowerCase(),
           user_phone: user_phone.trim(),
-          status: 'SUBMITTED',
-          current_step: 5,
+          status: initialStatus,
+          payment_status: isPendingPayment ? 'PENDING' : (isFeeApplicable ? 'PAID' : 'FREE'),
+          current_step: initialStep,
           submitted_at: new Date().toISOString(),
-          admin_remarks: 'Application submitted successfully. Under verification by E-Seva team.',
+          admin_remarks: isPendingPayment
+            ? 'Application saved pending PhonePe fee settlement.'
+            : 'Application submitted successfully. Under verification by E-Seva team.',
           updated_at: new Date().toISOString()
         });
       } else {
@@ -1053,10 +1062,13 @@ app.post('/api/applications', submitRateLimiter, upload.any(), async (req, res) 
           user_name: user_name.trim(),
           user_email: user_email.trim().toLowerCase(),
           user_phone: user_phone.trim(),
-          status: 'SUBMITTED',
-          current_step: 5,
+          status: initialStatus,
+          payment_status: isPendingPayment ? 'PENDING' : (isFeeApplicable ? 'PAID' : 'FREE'),
+          current_step: initialStep,
           submitted_at: new Date().toISOString(),
-          admin_remarks: 'Application submitted successfully. Under verification by E-Seva team.',
+          admin_remarks: isPendingPayment
+            ? 'Application saved pending PhonePe fee settlement.'
+            : 'Application submitted successfully. Under verification by E-Seva team.',
           total_fee: service.fee || 0
         });
       }
@@ -1154,35 +1166,41 @@ app.post('/api/applications', submitRateLimiter, upload.any(), async (req, res) 
       const payNum = `PAY-2026-${Math.floor(100000 + Math.random() * 900000)}`;
       db.insert('payments', {
         application_id: application.id,
+        application_number: applicationNumber,
         user_id: userId,
         payment_number: payNum,
         amount: service.fee || 0,
-        payment_method: payment_method || 'Online Facilitation Fee / UPI',
-        payment_status: service.fee > 0 ? 'Completed' : 'Free Service',
-        paid_at: new Date().toISOString()
+        payment_method: payment_method || (isPendingPayment ? 'PhonePe Payment Gateway' : 'Online Facilitation Fee / UPI'),
+        payment_status: isPendingPayment ? 'PENDING' : (service.fee > 0 ? 'Completed' : 'Free Service'),
+        paid_at: isPendingPayment ? null : new Date().toISOString()
       });
 
       // Audit Trail
       db.insert('application_status_history', {
         application_id: application.id,
-        status: 'SUBMITTED',
-        admin_remarks: 'Application submitted successfully with verified dynamic field data.',
+        status: initialStatus,
+        admin_remarks: isPendingPayment
+          ? 'Application filed and documents saved. Awaiting PhonePe fee payment settlement.'
+          : 'Application submitted successfully with verified dynamic field data.',
         updated_by: 'Applicant / Web Portal'
       });
 
       return {
         application_number: applicationNumber,
         application_id: application.id,
+        status: initialStatus,
+        payment_pending: isPendingPayment,
         submitted_at: application.submitted_at
       };
     });
 
-    // Dispatch Notification to Applicant
-    try {
-      NotificationService.sendNotification(db, {
-        userId: userId,
-        applicationId: submissionResult.application_id,
-        type: 'APPLICATION_SUBMITTED',
+    // Dispatch Notification to Applicant (only when submitted immediately or free)
+    if (!submissionResult.payment_pending) {
+      try {
+        NotificationService.sendNotification(db, {
+          userId: userId,
+          applicationId: submissionResult.application_id,
+          type: 'APPLICATION_SUBMITTED',
         title: `Application Submitted: ${submissionResult.application_number}`,
         message: `Your application (${submissionResult.application_number}) for ${service.name} has been submitted successfully. Track status online anytime.`,
         data: {
@@ -1195,15 +1213,17 @@ app.post('/api/applications', submitRateLimiter, upload.any(), async (req, res) 
         userEmail: user_email,
         userPhone: user_phone
       });
-    } catch (notifErr) {
-      console.error('Submission notification error:', notifErr);
+      } catch (notifErr) {
+        console.error('Submission notification error:', notifErr);
+      }
     }
 
     res.status(201).json({
-      message: 'Application submitted successfully',
+      message: submissionResult.payment_pending ? 'Application saved. Proceed to payment.' : 'Application submitted successfully',
       application_number: submissionResult.application_number,
       application_id: submissionResult.application_id,
-      status: 'SUBMITTED',
+      status: submissionResult.status || 'SUBMITTED',
+      payment_pending: Boolean(submissionResult.payment_pending),
       total_fee: service.fee,
       submitted_at: submissionResult.submitted_at || new Date().toISOString()
     });
@@ -1528,6 +1548,290 @@ app.post('/api/payments/retry', async (req, res) => {
       amount: amount
     });
   } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ==========================================
+// 3.5 PHONEPE PAYMENT GATEWAY INTEGRATION
+// ==========================================
+
+// Initiate PhonePe Payment Order
+app.post('/api/payments/phonepe/initiate', async (req, res) => {
+  try {
+    const { application_id, return_url } = req.body;
+    if (!application_id) {
+      return res.status(400).json({ error: 'application_id is required' });
+    }
+
+    const application = db.get('applications', a => String(a.id) === String(application_id) || a.application_number === application_id);
+    if (!application) {
+      return res.status(404).json({ error: 'Application record not found' });
+    }
+
+    const service = db.get('services', s => String(s.id) === String(application.service_id) || s.slug === application.service_id);
+    const amount = Number(service ? service.fee : application.total_fee) || 0;
+
+    if (amount <= 0) {
+      return res.json({
+        payment_required: false,
+        message: 'No payment required for this free service',
+        amount: 0
+      });
+    }
+
+    // Unique Merchant Transaction ID (alphanumeric, max 38 chars)
+    const merchantTransactionId = `MT${Date.now()}${Math.floor(1000 + Math.random() * 9000)}`;
+
+    // Determine client origin & redirect URL
+    let clientOrigin = 'http://localhost:5173';
+    if (req.headers.origin) {
+      clientOrigin = req.headers.origin;
+    } else if (req.headers.referer) {
+      try {
+        clientOrigin = new URL(req.headers.referer).origin;
+      } catch (e) {}
+    } else if (process.env.FRONTEND_URL) {
+      clientOrigin = process.env.FRONTEND_URL;
+    }
+
+    const redirectUrl = return_url || `${clientOrigin}/payment/callback?merchantTransactionId=${merchantTransactionId}&appId=${application.id}`;
+    const callbackUrl = `${req.protocol}://${req.get('host')}/api/payments/phonepe/callback`;
+
+    const phonePeResult = await PaymentService.initiatePhonePePayment({
+      merchantTransactionId,
+      amount,
+      userId: application.user_id,
+      userPhone: application.user_phone,
+      redirectUrl,
+      callbackUrl
+    });
+
+    const paymentRecord = db.insert('payments', {
+      application_id: application.id,
+      application_number: application.application_number,
+      user_id: application.user_id,
+      amount: amount,
+      currency: 'INR',
+      payment_gateway: 'PHONEPE',
+      payment_order_id: merchantTransactionId,
+      payment_transaction_id: merchantTransactionId,
+      payment_status: 'PENDING',
+      payment_method: 'PhonePe PG (UPI / Cards / NetBanking)',
+      initiated_at: new Date().toISOString(),
+      metadata: {
+        service_name: service ? service.name : 'Digital Facilitation Service',
+        phonepe_response: phonePeResult
+      }
+    });
+
+    if (!phonePeResult.success) {
+      console.warn('[PhonePe Initiation Failed]:', phonePeResult.message);
+      return res.status(400).json({
+        success: false,
+        error: phonePeResult.message || 'PhonePe payment gateway rejected initiation',
+        code: phonePeResult.code,
+        payment_id: paymentRecord.id,
+        raw: phonePeResult.raw
+      });
+    }
+
+    res.json({
+      success: true,
+      provider: 'PHONEPE',
+      merchantTransactionId,
+      redirectUrl: phonePeResult.redirectUrl,
+      payment_id: paymentRecord.id,
+      amount,
+      currency: 'INR',
+      service_name: service ? service.name : 'Digital Facilitation Service'
+    });
+  } catch (err) {
+    console.error('PhonePe initiation error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Verify PhonePe Payment Status
+app.get('/api/payments/phonepe/verify/:merchantTransactionId', async (req, res) => {
+  try {
+    const { merchantTransactionId } = req.params;
+    if (!merchantTransactionId) {
+      return res.status(400).json({ error: 'merchantTransactionId is required' });
+    }
+
+    let payment = db.get('payments', p => p.payment_order_id === merchantTransactionId || p.payment_transaction_id === merchantTransactionId);
+
+    let phonePeStatus;
+    try {
+      phonePeStatus = await PaymentService.checkPhonePeStatus(merchantTransactionId);
+    } catch (apiErr) {
+      console.warn('PhonePe status check API warning:', apiErr.message);
+      phonePeStatus = { success: false, message: apiErr.message };
+    }
+
+    const isSuccess = phonePeStatus.success && (phonePeStatus.code === 'PAYMENT_SUCCESS' || phonePeStatus.data?.state === 'COMPLETED');
+    const isPending = phonePeStatus.code === 'PAYMENT_PENDING' || phonePeStatus.data?.state === 'PENDING';
+
+    if (isSuccess) {
+      const txnData = phonePeStatus.data || {};
+      const gatewayTxnId = txnData.transactionId || merchantTransactionId;
+      const paymentInstrument = txnData.paymentInstrument?.type || 'PhonePe UPI';
+      const receiptNumber = `REC-2026-${Math.floor(100000 + Math.random() * 900000)}`;
+
+      if (payment) {
+        db.update('payments', p => p.id === payment.id, {
+          payment_status: 'PAID',
+          payment_transaction_id: gatewayTxnId,
+          payment_method: `PhonePe (${paymentInstrument})`,
+          receipt_number: receiptNumber,
+          paid_at: new Date().toISOString(),
+          metadata: { ...(payment.metadata || {}), verified_response: phonePeStatus }
+        });
+        payment = db.get('payments', p => p.id === payment.id);
+      }
+
+      const applicationId = payment ? payment.application_id : null;
+      let application = null;
+      if (applicationId) {
+        application = db.get('applications', a => a.id === Number(applicationId));
+        if (application) {
+          db.update('applications', a => a.id === application.id, {
+            status: 'SUBMITTED',
+            payment_status: 'PAID',
+            current_step: 5,
+            submitted_at: application.submitted_at || new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          });
+
+          db.insert('application_status_history', {
+            application_id: application.id,
+            status: 'SUBMITTED',
+            admin_remarks: `Service fee payment of ₹${payment ? payment.amount : ''} successfully verified via PhonePe (${paymentInstrument}). Gateway Txn: ${gatewayTxnId}`,
+            updated_by: 'PhonePe Gateway Automator'
+          });
+
+          // Dispatch Notification to Applicant
+          try {
+            const service = db.get('services', s => s.id === application.service_id);
+            NotificationService.sendNotification(db, {
+              userId: application.user_id,
+              applicationId: application.id,
+              type: 'PAYMENT_SUCCESS',
+              title: `Payment Successful: ${application.application_number}`,
+              message: `Payment of ₹${payment ? payment.amount : 0} for ${service ? service.name : 'your application'} was verified via PhonePe.`,
+              data: {
+                applicationId: application.id,
+                applicationNumber: application.application_number,
+                transactionId: gatewayTxnId,
+                amount: payment ? payment.amount : 0,
+                status: 'SUBMITTED'
+              },
+              userEmail: application.user_email,
+              userPhone: application.user_phone
+            });
+          } catch (notifErr) {
+            console.error('Notification dispatch error:', notifErr.message);
+          }
+        }
+      }
+
+      return res.json({
+        success: true,
+        state: 'COMPLETED',
+        message: 'Payment verified successfully',
+        transaction_id: gatewayTxnId,
+        receipt_number: receiptNumber,
+        paid_at: payment?.paid_at || new Date().toISOString(),
+        amount: payment ? payment.amount : (txnData.amount ? txnData.amount / 100 : 0),
+        payment_method: `PhonePe (${paymentInstrument})`,
+        application_id: applicationId,
+        application_number: application ? application.application_number : payment?.application_number
+      });
+    } else if (isPending) {
+      return res.json({
+        success: false,
+        state: 'PENDING',
+        message: phonePeStatus.message || 'Payment is currently pending confirmation from bank / PhonePe.'
+      });
+    } else {
+      if (payment) {
+        db.update('payments', p => p.id === payment.id, {
+          payment_status: 'FAILED',
+          metadata: { ...(payment.metadata || {}), failed_response: phonePeStatus }
+        });
+      }
+
+      return res.json({
+        success: false,
+        state: 'FAILED',
+        message: phonePeStatus.message || 'Payment transaction failed or was cancelled.',
+        raw: phonePeStatus
+      });
+    }
+  } catch (err) {
+    console.error('PhonePe verification error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// PhonePe Server-to-Server Webhook Endpoint
+app.post('/api/payments/phonepe/callback', async (req, res) => {
+  try {
+    const xVerify = req.headers['x-verify'];
+    const { response: base64Response } = req.body;
+
+    if (!base64Response || !xVerify) {
+      return res.status(400).json({ error: 'Missing response or X-VERIFY header' });
+    }
+
+    const isValid = PaymentService.verifyPhonePeWebhookSignature({
+      base64Response,
+      xVerifyHeader: xVerify
+    });
+
+    if (!isValid) {
+      console.warn('[PhonePe Webhook] Invalid signature rejected');
+      return res.status(400).json({ error: 'Invalid PhonePe webhook signature' });
+    }
+
+    const decoded = JSON.parse(Buffer.from(base64Response, 'base64').toString('utf8'));
+    console.log('[PhonePe Webhook Received]:', decoded.code, decoded.data?.merchantTransactionId);
+
+    if (decoded.success && decoded.code === 'PAYMENT_SUCCESS') {
+      const txnData = decoded.data || {};
+      const merchantTxnId = txnData.merchantTransactionId;
+      const gatewayTxnId = txnData.transactionId || merchantTxnId;
+
+      const payment = db.get('payments', p => p.payment_order_id === merchantTxnId || p.payment_transaction_id === merchantTxnId);
+      if (payment && payment.payment_status !== 'PAID') {
+        db.update('payments', p => p.id === payment.id, {
+          payment_status: 'PAID',
+          payment_transaction_id: gatewayTxnId,
+          payment_method: `PhonePe (${txnData.paymentInstrument?.type || 'UPI'})`,
+          paid_at: new Date().toISOString()
+        });
+
+        if (payment.application_id) {
+          db.update('applications', a => a.id === payment.application_id, {
+            status: 'SUBMITTED',
+            payment_status: 'PAID',
+            updated_at: new Date().toISOString()
+          });
+
+          db.insert('application_status_history', {
+            application_id: payment.application_id,
+            status: 'SUBMITTED',
+            admin_remarks: `Payment verified via PhonePe Webhook callback. Transaction: ${gatewayTxnId}`,
+            updated_by: 'PhonePe Webhook'
+          });
+        }
+      }
+    }
+
+    res.json({ status: 'OK' });
+  } catch (err) {
+    console.error('[PhonePe Webhook Error]:', err.message);
     res.status(500).json({ error: err.message });
   }
 });
