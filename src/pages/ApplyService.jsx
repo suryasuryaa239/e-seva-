@@ -4,7 +4,7 @@ import {
   ShieldAlert, FileText, Upload, CheckCircle2, ArrowRight, ArrowLeft,
   AlertCircle, Lock, Info, Save, Edit3, Check, FileCheck, UserCheck, Clock, Download,
   Phone, Mail, HelpCircle, Shield, Sparkles, Building, CreditCard, QrCode, Building2, Wallet,
-  Copy, Printer, ExternalLink, User, Camera, Eye, X, Maximize2, ShieldCheck
+  Copy, Printer, ExternalLink, User, Camera, Eye, X, Maximize2, ShieldCheck, RefreshCw
 } from 'lucide-react';
 import Breadcrumbs from '../components/Breadcrumbs';
 import CameraCaptureModal from '../components/CameraCaptureModal';
@@ -581,17 +581,15 @@ export default function ApplyService() {
 
   const handleNextStep = () => {
     if (currentStep === 1) {
-      if (validateStep1()) setCurrentStep(2);
+      if (validateStep1()) changeStep(2);
     } else if (currentStep === 2) {
-      if (validateStep2()) setCurrentStep(3);
+      if (validateStep2()) changeStep(3);
     }
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handlePrevStep = () => {
     if (currentStep > 1) {
-      setCurrentStep(prev => prev - 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      changeStep(currentStep - 1);
     }
   };
 
@@ -1324,7 +1322,7 @@ export default function ApplyService() {
                                         className="w-9 h-9 object-cover rounded-lg border border-emerald-200 shrink-0 cursor-pointer shadow-xs"
                                         onClick={() => setPreviewModalDoc({
                                           title: displayDocName,
-                                          fileName: currentFile.name,
+                                          fileName: currentFile?.name || 'Document',
                                           url: previewImgUrl
                                         })}
                                       />
@@ -1334,14 +1332,14 @@ export default function ApplyService() {
                                       </div>
                                     )}
                                     <div className="min-w-0 flex-1">
-                                      <div className="text-xs font-bold text-slate-800 truncate leading-snug">{currentFile.name}</div>
+                                      <div className="text-xs font-bold text-slate-800 truncate leading-snug">{currentFile?.name || 'Document'}</div>
                                       <div className="text-[10px] text-emerald-700 font-extrabold flex items-center gap-1 mt-0.5">
                                         <span>{t.uploadedSuccessfully}</span>
                                       </div>
                                     </div>
                                   </div>
                                   <span className="text-[10px] font-black bg-emerald-100/80 text-emerald-800 px-2 py-0.5 rounded-md shrink-0 font-mono">
-                                    {(currentFile.size / (1024 * 1024)).toFixed(2)} MB
+                                    {currentFile?.size ? (currentFile.size / (1024 * 1024)).toFixed(2) : '0.50'} MB
                                   </span>
                                 </div>
 
@@ -1352,7 +1350,7 @@ export default function ApplyService() {
                                       type="button"
                                       onClick={() => setPreviewModalDoc({
                                         title: displayDocName,
-                                        fileName: currentFile.name,
+                                        fileName: currentFile?.name || 'Document',
                                         url: previewImgUrl
                                       })}
                                       className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold text-[11px] rounded-lg border border-slate-200 flex items-center gap-1 transition-colors shrink-0"
@@ -1620,18 +1618,28 @@ export default function ApplyService() {
                             if (fObj instanceof File || fObj instanceof Blob) {
                               fileName = fObj.name || 'document';
                               fileSize = fObj.size ? `${(fObj.size / (1024 * 1024)).toFixed(2)} MB` : '';
-                              isImage = fObj.type ? fObj.type.startsWith('image/') : /\.(jpg|jpeg|png|webp|gif)$/i.test(fObj.name);
-                              isPdf = fObj.type === 'application/pdf' || /\.pdf$/i.test(fObj.name);
-                              if (isImage) previewUrl = URL.createObjectURL(fObj);
+                              isImage = fObj.type ? fObj.type.startsWith('image/') : /\.(jpg|jpeg|png|webp|gif)$/i.test(fObj.name || '');
+                              isPdf = fObj.type === 'application/pdf' || /\.pdf$/i.test(fObj.name || '');
+                              if (isImage) {
+                                if (fObj._previewUrl) {
+                                  previewUrl = fObj._previewUrl;
+                                } else {
+                                  try {
+                                    previewUrl = URL.createObjectURL(fObj);
+                                  } catch (e) {
+                                    console.warn('URL.createObjectURL failed:', e);
+                                  }
+                                }
+                              }
                             } else if (typeof fObj === 'string') {
                               fileName = fObj.split('/').pop() || 'document';
                               previewUrl = fObj;
                               isImage = fObj.startsWith('data:image/') || /\.(jpg|jpeg|png|webp|gif)$/i.test(fObj);
                               isPdf = fObj.endsWith('.pdf');
-                            } else if (typeof fObj === 'object') {
+                            } else if (typeof fObj === 'object' && fObj !== null) {
                               fileName = fObj.name || 'document';
                               fileSize = fObj.size ? `${(fObj.size / (1024 * 1024)).toFixed(2)} MB` : '';
-                              previewUrl = fObj.url || null;
+                              previewUrl = fObj._previewUrl || fObj.url || null;
                               isImage = previewUrl ? (/\.(jpg|jpeg|png|webp|gif)$/i.test(fileName) || /\.(jpg|jpeg|png|webp|gif)$/i.test(previewUrl) || previewUrl.includes('preview-file')) : true;
                               isPdf = previewUrl ? (/\.pdf$/i.test(fileName) || /\.pdf$/i.test(previewUrl)) : false;
                             }
@@ -2459,7 +2467,7 @@ export default function ApplyService() {
             application={submittedApp}
             service={service}
             applicantInfo={applicantInfo}
-            fieldValues={details?.field_values || Object.entries(fieldValues).map(([k, v]) => ({ field_name: k, field_label: k, value: v }))}
+            fieldValues={submittedApp?.field_values || Object.entries(fieldValues).map(([k, v]) => ({ field_name: k, field_label: k, value: v }))}
             onClose={() => setShowReceiptModal(false)}
           />
         )}

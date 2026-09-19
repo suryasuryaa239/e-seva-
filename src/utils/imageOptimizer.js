@@ -166,10 +166,17 @@ function compressImageFile(file, { maxDimension = 1920, quality = 0.85 }) {
             const cleanBase = originalBase.replace(/[^a-zA-Z0-9_-]/g, '_');
             const newFileName = `${cleanBase}_optimized.jpg`;
 
-            const optimizedFile = new File([blob], newFileName, {
-              type: 'image/jpeg',
-              lastModified: Date.now()
-            });
+            let optimizedFile;
+            try {
+              optimizedFile = new File([blob], newFileName, {
+                type: 'image/jpeg',
+                lastModified: Date.now()
+              });
+            } catch (e) {
+              blob.name = newFileName;
+              blob.lastModified = Date.now();
+              optimizedFile = blob;
+            }
 
             const previewUrl = URL.createObjectURL(blob);
 

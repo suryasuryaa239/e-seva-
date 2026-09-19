@@ -163,7 +163,13 @@ export default function CameraCaptureModal({ isOpen, onClose, onCapture, documen
 
     let fileObj;
     if (capturedBlob) {
-      fileObj = new File([capturedBlob], fileName, { type: 'image/jpeg' });
+      try {
+        fileObj = new File([capturedBlob], fileName, { type: 'image/jpeg' });
+      } catch (e) {
+        capturedBlob.name = fileName;
+        capturedBlob.lastModified = Date.now();
+        fileObj = capturedBlob;
+      }
     } else {
       // Fallback base64 conversion
       try {
@@ -175,7 +181,13 @@ export default function CameraCaptureModal({ isOpen, onClose, onCapture, documen
         while (n--) {
           u8arr[n] = bstr.charCodeAt(n);
         }
-        fileObj = new File([u8arr], fileName, { type: mime });
+        try {
+          fileObj = new File([u8arr], fileName, { type: mime });
+        } catch (e) {
+          const b = new Blob([u8arr], { type: mime });
+          b.name = fileName;
+          fileObj = b;
+        }
       } catch (err) {
         console.error('Base64 conversion error:', err);
         return;
