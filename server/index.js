@@ -2538,27 +2538,37 @@ app.get('/api/admin/dashboard', authenticateAdmin, (req, res) => {
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
   const applications = db.all('applications');
   const total = applications.length;
-  const pending = applications.filter(a => a.status === 'Pending').length;
-  const processing = applications.filter(a => a.status === 'Processing').length;
-  const approved = applications.filter(a => a.status === 'Approved').length;
-  const completed = applications.filter(a => a.status === 'Completed').length;
-  const rejected = applications.filter(a => a.status === 'Rejected').length;
+  const pending = applications.filter(a => {
+    const s = (a.status || '').toUpperCase();
+    return s === 'PENDING' || s === 'SUBMITTED' || s === 'PAYMENT_PENDING';
+  }).length;
+  const processing = applications.filter(a => {
+    const s = (a.status || '').toUpperCase();
+    return s === 'PROCESSING' || s === 'UNDER_REVIEW' || s === 'UNDER REVIEW' || s === 'IN_PROCESS';
+  }).length;
+  const approved = applications.filter(a => (a.status || '').toUpperCase() === 'APPROVED').length;
+  const completed = applications.filter(a => (a.status || '').toUpperCase() === 'COMPLETED').length;
+  const rejected = applications.filter(a => (a.status || '').toUpperCase() === 'REJECTED').length;
 
   const usersCount = db.all('users').length;
   const servicesCount = db.all('services').length;
   const enquiriesCount = db.all('contact_messages', m => m.status === 'Unread').length;
 
-  const payments = db.all('payments', p => p.payment_status === 'Completed');
-  const totalRevenue = payments.reduce((sum, p) => sum + (p.amount || 0), 0);
+  const payments = db.all('payments', p => p.payment_status === 'Completed' || p.payment_status === 'PAID' || p.status === 'SUCCESS');
+  const totalRevenue = payments.reduce((sum, p) => sum + Number(p.amount || 0), 0);
 
   const recentApplications = applications
-    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-    .slice(0, 5)
+    .sort((a, b) => new Date(b.created_at || b.submitted_at || 0) - new Date(a.created_at || a.submitted_at || 0))
+    .slice(0, 10)
     .map(a => {
       const srv = db.get('services', s => s.id === a.service_id);
       return {
         ...a,
-        service_name: srv ? srv.name : 'Digital Service'
+        user_name: a.user_name || a.applicant_name || 'Citizen',
+        user_email: a.user_email || a.applicant_email || '',
+        user_phone: a.user_phone || a.applicant_phone || '',
+        total_fee: a.total_fee !== undefined && a.total_fee !== null ? a.total_fee : (a.fee_amount || 0),
+        service_name: srv ? srv.name : (a.service_name || 'Digital Service')
       };
     });
 
@@ -2584,17 +2594,28 @@ app.get('/api/admin/applications', authenticateAdmin, (req, res) => {
   let applications = db.all('applications');
 
   if (status && status !== 'All') {
-    applications = applications.filter(a => a.status.toLowerCase() === status.toLowerCase());
+    const sLower = status.toLowerCase().trim();
+    applications = applications.filter(a => {
+      const aStatus = (a.status || 'SUBMITTED').toLowerCase().trim();
+      if (sLower === 'pending') {
+        return aStatus === 'pending' || aStatus === 'submitted' || aStatus === 'payment_pending';
+      }
+      if (sLower === 'processing') {
+        return aStatus === 'processing' || aStatus === 'under review' || aStatus === 'under_review' || aStatus === 'in process';
+      }
+      return aStatus === sLower;
+    });
   }
 
   if (search && search.trim() !== '') {
     const q = search.toLowerCase().trim();
-    applications = applications.filter(a =>
-      a.application_number.toLowerCase().includes(q) ||
-      a.user_name.toLowerCase().includes(q) ||
-      a.user_email.toLowerCase().includes(q) ||
-      a.user_phone.toLowerCase().includes(q)
-    );
+    applications = applications.filter(a => {
+      const aNum = (a.application_number || '').toLowerCase();
+      const uName = (a.user_name || a.applicant_name || '').toLowerCase();
+      const uEmail = (a.user_email || a.applicant_email || '').toLowerCase();
+      const uPhone = (a.user_phone || a.applicant_phone || '').toLowerCase();
+      return aNum.includes(q) || uName.includes(q) || uEmail.includes(q) || uPhone.includes(q);
+    });
   }
 
   const services = db.all('services');
@@ -2607,11 +2628,15 @@ app.get('/api/admin/applications', authenticateAdmin, (req, res) => {
       const srv = serviceMap[a.service_id];
       return {
         ...a,
-        service_name: srv ? srv.name : 'Digital Service',
-        category_name: srv ? catMap[srv.category_id] || '' : ''
+        user_name: a.user_name || a.applicant_name || 'Citizen',
+        user_email: a.user_email || a.applicant_email || '',
+        user_phone: a.user_phone || a.applicant_phone || '',
+        total_fee: a.total_fee !== undefined && a.total_fee !== null ? a.total_fee : (a.fee_amount !== undefined ? a.fee_amount : (srv ? srv.fee : 0)),
+        service_name: srv ? srv.name : (a.service_name || 'Digital Service'),
+        category_name: srv ? (catMap[srv.category_id] || '') : (a.category_name || '')
       };
     })
-    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    .sort((a, b) => new Date(b.created_at || b.submitted_at || 0) - new Date(a.created_at || a.submitted_at || 0));
 
   res.json(result);
 });

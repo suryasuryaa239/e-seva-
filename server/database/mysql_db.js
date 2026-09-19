@@ -37,6 +37,12 @@ export async function initializeDatabaseSchema() {
         phone VARCHAR(50),
         password VARCHAR(255) NOT NULL,
         role VARCHAR(50) DEFAULT 'citizen',
+        aadhaar_no VARCHAR(50),
+        address TEXT,
+        district VARCHAR(100),
+        pincode VARCHAR(20),
+        status VARCHAR(50) DEFAULT 'active',
+        password_hash VARCHAR(255),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -92,17 +98,28 @@ export async function initializeDatabaseSchema() {
         applicant_name VARCHAR(255),
         applicant_email VARCHAR(255),
         applicant_phone VARCHAR(50),
+        user_name VARCHAR(255),
+        user_email VARCHAR(255),
+        user_phone VARCHAR(50),
         service_id INT,
         service_name VARCHAR(255),
         service_slug VARCHAR(255),
-        status VARCHAR(50) DEFAULT 'Submitted',
+        status VARCHAR(50) DEFAULT 'SUBMITTED',
         fee_amount DECIMAL(10, 2) DEFAULT 0.00,
+        total_fee DECIMAL(10, 2) DEFAULT 0.00,
         payment_status VARCHAR(50) DEFAULT 'Paid',
         payment_id VARCHAR(100),
+        payment_transaction_id VARCHAR(100),
+        current_step INT DEFAULT 1,
         form_data JSON,
+        field_values JSON,
         documents JSON,
         rejection_reason TEXT,
         remarks TEXT,
+        admin_remarks TEXT,
+        certificate_url TEXT,
+        certificate_generated_at TIMESTAMP NULL,
+        submitted_at TIMESTAMP NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -111,12 +128,21 @@ export async function initializeDatabaseSchema() {
     await connection.query(`
       CREATE TABLE IF NOT EXISTS payments (
         id INT AUTO_INCREMENT PRIMARY KEY,
-        payment_id VARCHAR(100) NOT NULL UNIQUE,
+        payment_id VARCHAR(100),
+        application_id INT,
         application_number VARCHAR(100),
         user_id INT,
         amount DECIMAL(10, 2),
+        currency VARCHAR(10) DEFAULT 'INR',
         payment_method VARCHAR(50),
+        payment_gateway VARCHAR(50),
+        payment_order_id VARCHAR(100),
+        payment_transaction_id VARCHAR(100),
+        payment_status VARCHAR(50),
         status VARCHAR(50),
+        initiated_at TIMESTAMP NULL,
+        completed_at TIMESTAMP NULL,
+        metadata JSON,
         transaction_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
@@ -138,11 +164,13 @@ export async function initializeDatabaseSchema() {
       CREATE TABLE IF NOT EXISTS career_applications (
         id INT AUTO_INCREMENT PRIMARY KEY,
         full_name VARCHAR(255),
+        applicant_name VARCHAR(255),
         email VARCHAR(255),
         phone VARCHAR(50),
         position VARCHAR(255),
         experience VARCHAR(100),
         resume_url TEXT,
+        resume_file TEXT,
         status VARCHAR(50) DEFAULT 'Received',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -152,10 +180,14 @@ export async function initializeDatabaseSchema() {
       CREATE TABLE IF NOT EXISTS notifications (
         id INT AUTO_INCREMENT PRIMARY KEY,
         user_id INT,
+        application_id INT,
+        admin_id INT,
         title VARCHAR(255),
         message TEXT,
         type VARCHAR(50) DEFAULT 'info',
+        status VARCHAR(50),
         is_read TINYINT(1) DEFAULT 0,
+        metadata JSON,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
@@ -194,7 +226,46 @@ export async function initializeDatabaseSchema() {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
 
-    console.log('✅ [TiDB CLOUD] Database Schema Tables initialized successfully!');
+    // Automated Column Migrations for any pre-existing tables
+    const migrations = [
+      "ALTER TABLE applications ADD COLUMN IF NOT EXISTS user_name VARCHAR(255)",
+      "ALTER TABLE applications ADD COLUMN IF NOT EXISTS user_email VARCHAR(255)",
+      "ALTER TABLE applications ADD COLUMN IF NOT EXISTS user_phone VARCHAR(50)",
+      "ALTER TABLE applications ADD COLUMN IF NOT EXISTS total_fee DECIMAL(10, 2) DEFAULT 0.00",
+      "ALTER TABLE applications ADD COLUMN IF NOT EXISTS admin_remarks TEXT",
+      "ALTER TABLE applications ADD COLUMN IF NOT EXISTS current_step INT DEFAULT 1",
+      "ALTER TABLE applications ADD COLUMN IF NOT EXISTS submitted_at TIMESTAMP NULL",
+      "ALTER TABLE applications ADD COLUMN IF NOT EXISTS certificate_url TEXT",
+      "ALTER TABLE applications ADD COLUMN IF NOT EXISTS certificate_generated_at TIMESTAMP NULL",
+      "ALTER TABLE applications ADD COLUMN IF NOT EXISTS field_values JSON",
+      "ALTER TABLE applications ADD COLUMN IF NOT EXISTS payment_transaction_id VARCHAR(100)",
+      "ALTER TABLE users ADD COLUMN IF NOT EXISTS aadhaar_no VARCHAR(50)",
+      "ALTER TABLE users ADD COLUMN IF NOT EXISTS address TEXT",
+      "ALTER TABLE users ADD COLUMN IF NOT EXISTS district VARCHAR(100)",
+      "ALTER TABLE users ADD COLUMN IF NOT EXISTS pincode VARCHAR(20)",
+      "ALTER TABLE users ADD COLUMN IF NOT EXISTS status VARCHAR(50) DEFAULT 'active'",
+      "ALTER TABLE users ADD COLUMN IF NOT EXISTS password_hash VARCHAR(255)",
+      "ALTER TABLE payments ADD COLUMN IF NOT EXISTS application_id INT",
+      "ALTER TABLE payments ADD COLUMN IF NOT EXISTS currency VARCHAR(10) DEFAULT 'INR'",
+      "ALTER TABLE payments ADD COLUMN IF NOT EXISTS payment_gateway VARCHAR(50)",
+      "ALTER TABLE payments ADD COLUMN IF NOT EXISTS payment_order_id VARCHAR(100)",
+      "ALTER TABLE payments ADD COLUMN IF NOT EXISTS payment_transaction_id VARCHAR(100)",
+      "ALTER TABLE payments ADD COLUMN IF NOT EXISTS payment_status VARCHAR(50)",
+      "ALTER TABLE payments ADD COLUMN IF NOT EXISTS initiated_at TIMESTAMP NULL",
+      "ALTER TABLE payments ADD COLUMN IF NOT EXISTS completed_at TIMESTAMP NULL",
+      "ALTER TABLE payments ADD COLUMN IF NOT EXISTS metadata JSON",
+      "ALTER TABLE notifications ADD COLUMN IF NOT EXISTS application_id INT",
+      "ALTER TABLE notifications ADD COLUMN IF NOT EXISTS admin_id INT",
+      "ALTER TABLE notifications ADD COLUMN IF NOT EXISTS metadata JSON"
+    ];
+
+    for (const sql of migrations) {
+      try {
+        await connection.query(sql);
+      } catch (e) {}
+    }
+
+    console.log('✅ [TiDB CLOUD] Database Schema Tables & Columns initialized successfully!');
   } catch (error) {
     console.error('❌ [TiDB CLOUD DB ERROR]', error);
   } finally {

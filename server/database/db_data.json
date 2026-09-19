@@ -7842,24 +7842,8 @@
   ],
   "applications": [
     {
-      "id": 1,
-      "created_at": "2026-09-13T08:29:56.731Z",
-      "application_number": "ESV-2026-000001",
-      "user_id": 1,
-      "service_id": 1,
-      "user_name": "Surya A",
-      "user_email": "hariraj2005.m@gmail.com",
-      "user_phone": "9003454109",
-      "status": "SUBMITTED",
-      "current_step": 5,
-      "admin_remarks": "Application submitted successfully. Under verification by E-Seva team.",
-      "total_fee": "50.00",
-      "updated_at": "2026-09-13T18:20:44.093Z",
-      "submitted_at": "2026-09-13T18:20:44.093Z"
-    },
-    {
-      "id": 2,
-      "created_at": "2026-09-13T18:40:58.676Z",
+      "id": 3,
+      "created_at": "2026-09-13T13:10:59.000Z",
       "application_number": "ESV-2026-000002",
       "user_id": 1,
       "service_id": 1,
@@ -7870,12 +7854,28 @@
       "current_step": 5,
       "admin_remarks": "Application submitted successfully. Under verification by E-Seva team.",
       "total_fee": "50.00",
-      "submitted_at": "2026-09-13T18:47:02.227Z",
-      "updated_at": "2026-09-13T19:57:57.462Z"
+      "submitted_at": "2026-09-13T13:17:02.000Z",
+      "updated_at": "2026-09-13T14:27:57.000Z",
+      "applicant_name": "Hari Raj",
+      "applicant_email": "hariraj2005.m@gmail.com",
+      "applicant_phone": "9003454109",
+      "service_name": null,
+      "service_slug": null,
+      "fee_amount": "50.00",
+      "payment_status": "Paid",
+      "payment_id": null,
+      "form_data": null,
+      "documents": null,
+      "rejection_reason": null,
+      "remarks": "Application submitted successfully. Under verification by E-Seva team.",
+      "certificate_url": null,
+      "certificate_generated_at": null,
+      "field_values": null,
+      "payment_transaction_id": null
     },
     {
-      "id": 3,
-      "created_at": "2026-09-13T19:53:28.860Z",
+      "id": 2,
+      "created_at": "2026-09-13T14:23:29.000Z",
       "application_number": "ESV-2026-000003",
       "user_id": 2,
       "service_id": 1,
@@ -7886,9 +7886,77 @@
       "current_step": 5,
       "admin_remarks": "Verified documents.",
       "total_fee": "50.00",
-      "submitted_at": "2026-09-13T19:53:28.868Z",
-      "updated_at": "2026-09-13T19:53:28.937Z",
-      "payment_status": "PAID"
+      "submitted_at": "2026-09-13T14:23:29.000Z",
+      "updated_at": "2026-09-13T14:23:29.000Z",
+      "payment_status": "PAID",
+      "applicant_name": "Security Audit Tester",
+      "applicant_email": "audit_user_1789329208449@eseva.gov.in",
+      "applicant_phone": "9876543210",
+      "service_name": null,
+      "service_slug": null,
+      "fee_amount": "50.00",
+      "payment_id": null,
+      "form_data": null,
+      "documents": null,
+      "rejection_reason": null,
+      "remarks": "Verified documents.",
+      "certificate_url": null,
+      "certificate_generated_at": null,
+      "field_values": null,
+      "payment_transaction_id": null
+    },
+    {
+      "id": 1,
+      "created_at": "2026-09-13T02:59:57.000Z",
+      "application_number": "ESV-2026-000001",
+      "user_id": 1,
+      "service_id": 1,
+      "user_name": "Surya A",
+      "user_email": "hariraj2005.m@gmail.com",
+      "user_phone": "9003454109",
+      "status": "SUBMITTED",
+      "current_step": 5,
+      "admin_remarks": "Application submitted successfully. Under verification by E-Seva team.",
+      "total_fee": "50.00",
+      "updated_at": "2026-09-13T12:50:44.000Z",
+      "submitted_at": "2026-09-13T12:50:44.000Z",
+      "applicant_name": "Surya A",
+      "applicant_email": "hariraj2005.m@gmail.com",
+      "applicant_phone": "9003454109",
+      "service_name": null,
+      "service_slug": null,
+      "fee_amount": "50.00",
+      "payment_status": "Paid",
+      "payment_id": null,
+      "form_data": null,
+      "documents": null,
+      "rejection_reason": null,
+      "remarks": "Application submitted successfully. Under verification by E-Seva team.",
+      "certificate_url": null,
+      "certificate_generated_at": null,
+      "field_values": null,
+      "payment_transaction_id": null
+    },
+    {
+      "id": 4,
+      "created_at": "2026-09-19T08:22:01.794Z",
+      "application_number": "ESV-2026-000004",
+      "user_id": 1,
+      "service_id": 1,
+      "user_name": "Karthik Raja",
+      "user_email": "karthik.test@gmail.com",
+      "user_phone": "9876501234",
+      "status": "SUBMITTED",
+      "payment_status": "PAID",
+      "current_step": 5,
+      "submitted_at": "2026-09-19T08:22:01.794Z",
+      "admin_remarks": "Application submitted successfully. Under verification by E-Seva team.",
+      "total_fee": "50.00",
+      "applicant_name": "Karthik Raja",
+      "applicant_email": "karthik.test@gmail.com",
+      "applicant_phone": "9876501234",
+      "fee_amount": "50.00",
+      "remarks": "Application submitted successfully. Under verification by E-Seva team."
     }
   ],
   "application_field_values": [
@@ -8411,6 +8479,22 @@
       "field_id": null,
       "field_label": "income_amount",
       "value": "150000"
+    },
+    {
+      "id": 66,
+      "created_at": "2026-09-19T08:22:01.796Z",
+      "application_id": 4,
+      "field_id": null,
+      "field_label": "aadhaar_no",
+      "value": "999988887777"
+    },
+    {
+      "id": 67,
+      "created_at": "2026-09-19T08:22:01.802Z",
+      "application_id": 4,
+      "field_id": null,
+      "field_label": "address",
+      "value": "Chennai"
     }
   ],
   "application_documents": [
@@ -8484,7 +8568,16 @@
       "amount": "60.00",
       "payment_method": "UPI / Razorpay",
       "status": "Success",
-      "transaction_date": "2026-09-12T13:40:38.000Z"
+      "transaction_date": "2026-09-12T13:40:38.000Z",
+      "application_id": null,
+      "currency": "INR",
+      "payment_gateway": null,
+      "payment_order_id": null,
+      "payment_transaction_id": null,
+      "payment_status": null,
+      "initiated_at": null,
+      "completed_at": null,
+      "metadata": null
     },
     {
       "id": 30002,
@@ -8494,7 +8587,16 @@
       "amount": "50.00",
       "payment_method": "UPI / Razorpay",
       "status": "Success",
-      "transaction_date": "2026-09-12T13:40:38.000Z"
+      "transaction_date": "2026-09-12T13:40:38.000Z",
+      "application_id": null,
+      "currency": "INR",
+      "payment_gateway": null,
+      "payment_order_id": null,
+      "payment_transaction_id": null,
+      "payment_status": null,
+      "initiated_at": null,
+      "completed_at": null,
+      "metadata": null
     },
     {
       "id": 30003,
@@ -8504,7 +8606,28 @@
       "amount": "30.00",
       "payment_method": "UPI / Razorpay",
       "status": "Success",
-      "transaction_date": "2026-09-12T13:40:38.000Z"
+      "transaction_date": "2026-09-12T13:40:38.000Z",
+      "application_id": null,
+      "currency": "INR",
+      "payment_gateway": null,
+      "payment_order_id": null,
+      "payment_transaction_id": null,
+      "payment_status": null,
+      "initiated_at": null,
+      "completed_at": null,
+      "metadata": null
+    },
+    {
+      "id": 30004,
+      "created_at": "2026-09-19T08:22:01.805Z",
+      "application_id": 4,
+      "application_number": "ESV-2026-000004",
+      "user_id": 1,
+      "payment_number": "PAY-2026-897825",
+      "amount": "50.00",
+      "payment_method": "Online Facilitation Fee / UPI",
+      "payment_status": "Completed",
+      "paid_at": "2026-09-19T08:22:01.805Z"
     }
   ],
   "application_status_history": [
@@ -8763,6 +8886,14 @@
       "status": "Under Review",
       "admin_remarks": "Application submitted successfully. Under verification by E-Seva team.",
       "updated_by": "System Administrator"
+    },
+    {
+      "id": 36,
+      "created_at": "2026-09-19T08:22:01.807Z",
+      "application_id": 4,
+      "status": "SUBMITTED",
+      "admin_remarks": "Application submitted successfully with verified dynamic field data.",
+      "updated_by": "Applicant / Web Portal"
     }
   ],
   "contact_messages": [],
@@ -9042,6 +9173,28 @@
         "status": "Under Review",
         "remarks": "Application submitted successfully. Under verification by E-Seva team.",
         "link": "/track-application?appNumber=ESV-2026-000002",
+        "idempotencyKey": null
+      }
+    },
+    {
+      "id": 11,
+      "created_at": "2026-09-19T08:22:01.816Z",
+      "userId": 1,
+      "adminId": null,
+      "applicationId": 4,
+      "type": "APPLICATION_SUBMITTED",
+      "title": "Application Submitted: ESV-2026-000004",
+      "message": "Your application (ESV-2026-000004) for Aadhaar Address Update has been submitted successfully. Track status online anytime.",
+      "status": "DELIVERED",
+      "isRead": 0,
+      "createdAt": "2026-09-19T08:22:01.816Z",
+      "readAt": null,
+      "metadata": {
+        "applicationId": 4,
+        "applicationNumber": "ESV-2026-000004",
+        "serviceName": "Aadhaar Address Update",
+        "status": "SUBMITTED",
+        "link": "/track-application?appNumber=ESV-2026-000004",
         "idempotencyKey": null
       }
     }
@@ -9509,6 +9662,39 @@
       "attempts": 1,
       "sentAt": "2026-09-13T19:57:59.822Z",
       "failureReason": "Invalid login: 535-5.7.8 Username and Password not accepted. For more information, go to\n535 5.7.8  https://support.google.com/mail/?p=BadCredentials a92af1059eb24-14365b345a4sm19641315c88.5 - gsmtp"
+    },
+    {
+      "id": 43,
+      "created_at": "2026-09-19T08:22:01.910Z",
+      "recipient": "9876501234",
+      "channel": "SMS",
+      "template": "APPLICATION_SUBMITTED",
+      "status": "SENT",
+      "attempts": 1,
+      "sentAt": "2026-09-19T08:22:01.910Z",
+      "failureReason": null
+    },
+    {
+      "id": 44,
+      "created_at": "2026-09-19T08:22:01.917Z",
+      "recipient": "9876501234",
+      "channel": "WHATSAPP",
+      "template": "APPLICATION_SUBMITTED",
+      "status": "SENT",
+      "attempts": 1,
+      "sentAt": "2026-09-19T08:22:01.917Z",
+      "failureReason": null
+    },
+    {
+      "id": 45,
+      "created_at": "2026-09-19T08:22:03.107Z",
+      "recipient": "karthik.test@gmail.com",
+      "channel": "EMAIL",
+      "template": "APPLICATION_SUBMITTED",
+      "status": "FAILED",
+      "attempts": 1,
+      "sentAt": "2026-09-19T08:22:03.107Z",
+      "failureReason": "Invalid login: 535-5.7.8 Username and Password not accepted. For more information, go to\n535 5.7.8  https://support.google.com/mail/?p=BadCredentials a92af1059eb24-144d55bf843sm6005775c88.8 - gsmtp"
     }
   ]
 }

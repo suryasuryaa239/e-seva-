@@ -56,6 +56,18 @@ class TiDBSupportedDatabase {
     }
   }
 
+  async getTableColumns(tableName) {
+    if (!this._tableColumns) this._tableColumns = {};
+    if (this._tableColumns[tableName]) return this._tableColumns[tableName];
+    try {
+      const [cols] = await pool.query(`DESCRIBE ${tableName}`);
+      this._tableColumns[tableName] = new Set(cols.map(c => c.Field));
+      return this._tableColumns[tableName];
+    } catch (e) {
+      return null;
+    }
+  }
+
   async syncFromTiDB() {
     try {
       const conn = await pool.getConnection();
@@ -64,20 +76,69 @@ class TiDBSupportedDatabase {
         for (const tbl of tables) {
           try {
             const [rows] = await conn.query(`SELECT * FROM ${tbl}`);
-            if (rows && rows.length > 0) {
-              this.data[tbl] = rows.map(r => {
-                const obj = { ...r };
-                for (const key of Object.keys(obj)) {
-                  if (typeof obj[key] === 'string' && (obj[key].startsWith('{') || obj[key].startsWith('['))) {
-                    try {
-                      obj[key] = JSON.parse(obj[key]);
-                    } catch (e) {}
-                  }
+            const parsedRows = (rows || []).map(r => {
+              const obj = { ...r };
+              for (const key of Object.keys(obj)) {
+                if (typeof obj[key] === 'string' && (obj[key].startsWith('{') || obj[key].startsWith('['))) {
+                  try {
+                    obj[key] = JSON.parse(obj[key]);
+                  } catch (e) {}
                 }
-                return obj;
-              });
+              }
+              return obj;
+            });
+
+            if (tbl === 'applications') {
+              // Intelligent non-destructive merge: preserve local records and incorporate TiDB records
+              const localApps = this.data['applications'] || [];
+              const appMap = new Map();
+
+              // 1. Load local applications first
+              for (const a of localApps) {
+                const key = a.application_number ? String(a.application_number).trim() : `id_${a.id}`;
+                appMap.set(key, { ...a });
+              }
+
+              // 2. Merge TiDB applications
+              const tidbAppNumbers = new Set();
+              for (const r of parsedRows) {
+                const key = r.application_number ? String(r.application_number).trim() : `id_${r.id}`;
+                if (r.application_number) tidbAppNumbers.add(String(r.application_number).trim());
+
+                const existing = appMap.get(key) || {};
+                const merged = {
+                  ...existing,
+                  ...r,
+                  user_name: r.user_name || r.applicant_name || existing.user_name || 'Citizen',
+                  applicant_name: r.user_name || r.applicant_name || existing.applicant_name || 'Citizen',
+                  user_email: r.user_email || r.applicant_email || existing.user_email || '',
+                  applicant_email: r.user_email || r.applicant_email || existing.applicant_email || '',
+                  user_phone: r.user_phone || r.applicant_phone || existing.user_phone || '',
+                  applicant_phone: r.user_phone || r.applicant_phone || existing.applicant_phone || '',
+                  total_fee: r.total_fee !== undefined && r.total_fee !== null ? r.total_fee : (r.fee_amount !== undefined ? r.fee_amount : (existing.total_fee || 0)),
+                  fee_amount: r.total_fee !== undefined && r.total_fee !== null ? r.total_fee : (r.fee_amount !== undefined ? r.fee_amount : (existing.total_fee || 0)),
+                  admin_remarks: r.admin_remarks || r.remarks || existing.admin_remarks || '',
+                  remarks: r.admin_remarks || r.remarks || existing.admin_remarks || '',
+                  status: r.status || existing.status || 'SUBMITTED',
+                  current_step: r.current_step || existing.current_step || 5
+                };
+                appMap.set(key, merged);
+              }
+
+              this.data['applications'] = Array.from(appMap.values()).sort((a, b) => (b.id || 0) - (a.id || 0));
+
+              // 3. Push any local applications that are missing from TiDB into TiDB
+              for (const app of localApps) {
+                if (app.application_number && !tidbAppNumbers.has(String(app.application_number).trim())) {
+                  this.persistInsertToTiDB('applications', app).catch(() => {});
+                }
+              }
+            } else if (parsedRows.length > 0) {
+              this.data[tbl] = parsedRows;
             }
-          } catch (e) {}
+          } catch (e) {
+            console.warn(`[SYNC WARNING] Table ${tbl}:`, e.message);
+          }
         }
         this.saveLocal();
         console.log('✅ [TiDB CLOUD] Successfully loaded & synchronized tables from TiDB Cloud MySQL!');
@@ -117,12 +178,26 @@ class TiDBSupportedDatabase {
       created_at: new Date().toISOString(),
       ...row
     };
+
+    if (tableName === 'applications') {
+      newRow.user_name = newRow.user_name || newRow.applicant_name || 'Citizen';
+      newRow.applicant_name = newRow.user_name;
+      newRow.user_email = newRow.user_email || newRow.applicant_email || '';
+      newRow.applicant_email = newRow.user_email;
+      newRow.user_phone = newRow.user_phone || newRow.applicant_phone || '';
+      newRow.applicant_phone = newRow.user_phone;
+      newRow.total_fee = newRow.total_fee !== undefined ? newRow.total_fee : (newRow.fee_amount || 0);
+      newRow.fee_amount = newRow.total_fee;
+      newRow.admin_remarks = newRow.admin_remarks || newRow.remarks || '';
+      newRow.remarks = newRow.admin_remarks;
+    }
+
     this.data[tableName].push(newRow);
     if (!this._inTransaction) {
       this.saveLocal();
     }
 
-    // Async save to TiDB Cloud
+    // Async save to TiDB Cloud with safe error boundary
     this.persistInsertToTiDB(tableName, newRow).catch(err => {
       console.warn(`[TiDB PERSIST INSERT WARNING] ${tableName}:`, err.message);
     });
@@ -135,8 +210,27 @@ class TiDBSupportedDatabase {
       const allowedTables = ['users', 'admins', 'categories', 'services', 'applications', 'payments', 'contact_messages', 'career_applications', 'notifications', 'application_documents', 'application_field_values'];
       if (!allowedTables.includes(tableName)) return;
 
-      const keys = Object.keys(row).filter(k => k !== 'id');
-      const values = keys.map(k => typeof row[k] === 'object' ? JSON.stringify(row[k]) : row[k]);
+      const validCols = await this.getTableColumns(tableName);
+      const cleanRow = { ...row };
+
+      if (tableName === 'applications') {
+        cleanRow.user_name = cleanRow.user_name || cleanRow.applicant_name;
+        cleanRow.applicant_name = cleanRow.user_name || cleanRow.applicant_name;
+        cleanRow.user_email = cleanRow.user_email || cleanRow.applicant_email;
+        cleanRow.applicant_email = cleanRow.user_email || cleanRow.applicant_email;
+        cleanRow.user_phone = cleanRow.user_phone || cleanRow.applicant_phone;
+        cleanRow.applicant_phone = cleanRow.user_phone || cleanRow.applicant_phone;
+        cleanRow.total_fee = cleanRow.total_fee !== undefined ? cleanRow.total_fee : (cleanRow.fee_amount || 0);
+        cleanRow.fee_amount = cleanRow.total_fee;
+        cleanRow.admin_remarks = cleanRow.admin_remarks || cleanRow.remarks || '';
+        cleanRow.remarks = cleanRow.admin_remarks;
+      }
+
+      // Filter only columns that physically exist in the TiDB table
+      const keys = Object.keys(cleanRow).filter(k => k !== 'id' && (!validCols || validCols.has(k)));
+      if (keys.length === 0) return;
+
+      const values = keys.map(k => typeof cleanRow[k] === 'object' && cleanRow[k] !== null ? JSON.stringify(cleanRow[k]) : cleanRow[k]);
       const placeholders = keys.map(() => '?').join(', ');
 
       const sql = `INSERT INTO ${tableName} (${keys.join(', ')}) VALUES (${placeholders})`;
@@ -157,6 +251,15 @@ class TiDBSupportedDatabase {
           ...updates,
           updated_at: new Date().toISOString()
         };
+
+        if (tableName === 'applications') {
+          if (updatedItem.user_name) updatedItem.applicant_name = updatedItem.user_name;
+          if (updatedItem.user_email) updatedItem.applicant_email = updatedItem.user_email;
+          if (updatedItem.user_phone) updatedItem.applicant_phone = updatedItem.user_phone;
+          if (updatedItem.total_fee !== undefined) updatedItem.fee_amount = updatedItem.total_fee;
+          if (updatedItem.admin_remarks) updatedItem.remarks = updatedItem.admin_remarks;
+        }
+
         // Async save to TiDB Cloud
         this.persistUpdateToTiDB(tableName, item.id, updates).catch(err => {
           console.warn(`[TiDB PERSIST UPDATE WARNING] ${tableName}:`, err.message);
@@ -174,11 +277,23 @@ class TiDBSupportedDatabase {
       const allowedTables = ['users', 'admins', 'categories', 'services', 'applications', 'payments', 'contact_messages', 'career_applications', 'notifications', 'application_documents', 'application_field_values'];
       if (!allowedTables.includes(tableName) || !id) return;
 
-      const keys = Object.keys(updates);
+      const validCols = await this.getTableColumns(tableName);
+      const cleanUpdates = { ...updates };
+
+      if (tableName === 'applications') {
+        if (cleanUpdates.user_name) cleanUpdates.applicant_name = cleanUpdates.user_name;
+        if (cleanUpdates.user_email) cleanUpdates.applicant_email = cleanUpdates.user_email;
+        if (cleanUpdates.user_phone) cleanUpdates.applicant_phone = cleanUpdates.user_phone;
+        if (cleanUpdates.total_fee !== undefined) cleanUpdates.fee_amount = cleanUpdates.total_fee;
+        if (cleanUpdates.admin_remarks) cleanUpdates.remarks = cleanUpdates.admin_remarks;
+      }
+
+      // Filter only columns that exist in TiDB table
+      const keys = Object.keys(cleanUpdates).filter(k => !validCols || validCols.has(k));
       if (keys.length === 0) return;
 
       const setClause = keys.map(k => `${k} = ?`).join(', ');
-      const values = keys.map(k => typeof updates[k] === 'object' ? JSON.stringify(updates[k]) : updates[k]);
+      const values = keys.map(k => typeof cleanUpdates[k] === 'object' && cleanUpdates[k] !== null ? JSON.stringify(cleanUpdates[k]) : cleanUpdates[k]);
       values.push(id);
 
       const sql = `UPDATE ${tableName} SET ${setClause} WHERE id = ?`;
