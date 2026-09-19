@@ -16,6 +16,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 5000;
 const JWT_SECRET = process.env.JWT_SECRET || 'eseva_super_secret_jwt_key_2026';
 
@@ -339,6 +340,7 @@ app.post('/api/auth/register', authRateLimiter, async (req, res) => {
       pincode: pincode ? pincode.trim() : '',
       status: 'Active',
       role: 'citizen',
+      password: password_hash,
       password_hash
     });
 
@@ -1165,6 +1167,7 @@ app.post('/api/applications', submitRateLimiter, upload.any(), async (req, res) 
       // Save Payment Entry
       const payNum = `PAY-2026-${Math.floor(100000 + Math.random() * 900000)}`;
       db.insert('payments', {
+        payment_id: payNum,
         application_id: application.id,
         application_number: applicationNumber,
         user_id: userId,
@@ -1583,8 +1586,13 @@ app.post('/api/payments/phonepe/initiate', async (req, res) => {
     // Unique Merchant Transaction ID (alphanumeric, max 38 chars)
     const merchantTransactionId = `MT${Date.now()}${Math.floor(1000 + Math.random() * 9000)}`;
 
-    // Determine client origin & redirect URL
-    let clientOrigin = 'http://localhost:5173';
+    // Determine scheme, host, origin & redirect URL
+    const isVercel = Boolean(process.env.VERCEL);
+    const forwardedProto = req.headers['x-forwarded-proto'];
+    const protocol = isVercel || forwardedProto === 'https' ? 'https' : req.protocol;
+    const host = req.headers['x-forwarded-host'] || req.get('host');
+
+    let clientOrigin = `${protocol}://${host}`;
     if (req.headers.origin) {
       clientOrigin = req.headers.origin;
     } else if (req.headers.referer) {
@@ -1596,7 +1604,7 @@ app.post('/api/payments/phonepe/initiate', async (req, res) => {
     }
 
     const redirectUrl = return_url || `${clientOrigin}/payment/callback?merchantTransactionId=${merchantTransactionId}&appId=${application.id}`;
-    const callbackUrl = `${req.protocol}://${req.get('host')}/api/payments/phonepe/callback`;
+    const callbackUrl = `${protocol}://${host}/api/payments/phonepe/callback`;
 
     const phonePeResult = await PaymentService.initiatePhonePePayment({
       merchantTransactionId,
@@ -1608,6 +1616,7 @@ app.post('/api/payments/phonepe/initiate', async (req, res) => {
     });
 
     const paymentRecord = db.insert('payments', {
+      payment_id: merchantTransactionId,
       application_id: application.id,
       application_number: application.application_number,
       user_id: application.user_id,

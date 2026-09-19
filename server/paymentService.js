@@ -39,6 +39,15 @@ class PaymentService {
     redirectUrl,
     callbackUrl
   }) {
+    if (!PHONEPE_MERCHANT_ID || !PHONEPE_SALT_KEY) {
+      console.error('[PhonePe Error]: PHONEPE_MERCHANT_ID or PHONEPE_SALT_KEY is missing from environment variables!');
+      return {
+        success: false,
+        code: 'MISSING_CREDENTIALS',
+        message: 'PhonePe credentials are not configured in environment variables on this server (Vercel).'
+      };
+    }
+
     const amountInPaise = Math.round(Number(amount) * 100);
     const cleanPhone = (userPhone || '9999999999').replace(/\D/g, '').slice(-10);
 

@@ -730,7 +730,11 @@ export default function ApplyService() {
       setCurrentStep(5);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err) {
+      console.error('Application submit error:', err);
       setSubmitError(err.message);
+      if (typeof addToast === 'function') {
+        addToast(err.message || 'Payment initiation failed. Please check details.', 'error');
+      }
     } finally {
       setSubmitting(false);
     }
@@ -2000,6 +2004,13 @@ export default function ApplyService() {
                       )}
                     </label>
                   </div>
+
+                  {submitError && (
+                    <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl text-rose-800 text-xs flex items-center space-x-2">
+                      <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
+                      <span className="font-semibold">{submitError}</span>
+                    </div>
+                  )}
 
                   {/* BOTTOM PAYMENT ACTIONS */}
                   <div className="pt-6 border-t border-slate-100 flex items-center justify-between gap-4">

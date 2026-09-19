@@ -44,6 +44,34 @@
       "reset_token": null,
       "reset_expires": null,
       "updated_at": "2026-09-15T10:32:41.727Z"
+    },
+    {
+      "id": 4,
+      "created_at": "2026-09-19T08:41:52.340Z",
+      "name": "Automated Test User",
+      "email": "autotest8805@eseva.gov.in",
+      "phone": "9888051234",
+      "aadhaar_no": "123456788805",
+      "address": "",
+      "district": "",
+      "pincode": "",
+      "status": "Active",
+      "role": "citizen",
+      "password_hash": "$2a$10$WWM5q01gauJW2gWiUiPqO.VXu4M1cY35c2ELgtnQgIF6pZxpy7p.S"
+    },
+    {
+      "id": 5,
+      "created_at": "2026-09-19T14:33:44.294Z",
+      "name": "hariraj",
+      "email": "rhari720048@gmail.com",
+      "phone": "9193637252",
+      "aadhaar_no": "",
+      "address": "",
+      "district": "",
+      "pincode": "",
+      "status": "Active",
+      "role": "citizen",
+      "password_hash": "$2a$10$SAfuVPZj/kz35GHwo1ja4.knK7rHBOSbCz2gxhSfNgwaPhSVUPTFy"
     }
   ],
   "admins": [
@@ -157,6 +185,16 @@
       "badge": "TNPDS",
       "service_count": 5,
       "created_at": "2026-09-11T12:40:08.000Z"
+    },
+    {
+      "id": 60001,
+      "name": "demo",
+      "slug": "demo",
+      "description": "Official services under demo",
+      "icon": "Grid",
+      "badge": null,
+      "service_count": 0,
+      "created_at": "2026-09-19T03:02:31.000Z"
     }
   ],
   "services": [
@@ -7842,6 +7880,134 @@
   ],
   "applications": [
     {
+      "id": 8,
+      "application_number": "ESV-2026-000007",
+      "user_id": 3,
+      "applicant_name": "surya",
+      "applicant_email": "suryasiva637480@gmail.com",
+      "applicant_phone": "6374889933",
+      "service_id": 1,
+      "service_name": null,
+      "service_slug": null,
+      "status": "PAYMENT_PENDING",
+      "fee_amount": "50.00",
+      "payment_status": "PENDING",
+      "payment_id": null,
+      "form_data": null,
+      "documents": null,
+      "rejection_reason": null,
+      "remarks": "Application saved pending PhonePe fee settlement.",
+      "created_at": "2026-09-19T03:08:37.000Z",
+      "updated_at": "2026-09-19T03:08:49.000Z",
+      "user_name": "surya",
+      "user_email": "suryasiva637480@gmail.com",
+      "user_phone": "6374889933",
+      "total_fee": "50.00",
+      "admin_remarks": "Application saved pending PhonePe fee settlement.",
+      "current_step": 4,
+      "submitted_at": "2026-09-19T03:08:37.000Z",
+      "certificate_url": null,
+      "certificate_generated_at": null,
+      "field_values": null,
+      "payment_transaction_id": null
+    },
+    {
+      "id": 7,
+      "application_number": "ESV-2026-000006",
+      "user_id": 3,
+      "applicant_name": "surya",
+      "applicant_email": "suryasiva637480@gmail.com",
+      "applicant_phone": "6374889933",
+      "service_id": 1,
+      "service_name": null,
+      "service_slug": null,
+      "status": "PAYMENT_PENDING",
+      "fee_amount": "50.00",
+      "payment_status": "PENDING",
+      "payment_id": null,
+      "form_data": null,
+      "documents": null,
+      "rejection_reason": null,
+      "remarks": "Application saved pending PhonePe fee settlement.",
+      "created_at": "2026-09-19T03:08:27.000Z",
+      "updated_at": "2026-09-19T03:08:43.000Z",
+      "user_name": "surya",
+      "user_email": "suryasiva637480@gmail.com",
+      "user_phone": "6374889933",
+      "total_fee": "50.00",
+      "admin_remarks": "Application saved pending PhonePe fee settlement.",
+      "current_step": 4,
+      "submitted_at": "2026-09-19T03:08:27.000Z",
+      "certificate_url": null,
+      "certificate_generated_at": null,
+      "field_values": null,
+      "payment_transaction_id": null
+    },
+    {
+      "id": 6,
+      "application_number": "ESV-2026-000005",
+      "user_id": 3,
+      "applicant_name": "surya",
+      "applicant_email": "suryasiva637480@gmail.com",
+      "applicant_phone": "6374889933",
+      "service_id": 1,
+      "service_name": null,
+      "service_slug": null,
+      "status": "PAYMENT_PENDING",
+      "fee_amount": "50.00",
+      "payment_status": "PENDING",
+      "payment_id": null,
+      "form_data": null,
+      "documents": null,
+      "rejection_reason": null,
+      "remarks": "Application saved pending PhonePe fee settlement.",
+      "created_at": "2026-09-19T03:08:21.000Z",
+      "updated_at": "2026-09-19T03:08:37.000Z",
+      "user_name": "surya",
+      "user_email": "suryasiva637480@gmail.com",
+      "user_phone": "6374889933",
+      "total_fee": "50.00",
+      "admin_remarks": "Application saved pending PhonePe fee settlement.",
+      "current_step": 4,
+      "submitted_at": "2026-09-19T03:08:21.000Z",
+      "certificate_url": null,
+      "certificate_generated_at": null,
+      "field_values": null,
+      "payment_transaction_id": null
+    },
+    {
+      "id": 5,
+      "created_at": "2026-09-19T02:52:02.000Z",
+      "application_number": "ESV-2026-000004",
+      "user_id": 1,
+      "service_id": 1,
+      "user_name": "Karthik Raja",
+      "user_email": "karthik.test@gmail.com",
+      "user_phone": "9876501234",
+      "status": "SUBMITTED",
+      "payment_status": "PAID",
+      "current_step": 5,
+      "submitted_at": "2026-09-19T02:52:02.000Z",
+      "admin_remarks": "Application submitted successfully. Under verification by E-Seva team.",
+      "total_fee": "50.00",
+      "applicant_name": "Karthik Raja",
+      "applicant_email": "karthik.test@gmail.com",
+      "applicant_phone": "9876501234",
+      "fee_amount": "50.00",
+      "remarks": "Application submitted successfully. Under verification by E-Seva team.",
+      "service_name": null,
+      "service_slug": null,
+      "payment_id": null,
+      "form_data": null,
+      "documents": null,
+      "rejection_reason": null,
+      "updated_at": "2026-09-19T03:02:29.000Z",
+      "certificate_url": null,
+      "certificate_generated_at": null,
+      "field_values": null,
+      "payment_transaction_id": null
+    },
+    {
       "id": 3,
       "created_at": "2026-09-13T13:10:59.000Z",
       "application_number": "ESV-2026-000002",
@@ -7938,625 +8104,729 @@
       "payment_transaction_id": null
     },
     {
-      "id": 4,
-      "created_at": "2026-09-19T08:22:01.794Z",
-      "application_number": "ESV-2026-000004",
-      "user_id": 1,
-      "service_id": 1,
-      "user_name": "Karthik Raja",
-      "user_email": "karthik.test@gmail.com",
-      "user_phone": "9876501234",
-      "status": "SUBMITTED",
-      "payment_status": "PAID",
-      "current_step": 5,
-      "submitted_at": "2026-09-19T08:22:01.794Z",
-      "admin_remarks": "Application submitted successfully. Under verification by E-Seva team.",
-      "total_fee": "50.00",
-      "applicant_name": "Karthik Raja",
-      "applicant_email": "karthik.test@gmail.com",
-      "applicant_phone": "9876501234",
-      "fee_amount": "50.00",
-      "remarks": "Application submitted successfully. Under verification by E-Seva team."
+      "id": 9,
+      "created_at": "2026-09-19T14:35:30.940Z",
+      "application_number": "ESV-2026-000008",
+      "user_id": 5,
+      "service_id": 2,
+      "user_name": "hariraj",
+      "user_email": "rhari720048@gmail.com",
+      "user_phone": "9193637252",
+      "status": "PAYMENT_PENDING",
+      "payment_status": "PENDING",
+      "current_step": 4,
+      "submitted_at": "2026-09-19T14:35:30.940Z",
+      "admin_remarks": "Application saved pending PhonePe fee settlement.",
+      "total_fee": "110.00",
+      "applicant_name": "hariraj",
+      "applicant_email": "rhari720048@gmail.com",
+      "applicant_phone": "9193637252",
+      "fee_amount": "110.00",
+      "remarks": "Application saved pending PhonePe fee settlement."
     }
   ],
   "application_field_values": [
     {
       "id": 1,
-      "created_at": "2026-09-13T18:20:44.112Z",
-      "application_id": 1,
+      "application_id": 4,
       "field_id": null,
-      "field_label": "user_name",
-      "value": "Surya A"
+      "field_label": "address",
+      "value": "Chennai",
+      "created_at": "2026-09-19T02:52:02.000Z"
     },
     {
       "id": 2,
-      "created_at": "2026-09-13T18:20:44.117Z",
-      "application_id": 1,
+      "application_id": 4,
       "field_id": null,
-      "field_label": "dob",
-      "value": ""
+      "field_label": "aadhaar_no",
+      "value": "999988887777",
+      "created_at": "2026-09-19T02:52:02.000Z"
     },
     {
       "id": 3,
-      "created_at": "2026-09-13T18:20:44.122Z",
-      "application_id": 1,
-      "field_id": null,
-      "field_label": "gender",
-      "value": "Male"
+      "application_id": 5,
+      "field_id": 27,
+      "field_label": "District",
+      "value": "dtf",
+      "created_at": "2026-09-19T03:08:21.000Z"
     },
     {
       "id": 4,
-      "created_at": "2026-09-13T18:20:44.127Z",
-      "application_id": 1,
+      "application_id": 5,
       "field_id": null,
-      "field_label": "user_phone",
-      "value": "9003454109"
+      "field_label": "user_email",
+      "value": "suryasiva637480@gmail.com",
+      "created_at": "2026-09-19T03:08:21.000Z"
     },
     {
       "id": 5,
-      "created_at": "2026-09-13T18:20:44.132Z",
-      "application_id": 1,
+      "application_id": 5,
       "field_id": null,
-      "field_label": "user_email",
-      "value": "hariraj2005.m@gmail.com"
+      "field_label": "user_name",
+      "value": "surya",
+      "created_at": "2026-09-19T03:08:21.000Z"
     },
     {
       "id": 6,
-      "created_at": "2026-09-13T18:20:44.137Z",
-      "application_id": 1,
+      "application_id": 5,
       "field_id": null,
-      "field_label": "address",
-      "value": ""
+      "field_label": "gender",
+      "value": "Male",
+      "created_at": "2026-09-19T03:08:21.000Z"
     },
     {
       "id": 7,
-      "created_at": "2026-09-13T18:20:44.143Z",
-      "application_id": 1,
-      "field_id": 9,
-      "field_label": "District",
-      "value": "vnr"
+      "application_id": 5,
+      "field_id": null,
+      "field_label": "user_phone",
+      "value": "6374889933",
+      "created_at": "2026-09-19T03:08:21.000Z"
     },
     {
       "id": 8,
-      "created_at": "2026-09-13T18:20:44.149Z",
-      "application_id": 1,
-      "field_id": 10,
-      "field_label": "State",
-      "value": "Tamil Nadu"
+      "application_id": 5,
+      "field_id": null,
+      "field_label": "dob",
+      "value": "",
+      "created_at": "2026-09-19T03:08:21.000Z"
     },
     {
       "id": 9,
-      "created_at": "2026-09-13T18:20:44.155Z",
-      "application_id": 1,
-      "field_id": 8,
-      "field_label": "6-Digit PIN Code",
-      "value": "626125"
+      "application_id": 5,
+      "field_id": null,
+      "field_label": "address",
+      "value": "",
+      "created_at": "2026-09-19T03:08:21.000Z"
     },
     {
       "id": 10,
-      "created_at": "2026-09-13T18:20:44.159Z",
-      "application_id": 1,
-      "field_id": null,
-      "field_label": "aadhaar_no",
-      "value": "633938484155"
+      "application_id": 5,
+      "field_id": 28,
+      "field_label": "State",
+      "value": "Tamil Nadu",
+      "created_at": "2026-09-19T03:08:21.000Z"
     },
     {
       "id": 11,
-      "created_at": "2026-09-13T18:20:44.163Z",
-      "application_id": 1,
-      "field_id": 1,
-      "field_label": "12-Digit Aadhaar Number",
-      "value": "633938484155"
+      "application_id": 5,
+      "field_id": 29,
+      "field_label": "6-Digit Pincode",
+      "value": "626125",
+      "created_at": "2026-09-19T03:08:21.000Z"
     },
     {
       "id": 12,
-      "created_at": "2026-09-13T18:20:44.167Z",
-      "application_id": 1,
-      "field_id": 2,
-      "field_label": "Full Name (as in Aadhaar)",
-      "value": "Surya A"
+      "application_id": 5,
+      "field_id": 21,
+      "field_label": "12-Digit Aadhaar Number",
+      "value": "6767 6767 6767",
+      "created_at": "2026-09-19T03:08:21.000Z"
     },
     {
       "id": 13,
-      "created_at": "2026-09-13T18:20:44.172Z",
-      "application_id": 1,
-      "field_id": 3,
-      "field_label": "C/O (Father / Husband / Guardian Name)",
-      "value": "ayyanar"
+      "application_id": 5,
+      "field_id": null,
+      "field_label": "aadhaar_no",
+      "value": "633938484155",
+      "created_at": "2026-09-19T03:08:21.000Z"
     },
     {
       "id": 14,
-      "created_at": "2026-09-13T18:20:44.177Z",
-      "application_id": 1,
-      "field_id": 4,
-      "field_label": "House / Building / Apartment No.",
-      "value": "33 a"
+      "application_id": 5,
+      "field_id": 23,
+      "field_label": "New House / Door / Flat No",
+      "value": "34ehkghffgc",
+      "created_at": "2026-09-19T03:08:21.000Z"
     },
     {
       "id": 15,
-      "created_at": "2026-09-13T18:20:44.181Z",
-      "application_id": 1,
-      "field_id": 5,
-      "field_label": "Street / Road / Lane Name",
-      "value": "mayandi patti street"
+      "application_id": 5,
+      "field_id": 22,
+      "field_label": "Current Address in Aadhaar",
+      "value": "223344556677",
+      "created_at": "2026-09-19T03:08:21.000Z"
     },
     {
       "id": 16,
-      "created_at": "2026-09-13T18:20:44.186Z",
-      "application_id": 1,
-      "field_id": 6,
-      "field_label": "Landmark",
-      "value": "sriviliputthur nearby church"
+      "application_id": 5,
+      "field_id": 26,
+      "field_label": "City / Town",
+      "value": "hgyug",
+      "created_at": "2026-09-19T03:08:21.000Z"
     },
     {
       "id": 17,
-      "created_at": "2026-09-13T18:20:44.193Z",
-      "application_id": 1,
-      "field_id": 7,
-      "field_label": "Area / Locality / Sector",
-      "value": "sriviiliputhur"
+      "application_id": 5,
+      "field_id": 24,
+      "field_label": "Street / Road Name",
+      "value": "srivi",
+      "created_at": "2026-09-19T03:08:21.000Z"
     },
     {
       "id": 18,
-      "created_at": "2026-09-13T18:20:44.198Z",
-      "application_id": 1,
-      "field_id": 11,
-      "field_label": "Reason for Address Change",
-      "value": "ama change pannanum "
+      "application_id": 6,
+      "field_id": null,
+      "field_label": "user_name",
+      "value": "surya",
+      "created_at": "2026-09-19T03:08:27.000Z"
     },
     {
       "id": 19,
-      "created_at": "2026-09-13T18:20:44.202Z",
-      "application_id": 1,
-      "field_id": null,
-      "field_label": "District",
-      "value": "vnr"
+      "application_id": 5,
+      "field_id": 30,
+      "field_label": "Linked Mobile Number",
+      "value": "6565657788",
+      "created_at": "2026-09-19T03:08:21.000Z"
     },
     {
       "id": 20,
-      "created_at": "2026-09-13T18:20:44.208Z",
-      "application_id": 1,
-      "field_id": null,
-      "field_label": "State",
-      "value": "Tamil Nadu"
+      "application_id": 6,
+      "field_id": 27,
+      "field_label": "District",
+      "value": "dtf",
+      "created_at": "2026-09-19T03:08:27.000Z"
     },
     {
       "id": 21,
-      "created_at": "2026-09-13T18:20:44.212Z",
-      "application_id": 1,
-      "field_id": null,
-      "field_label": "6-Digit PIN Code",
-      "value": "626125"
+      "application_id": 5,
+      "field_id": 25,
+      "field_label": "Area / Locality",
+      "value": "sdrdt",
+      "created_at": "2026-09-19T03:08:21.000Z"
     },
     {
       "id": 22,
-      "created_at": "2026-09-13T18:20:44.216Z",
-      "application_id": 1,
+      "application_id": 6,
       "field_id": null,
-      "field_label": "12-Digit Aadhaar Number",
-      "value": "633938484155"
+      "field_label": "dob",
+      "value": "",
+      "created_at": "2026-09-19T03:08:27.000Z"
     },
     {
       "id": 23,
-      "created_at": "2026-09-13T18:20:44.222Z",
-      "application_id": 1,
+      "application_id": 6,
       "field_id": null,
-      "field_label": "Full Name (as in Aadhaar)",
-      "value": "Surya A"
+      "field_label": "gender",
+      "value": "Male",
+      "created_at": "2026-09-19T03:08:27.000Z"
     },
     {
       "id": 24,
-      "created_at": "2026-09-13T18:20:44.226Z",
-      "application_id": 1,
+      "application_id": 7,
       "field_id": null,
-      "field_label": "C/O (Father / Husband / Guardian Name)",
-      "value": "ayyanar"
+      "field_label": "user_name",
+      "value": "surya",
+      "created_at": "2026-09-19T03:08:37.000Z"
     },
     {
       "id": 25,
-      "created_at": "2026-09-13T18:20:44.231Z",
-      "application_id": 1,
+      "application_id": 7,
       "field_id": null,
-      "field_label": "c/o (father / husband / guardian name)",
-      "value": "ayyanar"
+      "field_label": "user_email",
+      "value": "suryasiva637480@gmail.com",
+      "created_at": "2026-09-19T03:08:37.000Z"
     },
     {
       "id": 26,
-      "created_at": "2026-09-13T18:20:44.235Z",
-      "application_id": 1,
+      "application_id": 6,
       "field_id": null,
-      "field_label": "House / Building / Apartment No.",
-      "value": "33 a"
+      "field_label": "address",
+      "value": "",
+      "created_at": "2026-09-19T03:08:27.000Z"
     },
     {
       "id": 27,
-      "created_at": "2026-09-13T18:20:44.241Z",
-      "application_id": 1,
+      "application_id": 6,
       "field_id": null,
-      "field_label": "house / building / apartment no.",
-      "value": "33 a"
+      "field_label": "user_phone",
+      "value": "6374889933",
+      "created_at": "2026-09-19T03:08:27.000Z"
     },
     {
       "id": 28,
-      "created_at": "2026-09-13T18:20:44.245Z",
-      "application_id": 1,
+      "application_id": 6,
       "field_id": null,
-      "field_label": "Street / Road / Lane Name",
-      "value": "mayandi patti street"
+      "field_label": "user_email",
+      "value": "suryasiva637480@gmail.com",
+      "created_at": "2026-09-19T03:08:27.000Z"
     },
     {
       "id": 29,
-      "created_at": "2026-09-13T18:20:44.250Z",
-      "application_id": 1,
+      "application_id": 7,
       "field_id": null,
-      "field_label": "street / road / lane name",
-      "value": "mayandi patti street"
+      "field_label": "gender",
+      "value": "Male",
+      "created_at": "2026-09-19T03:08:37.000Z"
     },
     {
       "id": 30,
-      "created_at": "2026-09-13T18:20:44.255Z",
-      "application_id": 1,
+      "application_id": 7,
       "field_id": null,
-      "field_label": "Landmark",
-      "value": "sriviliputthur nearby church"
+      "field_label": "dob",
+      "value": "",
+      "created_at": "2026-09-19T03:08:37.000Z"
     },
     {
       "id": 31,
-      "created_at": "2026-09-13T18:20:44.260Z",
-      "application_id": 1,
+      "application_id": 7,
       "field_id": null,
-      "field_label": "Area / Locality / Sector",
-      "value": "sriviiliputhur"
+      "field_label": "user_phone",
+      "value": "6374889933",
+      "created_at": "2026-09-19T03:08:37.000Z"
     },
     {
       "id": 32,
-      "created_at": "2026-09-13T18:20:44.265Z",
-      "application_id": 1,
-      "field_id": null,
-      "field_label": "area / locality / sector",
-      "value": "sriviiliputhur"
+      "application_id": 7,
+      "field_id": 28,
+      "field_label": "State",
+      "value": "Tamil Nadu",
+      "created_at": "2026-09-19T03:08:37.000Z"
     },
     {
       "id": 33,
-      "created_at": "2026-09-13T18:20:44.271Z",
-      "application_id": 1,
+      "application_id": 7,
       "field_id": null,
-      "field_label": "Reason for Address Change",
-      "value": "ama change pannanum "
+      "field_label": "aadhaar_no",
+      "value": "633938484155",
+      "created_at": "2026-09-19T03:08:37.000Z"
     },
     {
       "id": 34,
-      "created_at": "2026-09-13T18:20:44.276Z",
-      "application_id": 1,
-      "field_id": null,
-      "field_label": "reason for address change",
-      "value": "ama change pannanum "
+      "application_id": 7,
+      "field_id": 27,
+      "field_label": "District",
+      "value": "dtf",
+      "created_at": "2026-09-19T03:08:37.000Z"
     },
     {
       "id": 35,
-      "created_at": "2026-09-13T18:47:02.253Z",
-      "application_id": 2,
+      "application_id": 7,
       "field_id": null,
-      "field_label": "user_name",
-      "value": "Hari Raj"
+      "field_label": "address",
+      "value": "",
+      "created_at": "2026-09-19T03:08:37.000Z"
     },
     {
       "id": 36,
-      "created_at": "2026-09-13T18:47:02.258Z",
-      "application_id": 2,
+      "application_id": 7,
+      "field_id": 22,
+      "field_label": "Current Address in Aadhaar",
+      "value": "223344556677",
+      "created_at": "2026-09-19T03:08:37.000Z"
+    },
+    {
+      "id": 37,
+      "application_id": 7,
+      "field_id": 23,
+      "field_label": "New House / Door / Flat No",
+      "value": "34ehkghffgc",
+      "created_at": "2026-09-19T03:08:37.000Z"
+    },
+    {
+      "id": 38,
+      "application_id": 7,
+      "field_id": 21,
+      "field_label": "12-Digit Aadhaar Number",
+      "value": "6767 6767 6767",
+      "created_at": "2026-09-19T03:08:37.000Z"
+    },
+    {
+      "id": 39,
+      "application_id": 7,
+      "field_id": 24,
+      "field_label": "Street / Road Name",
+      "value": "srivi",
+      "created_at": "2026-09-19T03:08:37.000Z"
+    },
+    {
+      "id": 40,
+      "application_id": 7,
+      "field_id": 25,
+      "field_label": "Area / Locality",
+      "value": "sdrdt",
+      "created_at": "2026-09-19T03:08:37.000Z"
+    },
+    {
+      "id": 41,
+      "application_id": 7,
+      "field_id": 29,
+      "field_label": "6-Digit Pincode",
+      "value": "626125",
+      "created_at": "2026-09-19T03:08:37.000Z"
+    },
+    {
+      "id": 42,
+      "application_id": 7,
+      "field_id": 26,
+      "field_label": "City / Town",
+      "value": "hgyug",
+      "created_at": "2026-09-19T03:08:37.000Z"
+    },
+    {
+      "id": 43,
+      "application_id": 6,
+      "field_id": 28,
+      "field_label": "State",
+      "value": "Tamil Nadu",
+      "created_at": "2026-09-19T03:08:27.000Z"
+    },
+    {
+      "id": 44,
+      "application_id": 6,
+      "field_id": null,
+      "field_label": "aadhaar_no",
+      "value": "633938484155",
+      "created_at": "2026-09-19T03:08:27.000Z"
+    },
+    {
+      "id": 45,
+      "application_id": 7,
+      "field_id": 30,
+      "field_label": "Linked Mobile Number",
+      "value": "6565657788",
+      "created_at": "2026-09-19T03:08:37.000Z"
+    },
+    {
+      "id": 46,
+      "application_id": 6,
+      "field_id": 24,
+      "field_label": "Street / Road Name",
+      "value": "srivi",
+      "created_at": "2026-09-19T03:08:27.000Z"
+    },
+    {
+      "id": 47,
+      "application_id": 6,
+      "field_id": 29,
+      "field_label": "6-Digit Pincode",
+      "value": "626125",
+      "created_at": "2026-09-19T03:08:27.000Z"
+    },
+    {
+      "id": 48,
+      "application_id": 6,
+      "field_id": 21,
+      "field_label": "12-Digit Aadhaar Number",
+      "value": "6767 6767 6767",
+      "created_at": "2026-09-19T03:08:27.000Z"
+    },
+    {
+      "id": 49,
+      "application_id": 6,
+      "field_id": 26,
+      "field_label": "City / Town",
+      "value": "hgyug",
+      "created_at": "2026-09-19T03:08:27.000Z"
+    },
+    {
+      "id": 50,
+      "application_id": 6,
+      "field_id": 25,
+      "field_label": "Area / Locality",
+      "value": "sdrdt",
+      "created_at": "2026-09-19T03:08:27.000Z"
+    },
+    {
+      "id": 51,
+      "application_id": 6,
+      "field_id": 23,
+      "field_label": "New House / Door / Flat No",
+      "value": "34ehkghffgc",
+      "created_at": "2026-09-19T03:08:27.000Z"
+    },
+    {
+      "id": 52,
+      "application_id": 6,
+      "field_id": 22,
+      "field_label": "Current Address in Aadhaar",
+      "value": "223344556677",
+      "created_at": "2026-09-19T03:08:27.000Z"
+    },
+    {
+      "id": 53,
+      "application_id": 6,
+      "field_id": 30,
+      "field_label": "Linked Mobile Number",
+      "value": "6565657788",
+      "created_at": "2026-09-19T03:08:27.000Z"
+    },
+    {
+      "id": 54,
+      "created_at": "2026-09-19T14:35:30.941Z",
+      "application_id": 9,
+      "field_id": null,
+      "field_label": "user_name",
+      "value": "hariraj"
+    },
+    {
+      "id": 55,
+      "created_at": "2026-09-19T14:35:30.942Z",
+      "application_id": 9,
       "field_id": null,
       "field_label": "dob",
       "value": ""
     },
     {
-      "id": 37,
-      "created_at": "2026-09-13T18:47:02.265Z",
-      "application_id": 2,
+      "id": 56,
+      "created_at": "2026-09-19T14:35:30.943Z",
+      "application_id": 9,
       "field_id": null,
       "field_label": "gender",
       "value": "Male"
     },
     {
-      "id": 38,
-      "created_at": "2026-09-13T18:47:02.271Z",
-      "application_id": 2,
+      "id": 57,
+      "created_at": "2026-09-19T14:35:30.944Z",
+      "application_id": 9,
       "field_id": null,
       "field_label": "user_phone",
-      "value": "9003454109"
+      "value": "9193637252"
     },
     {
-      "id": 39,
-      "created_at": "2026-09-13T18:47:02.277Z",
-      "application_id": 2,
+      "id": 58,
+      "created_at": "2026-09-19T14:35:30.946Z",
+      "application_id": 9,
       "field_id": null,
       "field_label": "user_email",
-      "value": "hariraj2005.m@gmail.com"
+      "value": "rhari720048@gmail.com"
     },
     {
-      "id": 40,
-      "created_at": "2026-09-13T18:47:02.283Z",
-      "application_id": 2,
+      "id": 59,
+      "created_at": "2026-09-19T14:35:30.951Z",
+      "application_id": 9,
       "field_id": null,
       "field_label": "address",
       "value": ""
     },
     {
-      "id": 41,
-      "created_at": "2026-09-13T18:47:02.288Z",
-      "application_id": 2,
-      "field_id": 9,
-      "field_label": "District",
-      "value": "vnr"
-    },
-    {
-      "id": 42,
-      "created_at": "2026-09-13T18:47:02.293Z",
-      "application_id": 2,
-      "field_id": 10,
-      "field_label": "State",
-      "value": "Tamil Nadu"
-    },
-    {
-      "id": 43,
-      "created_at": "2026-09-13T18:47:02.299Z",
-      "application_id": 2,
-      "field_id": 8,
-      "field_label": "6-Digit PIN Code",
-      "value": "626125"
-    },
-    {
-      "id": 44,
-      "created_at": "2026-09-13T18:47:02.303Z",
-      "application_id": 2,
-      "field_id": null,
-      "field_label": "aadhaar_no",
-      "value": "123456789012"
-    },
-    {
-      "id": 45,
-      "created_at": "2026-09-13T18:47:02.308Z",
-      "application_id": 2,
-      "field_id": 1,
-      "field_label": "12-Digit Aadhaar Number",
-      "value": "123456789012"
-    },
-    {
-      "id": 46,
-      "created_at": "2026-09-13T18:47:02.314Z",
-      "application_id": 2,
-      "field_id": 2,
-      "field_label": "Full Name (as in Aadhaar)",
-      "value": "Hari Raj"
-    },
-    {
-      "id": 47,
-      "created_at": "2026-09-13T18:47:02.319Z",
-      "application_id": 2,
-      "field_id": 3,
-      "field_label": "C/O (Father / Husband / Guardian Name)",
-      "value": "marimuthu"
-    },
-    {
-      "id": 48,
-      "created_at": "2026-09-13T18:47:02.324Z",
-      "application_id": 2,
-      "field_id": 4,
-      "field_label": "House / Building / Apartment No.",
-      "value": "sjbsaj"
-    },
-    {
-      "id": 49,
-      "created_at": "2026-09-13T18:47:02.328Z",
-      "application_id": 2,
-      "field_id": 5,
-      "field_label": "Street / Road / Lane Name",
-      "value": "skjsdksd"
-    },
-    {
-      "id": 50,
-      "created_at": "2026-09-13T18:47:02.332Z",
-      "application_id": 2,
-      "field_id": 6,
-      "field_label": "Landmark",
-      "value": "djsbsak"
-    },
-    {
-      "id": 51,
-      "created_at": "2026-09-13T18:47:02.335Z",
-      "application_id": 2,
-      "field_id": 7,
-      "field_label": "Area / Locality / Sector",
-      "value": "dsbdksab"
-    },
-    {
-      "id": 52,
-      "created_at": "2026-09-13T18:47:02.339Z",
-      "application_id": 2,
-      "field_id": 11,
-      "field_label": "Reason for Address Change",
-      "value": "dasudgiud"
-    },
-    {
-      "id": 53,
-      "created_at": "2026-09-13T18:47:02.344Z",
-      "application_id": 2,
-      "field_id": null,
-      "field_label": "District",
-      "value": "vnr"
-    },
-    {
-      "id": 54,
-      "created_at": "2026-09-13T18:47:02.348Z",
-      "application_id": 2,
-      "field_id": null,
-      "field_label": "State",
-      "value": "Tamil Nadu"
-    },
-    {
-      "id": 55,
-      "created_at": "2026-09-13T18:47:02.351Z",
-      "application_id": 2,
-      "field_id": null,
-      "field_label": "6-Digit PIN Code",
-      "value": "626125"
-    },
-    {
-      "id": 56,
-      "created_at": "2026-09-13T18:47:02.354Z",
-      "application_id": 2,
-      "field_id": null,
-      "field_label": "12-Digit Aadhaar Number",
-      "value": "123456789012"
-    },
-    {
-      "id": 57,
-      "created_at": "2026-09-13T18:47:02.357Z",
-      "application_id": 2,
-      "field_id": null,
-      "field_label": "Full Name (as in Aadhaar)",
-      "value": "Hari Raj"
-    },
-    {
-      "id": 58,
-      "created_at": "2026-09-13T18:47:02.361Z",
-      "application_id": 2,
-      "field_id": null,
-      "field_label": "C/O (Father / Husband / Guardian Name)",
-      "value": "marimuthu"
-    },
-    {
-      "id": 59,
-      "created_at": "2026-09-13T18:47:02.365Z",
-      "application_id": 2,
-      "field_id": null,
-      "field_label": "House / Building / Apartment No.",
-      "value": "sjbsaj"
-    },
-    {
       "id": 60,
-      "created_at": "2026-09-13T18:47:02.368Z",
-      "application_id": 2,
+      "created_at": "2026-09-19T14:35:30.951Z",
+      "application_id": 9,
       "field_id": null,
-      "field_label": "Street / Road / Lane Name",
-      "value": "skjsdksd"
+      "field_label": "district",
+      "value": ""
     },
     {
       "id": 61,
-      "created_at": "2026-09-13T18:47:02.372Z",
-      "application_id": 2,
+      "created_at": "2026-09-19T14:35:30.952Z",
+      "application_id": 9,
       "field_id": null,
-      "field_label": "Landmark",
-      "value": "djsbsak"
+      "field_label": "state",
+      "value": "Tamil Nadu"
     },
     {
       "id": 62,
-      "created_at": "2026-09-13T18:47:02.375Z",
-      "application_id": 2,
+      "created_at": "2026-09-19T14:35:30.953Z",
+      "application_id": 9,
       "field_id": null,
-      "field_label": "Area / Locality / Sector",
-      "value": "dsbdksab"
+      "field_label": "pincode",
+      "value": ""
     },
     {
       "id": 63,
-      "created_at": "2026-09-13T18:47:02.380Z",
-      "application_id": 2,
+      "created_at": "2026-09-19T14:35:30.953Z",
+      "application_id": 9,
       "field_id": null,
-      "field_label": "Reason for Address Change",
-      "value": "dasudgiud"
+      "field_label": "aadhaar_no",
+      "value": "6339 3848 4155"
     },
     {
       "id": 64,
-      "created_at": "2026-09-13T19:53:28.870Z",
-      "application_id": 3,
-      "field_id": null,
-      "field_label": "applicant_name",
-      "value": "Security Audit Tester"
+      "created_at": "2026-09-19T14:35:30.954Z",
+      "application_id": 9,
+      "field_id": 31,
+      "field_label": "12-Digit Aadhaar Number",
+      "value": "6339 3848 4155"
     },
     {
       "id": 65,
-      "created_at": "2026-09-13T19:53:28.876Z",
-      "application_id": 3,
-      "field_id": null,
-      "field_label": "income_amount",
-      "value": "150000"
+      "created_at": "2026-09-19T14:35:30.954Z",
+      "application_id": 9,
+      "field_id": 32,
+      "field_label": "Current Name in Aadhaar",
+      "value": "1234 4567 8901"
     },
     {
       "id": 66,
-      "created_at": "2026-09-19T08:22:01.796Z",
-      "application_id": 4,
-      "field_id": null,
-      "field_label": "aadhaar_no",
-      "value": "999988887777"
+      "created_at": "2026-09-19T14:35:30.954Z",
+      "application_id": 9,
+      "field_id": 33,
+      "field_label": "Correct New Name",
+      "value": "hariraj"
     },
     {
       "id": 67,
-      "created_at": "2026-09-19T08:22:01.802Z",
-      "application_id": 4,
-      "field_id": null,
-      "field_label": "address",
-      "value": "Chennai"
+      "created_at": "2026-09-19T14:35:30.954Z",
+      "application_id": 9,
+      "field_id": 34,
+      "field_label": "Reason for Name Change",
+      "value": "Spelling Error Correction"
+    },
+    {
+      "id": 68,
+      "created_at": "2026-09-19T14:35:30.954Z",
+      "application_id": 9,
+      "field_id": 35,
+      "field_label": "Linked Mobile Number",
+      "value": "9003454109"
     }
   ],
   "application_documents": [
     {
       "id": 1,
-      "created_at": "2026-09-13T14:48:01.303Z",
-      "application_id": 1,
-      "service_document_id": 2,
-      "document_name": "Existing Aadhaar Card Copy",
-      "original_filename": "existing_aadhaar_card_copy_1789310867019.jpg",
-      "stored_filename": "1789310881166-241818365_existing_aadhaar_card_copy_1789310867019.jpg",
+      "application_id": 5,
+      "service_document_id": 10,
+      "document_name": "Valid Address Proof",
+      "original_filename": "valid_address_proof_1789807058636_optimized.jpg",
+      "stored_filename": "1789807101386-537392761_valid_address_proof_1789807058636_optimized.jpg",
       "file_type": "image/jpeg",
-      "file_size": 54633,
-      "file_path": "/api/documents/preview-file/1789310881166-241818365_existing_aadhaar_card_copy_1789310867019.jpg",
-      "uploaded_by": 1,
-      "uploaded_at": "2026-09-13T14:48:01.303Z",
-      "verification_status": "Pending Verification"
+      "file_size": 49680,
+      "file_path": "/api/documents/preview-file/1789807101386-537392761_valid_address_proof_1789807058636_optimized.jpg",
+      "uploaded_by": "3",
+      "uploaded_at": "2026-09-19T03:08:21.000Z",
+      "verification_status": "Pending Verification",
+      "verified_by": null,
+      "verified_at": null,
+      "rejection_reason": null,
+      "admin_notes": null,
+      "created_at": "2026-09-19T03:08:21.000Z",
+      "updated_at": "2026-09-19T03:08:43.000Z"
     },
     {
       "id": 2,
-      "created_at": "2026-09-13T16:23:29.461Z",
-      "application_id": 1,
-      "service_document_id": null,
-      "document_name": "proof of address poa ",
-      "original_filename": "proof_of_address_poa__1789316606737.jpg",
-      "stored_filename": "1789316609250-171288769_proof_of_address_poa__1789316606737.jpg",
+      "application_id": 5,
+      "service_document_id": 9,
+      "document_name": "Aadhaar Card Copy",
+      "original_filename": "aadhaar_card_copy_1789807048002_optimized.jpg",
+      "stored_filename": "1789807101385-593229763_aadhaar_card_copy_1789807048002_optimized.jpg",
       "file_type": "image/jpeg",
-      "file_size": 43553,
-      "file_path": "/api/documents/preview-file/1789316609250-171288769_proof_of_address_poa__1789316606737.jpg",
-      "uploaded_by": 1,
-      "uploaded_at": "2026-09-13T16:23:29.461Z",
-      "verification_status": "Pending Verification"
+      "file_size": 38599,
+      "file_path": "/api/documents/preview-file/1789807101385-593229763_aadhaar_card_copy_1789807048002_optimized.jpg",
+      "uploaded_by": "3",
+      "uploaded_at": "2026-09-19T03:08:21.000Z",
+      "verification_status": "Pending Verification",
+      "verified_by": null,
+      "verified_at": null,
+      "rejection_reason": null,
+      "admin_notes": null,
+      "created_at": "2026-09-19T03:08:21.000Z",
+      "updated_at": "2026-09-19T03:08:43.000Z"
     },
     {
       "id": 3,
-      "created_at": "2026-09-13T18:40:58.779Z",
-      "application_id": 2,
-      "service_document_id": null,
-      "document_name": "Proof of Address (PoA)",
-      "original_filename": "proof_of_address_poa__1789324847243.jpg",
-      "stored_filename": "1789324858650-837948754_proof_of_address_poa__1789324847243.jpg",
+      "application_id": 7,
+      "service_document_id": 10,
+      "document_name": "Valid Address Proof",
+      "original_filename": "valid_address_proof_1789807058636_optimized.jpg",
+      "stored_filename": "1789807116723-710946376_valid_address_proof_1789807058636_optimized.jpg",
       "file_type": "image/jpeg",
-      "file_size": 47668,
-      "file_path": "/api/documents/preview-file/1789324858650-837948754_proof_of_address_poa__1789324847243.jpg",
-      "uploaded_by": 1,
-      "uploaded_at": "2026-09-13T18:40:58.778Z",
-      "verification_status": "Pending Verification"
+      "file_size": 49680,
+      "file_path": "/api/documents/preview-file/1789807116723-710946376_valid_address_proof_1789807058636_optimized.jpg",
+      "uploaded_by": "3",
+      "uploaded_at": "2026-09-19T03:08:37.000Z",
+      "verification_status": "Pending Verification",
+      "verified_by": null,
+      "verified_at": null,
+      "rejection_reason": null,
+      "admin_notes": null,
+      "created_at": "2026-09-19T03:08:37.000Z",
+      "updated_at": "2026-09-19T03:09:04.000Z"
     },
     {
       "id": 4,
-      "created_at": "2026-09-13T18:40:58.783Z",
-      "application_id": 2,
-      "service_document_id": null,
-      "document_name": "Existing Aadhaar Card Copy",
-      "original_filename": "existing_aadhaar_card_copy_1789324855358.jpg",
-      "stored_filename": "1789324858660-270983511_existing_aadhaar_card_copy_1789324855358.jpg",
+      "application_id": 7,
+      "service_document_id": 9,
+      "document_name": "Aadhaar Card Copy",
+      "original_filename": "aadhaar_card_copy_1789807048002_optimized.jpg",
+      "stored_filename": "1789807116723-391471120_aadhaar_card_copy_1789807048002_optimized.jpg",
       "file_type": "image/jpeg",
-      "file_size": 46893,
-      "file_path": "/api/documents/preview-file/1789324858660-270983511_existing_aadhaar_card_copy_1789324855358.jpg",
-      "uploaded_by": 1,
-      "uploaded_at": "2026-09-13T18:40:58.783Z",
-      "verification_status": "Pending Verification"
+      "file_size": 38599,
+      "file_path": "/api/documents/preview-file/1789807116723-391471120_aadhaar_card_copy_1789807048002_optimized.jpg",
+      "uploaded_by": "3",
+      "uploaded_at": "2026-09-19T03:08:37.000Z",
+      "verification_status": "Pending Verification",
+      "verified_by": null,
+      "verified_at": null,
+      "rejection_reason": null,
+      "admin_notes": null,
+      "created_at": "2026-09-19T03:08:37.000Z",
+      "updated_at": "2026-09-19T03:09:04.000Z"
+    },
+    {
+      "id": 5,
+      "application_id": 6,
+      "service_document_id": 10,
+      "document_name": "Valid Address Proof",
+      "original_filename": "valid_address_proof_1789807058636_optimized.jpg",
+      "stored_filename": "1789807107209-241440505_valid_address_proof_1789807058636_optimized.jpg",
+      "file_type": "image/jpeg",
+      "file_size": 49680,
+      "file_path": "/api/documents/preview-file/1789807107209-241440505_valid_address_proof_1789807058636_optimized.jpg",
+      "uploaded_by": "3",
+      "uploaded_at": "2026-09-19T03:08:27.000Z",
+      "verification_status": "Pending Verification",
+      "verified_by": null,
+      "verified_at": null,
+      "rejection_reason": null,
+      "admin_notes": null,
+      "created_at": "2026-09-19T03:08:27.000Z",
+      "updated_at": "2026-09-19T03:09:13.000Z"
+    },
+    {
+      "id": 6,
+      "application_id": 6,
+      "service_document_id": 9,
+      "document_name": "Aadhaar Card Copy",
+      "original_filename": "aadhaar_card_copy_1789807048002_optimized.jpg",
+      "stored_filename": "1789807107209-34773267_aadhaar_card_copy_1789807048002_optimized.jpg",
+      "file_type": "image/jpeg",
+      "file_size": 38599,
+      "file_path": "/api/documents/preview-file/1789807107209-34773267_aadhaar_card_copy_1789807048002_optimized.jpg",
+      "uploaded_by": "3",
+      "uploaded_at": "2026-09-19T03:08:27.000Z",
+      "verification_status": "Pending Verification",
+      "verified_by": null,
+      "verified_at": null,
+      "rejection_reason": null,
+      "admin_notes": null,
+      "created_at": "2026-09-19T03:08:27.000Z",
+      "updated_at": "2026-09-19T03:09:13.000Z"
+    },
+    {
+      "id": 7,
+      "created_at": "2026-09-19T14:35:30.963Z",
+      "application_id": 9,
+      "service_document_id": 11,
+      "document_name": "Aadhaar Card Copy",
+      "original_filename": "aadhaar_card_copy_1789828494007_optimized.jpg",
+      "stored_filename": "1789828530913-418959554_aadhaar_card_copy_1789828494007_optimized.jpg",
+      "file_type": "image/jpeg",
+      "file_size": 80205,
+      "file_path": "/api/documents/preview-file/1789828530913-418959554_aadhaar_card_copy_1789828494007_optimized.jpg",
+      "uploaded_by": 5,
+      "uploaded_at": "2026-09-19T14:35:30.962Z",
+      "verification_status": "Pending Verification",
+      "verified_by": null,
+      "verified_at": null,
+      "rejection_reason": null
+    },
+    {
+      "id": 8,
+      "created_at": "2026-09-19T14:35:30.963Z",
+      "application_id": 9,
+      "service_document_id": null,
+      "document_name": "name change supporting name proof",
+      "original_filename": "digital_wallz_4k_14050626_142909340_optimized.jpg",
+      "stored_filename": "1789828530917-334341189_digital_wallz_4k_14050626_142909340_optimized.jpg",
+      "file_type": "image/jpeg",
+      "file_size": 268207,
+      "file_path": "/api/documents/preview-file/1789828530917-334341189_digital_wallz_4k_14050626_142909340_optimized.jpg",
+      "uploaded_by": 5,
+      "uploaded_at": "2026-09-19T14:35:30.963Z",
+      "verification_status": "Pending Verification",
+      "verified_by": null,
+      "verified_at": null,
+      "rejection_reason": null
     }
   ],
   "payments": [
@@ -8619,15 +8889,123 @@
     },
     {
       "id": 30004,
-      "created_at": "2026-09-19T08:22:01.805Z",
-      "application_id": 4,
-      "application_number": "ESV-2026-000004",
-      "user_id": 1,
-      "payment_number": "PAY-2026-897825",
-      "amount": "50.00",
-      "payment_method": "Online Facilitation Fee / UPI",
-      "payment_status": "Completed",
-      "paid_at": "2026-09-19T08:22:01.805Z"
+      "created_at": "2026-09-19T14:35:30.963Z",
+      "application_id": 9,
+      "application_number": "ESV-2026-000008",
+      "user_id": 5,
+      "payment_number": "PAY-2026-106400",
+      "amount": "110.00",
+      "payment_method": "PhonePe PG (UPI / Cards)",
+      "payment_status": "PENDING",
+      "paid_at": null
+    },
+    {
+      "id": 30005,
+      "created_at": "2026-09-19T14:35:31.955Z",
+      "application_id": 9,
+      "application_number": "ESV-2026-000008",
+      "user_id": 5,
+      "amount": 110,
+      "currency": "INR",
+      "payment_gateway": "PHONEPE",
+      "payment_order_id": "MT17898285309898562",
+      "payment_transaction_id": "MT17898285309898562",
+      "payment_status": "FAILED",
+      "payment_method": "PhonePe PG (UPI / Cards / NetBanking)",
+      "initiated_at": "2026-09-19T14:35:31.955Z",
+      "metadata": {
+        "service_name": "New PAN Card Application",
+        "phonepe_response": {
+          "success": true,
+          "merchantTransactionId": "MT17898285309898562",
+          "redirectUrl": "https://mercury-t2.phonepe.com/transact/pgv3?sltTkn=MGMxYzg3YzI4N2M0ZTY5ZDcyMGZiNTRjN2U1ZDE0OWE4YjZiNjY4YmJlYmJmYjZhOGNlMTgyNWE2MzZiMmVlN2RmMzhhYmUyNWM3MWMwODg4MWRiOWRkNmJiNzVhYmJlYWVjYTE5NDQ4NTVhODc6ZWZmOGE4YWFhY2RjOTcwYjQ5NDNmNGIzYzQyYzgzNzc&routingKey=W",
+          "provider": "PHONEPE",
+          "data": {
+            "merchantId": "M22KWW43XGUAZ",
+            "merchantTransactionId": "MT17898285309898562",
+            "instrumentResponse": {
+              "type": "PAY_PAGE",
+              "redirectInfo": {
+                "url": "https://mercury-t2.phonepe.com/transact/pgv3?sltTkn=MGMxYzg3YzI4N2M0ZTY5ZDcyMGZiNTRjN2U1ZDE0OWE4YjZiNjY4YmJlYmJmYjZhOGNlMTgyNWE2MzZiMmVlN2RmMzhhYmUyNWM3MWMwODg4MWRiOWRkNmJiNzVhYmJlYWVjYTE5NDQ4NTVhODc6ZWZmOGE4YWFhY2RjOTcwYjQ5NDNmNGIzYzQyYzgzNzc&routingKey=W",
+                "method": "GET"
+              }
+            }
+          }
+        },
+        "failed_response": {
+          "success": false,
+          "code": "PAYMENT_ERROR",
+          "message": "Payment Failed",
+          "data": {
+            "merchantId": "M22KWW43XGUAZ",
+            "merchantTransactionId": "MT17898285309898562",
+            "transactionId": "OMO2609192005287608651227W",
+            "amount": 11000,
+            "state": "FAILED",
+            "responseCode": "TXN_AUTO_FAILED",
+            "paymentInstrument": null,
+            "feesContext": {
+              "amount": 0
+            },
+            "metaInfo": null
+          }
+        }
+      },
+      "updated_at": "2026-09-19T14:37:32.482Z"
+    },
+    {
+      "id": 30006,
+      "created_at": "2026-09-19T14:38:03.440Z",
+      "application_id": 9,
+      "application_number": "ESV-2026-000008",
+      "user_id": 5,
+      "amount": 110,
+      "currency": "INR",
+      "payment_gateway": "PHONEPE",
+      "payment_order_id": "MT17898286830842688",
+      "payment_transaction_id": "MT17898286830842688",
+      "payment_status": "FAILED",
+      "payment_method": "PhonePe PG (UPI / Cards / NetBanking)",
+      "initiated_at": "2026-09-19T14:38:03.440Z",
+      "metadata": {
+        "service_name": "New PAN Card Application",
+        "phonepe_response": {
+          "success": true,
+          "merchantTransactionId": "MT17898286830842688",
+          "redirectUrl": "https://mercury-t2.phonepe.com/transact/pgv3?sltTkn=OGQyNGUwNTZmYzU2ZDM2M2ZkZDIxYTM4YTZkM2U3NmM1OGU1ZTQ4MjUzYTdkY2VkYjRkNDg3YzIyOGExNjRlMjc3ODk3OGFjYzY0YTE2ZDgwMmFhMjM1ZDYwNWQyODBlZDE5MTk0ODI1NDFiMzY6MDJmYTg2NjcxMTM0ZmRlOWUyNDM5YmVhMzI5N2ViYzA&routingKey=W",
+          "provider": "PHONEPE",
+          "data": {
+            "merchantId": "M22KWW43XGUAZ",
+            "merchantTransactionId": "MT17898286830842688",
+            "instrumentResponse": {
+              "type": "PAY_PAGE",
+              "redirectInfo": {
+                "url": "https://mercury-t2.phonepe.com/transact/pgv3?sltTkn=OGQyNGUwNTZmYzU2ZDM2M2ZkZDIxYTM4YTZkM2U3NmM1OGU1ZTQ4MjUzYTdkY2VkYjRkNDg3YzIyOGExNjRlMjc3ODk3OGFjYzY0YTE2ZDgwMmFhMjM1ZDYwNWQyODBlZDE5MTk0ODI1NDFiMzY6MDJmYTg2NjcxMTM0ZmRlOWUyNDM5YmVhMzI5N2ViYzA&routingKey=W",
+                "method": "GET"
+              }
+            }
+          }
+        },
+        "failed_response": {
+          "success": false,
+          "code": "PAYMENT_ERROR",
+          "message": "Payment Failed",
+          "data": {
+            "merchantId": "M22KWW43XGUAZ",
+            "merchantTransactionId": "MT17898286830842688",
+            "transactionId": "OMO2609192008002764881162W",
+            "amount": 11000,
+            "state": "FAILED",
+            "responseCode": "TXN_AUTO_FAILED",
+            "paymentInstrument": null,
+            "feesContext": {
+              "amount": 0
+            },
+            "metaInfo": null
+          }
+        }
+      },
+      "updated_at": "2026-09-19T14:47:37.646Z"
     }
   ],
   "application_status_history": [
@@ -8894,20 +9272,39 @@
       "status": "SUBMITTED",
       "admin_remarks": "Application submitted successfully with verified dynamic field data.",
       "updated_by": "Applicant / Web Portal"
+    },
+    {
+      "id": 37,
+      "created_at": "2026-09-19T14:35:30.964Z",
+      "application_id": 9,
+      "status": "PAYMENT_PENDING",
+      "admin_remarks": "Application filed and documents saved. Awaiting PhonePe fee payment settlement.",
+      "updated_by": "Applicant / Web Portal"
     }
   ],
-  "contact_messages": [],
+  "contact_messages": [
+    {
+      "id": 1,
+      "name": "Test Citizen",
+      "email": "test@example.com",
+      "phone": "9876543210",
+      "subject": "General Inquiry",
+      "message": "This is a test message.",
+      "status": "Unread",
+      "created_at": "2026-09-19T03:11:52.000Z"
+    }
+  ],
   "career_applications": [
     {
       "id": 1,
-      "created_at": "2026-09-02T12:59:21.341Z",
-      "applicant_name": "Priya Sharma",
-      "email": "priya.sharma@example.com",
-      "phone": "9840192837",
-      "position": "E-Seva Center Representative",
-      "experience": "3 Years in e-Governance Portal operations",
-      "resume_file": "/uploads/priya_resume.pdf",
-      "status": "Under Review"
+      "full_name": null,
+      "email": "candidate@example.com",
+      "phone": "9876543210",
+      "position": "E-Seva Center Operator",
+      "experience": "2 Years",
+      "resume_url": null,
+      "status": "Received",
+      "created_at": "2026-09-19T03:12:21.000Z"
     }
   ],
   "banners": [
@@ -8948,258 +9345,46 @@
   "notifications": [
     {
       "id": 1,
-      "created_at": "2026-09-13T07:42:42.795Z",
-      "userId": 1,
-      "adminId": null,
-      "applicationId": 1,
-      "type": "APPLICATION_SUBMITTED",
-      "title": "Application Submitted: ESV-2026-000001",
-      "message": "Your application (ESV-2026-000001) for Aadhaar Address Update has been submitted successfully. Track status online anytime.",
-      "status": "DELIVERED",
-      "isRead": 0,
-      "createdAt": "2026-09-13T07:42:42.795Z",
-      "readAt": null,
-      "metadata": {
-        "applicationId": 1,
-        "applicationNumber": "ESV-2026-000001",
-        "serviceName": "Aadhaar Address Update",
-        "status": "SUBMITTED",
-        "link": "/track-application?appNumber=ESV-2026-000001",
-        "idempotencyKey": null
-      }
-    },
-    {
-      "id": 2,
-      "created_at": "2026-09-13T18:04:56.515Z",
-      "userId": 1,
-      "adminId": null,
-      "applicationId": 1,
-      "type": "APPLICATION_SUBMITTED",
-      "title": "Application Submitted: ESV-2026-000001",
-      "message": "Your application (ESV-2026-000001) for Aadhaar Address Update has been submitted successfully. Track status online anytime.",
-      "status": "DELIVERED",
-      "isRead": 0,
-      "createdAt": "2026-09-13T18:04:56.515Z",
-      "readAt": null,
-      "metadata": {
-        "applicationId": 1,
-        "applicationNumber": "ESV-2026-000001",
-        "serviceName": "Aadhaar Address Update",
-        "status": "SUBMITTED",
-        "link": "/track-application?appNumber=ESV-2026-000001",
-        "idempotencyKey": null
-      }
-    },
-    {
-      "id": 3,
-      "created_at": "2026-09-13T18:20:44.297Z",
-      "userId": 1,
-      "adminId": null,
-      "applicationId": 1,
-      "type": "APPLICATION_SUBMITTED",
-      "title": "Application Submitted: ESV-2026-000001",
-      "message": "Your application (ESV-2026-000001) for Aadhaar Address Update has been submitted successfully. Track status online anytime.",
-      "status": "DELIVERED",
-      "isRead": 0,
-      "createdAt": "2026-09-13T18:20:44.297Z",
-      "readAt": null,
-      "metadata": {
-        "applicationId": 1,
-        "applicationNumber": "ESV-2026-000001",
-        "serviceName": "Aadhaar Address Update",
-        "status": "SUBMITTED",
-        "link": "/track-application?appNumber=ESV-2026-000001",
-        "idempotencyKey": null
-      }
-    },
-    {
-      "id": 4,
-      "created_at": "2026-09-13T18:47:02.395Z",
-      "userId": 1,
-      "adminId": null,
-      "applicationId": 2,
-      "type": "APPLICATION_SUBMITTED",
-      "title": "Application Submitted: ESV-2026-000002",
-      "message": "Your application (ESV-2026-000002) for Aadhaar Address Update has been submitted successfully. Track status online anytime.",
-      "status": "DELIVERED",
-      "isRead": 0,
-      "createdAt": "2026-09-13T18:47:02.395Z",
-      "readAt": null,
-      "metadata": {
-        "applicationId": 2,
-        "applicationNumber": "ESV-2026-000002",
-        "serviceName": "Aadhaar Address Update",
-        "status": "SUBMITTED",
-        "link": "/track-application?appNumber=ESV-2026-000002",
-        "idempotencyKey": null
-      }
-    },
-    {
-      "id": 5,
-      "created_at": "2026-09-13T19:47:16.648Z",
-      "userId": 1,
-      "adminId": null,
-      "applicationId": 2,
-      "type": "STATUS_UPDATE",
-      "title": "Application Status Updated: Processing",
-      "message": "Your application (ESV-2026-000002) for Aadhaar Address Update status is now \"Processing\". Remarks: Application submitted successfully. Under verification by E-Seva team.",
-      "status": "DELIVERED",
-      "isRead": 0,
-      "createdAt": "2026-09-13T19:47:16.648Z",
-      "readAt": null,
-      "metadata": {
-        "applicationId": 2,
-        "applicationNumber": "ESV-2026-000002",
-        "serviceName": "Aadhaar Address Update",
-        "userName": "Hari Raj",
-        "status": "Processing",
-        "remarks": "Application submitted successfully. Under verification by E-Seva team.",
-        "link": "/track-application?appNumber=ESV-2026-000002",
-        "idempotencyKey": null
-      }
-    },
-    {
-      "id": 6,
-      "created_at": "2026-09-13T19:47:32.497Z",
-      "userId": 1,
-      "adminId": null,
-      "applicationId": 2,
-      "type": "STATUS_UPDATE",
-      "title": "Application Status Updated: Processing",
-      "message": "Your application (ESV-2026-000002) for Aadhaar Address Update status is now \"Processing\". Remarks: Application submitted successfully. Under verification by E-Seva team.",
-      "status": "DELIVERED",
-      "isRead": 0,
-      "createdAt": "2026-09-13T19:47:32.497Z",
-      "readAt": null,
-      "metadata": {
-        "applicationId": 2,
-        "applicationNumber": "ESV-2026-000002",
-        "serviceName": "Aadhaar Address Update",
-        "userName": "Hari Raj",
-        "status": "Processing",
-        "remarks": "Application submitted successfully. Under verification by E-Seva team.",
-        "link": "/track-application?appNumber=ESV-2026-000002",
-        "idempotencyKey": null
-      }
-    },
-    {
-      "id": 7,
-      "created_at": "2026-09-13T19:48:24.501Z",
-      "userId": 1,
-      "adminId": null,
-      "applicationId": 2,
-      "type": "STATUS_UPDATE",
-      "title": "Application Status Updated: Processing",
-      "message": "Your application (ESV-2026-000002) for Aadhaar Address Update status is now \"Processing\". Remarks: Application submitted successfully. Under verification by E-Seva team.",
-      "status": "DELIVERED",
-      "isRead": 0,
-      "createdAt": "2026-09-13T19:48:24.501Z",
-      "readAt": null,
-      "metadata": {
-        "applicationId": 2,
-        "applicationNumber": "ESV-2026-000002",
-        "serviceName": "Aadhaar Address Update",
-        "userName": "Hari Raj",
-        "status": "Processing",
-        "remarks": "Application submitted successfully. Under verification by E-Seva team.",
-        "link": "/track-application?appNumber=ESV-2026-000002",
-        "idempotencyKey": null
-      }
-    },
-    {
-      "id": 8,
-      "created_at": "2026-09-13T19:53:28.886Z",
-      "userId": 2,
-      "adminId": null,
-      "applicationId": 3,
-      "type": "APPLICATION_SUBMITTED",
-      "title": "Application Submitted: ESV-2026-000003",
-      "message": "Your application (ESV-2026-000003) for Aadhaar Address Update has been submitted successfully. Track status online anytime.",
-      "status": "DELIVERED",
-      "isRead": 0,
-      "createdAt": "2026-09-13T19:53:28.886Z",
-      "readAt": null,
-      "metadata": {
-        "applicationId": 3,
-        "applicationNumber": "ESV-2026-000003",
-        "serviceName": "Aadhaar Address Update",
-        "status": "SUBMITTED",
-        "link": "/track-application?appNumber=ESV-2026-000003",
-        "idempotencyKey": null
-      }
-    },
-    {
-      "id": 9,
-      "created_at": "2026-09-13T19:53:28.943Z",
-      "userId": 2,
-      "adminId": null,
-      "applicationId": 3,
-      "type": "STATUS_UPDATE",
-      "title": "Application Status Updated: Processing",
-      "message": "Your application (ESV-2026-000003) for Aadhaar Address Update status is now \"Processing\". Remarks: Verified documents.",
-      "status": "DELIVERED",
-      "isRead": 0,
-      "createdAt": "2026-09-13T19:53:28.943Z",
-      "readAt": null,
-      "metadata": {
-        "applicationId": 3,
-        "applicationNumber": "ESV-2026-000003",
-        "serviceName": "Aadhaar Address Update",
-        "userName": "Security Audit Tester",
-        "status": "Processing",
-        "remarks": "Verified documents.",
-        "link": "/track-application?appNumber=ESV-2026-000003",
-        "idempotencyKey": null
-      }
-    },
-    {
-      "id": 10,
-      "created_at": "2026-09-13T19:57:57.485Z",
-      "userId": 1,
-      "adminId": null,
-      "applicationId": 2,
-      "type": "STATUS_UPDATE",
-      "title": "Application Status Updated: Under Review",
-      "message": "Your application (ESV-2026-000002) for Aadhaar Address Update status is now \"Under Review\". Remarks: Application submitted successfully. Under verification by E-Seva team.",
-      "status": "DELIVERED",
-      "isRead": 0,
-      "createdAt": "2026-09-13T19:57:57.485Z",
-      "readAt": null,
-      "metadata": {
-        "applicationId": 2,
-        "applicationNumber": "ESV-2026-000002",
-        "serviceName": "Aadhaar Address Update",
-        "userName": "Hari Raj",
-        "status": "Under Review",
-        "remarks": "Application submitted successfully. Under verification by E-Seva team.",
-        "link": "/track-application?appNumber=ESV-2026-000002",
-        "idempotencyKey": null
-      }
-    },
-    {
-      "id": 11,
-      "created_at": "2026-09-19T08:22:01.816Z",
-      "userId": 1,
-      "adminId": null,
-      "applicationId": 4,
-      "type": "APPLICATION_SUBMITTED",
+      "user_id": null,
       "title": "Application Submitted: ESV-2026-000004",
       "message": "Your application (ESV-2026-000004) for Aadhaar Address Update has been submitted successfully. Track status online anytime.",
-      "status": "DELIVERED",
-      "isRead": 0,
-      "createdAt": "2026-09-19T08:22:01.816Z",
-      "readAt": null,
+      "type": "APPLICATION_SUBMITTED",
+      "is_read": 0,
+      "created_at": "2026-09-19T02:52:02.000Z",
+      "application_id": null,
+      "admin_id": null,
       "metadata": {
         "applicationId": 4,
         "applicationNumber": "ESV-2026-000004",
-        "serviceName": "Aadhaar Address Update",
-        "status": "SUBMITTED",
+        "idempotencyKey": null,
         "link": "/track-application?appNumber=ESV-2026-000004",
-        "idempotencyKey": null
+        "serviceName": "Aadhaar Address Update",
+        "status": "SUBMITTED"
       }
     }
   ],
-  "document_audit_history": [],
+  "document_audit_history": [
+    {
+      "id": 1,
+      "created_at": "2026-09-19T14:35:30.963Z",
+      "application_id": 9,
+      "document_id": 7,
+      "action": "Uploaded",
+      "actor": "hariraj",
+      "actor_role": "User",
+      "details": "Uploaded aadhaar_card_copy_1789828494007_optimized.jpg"
+    },
+    {
+      "id": 2,
+      "created_at": "2026-09-19T14:35:30.963Z",
+      "application_id": 9,
+      "document_id": 8,
+      "action": "Uploaded",
+      "actor": "hariraj",
+      "actor_role": "User",
+      "details": "Uploaded digital_wallz_4k_14050626_142909340_optimized.jpg"
+    }
+  ],
   "notification_delivery_logs": [
     {
       "id": 1,
