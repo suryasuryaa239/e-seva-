@@ -115,6 +115,28 @@ const FIELD_LABEL_TRANSLATIONS = {
   'occupation': 'தொழில் / வேலை',
   'profession': 'தொழில்',
 
+  'father full name': 'தந்தை பெயர்',
+  'father_name': 'தந்தை பெயர்',
+  'mother full name': 'தாய் பெயர்',
+  'mother_name': 'தாய் பெயர்',
+  'correct applicant full name': 'சரியான விண்ணப்பதாரர் பெயர்',
+  'correct father full name': 'சரியான தந்தை பெயர்',
+  'correct date of birth': 'சரியான பிறந்த தேதி',
+  'correct dob': 'சரியான பிறந்த தேதி',
+  'village & taluk': 'கிராமம் & வட்டம்',
+  'village & taluk name': 'கிராமம் & வட்டம்',
+  'taluk': 'வட்டம்',
+  'village': 'கிராமம்',
+  'village / town': 'கிராமம் / நகரம்',
+  'sub-division number': 'உட்பிரிவு எண்',
+  'search period (years)': 'தேடல் காலம் (ஆண்டுகள்)',
+  'sub-registrar office': 'சார்பதிவாளர் அலுவலகம்',
+  'source of income': 'வருமான ஆதாரம்',
+  'caste / community category': 'சாதிப் பிரிவு',
+  'sub-caste name': 'உட்பிரிவு சாதி பெயர்',
+  'survey number / patta number': 'புல எண் / பட்டா எண்',
+  'survey / plot number': 'புல எண் / மனை எண்',
+
   'ration card number': 'ரேஷன் கார்டு எண்',
   'smart ration card no': 'ஸ்மார்ட் ரேஷன் கார்டு எண்',
   'family card number': 'குடும்ப அட்டை எண்',
@@ -146,10 +168,19 @@ export function getLocalizedFieldLabel(fLabel, lang = 'en') {
   const key = String(fLabel).trim().toLowerCase();
   if (FIELD_LABEL_TRANSLATIONS[key]) return FIELD_LABEL_TRANSLATIONS[key];
 
-  // Partial substring matches for dynamic backend labels
-  if (key.includes('aadhaar')) return FIELD_LABEL_TRANSLATIONS['aadhaar number'];
-  if (key.includes('full name') || key.includes('applicant name')) return FIELD_LABEL_TRANSLATIONS['full name'];
+  // Specific familial relations MUST precede generic 'name' / 'full name' checks!
+  if (key.includes('mother')) return FIELD_LABEL_TRANSLATIONS["mother's name"] || 'தாய் பெயர்';
   if (key.includes('father') || key.includes('husband') || key.includes('guardian')) return FIELD_LABEL_TRANSLATIONS['father / mother / guardian name'];
+
+  // Aadhaar, Gender, DOB
+  if (key.includes('aadhaar')) return FIELD_LABEL_TRANSLATIONS['aadhaar number'];
+  if (key.includes('gender')) return FIELD_LABEL_TRANSLATIONS['gender'];
+  if (key.includes('dob') || key.includes('date of birth') || key.includes('birth date')) return FIELD_LABEL_TRANSLATIONS['date of birth'];
+
+  // Applicant Name / Full Name
+  if (key.includes('full name') || key.includes('applicant name')) return FIELD_LABEL_TRANSLATIONS['full name'];
+
+  // Address and contact components
   if (key.includes('house') || key.includes('door') || key.includes('flat')) return FIELD_LABEL_TRANSLATIONS['house / building / apartment no.'];
   if (key.includes('street') || key.includes('road')) return FIELD_LABEL_TRANSLATIONS['street / road / lane name'];
   if (key.includes('landmark')) return FIELD_LABEL_TRANSLATIONS['landmark'];
@@ -159,7 +190,10 @@ export function getLocalizedFieldLabel(fLabel, lang = 'en') {
   if (key.includes('state')) return FIELD_LABEL_TRANSLATIONS['state'];
   if (key.includes('mobile') || key.includes('phone')) return FIELD_LABEL_TRANSLATIONS['mobile number'];
   if (key.includes('email')) return FIELD_LABEL_TRANSLATIONS['email address'];
-  if (key.includes('dob') || key.includes('date of birth')) return FIELD_LABEL_TRANSLATIONS['date of birth'];
+  if (key.includes('taluk')) return 'வட்டம்';
+  if (key.includes('village')) return 'கிராமம்';
+  if (key.includes('survey')) return 'சர்வே எண்';
+  if (key.includes('patta')) return 'பட்டா எண்';
 
   return fLabel;
 }

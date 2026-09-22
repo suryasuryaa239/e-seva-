@@ -812,7 +812,14 @@ app.get('/api/services/:idOrSlug', (req, res) => {
   if (!service) return res.status(404).json({ error: 'Service not found' });
 
   const category = db.get('categories', c => c.id === service.category_id);
-  const fields = db.all('service_fields', f => f.service_id === service.id).sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+  const rawFields = db.all('service_fields', f => f.service_id === service.id).sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+  const seenFieldKeys = new Set();
+  const fields = rawFields.filter(f => {
+    const k = String(f.field_name || f.name || f.field_label || '').trim().toLowerCase();
+    if (!k || seenFieldKeys.has(k)) return false;
+    seenFieldKeys.add(k);
+    return true;
+  });
   const documents = db.all('service_documents', d => d.service_id === service.id);
 
   const cleanName = (service.name || '').replace(/\s*\((Varumaana Saanrithazh|Jaathi Saanrithazh|AnyTamilLand|Saanrithazh|Thunglish|Tanglish)\)/gi, '').trim();

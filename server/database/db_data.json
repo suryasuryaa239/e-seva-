@@ -286,7 +286,7 @@
       "category_id": null,
       "category_slug": "land-patta-services",
       "name": "Patta Chitta Copy",
-      "slug": "patta-chitta-extract",
+      "slug": "patta-chitta",
       "description": "Extract official e-Patta and Chitta revenue record extracts online.",
       "fee": "30.00",
       "processing_time": "Instant / 24 Hours",
@@ -443,126 +443,6 @@
     },
     {
       "id": 11,
-      "service_id": 101,
-      "field_name": "full_name",
-      "field_label": "Full Name of Applicant",
-      "field_type": "text",
-      "placeholder": "Karthik Subramanian",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 1
-    },
-    {
-      "id": 12,
-      "service_id": 101,
-      "field_name": "dob",
-      "field_label": "Date of Birth",
-      "field_type": "date",
-      "placeholder": "",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 2
-    },
-    {
-      "id": 13,
-      "service_id": 101,
-      "field_name": "gender",
-      "field_label": "Gender",
-      "field_type": "select",
-      "placeholder": "",
-      "helpText": "",
-      "options_json": "[\"Male\",\"Female\",\"Transgender\"]",
-      "is_required": true,
-      "sort_order": 3
-    },
-    {
-      "id": 14,
-      "service_id": 101,
-      "field_name": "guardian_name",
-      "field_label": "Father / Mother / Guardian Name",
-      "field_type": "text",
-      "placeholder": "Subramanian S",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 4
-    },
-    {
-      "id": 15,
-      "service_id": 101,
-      "field_name": "mobile_number",
-      "field_label": "Mobile Number",
-      "field_type": "phone",
-      "placeholder": "9876543210",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 5
-    },
-    {
-      "id": 16,
-      "service_id": 101,
-      "field_name": "email",
-      "field_label": "Email Address",
-      "field_type": "email",
-      "placeholder": "user@example.com",
-      "helpText": "",
-      "options_json": null,
-      "is_required": false,
-      "sort_order": 6
-    },
-    {
-      "id": 17,
-      "service_id": 101,
-      "field_name": "address",
-      "field_label": "Residential Address",
-      "field_type": "textarea",
-      "placeholder": "Door No, Street Name, Village/City",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 7
-    },
-    {
-      "id": 18,
-      "service_id": 101,
-      "field_name": "district",
-      "field_label": "District",
-      "field_type": "text",
-      "placeholder": "Chennai",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 8
-    },
-    {
-      "id": 19,
-      "service_id": 101,
-      "field_name": "state",
-      "field_label": "State",
-      "field_type": "text",
-      "placeholder": "Tamil Nadu",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 9
-    },
-    {
-      "id": 20,
-      "service_id": 101,
-      "field_name": "pincode",
-      "field_label": "6-Digit Pincode",
-      "field_type": "text",
-      "placeholder": "600001",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 10
-    },
-    {
-      "id": 21,
       "service_id": 1,
       "field_name": "aadhaar_number",
       "field_label": "12-Digit Aadhaar Number",
@@ -574,7 +454,7 @@
       "sort_order": 1
     },
     {
-      "id": 22,
+      "id": 12,
       "service_id": 1,
       "field_name": "current_address",
       "field_label": "Current Address in Aadhaar",
@@ -586,7 +466,7 @@
       "sort_order": 2
     },
     {
-      "id": 23,
+      "id": 13,
       "service_id": 1,
       "field_name": "new_house_no",
       "field_label": "New House / Door / Flat No",
@@ -598,7 +478,7 @@
       "sort_order": 3
     },
     {
-      "id": 24,
+      "id": 14,
       "service_id": 1,
       "field_name": "new_street",
       "field_label": "Street / Road Name",
@@ -610,7 +490,7 @@
       "sort_order": 4
     },
     {
-      "id": 25,
+      "id": 15,
       "service_id": 1,
       "field_name": "new_area",
       "field_label": "Area / Locality",
@@ -622,7 +502,7 @@
       "sort_order": 5
     },
     {
-      "id": 26,
+      "id": 16,
       "service_id": 1,
       "field_name": "city_town",
       "field_label": "City / Town",
@@ -634,7 +514,7 @@
       "sort_order": 6
     },
     {
-      "id": 27,
+      "id": 17,
       "service_id": 1,
       "field_name": "district",
       "field_label": "District",
@@ -646,7 +526,7 @@
       "sort_order": 7
     },
     {
-      "id": 28,
+      "id": 18,
       "service_id": 1,
       "field_name": "state",
       "field_label": "State",
@@ -658,7 +538,7 @@
       "sort_order": 8
     },
     {
-      "id": 29,
+      "id": 19,
       "service_id": 1,
       "field_name": "pincode",
       "field_label": "6-Digit Pincode",
@@ -670,7 +550,7 @@
       "sort_order": 9
     },
     {
-      "id": 30,
+      "id": 20,
       "service_id": 1,
       "field_name": "mobile_number",
       "field_label": "Linked Mobile Number",
@@ -682,7 +562,7 @@
       "sort_order": 10
     },
     {
-      "id": 31,
+      "id": 21,
       "service_id": 2,
       "field_name": "aadhaar_number",
       "field_label": "12-Digit Aadhaar Number",
@@ -694,7 +574,7 @@
       "sort_order": 1
     },
     {
-      "id": 32,
+      "id": 22,
       "service_id": 2,
       "field_name": "current_name",
       "field_label": "Current Name in Aadhaar",
@@ -706,7 +586,7 @@
       "sort_order": 2
     },
     {
-      "id": 33,
+      "id": 23,
       "service_id": 2,
       "field_name": "correct_name",
       "field_label": "Correct New Name",
@@ -718,7 +598,7 @@
       "sort_order": 3
     },
     {
-      "id": 34,
+      "id": 24,
       "service_id": 2,
       "field_name": "reason",
       "field_label": "Reason for Name Change",
@@ -730,7 +610,7 @@
       "sort_order": 4
     },
     {
-      "id": 35,
+      "id": 25,
       "service_id": 2,
       "field_name": "mobile_number",
       "field_label": "Linked Mobile Number",
@@ -742,7 +622,7 @@
       "sort_order": 5
     },
     {
-      "id": 36,
+      "id": 26,
       "service_id": 3,
       "field_name": "aadhaar_number",
       "field_label": "12-Digit Aadhaar Number",
@@ -754,7 +634,7 @@
       "sort_order": 1
     },
     {
-      "id": 37,
+      "id": 27,
       "service_id": 3,
       "field_name": "current_mobile",
       "field_label": "Current Mobile Number (if any)",
@@ -766,7 +646,7 @@
       "sort_order": 2
     },
     {
-      "id": 38,
+      "id": 28,
       "service_id": 3,
       "field_name": "new_mobile",
       "field_label": "New Mobile Number to Link",
@@ -778,7 +658,7 @@
       "sort_order": 3
     },
     {
-      "id": 39,
+      "id": 29,
       "service_id": 102,
       "field_name": "aadhaar_number",
       "field_label": "12-Digit Aadhaar Number",
@@ -790,7 +670,7 @@
       "sort_order": 1
     },
     {
-      "id": 40,
+      "id": 30,
       "service_id": 102,
       "field_name": "new_email",
       "field_label": "New Email Address",
@@ -802,7 +682,7 @@
       "sort_order": 2
     },
     {
-      "id": 41,
+      "id": 31,
       "service_id": 102,
       "field_name": "mobile_number",
       "field_label": "Linked Mobile Number",
@@ -814,7 +694,7 @@
       "sort_order": 3
     },
     {
-      "id": 42,
+      "id": 32,
       "service_id": 103,
       "field_name": "aadhaar_number",
       "field_label": "12-Digit Aadhaar Number",
@@ -826,7 +706,7 @@
       "sort_order": 1
     },
     {
-      "id": 43,
+      "id": 33,
       "service_id": 103,
       "field_name": "current_dob",
       "field_label": "Current Date of Birth in Aadhaar",
@@ -838,7 +718,7 @@
       "sort_order": 2
     },
     {
-      "id": 44,
+      "id": 34,
       "service_id": 103,
       "field_name": "correct_dob",
       "field_label": "Correct Date of Birth",
@@ -850,7 +730,7 @@
       "sort_order": 3
     },
     {
-      "id": 45,
+      "id": 35,
       "service_id": 103,
       "field_name": "reason",
       "field_label": "Reason for Correction",
@@ -862,7 +742,7 @@
       "sort_order": 4
     },
     {
-      "id": 46,
+      "id": 36,
       "service_id": 104,
       "field_name": "aadhaar_number",
       "field_label": "12-Digit Aadhaar Number",
@@ -874,7 +754,7 @@
       "sort_order": 1
     },
     {
-      "id": 47,
+      "id": 37,
       "service_id": 104,
       "field_name": "current_gender",
       "field_label": "Current Gender in Card",
@@ -886,7 +766,7 @@
       "sort_order": 2
     },
     {
-      "id": 48,
+      "id": 38,
       "service_id": 104,
       "field_name": "correct_gender",
       "field_label": "Correct Gender",
@@ -898,7 +778,7 @@
       "sort_order": 3
     },
     {
-      "id": 49,
+      "id": 39,
       "service_id": 105,
       "field_name": "aadhaar_number",
       "field_label": "12-Digit Aadhaar Number",
@@ -910,7 +790,7 @@
       "sort_order": 1
     },
     {
-      "id": 50,
+      "id": 40,
       "service_id": 105,
       "field_name": "applicant_name",
       "field_label": "Applicant Name",
@@ -922,7 +802,7 @@
       "sort_order": 2
     },
     {
-      "id": 51,
+      "id": 41,
       "service_id": 105,
       "field_name": "mobile_number",
       "field_label": "Mobile Number",
@@ -934,7 +814,7 @@
       "sort_order": 3
     },
     {
-      "id": 52,
+      "id": 42,
       "service_id": 106,
       "field_name": "aadhaar_number",
       "field_label": "12-Digit Aadhaar Number",
@@ -946,7 +826,7 @@
       "sort_order": 1
     },
     {
-      "id": 53,
+      "id": 43,
       "service_id": 106,
       "field_name": "applicant_name",
       "field_label": "Applicant Full Name",
@@ -958,7 +838,7 @@
       "sort_order": 2
     },
     {
-      "id": 54,
+      "id": 44,
       "service_id": 106,
       "field_name": "dob",
       "field_label": "Date of Birth",
@@ -970,7 +850,7 @@
       "sort_order": 3
     },
     {
-      "id": 55,
+      "id": 45,
       "service_id": 106,
       "field_name": "mobile_number",
       "field_label": "Mobile Number",
@@ -982,7 +862,7 @@
       "sort_order": 4
     },
     {
-      "id": 56,
+      "id": 46,
       "service_id": 107,
       "field_name": "aadhaar_number",
       "field_label": "12-Digit Aadhaar Number",
@@ -994,7 +874,7 @@
       "sort_order": 1
     },
     {
-      "id": 57,
+      "id": 47,
       "service_id": 107,
       "field_name": "applicant_name",
       "field_label": "Applicant Name",
@@ -1006,7 +886,7 @@
       "sort_order": 2
     },
     {
-      "id": 58,
+      "id": 48,
       "service_id": 107,
       "field_name": "mobile_number",
       "field_label": "Linked Mobile Number",
@@ -1018,7 +898,7 @@
       "sort_order": 3
     },
     {
-      "id": 59,
+      "id": 49,
       "service_id": 108,
       "field_name": "aadhaar_number",
       "field_label": "12-Digit Aadhaar / Enrolment ID (EID)",
@@ -1030,7 +910,7 @@
       "sort_order": 1
     },
     {
-      "id": 60,
+      "id": 50,
       "service_id": 108,
       "field_name": "applicant_name",
       "field_label": "Full Name as in Aadhaar",
@@ -1042,7 +922,7 @@
       "sort_order": 2
     },
     {
-      "id": 61,
+      "id": 51,
       "service_id": 108,
       "field_name": "mobile_number",
       "field_label": "Linked Mobile Number for OTP",
@@ -1054,7 +934,7 @@
       "sort_order": 3
     },
     {
-      "id": 62,
+      "id": 52,
       "service_id": 108,
       "field_name": "email",
       "field_label": "Email for Sending PDF",
@@ -1066,7 +946,7 @@
       "sort_order": 4
     },
     {
-      "id": 63,
+      "id": 53,
       "service_id": 109,
       "field_name": "aadhaar_eid",
       "field_label": "Aadhaar / Application Reference Number (URN/EID)",
@@ -1078,7 +958,7 @@
       "sort_order": 1
     },
     {
-      "id": 64,
+      "id": 54,
       "service_id": 109,
       "field_name": "mobile_number",
       "field_label": "Registered Mobile Number",
@@ -1090,7 +970,7 @@
       "sort_order": 2
     },
     {
-      "id": 65,
+      "id": 55,
       "service_id": 110,
       "field_name": "aadhaar_number",
       "field_label": "12-Digit Aadhaar Number",
@@ -1102,7 +982,7 @@
       "sort_order": 1
     },
     {
-      "id": 66,
+      "id": 56,
       "service_id": 110,
       "field_name": "correction_type",
       "field_label": "Correction Type",
@@ -1114,7 +994,7 @@
       "sort_order": 2
     },
     {
-      "id": 67,
+      "id": 57,
       "service_id": 110,
       "field_name": "current_name",
       "field_label": "Current Name in Aadhaar",
@@ -1126,7 +1006,7 @@
       "sort_order": 3
     },
     {
-      "id": 68,
+      "id": 58,
       "service_id": 110,
       "field_name": "new_name",
       "field_label": "New Correct Name",
@@ -1138,7 +1018,7 @@
       "sort_order": 4
     },
     {
-      "id": 69,
+      "id": 59,
       "service_id": 110,
       "field_name": "current_dob",
       "field_label": "Current Date of Birth",
@@ -1150,7 +1030,7 @@
       "sort_order": 5
     },
     {
-      "id": 70,
+      "id": 60,
       "service_id": 110,
       "field_name": "correct_dob",
       "field_label": "Correct Date of Birth",
@@ -1162,7 +1042,7 @@
       "sort_order": 6
     },
     {
-      "id": 71,
+      "id": 61,
       "service_id": 110,
       "field_name": "current_gender",
       "field_label": "Current Gender",
@@ -1174,7 +1054,7 @@
       "sort_order": 7
     },
     {
-      "id": 72,
+      "id": 62,
       "service_id": 110,
       "field_name": "correct_gender",
       "field_label": "Correct Gender",
@@ -1186,7 +1066,7 @@
       "sort_order": 8
     },
     {
-      "id": 73,
+      "id": 63,
       "service_id": 110,
       "field_name": "current_address",
       "field_label": "Current Address",
@@ -1198,7 +1078,7 @@
       "sort_order": 9
     },
     {
-      "id": 74,
+      "id": 64,
       "service_id": 110,
       "field_name": "new_address",
       "field_label": "New Complete Address",
@@ -1210,7 +1090,7 @@
       "sort_order": 10
     },
     {
-      "id": 75,
+      "id": 65,
       "service_id": 110,
       "field_name": "current_mobile",
       "field_label": "Current Mobile",
@@ -1222,7 +1102,7 @@
       "sort_order": 11
     },
     {
-      "id": 76,
+      "id": 66,
       "service_id": 110,
       "field_name": "new_mobile",
       "field_label": "New Mobile Number",
@@ -1234,7 +1114,7 @@
       "sort_order": 12
     },
     {
-      "id": 77,
+      "id": 67,
       "service_id": 110,
       "field_name": "new_email",
       "field_label": "New Email ID",
@@ -1246,7 +1126,7 @@
       "sort_order": 13
     },
     {
-      "id": 78,
+      "id": 68,
       "service_id": 110,
       "field_name": "other_details",
       "field_label": "Correction Details & Explanation",
@@ -1258,7 +1138,7 @@
       "sort_order": 14
     },
     {
-      "id": 79,
+      "id": 69,
       "service_id": 110,
       "field_name": "mobile_number",
       "field_label": "Mobile Number for Communication",
@@ -1270,535 +1150,7 @@
       "sort_order": 15
     },
     {
-      "id": 80,
-      "service_id": 4,
-      "field_name": "aadhaar_number",
-      "field_label": "12-Digit Aadhaar Number",
-      "field_type": "text",
-      "placeholder": "1234 5678 9012",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 1
-    },
-    {
-      "id": 81,
-      "service_id": 4,
-      "field_name": "applicant_name",
-      "field_label": "Applicant Name",
-      "field_type": "text",
-      "placeholder": "Karthik Subramanian",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 2
-    },
-    {
-      "id": 82,
-      "service_id": 4,
-      "field_name": "delivery_address",
-      "field_label": "Complete Delivery Address",
-      "field_type": "textarea",
-      "placeholder": "Door No, Street Name, City, Pincode",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 3
-    },
-    {
-      "id": 83,
-      "service_id": 4,
-      "field_name": "district",
-      "field_label": "District",
-      "field_type": "text",
-      "placeholder": "Chennai",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 4
-    },
-    {
-      "id": 84,
-      "service_id": 4,
-      "field_name": "state",
-      "field_label": "State",
-      "field_type": "text",
-      "placeholder": "Tamil Nadu",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 5
-    },
-    {
-      "id": 85,
-      "service_id": 4,
-      "field_name": "pincode",
-      "field_label": "Pincode",
-      "field_type": "text",
-      "placeholder": "600001",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 6
-    },
-    {
-      "id": 86,
-      "service_id": 4,
-      "field_name": "mobile_number",
-      "field_label": "Mobile Number for Tracking",
-      "field_type": "phone",
-      "placeholder": "9876543210",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 7
-    },
-    {
-      "id": 87,
-      "service_id": 4,
-      "field_name": "aadhaar_number",
-      "field_label": "12-Digit Aadhaar Number",
-      "field_type": "text",
-      "placeholder": "1234 5678 9012",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 1
-    },
-    {
-      "id": 88,
-      "service_id": 4,
-      "field_name": "applicant_name",
-      "field_label": "Applicant Name",
-      "field_type": "text",
-      "placeholder": "Karthik Subramanian",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 2
-    },
-    {
-      "id": 89,
-      "service_id": 4,
-      "field_name": "delivery_address",
-      "field_label": "Complete Delivery Address",
-      "field_type": "textarea",
-      "placeholder": "Door No, Street Name, City, Pincode",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 3
-    },
-    {
-      "id": 90,
-      "service_id": 4,
-      "field_name": "district",
-      "field_label": "District",
-      "field_type": "text",
-      "placeholder": "Chennai",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 4
-    },
-    {
-      "id": 91,
-      "service_id": 4,
-      "field_name": "state",
-      "field_label": "State",
-      "field_type": "text",
-      "placeholder": "Tamil Nadu",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 5
-    },
-    {
-      "id": 92,
-      "service_id": 4,
-      "field_name": "pincode",
-      "field_label": "Pincode",
-      "field_type": "text",
-      "placeholder": "600001",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 6
-    },
-    {
-      "id": 93,
-      "service_id": 4,
-      "field_name": "mobile_number",
-      "field_label": "Mobile Number for Tracking",
-      "field_type": "phone",
-      "placeholder": "9876543210",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 7
-    },
-    {
-      "id": 94,
-      "service_id": 5,
-      "field_name": "full_name",
-      "field_label": "Applicant Full Name",
-      "field_type": "text",
-      "placeholder": "Karthik Subramanian",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 1
-    },
-    {
-      "id": 95,
-      "service_id": 5,
-      "field_name": "father_name",
-      "field_label": "Father Full Name",
-      "field_type": "text",
-      "placeholder": "Subramanian S",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 2
-    },
-    {
-      "id": 96,
-      "service_id": 5,
-      "field_name": "dob",
-      "field_label": "Date of Birth",
-      "field_type": "date",
-      "placeholder": "",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 3
-    },
-    {
-      "id": 97,
-      "service_id": 5,
-      "field_name": "gender",
-      "field_label": "Gender",
-      "field_type": "select",
-      "placeholder": "",
-      "helpText": "",
-      "options_json": "[\"Male\",\"Female\",\"Transgender\"]",
-      "is_required": true,
-      "sort_order": 4
-    },
-    {
-      "id": 98,
-      "service_id": 5,
-      "field_name": "aadhaar_number",
-      "field_label": "12-Digit Aadhaar Number",
-      "field_type": "text",
-      "placeholder": "1234 5678 9012",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 5
-    },
-    {
-      "id": 99,
-      "service_id": 5,
-      "field_name": "mobile_number",
-      "field_label": "Mobile Number",
-      "field_type": "phone",
-      "placeholder": "9876543210",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 6
-    },
-    {
-      "id": 100,
-      "service_id": 5,
-      "field_name": "full_name",
-      "field_label": "Applicant Full Name",
-      "field_type": "text",
-      "placeholder": "Karthik Subramanian",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 1
-    },
-    {
-      "id": 101,
-      "service_id": 5,
-      "field_name": "father_name",
-      "field_label": "Father Full Name",
-      "field_type": "text",
-      "placeholder": "Subramanian S",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 2
-    },
-    {
-      "id": 102,
-      "service_id": 5,
-      "field_name": "dob",
-      "field_label": "Date of Birth",
-      "field_type": "date",
-      "placeholder": "",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 3
-    },
-    {
-      "id": 103,
-      "service_id": 5,
-      "field_name": "gender",
-      "field_label": "Gender",
-      "field_type": "select",
-      "placeholder": "",
-      "helpText": "",
-      "options_json": "[\"Male\",\"Female\",\"Transgender\"]",
-      "is_required": true,
-      "sort_order": 4
-    },
-    {
-      "id": 104,
-      "service_id": 5,
-      "field_name": "aadhaar_number",
-      "field_label": "12-Digit Aadhaar Number",
-      "field_type": "text",
-      "placeholder": "1234 5678 9012",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 5
-    },
-    {
-      "id": 105,
-      "service_id": 5,
-      "field_name": "mobile_number",
-      "field_label": "Mobile Number",
-      "field_type": "phone",
-      "placeholder": "9876543210",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 6
-    },
-    {
-      "id": 106,
-      "service_id": 6,
-      "field_name": "existing_pan",
-      "field_label": "Existing 10-Digit PAN Number",
-      "field_type": "text",
-      "placeholder": "ABCDE1234F",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 1
-    },
-    {
-      "id": 107,
-      "service_id": 6,
-      "field_name": "correction_type",
-      "field_label": "Field to Correct",
-      "field_type": "select",
-      "placeholder": "",
-      "helpText": "",
-      "options_json": "[\"Name\",\"Date of Birth\",\"Father's Name\",\"Address\",\"Signature\",\"Photograph\",\"Other\"]",
-      "is_required": true,
-      "sort_order": 2
-    },
-    {
-      "id": 108,
-      "service_id": 6,
-      "field_name": "correct_name",
-      "field_label": "Correct Applicant Full Name",
-      "field_type": "text",
-      "placeholder": "Karthik Subramanian",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 3
-    },
-    {
-      "id": 109,
-      "service_id": 6,
-      "field_name": "correct_dob",
-      "field_label": "Correct Date of Birth",
-      "field_type": "date",
-      "placeholder": "",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 4
-    },
-    {
-      "id": 110,
-      "service_id": 6,
-      "field_name": "correct_father_name",
-      "field_label": "Correct Father Full Name",
-      "field_type": "text",
-      "placeholder": "Subramanian S",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 5
-    },
-    {
-      "id": 111,
-      "service_id": 6,
-      "field_name": "new_address",
-      "field_label": "New Communication Address",
-      "field_type": "textarea",
-      "placeholder": "Door No, Street Name, Pincode",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 6
-    },
-    {
-      "id": 112,
-      "service_id": 6,
-      "field_name": "other_details",
-      "field_label": "Explanation for Correction",
-      "field_type": "textarea",
-      "placeholder": "Provide details regarding signature/photo or other corrections",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 7
-    },
-    {
-      "id": 113,
-      "service_id": 6,
-      "field_name": "aadhaar_number",
-      "field_label": "12-Digit Aadhaar Number",
-      "field_type": "text",
-      "placeholder": "1234 5678 9012",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 8
-    },
-    {
-      "id": 114,
-      "service_id": 6,
-      "field_name": "mobile_number",
-      "field_label": "Mobile Number",
-      "field_type": "phone",
-      "placeholder": "9876543210",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 9
-    },
-    {
-      "id": 115,
-      "service_id": 6,
-      "field_name": "existing_pan",
-      "field_label": "Existing 10-Digit PAN Number",
-      "field_type": "text",
-      "placeholder": "ABCDE1234F",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 1
-    },
-    {
-      "id": 116,
-      "service_id": 6,
-      "field_name": "correction_type",
-      "field_label": "Field to Correct",
-      "field_type": "select",
-      "placeholder": "",
-      "helpText": "",
-      "options_json": "[\"Name\",\"Date of Birth\",\"Father's Name\",\"Address\",\"Signature\",\"Photograph\",\"Other\"]",
-      "is_required": true,
-      "sort_order": 2
-    },
-    {
-      "id": 117,
-      "service_id": 6,
-      "field_name": "correct_name",
-      "field_label": "Correct Applicant Full Name",
-      "field_type": "text",
-      "placeholder": "Karthik Subramanian",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 3
-    },
-    {
-      "id": 118,
-      "service_id": 6,
-      "field_name": "correct_dob",
-      "field_label": "Correct Date of Birth",
-      "field_type": "date",
-      "placeholder": "",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 4
-    },
-    {
-      "id": 119,
-      "service_id": 6,
-      "field_name": "correct_father_name",
-      "field_label": "Correct Father Full Name",
-      "field_type": "text",
-      "placeholder": "Subramanian S",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 5
-    },
-    {
-      "id": 120,
-      "service_id": 6,
-      "field_name": "new_address",
-      "field_label": "New Communication Address",
-      "field_type": "textarea",
-      "placeholder": "Door No, Street Name, Pincode",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 6
-    },
-    {
-      "id": 121,
-      "service_id": 6,
-      "field_name": "other_details",
-      "field_label": "Explanation for Correction",
-      "field_type": "textarea",
-      "placeholder": "Provide details regarding signature/photo or other corrections",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 7
-    },
-    {
-      "id": 122,
-      "service_id": 6,
-      "field_name": "aadhaar_number",
-      "field_label": "12-Digit Aadhaar Number",
-      "field_type": "text",
-      "placeholder": "1234 5678 9012",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 8
-    },
-    {
-      "id": 123,
-      "service_id": 6,
-      "field_name": "mobile_number",
-      "field_label": "Mobile Number",
-      "field_type": "phone",
-      "placeholder": "9876543210",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 9
-    },
-    {
-      "id": 124,
+      "id": 70,
       "service_id": 7,
       "field_name": "pan_number",
       "field_label": "10-Digit PAN Number",
@@ -1810,7 +1162,7 @@
       "sort_order": 1
     },
     {
-      "id": 125,
+      "id": 71,
       "service_id": 7,
       "field_name": "aadhaar_number",
       "field_label": "12-Digit Aadhaar Number",
@@ -1822,7 +1174,7 @@
       "sort_order": 2
     },
     {
-      "id": 126,
+      "id": 72,
       "service_id": 7,
       "field_name": "name_as_per_aadhaar",
       "field_label": "Full Name as per Aadhaar",
@@ -1834,7 +1186,7 @@
       "sort_order": 3
     },
     {
-      "id": 127,
+      "id": 73,
       "service_id": 7,
       "field_name": "mobile_number",
       "field_label": "Linked Mobile Number",
@@ -1846,7 +1198,7 @@
       "sort_order": 4
     },
     {
-      "id": 128,
+      "id": 74,
       "service_id": 111,
       "field_name": "pan_number",
       "field_label": "10-Digit PAN Number / Acknowledgement No",
@@ -1858,7 +1210,7 @@
       "sort_order": 1
     },
     {
-      "id": 129,
+      "id": 75,
       "service_id": 111,
       "field_name": "aadhaar_number",
       "field_label": "12-Digit Aadhaar Number",
@@ -1870,7 +1222,7 @@
       "sort_order": 2
     },
     {
-      "id": 130,
+      "id": 76,
       "service_id": 111,
       "field_name": "mobile_number",
       "field_label": "Registered Mobile Number",
@@ -1882,7 +1234,7 @@
       "sort_order": 3
     },
     {
-      "id": 131,
+      "id": 77,
       "service_id": 8,
       "field_name": "full_name",
       "field_label": "Applicant Name",
@@ -1894,7 +1246,7 @@
       "sort_order": 1
     },
     {
-      "id": 132,
+      "id": 78,
       "service_id": 8,
       "field_name": "relative_name",
       "field_label": "Father / Husband Name",
@@ -1906,7 +1258,7 @@
       "sort_order": 2
     },
     {
-      "id": 133,
+      "id": 79,
       "service_id": 8,
       "field_name": "dob",
       "field_label": "Date of Birth",
@@ -1918,7 +1270,7 @@
       "sort_order": 3
     },
     {
-      "id": 134,
+      "id": 80,
       "service_id": 8,
       "field_name": "gender",
       "field_label": "Gender",
@@ -1930,7 +1282,7 @@
       "sort_order": 4
     },
     {
-      "id": 135,
+      "id": 81,
       "service_id": 8,
       "field_name": "assembly_constituency",
       "field_label": "Assembly Constituency",
@@ -1942,7 +1294,7 @@
       "sort_order": 5
     },
     {
-      "id": 136,
+      "id": 82,
       "service_id": 8,
       "field_name": "address",
       "field_label": "Residential Address",
@@ -1954,7 +1306,7 @@
       "sort_order": 6
     },
     {
-      "id": 137,
+      "id": 83,
       "service_id": 8,
       "field_name": "mobile_number",
       "field_label": "Mobile Number",
@@ -1966,7 +1318,7 @@
       "sort_order": 7
     },
     {
-      "id": 138,
+      "id": 84,
       "service_id": 9,
       "field_name": "epic_number",
       "field_label": "10-Digit Voter EPIC Number",
@@ -1978,7 +1330,7 @@
       "sort_order": 1
     },
     {
-      "id": 139,
+      "id": 85,
       "service_id": 9,
       "field_name": "applicant_name",
       "field_label": "Applicant Name",
@@ -1990,7 +1342,7 @@
       "sort_order": 2
     },
     {
-      "id": 140,
+      "id": 86,
       "service_id": 9,
       "field_name": "correction_type",
       "field_label": "Type of Correction",
@@ -2002,7 +1354,7 @@
       "sort_order": 3
     },
     {
-      "id": 141,
+      "id": 87,
       "service_id": 9,
       "field_name": "new_address",
       "field_label": "New Residential Address",
@@ -2014,7 +1366,7 @@
       "sort_order": 4
     },
     {
-      "id": 142,
+      "id": 88,
       "service_id": 9,
       "field_name": "mobile_number",
       "field_label": "Mobile Number",
@@ -2026,7 +1378,7 @@
       "sort_order": 5
     },
     {
-      "id": 143,
+      "id": 89,
       "service_id": 10,
       "field_name": "applicant_name",
       "field_label": "Applicant Name",
@@ -2038,7 +1390,7 @@
       "sort_order": 1
     },
     {
-      "id": 144,
+      "id": 90,
       "service_id": 10,
       "field_name": "father_husband_name",
       "field_label": "Father / Husband Name",
@@ -2050,7 +1402,7 @@
       "sort_order": 2
     },
     {
-      "id": 145,
+      "id": 91,
       "service_id": 10,
       "field_name": "annual_income",
       "field_label": "Total Family Annual Income (₹)",
@@ -2062,7 +1414,7 @@
       "sort_order": 3
     },
     {
-      "id": 146,
+      "id": 92,
       "service_id": 10,
       "field_name": "occupation",
       "field_label": "Primary Occupation",
@@ -2074,7 +1426,7 @@
       "sort_order": 4
     },
     {
-      "id": 147,
+      "id": 93,
       "service_id": 10,
       "field_name": "address",
       "field_label": "Residential Address",
@@ -2086,7 +1438,7 @@
       "sort_order": 5
     },
     {
-      "id": 148,
+      "id": 94,
       "service_id": 10,
       "field_name": "mobile_number",
       "field_label": "Mobile Number",
@@ -2098,7 +1450,7 @@
       "sort_order": 6
     },
     {
-      "id": 149,
+      "id": 95,
       "service_id": 11,
       "field_name": "applicant_name",
       "field_label": "Applicant Name",
@@ -2110,7 +1462,7 @@
       "sort_order": 1
     },
     {
-      "id": 150,
+      "id": 96,
       "service_id": 11,
       "field_name": "father_name",
       "field_label": "Father Name",
@@ -2122,7 +1474,7 @@
       "sort_order": 2
     },
     {
-      "id": 151,
+      "id": 97,
       "service_id": 11,
       "field_name": "caste_category",
       "field_label": "Community Category",
@@ -2134,7 +1486,7 @@
       "sort_order": 3
     },
     {
-      "id": 152,
+      "id": 98,
       "service_id": 11,
       "field_name": "sub_caste",
       "field_label": "Specific Sub-Caste",
@@ -2146,7 +1498,7 @@
       "sort_order": 4
     },
     {
-      "id": 153,
+      "id": 99,
       "service_id": 11,
       "field_name": "address",
       "field_label": "Residential Address",
@@ -2158,7 +1510,7 @@
       "sort_order": 5
     },
     {
-      "id": 154,
+      "id": 100,
       "service_id": 11,
       "field_name": "mobile_number",
       "field_label": "Mobile Number",
@@ -2170,7 +1522,7 @@
       "sort_order": 6
     },
     {
-      "id": 155,
+      "id": 101,
       "service_id": 12,
       "field_name": "applicant_name",
       "field_label": "Applicant Name",
@@ -2182,7 +1534,7 @@
       "sort_order": 1
     },
     {
-      "id": 156,
+      "id": 102,
       "service_id": 12,
       "field_name": "father_name",
       "field_label": "Father / Guardian Name",
@@ -2194,7 +1546,7 @@
       "sort_order": 2
     },
     {
-      "id": 157,
+      "id": 103,
       "service_id": 12,
       "field_name": "years_of_residence",
       "field_label": "Number of Years Residing",
@@ -2206,7 +1558,7 @@
       "sort_order": 3
     },
     {
-      "id": 158,
+      "id": 104,
       "service_id": 12,
       "field_name": "address",
       "field_label": "Complete Residential Address",
@@ -2218,7 +1570,7 @@
       "sort_order": 4
     },
     {
-      "id": 159,
+      "id": 105,
       "service_id": 12,
       "field_name": "mobile_number",
       "field_label": "Mobile Number",
@@ -2230,7 +1582,7 @@
       "sort_order": 5
     },
     {
-      "id": 160,
+      "id": 106,
       "service_id": 13,
       "field_name": "student_name",
       "field_label": "Student Full Name",
@@ -2242,7 +1594,7 @@
       "sort_order": 1
     },
     {
-      "id": 161,
+      "id": 107,
       "service_id": 13,
       "field_name": "father_name",
       "field_label": "Father Name",
@@ -2254,7 +1606,7 @@
       "sort_order": 2
     },
     {
-      "id": 162,
+      "id": 108,
       "service_id": 13,
       "field_name": "mother_name",
       "field_label": "Mother Name",
@@ -2266,7 +1618,7 @@
       "sort_order": 3
     },
     {
-      "id": 163,
+      "id": 109,
       "service_id": 13,
       "field_name": "institution_applied",
       "field_label": "College / Institution Name",
@@ -2278,7 +1630,7 @@
       "sort_order": 4
     },
     {
-      "id": 164,
+      "id": 110,
       "service_id": 13,
       "field_name": "mobile_number",
       "field_label": "Mobile Number",
@@ -2290,7 +1642,7 @@
       "sort_order": 5
     },
     {
-      "id": 165,
+      "id": 111,
       "service_id": 14,
       "field_name": "deceased_name",
       "field_label": "Deceased Person Full Name",
@@ -2302,7 +1654,7 @@
       "sort_order": 1
     },
     {
-      "id": 166,
+      "id": 112,
       "service_id": 14,
       "field_name": "date_of_death",
       "field_label": "Date of Death",
@@ -2314,7 +1666,7 @@
       "sort_order": 2
     },
     {
-      "id": 167,
+      "id": 113,
       "service_id": 14,
       "field_name": "applicant_relation",
       "field_label": "Applicant Relationship with Deceased",
@@ -2326,7 +1678,7 @@
       "sort_order": 3
     },
     {
-      "id": 168,
+      "id": 114,
       "service_id": 14,
       "field_name": "heirs_count",
       "field_label": "Total Number of Legal Heirs",
@@ -2338,7 +1690,7 @@
       "sort_order": 4
     },
     {
-      "id": 169,
+      "id": 115,
       "service_id": 14,
       "field_name": "mobile_number",
       "field_label": "Applicant Mobile Number",
@@ -2350,7 +1702,7 @@
       "sort_order": 5
     },
     {
-      "id": 170,
+      "id": 116,
       "service_id": 15,
       "field_name": "buyer_name",
       "field_label": "New Owner / Buyer Name",
@@ -2362,7 +1714,7 @@
       "sort_order": 1
     },
     {
-      "id": 171,
+      "id": 117,
       "service_id": 15,
       "field_name": "seller_name",
       "field_label": "Previous Owner / Seller Name",
@@ -2374,7 +1726,7 @@
       "sort_order": 2
     },
     {
-      "id": 172,
+      "id": 118,
       "service_id": 15,
       "field_name": "survey_number",
       "field_label": "Land Survey / Sub-Division Number",
@@ -2386,7 +1738,7 @@
       "sort_order": 3
     },
     {
-      "id": 173,
+      "id": 119,
       "service_id": 15,
       "field_name": "village_taluk",
       "field_label": "Village & Taluk Name",
@@ -2398,7 +1750,7 @@
       "sort_order": 4
     },
     {
-      "id": 174,
+      "id": 120,
       "service_id": 15,
       "field_name": "district",
       "field_label": "District",
@@ -2410,7 +1762,7 @@
       "sort_order": 5
     },
     {
-      "id": 175,
+      "id": 121,
       "service_id": 15,
       "field_name": "mobile_number",
       "field_label": "Applicant Mobile Number",
@@ -2422,7 +1774,7 @@
       "sort_order": 6
     },
     {
-      "id": 176,
+      "id": 122,
       "service_id": 16,
       "field_name": "survey_number",
       "field_label": "Survey / Sub-Division Number",
@@ -2434,7 +1786,7 @@
       "sort_order": 1
     },
     {
-      "id": 177,
+      "id": 123,
       "service_id": 16,
       "field_name": "village_taluk",
       "field_label": "Village & Taluk Name",
@@ -2446,7 +1798,7 @@
       "sort_order": 2
     },
     {
-      "id": 178,
+      "id": 124,
       "service_id": 16,
       "field_name": "district",
       "field_label": "District",
@@ -2458,7 +1810,7 @@
       "sort_order": 3
     },
     {
-      "id": 179,
+      "id": 125,
       "service_id": 16,
       "field_name": "mobile_number",
       "field_label": "Mobile Number",
@@ -2470,7 +1822,7 @@
       "sort_order": 4
     },
     {
-      "id": 180,
+      "id": 126,
       "service_id": 17,
       "field_name": "survey_number",
       "field_label": "Survey & Sub-Division Number",
@@ -2482,7 +1834,7 @@
       "sort_order": 1
     },
     {
-      "id": 181,
+      "id": 127,
       "service_id": 17,
       "field_name": "taluk_village",
       "field_label": "Taluk & Village Name",
@@ -2494,7 +1846,7 @@
       "sort_order": 2
     },
     {
-      "id": 182,
+      "id": 128,
       "service_id": 17,
       "field_name": "mobile_number",
       "field_label": "Mobile Number",
@@ -2506,7 +1858,7 @@
       "sort_order": 3
     },
     {
-      "id": 183,
+      "id": 129,
       "service_id": 18,
       "field_name": "survey_number",
       "field_label": "Survey / Plot Number",
@@ -2518,7 +1870,7 @@
       "sort_order": 1
     },
     {
-      "id": 184,
+      "id": 130,
       "service_id": 18,
       "field_name": "search_period",
       "field_label": "Search Period (Years)",
@@ -2530,7 +1882,7 @@
       "sort_order": 2
     },
     {
-      "id": 185,
+      "id": 131,
       "service_id": 18,
       "field_name": "village_sub_registrar",
       "field_label": "Village & Sub-Registrar Office (SRO)",
@@ -2542,7 +1894,7 @@
       "sort_order": 3
     },
     {
-      "id": 186,
+      "id": 132,
       "service_id": 18,
       "field_name": "mobile_number",
       "field_label": "Mobile Number",
@@ -2554,7 +1906,7 @@
       "sort_order": 4
     },
     {
-      "id": 187,
+      "id": 133,
       "service_id": 19,
       "field_name": "given_name",
       "field_label": "Given Name (First & Middle Name)",
@@ -2566,7 +1918,7 @@
       "sort_order": 1
     },
     {
-      "id": 188,
+      "id": 134,
       "service_id": 19,
       "field_name": "surname",
       "field_label": "Surname",
@@ -2578,7 +1930,7 @@
       "sort_order": 2
     },
     {
-      "id": 189,
+      "id": 135,
       "service_id": 19,
       "field_name": "dob",
       "field_label": "Date of Birth",
@@ -2590,7 +1942,7 @@
       "sort_order": 3
     },
     {
-      "id": 190,
+      "id": 136,
       "service_id": 19,
       "field_name": "place_of_birth",
       "field_label": "Place of Birth (City/Village)",
@@ -2602,7 +1954,7 @@
       "sort_order": 4
     },
     {
-      "id": 191,
+      "id": 137,
       "service_id": 19,
       "field_name": "employment_type",
       "field_label": "Employment Category",
@@ -2614,7 +1966,7 @@
       "sort_order": 5
     },
     {
-      "id": 192,
+      "id": 138,
       "service_id": 19,
       "field_name": "mobile_number",
       "field_label": "Mobile Number",
@@ -2626,7 +1978,7 @@
       "sort_order": 6
     },
     {
-      "id": 193,
+      "id": 139,
       "service_id": 19,
       "field_name": "email",
       "field_label": "Email Address",
@@ -2638,7 +1990,7 @@
       "sort_order": 7
     },
     {
-      "id": 194,
+      "id": 140,
       "service_id": 20,
       "field_name": "passport_number",
       "field_label": "Existing Passport Number",
@@ -2650,7 +2002,7 @@
       "sort_order": 1
     },
     {
-      "id": 195,
+      "id": 141,
       "service_id": 20,
       "field_name": "expiry_date",
       "field_label": "Passport Expiry Date",
@@ -2662,7 +2014,7 @@
       "sort_order": 2
     },
     {
-      "id": 196,
+      "id": 142,
       "service_id": 20,
       "field_name": "reason_for_reissue",
       "field_label": "Reason for Renewal/Re-issue",
@@ -2674,7 +2026,7 @@
       "sort_order": 3
     },
     {
-      "id": 197,
+      "id": 143,
       "service_id": 20,
       "field_name": "mobile_number",
       "field_label": "Mobile Number",
@@ -2686,7 +2038,7 @@
       "sort_order": 4
     },
     {
-      "id": 198,
+      "id": 144,
       "service_id": 21,
       "field_name": "applicant_name",
       "field_label": "Applicant Name as per ID",
@@ -2698,7 +2050,7 @@
       "sort_order": 1
     },
     {
-      "id": 199,
+      "id": 145,
       "service_id": 21,
       "field_name": "dob",
       "field_label": "Date of Birth",
@@ -2710,7 +2062,7 @@
       "sort_order": 2
     },
     {
-      "id": 200,
+      "id": 146,
       "service_id": 21,
       "field_name": "vehicle_class",
       "field_label": "Vehicle Category",
@@ -2722,7 +2074,7 @@
       "sort_order": 3
     },
     {
-      "id": 201,
+      "id": 147,
       "service_id": 21,
       "field_name": "rto_office",
       "field_label": "Nearest RTO Office",
@@ -2734,7 +2086,7 @@
       "sort_order": 4
     },
     {
-      "id": 202,
+      "id": 148,
       "service_id": 21,
       "field_name": "mobile_number",
       "field_label": "Mobile Number",
@@ -2746,7 +2098,7 @@
       "sort_order": 5
     },
     {
-      "id": 203,
+      "id": 149,
       "service_id": 22,
       "field_name": "dl_number",
       "field_label": "16-Digit DL Number",
@@ -2758,7 +2110,7 @@
       "sort_order": 1
     },
     {
-      "id": 204,
+      "id": 150,
       "service_id": 22,
       "field_name": "dob",
       "field_label": "Date of Birth",
@@ -2770,7 +2122,7 @@
       "sort_order": 2
     },
     {
-      "id": 205,
+      "id": 151,
       "service_id": 22,
       "field_name": "mobile_number",
       "field_label": "Mobile Number",
@@ -2782,7 +2134,7 @@
       "sort_order": 3
     },
     {
-      "id": 206,
+      "id": 152,
       "service_id": 23,
       "field_name": "enterprise_name",
       "field_label": "Enterprise / Business Name",
@@ -2794,7 +2146,7 @@
       "sort_order": 1
     },
     {
-      "id": 207,
+      "id": 153,
       "service_id": 23,
       "field_name": "owner_name",
       "field_label": "Proprietor / Managing Partner Name",
@@ -2806,7 +2158,7 @@
       "sort_order": 2
     },
     {
-      "id": 208,
+      "id": 154,
       "service_id": 23,
       "field_name": "aadhaar_number",
       "field_label": "Owner 12-Digit Aadhaar Number",
@@ -2818,7 +2170,7 @@
       "sort_order": 3
     },
     {
-      "id": 209,
+      "id": 155,
       "service_id": 23,
       "field_name": "pan_number",
       "field_label": "Business / Owner PAN Number",
@@ -2830,7 +2182,7 @@
       "sort_order": 4
     },
     {
-      "id": 210,
+      "id": 156,
       "service_id": 23,
       "field_name": "business_type",
       "field_label": "Major Activity",
@@ -2842,7 +2194,7 @@
       "sort_order": 5
     },
     {
-      "id": 211,
+      "id": 157,
       "service_id": 23,
       "field_name": "bank_account",
       "field_label": "Bank Account Number & IFSC",
@@ -2854,7 +2206,7 @@
       "sort_order": 6
     },
     {
-      "id": 212,
+      "id": 158,
       "service_id": 23,
       "field_name": "mobile_number",
       "field_label": "Mobile Number for OTP",
@@ -2866,7 +2218,7 @@
       "sort_order": 7
     },
     {
-      "id": 213,
+      "id": 159,
       "service_id": 24,
       "field_name": "business_name",
       "field_label": "Trade / Business Name",
@@ -2878,7 +2230,7 @@
       "sort_order": 1
     },
     {
-      "id": 214,
+      "id": 160,
       "service_id": 24,
       "field_name": "constitution_type",
       "field_label": "Constitution of Business",
@@ -2890,7 +2242,7 @@
       "sort_order": 2
     },
     {
-      "id": 215,
+      "id": 161,
       "service_id": 24,
       "field_name": "pan_number",
       "field_label": "10-Digit PAN Number",
@@ -2902,7 +2254,7 @@
       "sort_order": 3
     },
     {
-      "id": 216,
+      "id": 162,
       "service_id": 24,
       "field_name": "business_address",
       "field_label": "Principal Place of Business Address",
@@ -2914,7 +2266,7 @@
       "sort_order": 4
     },
     {
-      "id": 217,
+      "id": 163,
       "service_id": 24,
       "field_name": "mobile_number",
       "field_label": "Authorized Mobile Number",
@@ -2926,7 +2278,7 @@
       "sort_order": 5
     },
     {
-      "id": 218,
+      "id": 164,
       "service_id": 25,
       "field_name": "eb_consumer_number",
       "field_label": "EB Service Connection Consumer Number",
@@ -2938,7 +2290,7 @@
       "sort_order": 1
     },
     {
-      "id": 219,
+      "id": 165,
       "service_id": 25,
       "field_name": "current_name",
       "field_label": "Current Name in EB Card",
@@ -2950,7 +2302,7 @@
       "sort_order": 2
     },
     {
-      "id": 220,
+      "id": 166,
       "service_id": 25,
       "field_name": "new_owner_name",
       "field_label": "New Property Owner Name",
@@ -2962,7 +2314,7 @@
       "sort_order": 3
     },
     {
-      "id": 221,
+      "id": 167,
       "service_id": 25,
       "field_name": "mobile_number",
       "field_label": "Mobile Number",
@@ -2974,7 +2326,7 @@
       "sort_order": 4
     },
     {
-      "id": 222,
+      "id": 168,
       "service_id": 26,
       "field_name": "applicant_name",
       "field_label": "Applicant Name",
@@ -2986,7 +2338,7 @@
       "sort_order": 1
     },
     {
-      "id": 223,
+      "id": 169,
       "service_id": 26,
       "field_name": "tariff_category",
       "field_label": "Tariff Type",
@@ -2998,7 +2350,7 @@
       "sort_order": 2
     },
     {
-      "id": 224,
+      "id": 170,
       "service_id": 26,
       "field_name": "building_address",
       "field_label": "Building Address",
@@ -3010,7 +2362,7 @@
       "sort_order": 3
     },
     {
-      "id": 225,
+      "id": 171,
       "service_id": 26,
       "field_name": "mobile_number",
       "field_label": "Mobile Number",
@@ -3022,7 +2374,7 @@
       "sort_order": 4
     },
     {
-      "id": 226,
+      "id": 172,
       "service_id": 27,
       "field_name": "head_family_name",
       "field_label": "Head of Family Full Name",
@@ -3034,7 +2386,7 @@
       "sort_order": 1
     },
     {
-      "id": 227,
+      "id": 173,
       "service_id": 27,
       "field_name": "father_husband_name",
       "field_label": "Father / Husband Name",
@@ -3046,7 +2398,7 @@
       "sort_order": 2
     },
     {
-      "id": 228,
+      "id": 174,
       "service_id": 27,
       "field_name": "members_count",
       "field_label": "Total Number of Family Members",
@@ -3058,7 +2410,7 @@
       "sort_order": 3
     },
     {
-      "id": 229,
+      "id": 175,
       "service_id": 27,
       "field_name": "address",
       "field_label": "Residential Address",
@@ -3070,7 +2422,7 @@
       "sort_order": 4
     },
     {
-      "id": 230,
+      "id": 176,
       "service_id": 27,
       "field_name": "mobile_number",
       "field_label": "Mobile Number",
@@ -3082,7 +2434,7 @@
       "sort_order": 5
     },
     {
-      "id": 231,
+      "id": 177,
       "service_id": 28,
       "field_name": "smart_card_number",
       "field_label": "12-Digit Smart Ration Card Number",
@@ -3094,7 +2446,7 @@
       "sort_order": 1
     },
     {
-      "id": 232,
+      "id": 178,
       "service_id": 28,
       "field_name": "new_member_name",
       "field_label": "New Member Name",
@@ -3106,7 +2458,7 @@
       "sort_order": 2
     },
     {
-      "id": 233,
+      "id": 179,
       "service_id": 28,
       "field_name": "relation_to_head",
       "field_label": "Relationship with Head of Family",
@@ -3118,7 +2470,7 @@
       "sort_order": 3
     },
     {
-      "id": 234,
+      "id": 180,
       "service_id": 28,
       "field_name": "new_member_dob",
       "field_label": "Date of Birth",
@@ -3130,7 +2482,7 @@
       "sort_order": 4
     },
     {
-      "id": 235,
+      "id": 181,
       "service_id": 28,
       "field_name": "mobile_number",
       "field_label": "Mobile Number",
@@ -3142,331 +2494,7 @@
       "sort_order": 5
     },
     {
-      "id": 236,
-      "service_id": 110,
-      "field_name": "aadhaar_number",
-      "field_label": "12-Digit Aadhaar Number",
-      "field_type": "text",
-      "placeholder": "1234 5678 9012",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 1
-    },
-    {
-      "id": 237,
-      "service_id": 110,
-      "field_name": "correction_type",
-      "field_label": "Correction Type",
-      "field_type": "select",
-      "placeholder": "",
-      "helpText": "",
-      "options_json": "[\"Name\",\"Date of Birth\",\"Gender\",\"Address\",\"Mobile Number\",\"Email\",\"Other\"]",
-      "is_required": true,
-      "sort_order": 2
-    },
-    {
-      "id": 238,
-      "service_id": 110,
-      "field_name": "current_name",
-      "field_label": "Current Name in Aadhaar",
-      "field_type": "text",
-      "placeholder": "Current Name",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 3
-    },
-    {
-      "id": 239,
-      "service_id": 110,
-      "field_name": "new_name",
-      "field_label": "New Correct Name",
-      "field_type": "text",
-      "placeholder": "New Name",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 4
-    },
-    {
-      "id": 240,
-      "service_id": 110,
-      "field_name": "current_dob",
-      "field_label": "Current Date of Birth",
-      "field_type": "date",
-      "placeholder": "",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 5
-    },
-    {
-      "id": 241,
-      "service_id": 110,
-      "field_name": "correct_dob",
-      "field_label": "Correct Date of Birth",
-      "field_type": "date",
-      "placeholder": "",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 6
-    },
-    {
-      "id": 242,
-      "service_id": 110,
-      "field_name": "current_gender",
-      "field_label": "Current Gender",
-      "field_type": "select",
-      "placeholder": "",
-      "helpText": "",
-      "options_json": "[\"Male\",\"Female\",\"Transgender\"]",
-      "is_required": true,
-      "sort_order": 7
-    },
-    {
-      "id": 243,
-      "service_id": 110,
-      "field_name": "correct_gender",
-      "field_label": "Correct Gender",
-      "field_type": "select",
-      "placeholder": "",
-      "helpText": "",
-      "options_json": "[\"Male\",\"Female\",\"Transgender\"]",
-      "is_required": true,
-      "sort_order": 8
-    },
-    {
-      "id": 244,
-      "service_id": 110,
-      "field_name": "current_address",
-      "field_label": "Current Address",
-      "field_type": "textarea",
-      "placeholder": "Current Address",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 9
-    },
-    {
-      "id": 245,
-      "service_id": 110,
-      "field_name": "new_address",
-      "field_label": "New Complete Address",
-      "field_type": "textarea",
-      "placeholder": "New Address",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 10
-    },
-    {
-      "id": 246,
-      "service_id": 110,
-      "field_name": "current_mobile",
-      "field_label": "Current Mobile",
-      "field_type": "phone",
-      "placeholder": "Old Mobile Number",
-      "helpText": "",
-      "options_json": null,
-      "is_required": false,
-      "sort_order": 11
-    },
-    {
-      "id": 247,
-      "service_id": 110,
-      "field_name": "new_mobile",
-      "field_label": "New Mobile Number",
-      "field_type": "phone",
-      "placeholder": "New Mobile Number",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 12
-    },
-    {
-      "id": 248,
-      "service_id": 110,
-      "field_name": "new_email",
-      "field_label": "New Email ID",
-      "field_type": "email",
-      "placeholder": "New Email Address",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 13
-    },
-    {
-      "id": 249,
-      "service_id": 110,
-      "field_name": "other_details",
-      "field_label": "Correction Details & Explanation",
-      "field_type": "textarea",
-      "placeholder": "Explain what needs correction",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 14
-    },
-    {
-      "id": 250,
-      "service_id": 110,
-      "field_name": "mobile_number",
-      "field_label": "Mobile Number for Communication",
-      "field_type": "phone",
-      "placeholder": "9876543210",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 15
-    },
-    {
-      "id": 251,
-      "service_id": 5,
-      "field_name": "full_name",
-      "field_label": "Applicant Full Name",
-      "field_type": "text",
-      "placeholder": "Karthik Subramanian",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 1
-    },
-    {
-      "id": 252,
-      "service_id": 5,
-      "field_name": "father_name",
-      "field_label": "Father Full Name",
-      "field_type": "text",
-      "placeholder": "Subramanian S",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 2
-    },
-    {
-      "id": 253,
-      "service_id": 5,
-      "field_name": "mother_name",
-      "field_label": "Mother Full Name",
-      "field_type": "text",
-      "placeholder": "Lakshmi S",
-      "helpText": "",
-      "options_json": null,
-      "is_required": false,
-      "sort_order": 3
-    },
-    {
-      "id": 254,
-      "service_id": 5,
-      "field_name": "dob",
-      "field_label": "Date of Birth",
-      "field_type": "date",
-      "placeholder": "",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 4
-    },
-    {
-      "id": 255,
-      "service_id": 5,
-      "field_name": "gender",
-      "field_label": "Gender",
-      "field_type": "select",
-      "placeholder": "",
-      "helpText": "",
-      "options_json": "[\"Male\",\"Female\",\"Transgender\"]",
-      "is_required": true,
-      "sort_order": 5
-    },
-    {
-      "id": 256,
-      "service_id": 5,
-      "field_name": "aadhaar_number",
-      "field_label": "12-Digit Aadhaar Number",
-      "field_type": "text",
-      "placeholder": "1234 5678 9012",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 6
-    },
-    {
-      "id": 257,
-      "service_id": 5,
-      "field_name": "address",
-      "field_label": "Residential Address",
-      "field_type": "textarea",
-      "placeholder": "Door No, Street, City, District, State, Pincode",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 7
-    },
-    {
-      "id": 258,
-      "service_id": 5,
-      "field_name": "mobile_number",
-      "field_label": "Mobile Number",
-      "field_type": "phone",
-      "placeholder": "9876543210",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 8
-    },
-    {
-      "id": 259,
-      "service_id": 5,
-      "field_name": "email",
-      "field_label": "Email Address",
-      "field_type": "email",
-      "placeholder": "user@example.com",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 9
-    },
-    {
-      "id": 260,
-      "service_id": 111,
-      "field_name": "pan_number",
-      "field_label": "10-Digit PAN Number / Acknowledgement No",
-      "field_type": "text",
-      "placeholder": "ABCDE1234F or Ack No",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 1
-    },
-    {
-      "id": 261,
-      "service_id": 111,
-      "field_name": "aadhaar_number",
-      "field_label": "12-Digit Aadhaar Number",
-      "field_type": "text",
-      "placeholder": "1234 5678 9012",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 2
-    },
-    {
-      "id": 262,
-      "service_id": 111,
-      "field_name": "mobile_number",
-      "field_label": "Registered Mobile Number",
-      "field_type": "phone",
-      "placeholder": "9876543210",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 3
-    },
-    {
-      "id": 263,
+      "id": 182,
       "service_id": 111,
       "field_name": "pan_ack_no",
       "field_label": "15-Digit Acknowledgement Number",
@@ -3478,43 +2506,7 @@
       "sort_order": 1
     },
     {
-      "id": 264,
-      "service_id": 111,
-      "field_name": "mobile_number",
-      "field_label": "Registered Mobile Number",
-      "field_type": "phone",
-      "placeholder": "9876543210",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 2
-    },
-    {
-      "id": 265,
-      "service_id": 12,
-      "field_name": "applicant_name",
-      "field_label": "Applicant Name",
-      "field_type": "text",
-      "placeholder": "Karthik Subramanian",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 1
-    },
-    {
-      "id": 266,
-      "service_id": 12,
-      "field_name": "father_name",
-      "field_label": "Father / Husband Name",
-      "field_type": "text",
-      "placeholder": "Subramanian S",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 2
-    },
-    {
-      "id": 267,
+      "id": 183,
       "service_id": 12,
       "field_name": "current_address",
       "field_label": "Current Residential Address",
@@ -3526,7 +2518,7 @@
       "sort_order": 3
     },
     {
-      "id": 268,
+      "id": 184,
       "service_id": 12,
       "field_name": "duration_residence",
       "field_label": "Duration of Residence (in Years)",
@@ -3538,31 +2530,7 @@
       "sort_order": 4
     },
     {
-      "id": 269,
-      "service_id": 12,
-      "field_name": "mobile_number",
-      "field_label": "Mobile Number",
-      "field_type": "phone",
-      "placeholder": "9876543210",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 5
-    },
-    {
-      "id": 270,
-      "service_id": 12,
-      "field_name": "applicant_name",
-      "field_label": "Applicant Name",
-      "field_type": "text",
-      "placeholder": "Karthik Subramanian",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 1
-    },
-    {
-      "id": 271,
+      "id": 185,
       "service_id": 12,
       "field_name": "dob",
       "field_label": "Date of Birth",
@@ -3574,7 +2542,7 @@
       "sort_order": 2
     },
     {
-      "id": 272,
+      "id": 186,
       "service_id": 12,
       "field_name": "place_of_birth",
       "field_label": "Place of Birth (Village/Town)",
@@ -3586,79 +2554,7 @@
       "sort_order": 3
     },
     {
-      "id": 273,
-      "service_id": 12,
-      "field_name": "father_name",
-      "field_label": "Father / Guardian Name",
-      "field_type": "text",
-      "placeholder": "Subramanian S",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 4
-    },
-    {
-      "id": 274,
-      "service_id": 12,
-      "field_name": "address",
-      "field_label": "Native Residential Address",
-      "field_type": "textarea",
-      "placeholder": "Complete native address",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 5
-    },
-    {
-      "id": 275,
-      "service_id": 12,
-      "field_name": "mobile_number",
-      "field_label": "Mobile Number",
-      "field_type": "phone",
-      "placeholder": "9876543210",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 6
-    },
-    {
-      "id": 276,
-      "service_id": 15,
-      "field_name": "buyer_name",
-      "field_label": "New Owner / Buyer Name",
-      "field_type": "text",
-      "placeholder": "Karthik Subramanian",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 1
-    },
-    {
-      "id": 277,
-      "service_id": 15,
-      "field_name": "seller_name",
-      "field_label": "Current / Previous Owner Name",
-      "field_type": "text",
-      "placeholder": "Ramesh Kumar",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 2
-    },
-    {
-      "id": 278,
-      "service_id": 15,
-      "field_name": "survey_number",
-      "field_label": "Survey Number",
-      "field_type": "text",
-      "placeholder": "123/4",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 3
-    },
-    {
-      "id": 279,
+      "id": 187,
       "service_id": 15,
       "field_name": "sub_division",
       "field_label": "Sub-Division Number",
@@ -3670,7 +2566,7 @@
       "sort_order": 4
     },
     {
-      "id": 280,
+      "id": 188,
       "service_id": 15,
       "field_name": "village",
       "field_label": "Village Name",
@@ -3682,7 +2578,7 @@
       "sort_order": 5
     },
     {
-      "id": 281,
+      "id": 189,
       "service_id": 15,
       "field_name": "taluk",
       "field_label": "Taluk Name",
@@ -3694,19 +2590,7 @@
       "sort_order": 6
     },
     {
-      "id": 282,
-      "service_id": 15,
-      "field_name": "district",
-      "field_label": "District",
-      "field_type": "text",
-      "placeholder": "Chennai",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 7
-    },
-    {
-      "id": 283,
+      "id": 190,
       "service_id": 15,
       "field_name": "property_details",
       "field_label": "Property Extent / Sq Ft Details",
@@ -3718,19 +2602,7 @@
       "sort_order": 8
     },
     {
-      "id": 284,
-      "service_id": 15,
-      "field_name": "mobile_number",
-      "field_label": "Applicant Mobile Number",
-      "field_type": "phone",
-      "placeholder": "9876543210",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 9
-    },
-    {
-      "id": 285,
+      "id": 191,
       "service_id": 151,
       "field_name": "applicant_name",
       "field_label": "Landowner Name",
@@ -3742,7 +2614,7 @@
       "sort_order": 1
     },
     {
-      "id": 286,
+      "id": 192,
       "service_id": 151,
       "field_name": "survey_number",
       "field_label": "Parent Survey Number",
@@ -3754,7 +2626,7 @@
       "sort_order": 2
     },
     {
-      "id": 287,
+      "id": 193,
       "service_id": 151,
       "field_name": "existing_sub_division",
       "field_label": "Existing Sub-Division",
@@ -3766,7 +2638,7 @@
       "sort_order": 3
     },
     {
-      "id": 288,
+      "id": 194,
       "service_id": 151,
       "field_name": "village",
       "field_label": "Village Name",
@@ -3778,7 +2650,7 @@
       "sort_order": 4
     },
     {
-      "id": 289,
+      "id": 195,
       "service_id": 151,
       "field_name": "taluk",
       "field_label": "Taluk Name",
@@ -3790,7 +2662,7 @@
       "sort_order": 5
     },
     {
-      "id": 290,
+      "id": 196,
       "service_id": 151,
       "field_name": "district",
       "field_label": "District",
@@ -3802,7 +2674,7 @@
       "sort_order": 6
     },
     {
-      "id": 291,
+      "id": 197,
       "service_id": 151,
       "field_name": "property_details",
       "field_label": "Area to Sub-divide (in Sq Ft / Cents)",
@@ -3814,7 +2686,7 @@
       "sort_order": 7
     },
     {
-      "id": 292,
+      "id": 198,
       "service_id": 151,
       "field_name": "mobile_number",
       "field_label": "Mobile Number",
@@ -3826,79 +2698,7 @@
       "sort_order": 8
     },
     {
-      "id": 293,
-      "service_id": 16,
-      "field_name": "survey_number",
-      "field_label": "Survey Number / Patta Number",
-      "field_type": "text",
-      "placeholder": "123/4A or Patta No 567",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 1
-    },
-    {
-      "id": 294,
-      "service_id": 16,
-      "field_name": "village_taluk",
-      "field_label": "Village & Taluk Name",
-      "field_type": "text",
-      "placeholder": "Village & Taluk Name",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 2
-    },
-    {
-      "id": 295,
-      "service_id": 16,
-      "field_name": "district",
-      "field_label": "District",
-      "field_type": "text",
-      "placeholder": "Chennai",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 3
-    },
-    {
-      "id": 296,
-      "service_id": 16,
-      "field_name": "mobile_number",
-      "field_label": "Mobile Number",
-      "field_type": "phone",
-      "placeholder": "9876543210",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 4
-    },
-    {
-      "id": 297,
-      "service_id": 21,
-      "field_name": "applicant_name",
-      "field_label": "Applicant Name as per ID",
-      "field_type": "text",
-      "placeholder": "Karthik Subramanian",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 1
-    },
-    {
-      "id": 298,
-      "service_id": 21,
-      "field_name": "dob",
-      "field_label": "Date of Birth",
-      "field_type": "date",
-      "placeholder": "",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 2
-    },
-    {
-      "id": 299,
+      "id": 199,
       "service_id": 21,
       "field_name": "gender",
       "field_label": "Gender",
@@ -3910,19 +2710,7 @@
       "sort_order": 3
     },
     {
-      "id": 300,
-      "service_id": 21,
-      "field_name": "vehicle_class",
-      "field_label": "Vehicle Class",
-      "field_type": "select",
-      "placeholder": "",
-      "helpText": "",
-      "options_json": "[\"Motorcycle With Gear (MCWG)\",\"Light Motor Vehicle (LMV Car)\",\"MCWG + LMV (Both)\"]",
-      "is_required": true,
-      "sort_order": 4
-    },
-    {
-      "id": 301,
+      "id": 200,
       "service_id": 21,
       "field_name": "address",
       "field_label": "Residential Address",
@@ -3934,7 +2722,7 @@
       "sort_order": 5
     },
     {
-      "id": 302,
+      "id": 201,
       "service_id": 21,
       "field_name": "district",
       "field_label": "District",
@@ -3946,7 +2734,7 @@
       "sort_order": 6
     },
     {
-      "id": 303,
+      "id": 202,
       "service_id": 21,
       "field_name": "state",
       "field_label": "State",
@@ -3958,7 +2746,7 @@
       "sort_order": 7
     },
     {
-      "id": 304,
+      "id": 203,
       "service_id": 21,
       "field_name": "pincode",
       "field_label": "Pincode",
@@ -3970,19 +2758,7 @@
       "sort_order": 8
     },
     {
-      "id": 305,
-      "service_id": 21,
-      "field_name": "mobile_number",
-      "field_label": "Mobile Number",
-      "field_type": "phone",
-      "placeholder": "9876543210",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 9
-    },
-    {
-      "id": 306,
+      "id": 204,
       "service_id": 21,
       "field_name": "email",
       "field_label": "Email Address",
@@ -3994,7 +2770,7 @@
       "sort_order": 10
     },
     {
-      "id": 307,
+      "id": 205,
       "service_id": 19,
       "field_name": "full_name",
       "field_label": "Full Name as per ID",
@@ -4006,19 +2782,7 @@
       "sort_order": 1
     },
     {
-      "id": 308,
-      "service_id": 19,
-      "field_name": "dob",
-      "field_label": "Date of Birth",
-      "field_type": "date",
-      "placeholder": "",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 2
-    },
-    {
-      "id": 309,
+      "id": 206,
       "service_id": 19,
       "field_name": "gender",
       "field_label": "Gender",
@@ -4030,7 +2794,7 @@
       "sort_order": 3
     },
     {
-      "id": 310,
+      "id": 207,
       "service_id": 19,
       "field_name": "father_name",
       "field_label": "Father Name",
@@ -4042,7 +2806,7 @@
       "sort_order": 4
     },
     {
-      "id": 311,
+      "id": 208,
       "service_id": 19,
       "field_name": "mother_name",
       "field_label": "Mother Name",
@@ -4054,7 +2818,7 @@
       "sort_order": 5
     },
     {
-      "id": 312,
+      "id": 209,
       "service_id": 19,
       "field_name": "marital_status",
       "field_label": "Marital Status",
@@ -4066,7 +2830,7 @@
       "sort_order": 6
     },
     {
-      "id": 313,
+      "id": 210,
       "service_id": 19,
       "field_name": "address",
       "field_label": "Current Address",
@@ -4078,7 +2842,7 @@
       "sort_order": 7
     },
     {
-      "id": 314,
+      "id": 211,
       "service_id": 19,
       "field_name": "district",
       "field_label": "District",
@@ -4090,7 +2854,7 @@
       "sort_order": 8
     },
     {
-      "id": 315,
+      "id": 212,
       "service_id": 19,
       "field_name": "state",
       "field_label": "State",
@@ -4102,7 +2866,7 @@
       "sort_order": 9
     },
     {
-      "id": 316,
+      "id": 213,
       "service_id": 19,
       "field_name": "pincode",
       "field_label": "Pincode",
@@ -4114,7 +2878,7 @@
       "sort_order": 10
     },
     {
-      "id": 317,
+      "id": 214,
       "service_id": 19,
       "field_name": "prev_passport",
       "field_label": "Previous Passport Details (if applicable)",
@@ -4126,67 +2890,7 @@
       "sort_order": 11
     },
     {
-      "id": 318,
-      "service_id": 19,
-      "field_name": "mobile_number",
-      "field_label": "Mobile Number",
-      "field_type": "phone",
-      "placeholder": "9876543210",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 12
-    },
-    {
-      "id": 319,
-      "service_id": 19,
-      "field_name": "email",
-      "field_label": "Email Address",
-      "field_type": "email",
-      "placeholder": "karthik@example.com",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 13
-    },
-    {
-      "id": 320,
-      "service_id": 23,
-      "field_name": "owner_name",
-      "field_label": "Applicant / Owner Name",
-      "field_type": "text",
-      "placeholder": "Karthik Subramanian",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 1
-    },
-    {
-      "id": 321,
-      "service_id": 23,
-      "field_name": "aadhaar_number",
-      "field_label": "Aadhaar Number",
-      "field_type": "text",
-      "placeholder": "1234 5678 9012",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 2
-    },
-    {
-      "id": 322,
-      "service_id": 23,
-      "field_name": "pan_number",
-      "field_label": "PAN Number",
-      "field_type": "text",
-      "placeholder": "ABCDE1234F",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 3
-    },
-    {
-      "id": 323,
+      "id": 215,
       "service_id": 23,
       "field_name": "business_name",
       "field_label": "Business Name",
@@ -4198,19 +2902,7 @@
       "sort_order": 4
     },
     {
-      "id": 324,
-      "service_id": 23,
-      "field_name": "business_type",
-      "field_label": "Business Type",
-      "field_type": "select",
-      "placeholder": "",
-      "helpText": "",
-      "options_json": "[\"Proprietorship\",\"Partnership\",\"Private Limited\",\"LLP\"]",
-      "is_required": true,
-      "sort_order": 5
-    },
-    {
-      "id": 325,
+      "id": 216,
       "service_id": 23,
       "field_name": "business_activity",
       "field_label": "Major Business Activity",
@@ -4222,7 +2914,7 @@
       "sort_order": 6
     },
     {
-      "id": 326,
+      "id": 217,
       "service_id": 23,
       "field_name": "address",
       "field_label": "Business Address",
@@ -4234,7 +2926,7 @@
       "sort_order": 7
     },
     {
-      "id": 327,
+      "id": 218,
       "service_id": 23,
       "field_name": "district",
       "field_label": "District",
@@ -4246,7 +2938,7 @@
       "sort_order": 8
     },
     {
-      "id": 328,
+      "id": 219,
       "service_id": 23,
       "field_name": "state",
       "field_label": "State",
@@ -4258,7 +2950,7 @@
       "sort_order": 9
     },
     {
-      "id": 329,
+      "id": 220,
       "service_id": 23,
       "field_name": "pincode",
       "field_label": "Pincode",
@@ -4270,19 +2962,7 @@
       "sort_order": 10
     },
     {
-      "id": 330,
-      "service_id": 23,
-      "field_name": "mobile_number",
-      "field_label": "Mobile Number",
-      "field_type": "phone",
-      "placeholder": "9876543210",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 11
-    },
-    {
-      "id": 331,
+      "id": 221,
       "service_id": 23,
       "field_name": "email",
       "field_label": "Email Address",
@@ -4294,7 +2974,7 @@
       "sort_order": 12
     },
     {
-      "id": 332,
+      "id": 222,
       "service_id": 231,
       "field_name": "establishment_name",
       "field_label": "Food Business / Establishment Name",
@@ -4306,7 +2986,7 @@
       "sort_order": 1
     },
     {
-      "id": 333,
+      "id": 223,
       "service_id": 231,
       "field_name": "owner_name",
       "field_label": "Owner Full Name",
@@ -4318,7 +2998,7 @@
       "sort_order": 2
     },
     {
-      "id": 334,
+      "id": 224,
       "service_id": 231,
       "field_name": "business_type",
       "field_label": "FSSAI Business Category",
@@ -4330,7 +3010,7 @@
       "sort_order": 3
     },
     {
-      "id": 335,
+      "id": 225,
       "service_id": 231,
       "field_name": "food_items",
       "field_label": "Food Product Items Category",
@@ -4342,7 +3022,7 @@
       "sort_order": 4
     },
     {
-      "id": 336,
+      "id": 226,
       "service_id": 231,
       "field_name": "address",
       "field_label": "Business Premises Address",
@@ -4354,7 +3034,7 @@
       "sort_order": 5
     },
     {
-      "id": 337,
+      "id": 227,
       "service_id": 231,
       "field_name": "district",
       "field_label": "District",
@@ -4366,7 +3046,7 @@
       "sort_order": 6
     },
     {
-      "id": 338,
+      "id": 228,
       "service_id": 231,
       "field_name": "state",
       "field_label": "State",
@@ -4378,7 +3058,7 @@
       "sort_order": 7
     },
     {
-      "id": 339,
+      "id": 229,
       "service_id": 231,
       "field_name": "pincode",
       "field_label": "Pincode",
@@ -4390,7 +3070,7 @@
       "sort_order": 8
     },
     {
-      "id": 340,
+      "id": 230,
       "service_id": 231,
       "field_name": "mobile_number",
       "field_label": "Mobile Number",
@@ -4402,7 +3082,7 @@
       "sort_order": 9
     },
     {
-      "id": 341,
+      "id": 231,
       "service_id": 231,
       "field_name": "email",
       "field_label": "Email Address",
@@ -4414,19 +3094,7 @@
       "sort_order": 10
     },
     {
-      "id": 342,
-      "service_id": 26,
-      "field_name": "applicant_name",
-      "field_label": "Applicant Name",
-      "field_type": "text",
-      "placeholder": "Karthik Subramanian",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 1
-    },
-    {
-      "id": 343,
+      "id": 232,
       "service_id": 26,
       "field_name": "connection_type",
       "field_label": "Connection Type",
@@ -4438,7 +3106,7 @@
       "sort_order": 2
     },
     {
-      "id": 344,
+      "id": 233,
       "service_id": 26,
       "field_name": "address",
       "field_label": "Property / Building Address",
@@ -4450,7 +3118,7 @@
       "sort_order": 3
     },
     {
-      "id": 345,
+      "id": 234,
       "service_id": 26,
       "field_name": "district",
       "field_label": "District",
@@ -4462,7 +3130,7 @@
       "sort_order": 4
     },
     {
-      "id": 346,
+      "id": 235,
       "service_id": 26,
       "field_name": "state",
       "field_label": "State",
@@ -4474,7 +3142,7 @@
       "sort_order": 5
     },
     {
-      "id": 347,
+      "id": 236,
       "service_id": 26,
       "field_name": "pincode",
       "field_label": "Pincode",
@@ -4486,19 +3154,7 @@
       "sort_order": 6
     },
     {
-      "id": 348,
-      "service_id": 26,
-      "field_name": "mobile_number",
-      "field_label": "Mobile Number",
-      "field_type": "phone",
-      "placeholder": "9876543210",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 7
-    },
-    {
-      "id": 349,
+      "id": 237,
       "service_id": 26,
       "field_name": "email",
       "field_label": "Email Address",
@@ -4510,7 +3166,7 @@
       "sort_order": 8
     },
     {
-      "id": 350,
+      "id": 238,
       "service_id": 261,
       "field_name": "rc_owner_name",
       "field_label": "Vehicle RC Owner Name",
@@ -4522,7 +3178,7 @@
       "sort_order": 1
     },
     {
-      "id": 351,
+      "id": 239,
       "service_id": 261,
       "field_name": "vehicle_reg_number",
       "field_label": "Vehicle Registration Number",
@@ -4534,7 +3190,7 @@
       "sort_order": 2
     },
     {
-      "id": 352,
+      "id": 240,
       "service_id": 261,
       "field_name": "vehicle_class",
       "field_label": "Vehicle Type / Class",
@@ -4546,7 +3202,7 @@
       "sort_order": 3
     },
     {
-      "id": 353,
+      "id": 241,
       "service_id": 261,
       "field_name": "chassis_number",
       "field_label": "Chassis Number / VIN",
@@ -4558,7 +3214,7 @@
       "sort_order": 4
     },
     {
-      "id": 354,
+      "id": 242,
       "service_id": 261,
       "field_name": "delivery_address",
       "field_label": "FASTag Delivery Address",
@@ -4570,7 +3226,7 @@
       "sort_order": 5
     },
     {
-      "id": 355,
+      "id": 243,
       "service_id": 261,
       "field_name": "mobile_number",
       "field_label": "Mobile Number",
@@ -4582,7 +3238,7 @@
       "sort_order": 6
     },
     {
-      "id": 356,
+      "id": 244,
       "service_id": 261,
       "field_name": "email",
       "field_label": "Email Address",
@@ -4594,79 +3250,7 @@
       "sort_order": 7
     },
     {
-      "id": 357,
-      "service_id": 8,
-      "field_name": "full_name",
-      "field_label": "Applicant Name",
-      "field_type": "text",
-      "placeholder": "Karthik Subramanian",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 1
-    },
-    {
-      "id": 358,
-      "service_id": 8,
-      "field_name": "relative_name",
-      "field_label": "Father / Husband Name",
-      "field_type": "text",
-      "placeholder": "Subramanian S",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 2
-    },
-    {
-      "id": 359,
-      "service_id": 8,
-      "field_name": "dob",
-      "field_label": "Date of Birth",
-      "field_type": "date",
-      "placeholder": "",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 3
-    },
-    {
-      "id": 360,
-      "service_id": 8,
-      "field_name": "gender",
-      "field_label": "Gender",
-      "field_type": "select",
-      "placeholder": "",
-      "helpText": "",
-      "options_json": "[\"Male\",\"Female\",\"Transgender\"]",
-      "is_required": true,
-      "sort_order": 4
-    },
-    {
-      "id": 361,
-      "service_id": 8,
-      "field_name": "assembly_constituency",
-      "field_label": "Assembly Constituency Name",
-      "field_type": "text",
-      "placeholder": "Mylapore / Velachery",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 5
-    },
-    {
-      "id": 362,
-      "service_id": 8,
-      "field_name": "address",
-      "field_label": "Residential Address",
-      "field_type": "textarea",
-      "placeholder": "Door No, Street, City, District, State, Pincode",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 6
-    },
-    {
-      "id": 363,
+      "id": 245,
       "service_id": 8,
       "field_name": "district",
       "field_label": "District",
@@ -4678,7 +3262,7 @@
       "sort_order": 7
     },
     {
-      "id": 364,
+      "id": 246,
       "service_id": 8,
       "field_name": "state",
       "field_label": "State",
@@ -4690,7 +3274,7 @@
       "sort_order": 8
     },
     {
-      "id": 365,
+      "id": 247,
       "service_id": 8,
       "field_name": "pincode",
       "field_label": "Pincode",
@@ -4702,31 +3286,7 @@
       "sort_order": 9
     },
     {
-      "id": 366,
-      "service_id": 8,
-      "field_name": "mobile_number",
-      "field_label": "Mobile Number",
-      "field_type": "phone",
-      "placeholder": "9876543210",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 10
-    },
-    {
-      "id": 367,
-      "service_id": 111,
-      "field_name": "aadhaar_number",
-      "field_label": "12-Digit Aadhaar Number",
-      "field_type": "text",
-      "placeholder": "1234 5678 9012",
-      "helpText": "",
-      "options_json": null,
-      "is_required": true,
-      "sort_order": 1
-    },
-    {
-      "id": 368,
+      "id": 248,
       "service_id": 111,
       "field_name": "update_type",
       "field_label": "Biometric Update Type",
@@ -4738,7 +3298,7 @@
       "sort_order": 2
     },
     {
-      "id": 369,
+      "id": 249,
       "service_id": 111,
       "field_name": "center_pincode",
       "field_label": "Preferred Center Pincode",
@@ -4750,7 +3310,7 @@
       "sort_order": 3
     },
     {
-      "id": 370,
+      "id": 250,
       "service_id": 112,
       "field_name": "aadhaar_number",
       "field_label": "12-Digit Aadhaar Number",
@@ -4762,7 +3322,7 @@
       "sort_order": 1
     },
     {
-      "id": 371,
+      "id": 251,
       "service_id": 112,
       "field_name": "delivery_address",
       "field_label": "Speed Post Delivery Address",
@@ -4774,7 +3334,7 @@
       "sort_order": 2
     },
     {
-      "id": 372,
+      "id": 252,
       "service_id": 112,
       "field_name": "pincode",
       "field_label": "6-Digit Pincode",
@@ -4786,7 +3346,7 @@
       "sort_order": 3
     },
     {
-      "id": 373,
+      "id": 253,
       "service_id": 113,
       "field_name": "applicant_name",
       "field_label": "Full Name of Applicant",
@@ -4798,7 +3358,7 @@
       "sort_order": 1
     },
     {
-      "id": 374,
+      "id": 254,
       "service_id": 113,
       "field_name": "dob",
       "field_label": "Date of Birth",
@@ -4810,7 +3370,7 @@
       "sort_order": 2
     },
     {
-      "id": 375,
+      "id": 255,
       "service_id": 113,
       "field_name": "gender",
       "field_label": "Gender",
@@ -4822,7 +3382,7 @@
       "sort_order": 3
     },
     {
-      "id": 376,
+      "id": 256,
       "service_id": 113,
       "field_name": "guardian_name",
       "field_label": "Father / Husband / Guardian Name",
@@ -4834,7 +3394,7 @@
       "sort_order": 4
     },
     {
-      "id": 377,
+      "id": 257,
       "service_id": 205,
       "field_name": "existing_pan",
       "field_label": "Existing 10-Digit PAN Number",
@@ -4846,7 +3406,7 @@
       "sort_order": 1
     },
     {
-      "id": 378,
+      "id": 258,
       "service_id": 205,
       "field_name": "correction_type",
       "field_label": "Correction Type Required",
@@ -4858,7 +3418,7 @@
       "sort_order": 2
     },
     {
-      "id": 379,
+      "id": 259,
       "service_id": 205,
       "field_name": "corrected_full_name",
       "field_label": "Corrected Full Name (as per proof)",
@@ -4870,7 +3430,7 @@
       "sort_order": 3
     },
     {
-      "id": 380,
+      "id": 260,
       "service_id": 205,
       "field_name": "father_name",
       "field_label": "Father's Full Name",
@@ -4882,7 +3442,7 @@
       "sort_order": 4
     },
     {
-      "id": 381,
+      "id": 261,
       "service_id": 206,
       "field_name": "pan_number",
       "field_label": "Existing 10-Digit PAN Number",
@@ -4894,7 +3454,7 @@
       "sort_order": 1
     },
     {
-      "id": 382,
+      "id": 262,
       "service_id": 206,
       "field_name": "reason",
       "field_label": "Reason for Reprint",
@@ -4906,7 +3466,7 @@
       "sort_order": 2
     },
     {
-      "id": 383,
+      "id": 263,
       "service_id": 206,
       "field_name": "delivery_address",
       "field_label": "Card Dispatch Address",
@@ -4918,7 +3478,7 @@
       "sort_order": 3
     },
     {
-      "id": 384,
+      "id": 264,
       "service_id": 207,
       "field_name": "applicant_name",
       "field_label": "Full Name of Foreign Applicant",
@@ -4930,7 +3490,7 @@
       "sort_order": 1
     },
     {
-      "id": 385,
+      "id": 265,
       "service_id": 207,
       "field_name": "country",
       "field_label": "Country of Citizenship",
@@ -4942,7 +3502,7 @@
       "sort_order": 2
     },
     {
-      "id": 386,
+      "id": 266,
       "service_id": 207,
       "field_name": "passport_number",
       "field_label": "Passport Number",
@@ -4954,7 +3514,7 @@
       "sort_order": 3
     },
     {
-      "id": 387,
+      "id": 267,
       "service_id": 208,
       "field_name": "existing_pan",
       "field_label": "Existing Minor PAN Number",
@@ -4966,7 +3526,7 @@
       "sort_order": 1
     },
     {
-      "id": 388,
+      "id": 268,
       "service_id": 208,
       "field_name": "dob",
       "field_label": "Date of Birth (Major Status)",
@@ -4978,7 +3538,7 @@
       "sort_order": 2
     },
     {
-      "id": 389,
+      "id": 269,
       "service_id": 208,
       "field_name": "father_name",
       "field_label": "Father's Full Name",
@@ -4990,7 +3550,7 @@
       "sort_order": 3
     },
     {
-      "id": 390,
+      "id": 270,
       "service_id": 301,
       "field_name": "community_category",
       "field_label": "Community Category",
@@ -5002,7 +3562,7 @@
       "sort_order": 1
     },
     {
-      "id": 391,
+      "id": 271,
       "service_id": 301,
       "field_name": "sub_caste",
       "field_label": "Specific Sub-Caste Name",
@@ -5014,7 +3574,7 @@
       "sort_order": 2
     },
     {
-      "id": 392,
+      "id": 272,
       "service_id": 301,
       "field_name": "father_caste",
       "field_label": "Father's / Mother's Community",
@@ -5026,7 +3586,7 @@
       "sort_order": 3
     },
     {
-      "id": 393,
+      "id": 273,
       "service_id": 301,
       "field_name": "tc_school",
       "field_label": "School / College Last Attended",
@@ -5038,7 +3598,7 @@
       "sort_order": 4
     },
     {
-      "id": 394,
+      "id": 274,
       "service_id": 302,
       "field_name": "years_residence",
       "field_label": "Years of Continuous Residence in TN",
@@ -5050,7 +3610,7 @@
       "sort_order": 1
     },
     {
-      "id": 395,
+      "id": 275,
       "service_id": 302,
       "field_name": "father_native_place",
       "field_label": "Ancestral Native Place / District",
@@ -5062,7 +3622,7 @@
       "sort_order": 2
     },
     {
-      "id": 396,
+      "id": 276,
       "service_id": 302,
       "field_name": "purpose",
       "field_label": "Purpose of Nativity Certificate",
@@ -5074,7 +3634,7 @@
       "sort_order": 3
     },
     {
-      "id": 397,
+      "id": 277,
       "service_id": 305,
       "field_name": "female_children_count",
       "field_label": "Number of Female Children",
@@ -5086,7 +3646,7 @@
       "sort_order": 1
     },
     {
-      "id": 398,
+      "id": 278,
       "service_id": 305,
       "field_name": "mother_name",
       "field_label": "Mother's Full Name",
@@ -5098,7 +3658,7 @@
       "sort_order": 2
     },
     {
-      "id": 399,
+      "id": 279,
       "service_id": 305,
       "field_name": "sterilization_status",
       "field_label": "Family Welfare Sterilization Done?",
@@ -5110,7 +3670,7 @@
       "sort_order": 3
     },
     {
-      "id": 400,
+      "id": 280,
       "service_id": 307,
       "field_name": "property_value",
       "field_label": "Estimated Solvency Value in ₹",
@@ -5122,7 +3682,7 @@
       "sort_order": 1
     },
     {
-      "id": 401,
+      "id": 281,
       "service_id": 307,
       "field_name": "survey_number",
       "field_label": "Property Survey No. & Village",
@@ -5134,7 +3694,7 @@
       "sort_order": 2
     },
     {
-      "id": 402,
+      "id": 282,
       "service_id": 307,
       "field_name": "purpose",
       "field_label": "Solvency Purpose",
@@ -5146,7 +3706,7 @@
       "sort_order": 3
     },
     {
-      "id": 403,
+      "id": 283,
       "service_id": 308,
       "field_name": "age",
       "field_label": "Current Age",
@@ -5158,7 +3718,7 @@
       "sort_order": 1
     },
     {
-      "id": 404,
+      "id": 284,
       "service_id": 308,
       "field_name": "purpose",
       "field_label": "Purpose of Certificate",
@@ -5170,7 +3730,7 @@
       "sort_order": 2
     },
     {
-      "id": 405,
+      "id": 285,
       "service_id": 308,
       "field_name": "declaration",
       "field_label": "I declare that I have not been legally married",
@@ -5182,7 +3742,7 @@
       "sort_order": 3
     },
     {
-      "id": 406,
+      "id": 286,
       "service_id": 405,
       "field_name": "existing_patta_no",
       "field_label": "Existing Joint Patta Number",
@@ -5194,7 +3754,7 @@
       "sort_order": 1
     },
     {
-      "id": 407,
+      "id": 287,
       "service_id": 405,
       "field_name": "survey_no",
       "field_label": "Survey Number & Sub Division",
@@ -5206,7 +3766,7 @@
       "sort_order": 2
     },
     {
-      "id": 408,
+      "id": 288,
       "service_id": 405,
       "field_name": "extent_sqft",
       "field_label": "Subdivided Area Extent (Sq.Ft / Cents)",
@@ -5218,7 +3778,7 @@
       "sort_order": 3
     },
     {
-      "id": 409,
+      "id": 289,
       "service_id": 405,
       "field_name": "taluk_village",
       "field_label": "Taluk and Village Name",
@@ -5230,7 +3790,7 @@
       "sort_order": 4
     },
     {
-      "id": 410,
+      "id": 290,
       "service_id": 504,
       "field_name": "trade_name",
       "field_label": "Business / Shop Trade Name",
@@ -5242,7 +3802,7 @@
       "sort_order": 1
     },
     {
-      "id": 411,
+      "id": 291,
       "service_id": 504,
       "field_name": "trade_category",
       "field_label": "Category of Trade",
@@ -5254,7 +3814,7 @@
       "sort_order": 2
     },
     {
-      "id": 412,
+      "id": 292,
       "service_id": 504,
       "field_name": "shop_address",
       "field_label": "Commercial Shop Address",
@@ -5266,7 +3826,7 @@
       "sort_order": 3
     },
     {
-      "id": 413,
+      "id": 293,
       "service_id": 504,
       "field_name": "premises_type",
       "field_label": "Premises Ownership",
@@ -5278,7 +3838,7 @@
       "sort_order": 4
     },
     {
-      "id": 414,
+      "id": 294,
       "service_id": 602,
       "field_name": "llr_number",
       "field_label": "Existing LLR Number",
@@ -5290,7 +3850,7 @@
       "sort_order": 1
     },
     {
-      "id": 415,
+      "id": 295,
       "service_id": 602,
       "field_name": "llr_issue_date",
       "field_label": "LLR Issue Date",
@@ -5302,7 +3862,7 @@
       "sort_order": 2
     },
     {
-      "id": 416,
+      "id": 296,
       "service_id": 602,
       "field_name": "vehicle_class",
       "field_label": "Vehicle Class Category",
@@ -5314,7 +3874,7 @@
       "sort_order": 3
     },
     {
-      "id": 417,
+      "id": 297,
       "service_id": 602,
       "field_name": "rto_office",
       "field_label": "Assigned RTO Office Location",
@@ -5326,7 +3886,7 @@
       "sort_order": 4
     },
     {
-      "id": 418,
+      "id": 298,
       "service_id": 603,
       "field_name": "dl_number",
       "field_label": "Existing Driving Licence Number",
@@ -5338,7 +3898,7 @@
       "sort_order": 1
     },
     {
-      "id": 419,
+      "id": 299,
       "service_id": 603,
       "field_name": "dl_expiry_date",
       "field_label": "DL Expiry Date",
@@ -5350,7 +3910,7 @@
       "sort_order": 2
     },
     {
-      "id": 420,
+      "id": 300,
       "service_id": 603,
       "field_name": "blood_group",
       "field_label": "Blood Group",
@@ -5362,7 +3922,7 @@
       "sort_order": 3
     },
     {
-      "id": 421,
+      "id": 301,
       "service_id": 604,
       "field_name": "vehicle_reg_no",
       "field_label": "Vehicle Registration Number",
@@ -5374,7 +3934,7 @@
       "sort_order": 1
     },
     {
-      "id": 422,
+      "id": 302,
       "service_id": 604,
       "field_name": "seller_name",
       "field_label": "Seller / Original Owner Name",
@@ -5386,7 +3946,7 @@
       "sort_order": 2
     },
     {
-      "id": 423,
+      "id": 303,
       "service_id": 604,
       "field_name": "buyer_name",
       "field_label": "Buyer / New Owner Name",
@@ -5398,7 +3958,7 @@
       "sort_order": 3
     },
     {
-      "id": 424,
+      "id": 304,
       "service_id": 604,
       "field_name": "transfer_reason",
       "field_label": "Ownership Transfer Reason",
@@ -5410,7 +3970,7 @@
       "sort_order": 4
     },
     {
-      "id": 425,
+      "id": 305,
       "service_id": 701,
       "field_name": "ration_card_no",
       "field_label": "Smart Ration Card Number",
@@ -5422,7 +3982,7 @@
       "sort_order": 1
     },
     {
-      "id": 426,
+      "id": 306,
       "service_id": 701,
       "field_name": "action_type",
       "field_label": "Member Modification Type",
@@ -5434,7 +3994,7 @@
       "sort_order": 2
     },
     {
-      "id": 427,
+      "id": 307,
       "service_id": 701,
       "field_name": "member_name",
       "field_label": "Full Name of Member to Add / Remove",
@@ -5446,7 +4006,7 @@
       "sort_order": 3
     },
     {
-      "id": 428,
+      "id": 308,
       "service_id": 701,
       "field_name": "relationship",
       "field_label": "Relationship with Head of Family",
@@ -5458,7 +4018,7 @@
       "sort_order": 4
     },
     {
-      "id": 429,
+      "id": 309,
       "service_id": 703,
       "field_name": "ration_card_no",
       "field_label": "Smart Ration Card Number",
@@ -5470,7 +4030,7 @@
       "sort_order": 1
     },
     {
-      "id": 430,
+      "id": 310,
       "service_id": 703,
       "field_name": "current_head_name",
       "field_label": "Current Head of Family Name",
@@ -5482,7 +4042,7 @@
       "sort_order": 2
     },
     {
-      "id": 431,
+      "id": 311,
       "service_id": 703,
       "field_name": "new_head_name",
       "field_label": "New Head of Family Name",
@@ -5494,7 +4054,7 @@
       "sort_order": 3
     },
     {
-      "id": 432,
+      "id": 312,
       "service_id": 703,
       "field_name": "reason",
       "field_label": "Reason for Change",
@@ -5506,7 +4066,7 @@
       "sort_order": 4
     },
     {
-      "id": 433,
+      "id": 313,
       "service_id": 704,
       "field_name": "ration_card_no",
       "field_label": "Smart Ration Card Number",
@@ -5518,7 +4078,7 @@
       "sort_order": 1
     },
     {
-      "id": 434,
+      "id": 314,
       "service_id": 704,
       "field_name": "new_address",
       "field_label": "New Residential Address",
@@ -5530,7 +4090,7 @@
       "sort_order": 2
     },
     {
-      "id": 435,
+      "id": 315,
       "service_id": 704,
       "field_name": "new_fps_code",
       "field_label": "Preferred New Fair Price Shop (FPS) Name/Code",
@@ -5542,7 +4102,7 @@
       "sort_order": 3
     },
     {
-      "id": 436,
+      "id": 316,
       "service_id": 801,
       "field_name": "assembly_constituency",
       "field_label": "Assembly Constituency Name / No.",
@@ -5554,7 +4114,7 @@
       "sort_order": 1
     },
     {
-      "id": 437,
+      "id": 317,
       "service_id": 801,
       "field_name": "dob",
       "field_label": "Date of Birth",
@@ -5566,7 +4126,7 @@
       "sort_order": 2
     },
     {
-      "id": 438,
+      "id": 318,
       "service_id": 801,
       "field_name": "gender",
       "field_label": "Gender",
@@ -5578,7 +4138,7 @@
       "sort_order": 3
     },
     {
-      "id": 439,
+      "id": 319,
       "service_id": 801,
       "field_name": "relative_name",
       "field_label": "Father's / Mother's / Husband's Name",
@@ -5590,7 +4150,7 @@
       "sort_order": 4
     },
     {
-      "id": 440,
+      "id": 320,
       "service_id": 802,
       "field_name": "epic_no",
       "field_label": "10-Character Voter EPIC Number",
@@ -5602,7 +4162,7 @@
       "sort_order": 1
     },
     {
-      "id": 441,
+      "id": 321,
       "service_id": 802,
       "field_name": "correction_type",
       "field_label": "Modification Type",
@@ -5614,7 +4174,7 @@
       "sort_order": 2
     },
     {
-      "id": 442,
+      "id": 322,
       "service_id": 802,
       "field_name": "new_address",
       "field_label": "New Address / Corrected Information",
@@ -5626,7 +4186,7 @@
       "sort_order": 3
     },
     {
-      "id": 443,
+      "id": 323,
       "service_id": 803,
       "field_name": "epic_no",
       "field_label": "10-Character Voter EPIC Number",
@@ -5638,7 +4198,7 @@
       "sort_order": 1
     },
     {
-      "id": 444,
+      "id": 324,
       "service_id": 803,
       "field_name": "aadhaar_number",
       "field_label": "12-Digit Aadhaar Number",
@@ -5650,7 +4210,7 @@
       "sort_order": 2
     },
     {
-      "id": 445,
+      "id": 325,
       "service_id": 803,
       "field_name": "mobile_number",
       "field_label": "Linked Mobile Number",
@@ -5662,7 +4222,7 @@
       "sort_order": 3
     },
     {
-      "id": 446,
+      "id": 326,
       "service_id": 804,
       "field_name": "epic_no",
       "field_label": "10-Character Voter EPIC Number",
@@ -5674,7 +4234,7 @@
       "sort_order": 1
     },
     {
-      "id": 447,
+      "id": 327,
       "service_id": 804,
       "field_name": "mobile_number",
       "field_label": "Registered Mobile Number",
@@ -5686,7 +4246,7 @@
       "sort_order": 2
     },
     {
-      "id": 448,
+      "id": 328,
       "service_id": 805,
       "field_name": "epic_no",
       "field_label": "10-Character Voter EPIC Number",
@@ -5698,7 +4258,7 @@
       "sort_order": 1
     },
     {
-      "id": 449,
+      "id": 329,
       "service_id": 805,
       "field_name": "reason",
       "field_label": "Reason for Replacement",
@@ -5710,7 +4270,7 @@
       "sort_order": 2
     },
     {
-      "id": 450,
+      "id": 330,
       "service_id": 805,
       "field_name": "delivery_address",
       "field_label": "Delivery Address",
@@ -5722,7 +4282,7 @@
       "sort_order": 3
     },
     {
-      "id": 451,
+      "id": 331,
       "service_id": 806,
       "field_name": "passport_number",
       "field_label": "Indian Passport Number",
@@ -5734,7 +4294,7 @@
       "sort_order": 1
     },
     {
-      "id": 452,
+      "id": 332,
       "service_id": 806,
       "field_name": "overseas_address",
       "field_label": "Overseas Address Abroad",
@@ -5746,7 +4306,7 @@
       "sort_order": 2
     },
     {
-      "id": 453,
+      "id": 333,
       "service_id": 806,
       "field_name": "native_constituency",
       "field_label": "Native Assembly Constituency in India",
@@ -5758,7 +4318,7 @@
       "sort_order": 3
     },
     {
-      "id": 454,
+      "id": 334,
       "service_id": 807,
       "field_name": "voter_name",
       "field_label": "Full Name of Voter",
@@ -5770,7 +4330,7 @@
       "sort_order": 1
     },
     {
-      "id": 455,
+      "id": 335,
       "service_id": 807,
       "field_name": "district",
       "field_label": "District Name",
@@ -5782,7 +4342,7 @@
       "sort_order": 2
     },
     {
-      "id": 456,
+      "id": 336,
       "service_id": 807,
       "field_name": "relative_name",
       "field_label": "Father's / Husband's Name",
@@ -5794,7 +4354,7 @@
       "sort_order": 3
     },
     {
-      "id": 457,
+      "id": 337,
       "service_id": 808,
       "field_name": "objector_epic",
       "field_label": "Objector EPIC Number",
@@ -5806,7 +4366,7 @@
       "sort_order": 1
     },
     {
-      "id": 458,
+      "id": 338,
       "service_id": 808,
       "field_name": "target_epic",
       "field_label": "EPIC Number to be Deleted / Shifted",
@@ -5818,7 +4378,7 @@
       "sort_order": 2
     },
     {
-      "id": 459,
+      "id": 339,
       "service_id": 808,
       "field_name": "reason",
       "field_label": "Deletion Reason",
@@ -5830,7 +4390,7 @@
       "sort_order": 3
     },
     {
-      "id": 460,
+      "id": 340,
       "service_id": 901,
       "field_name": "consumer_number",
       "field_label": "TNEB Consumer / Service Number",
@@ -5842,7 +4402,7 @@
       "sort_order": 1
     },
     {
-      "id": 461,
+      "id": 341,
       "service_id": 901,
       "field_name": "previous_owner",
       "field_label": "Previous EB Account Owner Name",
@@ -5854,7 +4414,7 @@
       "sort_order": 2
     },
     {
-      "id": 462,
+      "id": 342,
       "service_id": 901,
       "field_name": "new_owner",
       "field_label": "New EB Account Owner Name",
@@ -5866,7 +4426,7 @@
       "sort_order": 3
     },
     {
-      "id": 463,
+      "id": 343,
       "service_id": 901,
       "field_name": "transfer_type",
       "field_label": "Name Transfer Category",
@@ -5878,7 +4438,7 @@
       "sort_order": 4
     },
     {
-      "id": 464,
+      "id": 344,
       "service_id": 902,
       "field_name": "tariff_category",
       "field_label": "Tariff Category Required",
@@ -5890,7 +4450,7 @@
       "sort_order": 1
     },
     {
-      "id": 465,
+      "id": 345,
       "service_id": 902,
       "field_name": "load_kw",
       "field_label": "Required Connected Load in kW",
@@ -5902,7 +4462,7 @@
       "sort_order": 2
     },
     {
-      "id": 466,
+      "id": 346,
       "service_id": 902,
       "field_name": "property_address",
       "field_label": "Premises Installation Address",
@@ -5914,7 +4474,7 @@
       "sort_order": 3
     },
     {
-      "id": 467,
+      "id": 347,
       "service_id": 903,
       "field_name": "property_type",
       "field_label": "Property Type",
@@ -5926,7 +4486,7 @@
       "sort_order": 1
     },
     {
-      "id": 468,
+      "id": 348,
       "service_id": 903,
       "field_name": "plinth_area_sqft",
       "field_label": "Total Plinth Area in Sq.Ft",
@@ -5938,7 +4498,7 @@
       "sort_order": 2
     },
     {
-      "id": 469,
+      "id": 349,
       "service_id": 903,
       "field_name": "survey_door_no",
       "field_label": "Survey No. / Door No.",
@@ -5950,7 +4510,7 @@
       "sort_order": 3
     },
     {
-      "id": 470,
+      "id": 350,
       "service_id": 1004,
       "field_name": "passport_number",
       "field_label": "Valid Indian Passport Number",
@@ -5962,7 +4522,7 @@
       "sort_order": 1
     },
     {
-      "id": 471,
+      "id": 351,
       "service_id": 1004,
       "field_name": "passport_issue_date",
       "field_label": "Passport Issue Date",
@@ -5974,7 +4534,7 @@
       "sort_order": 2
     },
     {
-      "id": 472,
+      "id": 352,
       "service_id": 1004,
       "field_name": "country_applying_for",
       "field_label": "Country Requiring PCC",
@@ -5984,6 +4544,246 @@
       "options_json": "[\"United States (USA)\",\"Canada\",\"United Kingdom (UK)\",\"Australia\",\"United Arab Emirates (UAE)\",\"Singapore\",\"Other\"]",
       "is_required": true,
       "sort_order": 3
+    },
+    {
+      "service_id": 4,
+      "field_name": "applicant_name",
+      "field_label": "Applicant Name",
+      "field_type": "text",
+      "placeholder": "Karthik Subramanian",
+      "helpText": "",
+      "options_json": null,
+      "is_required": true,
+      "sort_order": 1,
+      "id": 353
+    },
+    {
+      "service_id": 4,
+      "field_name": "father_name",
+      "field_label": "Father Full Name",
+      "field_type": "text",
+      "placeholder": "Subramanian S",
+      "helpText": "",
+      "options_json": null,
+      "is_required": true,
+      "sort_order": 2,
+      "id": 354
+    },
+    {
+      "service_id": 4,
+      "field_name": "caste_category",
+      "field_label": "Caste / Community Category",
+      "field_type": "select",
+      "placeholder": "",
+      "helpText": "",
+      "options_json": "[\"BC\",\"MBC\",\"SC\",\"ST\",\"OC\"]",
+      "is_required": true,
+      "sort_order": 3,
+      "id": 355
+    },
+    {
+      "service_id": 4,
+      "field_name": "sub_caste",
+      "field_label": "Sub-Caste Name",
+      "field_type": "text",
+      "placeholder": "Enter Sub-Caste Name",
+      "helpText": "",
+      "options_json": null,
+      "is_required": true,
+      "sort_order": 4,
+      "id": 356
+    },
+    {
+      "service_id": 4,
+      "field_name": "delivery_address",
+      "field_label": "Complete Residential Address",
+      "field_type": "textarea",
+      "placeholder": "Door No, Street Name, Village/City, Pincode",
+      "helpText": "",
+      "options_json": null,
+      "is_required": true,
+      "sort_order": 5,
+      "id": 357
+    },
+    {
+      "service_id": 4,
+      "field_name": "district",
+      "field_label": "District",
+      "field_type": "text",
+      "placeholder": "Erode",
+      "helpText": "",
+      "options_json": null,
+      "is_required": true,
+      "sort_order": 6,
+      "id": 358
+    },
+    {
+      "service_id": 4,
+      "field_name": "pincode",
+      "field_label": "6-Digit Pincode",
+      "field_type": "text",
+      "placeholder": "638402",
+      "helpText": "",
+      "options_json": null,
+      "is_required": true,
+      "sort_order": 7,
+      "id": 359
+    },
+    {
+      "service_id": 4,
+      "field_name": "mobile_number",
+      "field_label": "Mobile Number for Tracking",
+      "field_type": "phone",
+      "placeholder": "9894059591",
+      "helpText": "",
+      "options_json": null,
+      "is_required": true,
+      "sort_order": 8,
+      "id": 360
+    },
+    {
+      "service_id": 5,
+      "field_name": "district",
+      "field_label": "District",
+      "field_type": "text",
+      "placeholder": "e.g. Erode / Coimbatore / Chennai",
+      "helpText": "",
+      "options_json": null,
+      "is_required": true,
+      "sort_order": 1,
+      "id": 361
+    },
+    {
+      "service_id": 5,
+      "field_name": "taluk",
+      "field_label": "Taluk",
+      "field_type": "text",
+      "placeholder": "e.g. Sathyamangalam",
+      "helpText": "",
+      "options_json": null,
+      "is_required": true,
+      "sort_order": 2,
+      "id": 362
+    },
+    {
+      "service_id": 5,
+      "field_name": "village",
+      "field_label": "Village",
+      "field_type": "text",
+      "placeholder": "e.g. Alathucombai",
+      "helpText": "",
+      "options_json": null,
+      "is_required": true,
+      "sort_order": 3,
+      "id": 363
+    },
+    {
+      "service_id": 5,
+      "field_name": "survey_number",
+      "field_label": "Survey Number / Patta Number",
+      "field_type": "text",
+      "placeholder": "e.g. 123/4A or Patta No 567",
+      "helpText": "",
+      "options_json": null,
+      "is_required": true,
+      "sort_order": 4,
+      "id": 364
+    },
+    {
+      "service_id": 5,
+      "field_name": "sub_division_number",
+      "field_label": "Sub-Division Number",
+      "field_type": "text",
+      "placeholder": "e.g. 2B (optional if Patta No provided)",
+      "helpText": "",
+      "options_json": null,
+      "is_required": false,
+      "sort_order": 5,
+      "id": 365
+    },
+    {
+      "service_id": 5,
+      "field_name": "mobile_number",
+      "field_label": "Mobile Number for Status Alerts",
+      "field_type": "phone",
+      "placeholder": "9894059591",
+      "helpText": "",
+      "options_json": null,
+      "is_required": true,
+      "sort_order": 6,
+      "id": 366
+    },
+    {
+      "service_id": 6,
+      "field_name": "district",
+      "field_label": "District",
+      "field_type": "text",
+      "placeholder": "e.g. Erode / Chennai",
+      "helpText": "",
+      "options_json": null,
+      "is_required": true,
+      "sort_order": 1,
+      "id": 367
+    },
+    {
+      "service_id": 6,
+      "field_name": "sub_registrar_office",
+      "field_label": "Sub-Registrar Office (SRO)",
+      "field_type": "text",
+      "placeholder": "e.g. Sathyamangalam SRO",
+      "helpText": "",
+      "options_json": null,
+      "is_required": true,
+      "sort_order": 2,
+      "id": 368
+    },
+    {
+      "service_id": 6,
+      "field_name": "village_taluk",
+      "field_label": "Village & Taluk",
+      "field_type": "text",
+      "placeholder": "e.g. Sathyamangalam Village",
+      "helpText": "",
+      "options_json": null,
+      "is_required": true,
+      "sort_order": 3,
+      "id": 369
+    },
+    {
+      "service_id": 6,
+      "field_name": "survey_number",
+      "field_label": "Survey / Plot Number",
+      "field_type": "text",
+      "placeholder": "e.g. Plot 42, Survey 123/4",
+      "helpText": "",
+      "options_json": null,
+      "is_required": true,
+      "sort_order": 4,
+      "id": 370
+    },
+    {
+      "service_id": 6,
+      "field_name": "search_period",
+      "field_label": "Search Period (Years)",
+      "field_type": "select",
+      "placeholder": "",
+      "helpText": "",
+      "options_json": "[\"5 Years\",\"10 Years\",\"15 Years\",\"30 Years\"]",
+      "is_required": true,
+      "sort_order": 5,
+      "id": 371
+    },
+    {
+      "service_id": 6,
+      "field_name": "mobile_number",
+      "field_label": "Mobile Number",
+      "field_type": "phone",
+      "placeholder": "9894059591",
+      "helpText": "",
+      "options_json": null,
+      "is_required": true,
+      "sort_order": 6,
+      "id": 372
     }
   ],
   "service_documents": [

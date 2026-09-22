@@ -20,6 +20,13 @@ import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 
+const PRIMARY_APPLICANT_KEYS = new Set([
+  'user_name', 'full_name', 'applicant_name', 'name',
+  'user_phone', 'mobile_number', 'mobile', 'phone', 'phone_number',
+  'user_email', 'email', 'email_id',
+  'aadhaar_no', 'aadhaar_number', 'aadhaar'
+]);
+
 export default function ApplyService() {
   const { lang, t } = useLanguage();
   const { slug, serviceId } = useParams();
@@ -325,26 +332,53 @@ export default function ApplyService() {
       const res = await fetch(`/api/services/${serviceParam}`);
       if (res.ok) {
         const data = await res.json();
+
+        // Deduplicate dynamic fields from API so each field key is strictly unique
+        const rawFields = Array.isArray(data.fields) ? data.fields : [];
+        const seenFieldMap = new Set();
+        const deduplicatedFields = rawFields.filter(f => {
+          if (!f) return false;
+          const k = String(f.field_name || f.name || f.field_label || f.label || '').trim().toLowerCase();
+          if (!k || seenFieldMap.has(k)) return false;
+          seenFieldMap.add(k);
+          return true;
+        });
+        data.fields = deduplicatedFields;
+
         setService(getLocalizedService(data, lang));
 
-        // Pre-fill initial dynamic field values
+        // Pre-fill initial dynamic field values (skipping fields collected in primary card)
         const initialFields = {};
-        if (data.fields) {
-          data.fields.forEach(f => {
-            const key = f.field_name || f.name;
+        deduplicatedFields.forEach(f => {
+          const key = f.field_name || f.name;
+          const normKey = String(key || '').trim().toLowerCase();
+          if (!PRIMARY_APPLICANT_KEYS.has(normKey)) {
             initialFields[key] = f.default_value || '';
-          });
-        }
+          }
+        });
         setFieldValues(prev => ({ ...initialFields, ...prev }));
       } else {
         // Fallback service definition
         const fallback = getServiceDefinition(serviceParam, lang);
+        if (fallback && fallback.fields) {
+          const seenFallbackKeys = new Set();
+          fallback.fields = fallback.fields.filter(f => {
+            if (!f) return false;
+            const k = String(f.field_name || f.name || f.field_label || f.label || '').trim().toLowerCase();
+            if (!k || seenFallbackKeys.has(k)) return false;
+            seenFallbackKeys.add(k);
+            return true;
+          });
+        }
         setService(fallback);
         const initialFields = {};
-        if (fallback.fields) {
+        if (fallback && fallback.fields) {
           fallback.fields.forEach(f => {
             const key = f.field_name || f.name;
-            initialFields[key] = f.default_value || '';
+            const normKey = String(key || '').trim().toLowerCase();
+            if (!PRIMARY_APPLICANT_KEYS.has(normKey)) {
+              initialFields[key] = f.default_value || '';
+            }
           });
         }
         setFieldValues(prev => ({ ...initialFields, ...prev }));
@@ -535,23 +569,38 @@ export default function ApplyService() {
       errs.pincode = lang === 'ta' ? 'செல்லுபடியாகும் 6-இலக்க அஞ்சல் குறியீட்டை உள்ளிடவும்.' : 'Please enter a valid 6-digit pincode.';
     }
 
-    // Dynamic Custom Service Fields Validation
+    // Dynamic Custom Service Fields Validation (deduplicated, skipping primary applicant inputs)
     if (service && service.fields) {
+      const validatedKeys = new Set();
       service.fields.forEach(f => {
+        if (!f) return;
+        const key = f.field_name || f.name;
+        const rawLabel = f.field_label || f.label || key;
+        const normKey = String(key || rawLabel).trim().toLowerCase();
+
+        // Skip primary applicant fields (validated above)
+        if (PRIMARY_APPLICANT_KEYS.has(normKey) || (key && PRIMARY_APPLICANT_KEYS.has(String(key).trim().toLowerCase()))) {
+          return;
+        }
+
+        // Avoid validating duplicate keys multiple times
+        if (validatedKeys.has(normKey)) return;
+        validatedKeys.add(normKey);
+
         if (isFieldVisible(f)) {
-          const key = f.field_name || f.name;
           const val = fieldValues[key];
           const fLabel = f.field_label || f.label || key;
+          const localizedLabel = getLocalizedFieldLabel(fLabel, lang);
           const isRequired = f.is_required !== false && f.required !== false;
           const constraints = getFieldConstraints(f);
 
           if (isRequired && (!val || String(val).trim() === '')) {
-            errs[key] = lang === 'ta' ? `${fLabel} உள்ளிடவும்.` : `Please enter ${fLabel}.`;
+            errs[key] = lang === 'ta' ? `${localizedLabel} உள்ளிடவும்.` : `Please enter ${localizedLabel}.`;
           } else if (val && String(val).trim() !== '' && constraints.validate) {
             if (!constraints.validate(val)) {
               errs[key] = constraints.errorMsg
                 ? (lang === 'ta' ? constraints.errorMsg.ta : constraints.errorMsg.en)
-                : (lang === 'ta' ? `${fLabel} சரியான வடிவத்தில் இல்லை.` : `${fLabel} is invalid.`);
+                : (lang === 'ta' ? `${localizedLabel} சரியான வடிவத்தில் இல்லை.` : `${localizedLabel} is invalid.`);
             }
           }
         }
@@ -611,7 +660,22 @@ export default function ApplyService() {
       formData.append('user_email', applicantInfo.user_email || '');
       formData.append('user_phone', applicantInfo.user_phone || '');
       formData.append('current_step', currentStep || 1);
-      formData.append('field_values', JSON.stringify({ ...applicantInfo, ...fieldValues }));
+
+      const combinedDraftValues = {
+        ...fieldValues,
+        full_name: applicantInfo.user_name || '',
+        applicant_name: applicantInfo.user_name || '',
+        user_name: applicantInfo.user_name || '',
+        mobile_number: applicantInfo.user_phone || '',
+        user_phone: applicantInfo.user_phone || '',
+        phone_number: applicantInfo.user_phone || '',
+        email: applicantInfo.user_email || '',
+        user_email: applicantInfo.user_email || '',
+        aadhaar_number: applicantInfo.aadhaar_no || '',
+        aadhaar_no: applicantInfo.aadhaar_no || '',
+        ...applicantInfo
+      };
+      formData.append('field_values', JSON.stringify(combinedDraftValues));
 
       // Attach file uploads to draft if any
       const docMetadataMap = {};
@@ -670,7 +734,22 @@ export default function ApplyService() {
       formData.append('user_name', applicantInfo.user_name);
       formData.append('user_email', applicantInfo.user_email);
       formData.append('user_phone', applicantInfo.user_phone);
-      formData.append('field_values', JSON.stringify({ ...applicantInfo, ...fieldValues }));
+
+      const combinedSubmitValues = {
+        ...fieldValues,
+        full_name: applicantInfo.user_name || '',
+        applicant_name: applicantInfo.user_name || '',
+        user_name: applicantInfo.user_name || '',
+        mobile_number: applicantInfo.user_phone || '',
+        user_phone: applicantInfo.user_phone || '',
+        phone_number: applicantInfo.user_phone || '',
+        email: applicantInfo.user_email || '',
+        user_email: applicantInfo.user_email || '',
+        aadhaar_number: applicantInfo.aadhaar_no || '',
+        aadhaar_no: applicantInfo.aadhaar_no || '',
+        ...applicantInfo
+      };
+      formData.append('field_values', JSON.stringify(combinedSubmitValues));
 
       // Attach file uploads
       const docMetadataMap = {};
@@ -823,10 +902,28 @@ export default function ApplyService() {
     );
   }
 
-  // Group Dynamic Fields by Section
+  // Group Dynamic Fields by Section, ensuring strictly SINGLE-INSTANCE fields (no duplicates)
   const groupedFields = {};
-  if (service.fields) {
+  const renderedFieldKeys = new Set();
+
+  if (service && service.fields) {
     service.fields.forEach(f => {
+      if (!f) return;
+      const rawKey = f.field_name || f.name || '';
+      const rawLabel = f.field_label || f.label || rawKey;
+      const normKey = String(rawKey || rawLabel).trim().toLowerCase();
+
+      if (!normKey) return;
+
+      // Filter out fields already present in the Primary Applicant Information card above
+      if (PRIMARY_APPLICANT_KEYS.has(normKey) || (rawKey && PRIMARY_APPLICANT_KEYS.has(String(rawKey).trim().toLowerCase()))) {
+        return;
+      }
+
+      // Ensure every dynamic field is strictly single-instance
+      if (renderedFieldKeys.has(normKey)) return;
+      renderedFieldKeys.add(normKey);
+
       const secName = f.section || 'Specific Service Information';
       if (!groupedFields[secName]) groupedFields[secName] = [];
       groupedFields[secName].push(f);
@@ -1514,8 +1611,7 @@ export default function ApplyService() {
                       'user_phone', 'mobile', 'mobile_number', 'phone',
                       'aadhaar_no', 'aadhaar_number', '12-digit aadhaar number',
                       'address', 'residential_address',
-                      'district', 'state', 'pincode', 'pin_code', '6-digit pin code',
-                      'dob', 'gender'
+                      'district', 'state', 'pincode', 'pin_code', '6-digit pin code'
                     ];
 
                     const uniqueCustomEntries = Object.entries(fieldValues).filter(([k, v]) => {
