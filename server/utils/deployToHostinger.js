@@ -30,7 +30,7 @@ async function deploy() {
   }
 
   console.log(`Connecting to FTP Server: ${host}:${port} as ${user}...`);
-  const client = new ftp.Client(30000); // 30s timeout
+  const client = new ftp.Client(60000); // 60s timeout
   client.ftp.verbose = false;
 
   client.trackProgress(info => {
