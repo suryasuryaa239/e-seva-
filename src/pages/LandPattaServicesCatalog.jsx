@@ -13,6 +13,16 @@ export default function LandPattaServicesCatalog() {
 
   const services = [
     {
+      id: 'patta-chitta',
+      title: 'Patta / Chitta Online Application & Copy',
+      description: 'Official online application for Patta Chitta extract, name transfer & ownership verification.',
+      fee: '₹30',
+      sla: 'Instant / 1 Working Day',
+      docs: ['District, Taluk, Village Details', 'Survey Number / Sub-division / Patta Number'],
+      icon: MapPin,
+      badge: 'Most Popular'
+    },
+    {
       id: 'patta-transfer-application',
       title: 'Patta / Chitta Name Transfer Application',
       description: 'Apply for official Patta transfer in revenue land records post property purchase or inheritance.',
@@ -185,7 +195,7 @@ export default function LandPattaServicesCatalog() {
                 </div>
 
                 <div className="p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
-                  <Link to={`/service/${service.id}`} className="text-xs font-bold text-slate-700 hover:text-amber-800 hover:underline">
+                  <Link to={`/enquiry/${service.id}`} className="text-xs font-bold text-slate-700 hover:text-amber-800 hover:underline">
                     {lang === 'ta' ? 'விவரங்கள்' : 'View Details'}
                   </Link>
                   <button onClick={() => navigate(`/apply/${service.id}`)} className="px-4 py-2 bg-amber-800 hover:bg-amber-900 text-white text-xs font-bold rounded-lg shadow-sm transition-colors flex items-center space-x-1.5">

@@ -12,21 +12,21 @@ export default function WhatsAppSupport() {
   const { lang } = useLanguage();
 
   // Support WhatsApp Number (Configurable - User Specified 6374889944)
-  const whatsappNumber = '916374889944'; 
+  const whatsappNumber = '919894059591'; 
 
   // Generate contextual WhatsApp message based on current page
   const getContextualChatMessage = () => {
     const currentUrl = window.location.href;
     const pagePath = location.pathname;
 
-    if (pagePath.includes('/service/')) {
-      return encodeURIComponent(`Hello E-Seva Support, I need assistance regarding this service:\n${currentUrl}`);
+    if (pagePath.includes('/enquiry/') || pagePath.includes('/service/')) {
+      return encodeURIComponent(`Hello EConnect Support, I need assistance regarding this service:\n${currentUrl}`);
     } else if (pagePath.includes('/apply/')) {
-      return encodeURIComponent(`Hello E-Seva Support, I am filling an application and need help.\nPage: ${currentUrl}`);
+      return encodeURIComponent(`Hello EConnect Support, I am filling an application and need help.\nPage: ${currentUrl}`);
     } else if (pagePath.includes('/track')) {
-      return encodeURIComponent(`Hello E-Seva Support, I want to track my application status.\nPage: ${currentUrl}`);
+      return encodeURIComponent(`Hello EConnect Support, I want to track my application status.\nPage: ${currentUrl}`);
     } else {
-      return encodeURIComponent(`Hello E-Seva Support, I have a query regarding E-Seva digital services.\nPage: ${currentUrl}`);
+      return encodeURIComponent(`Hello EConnect Support, I have a query regarding EConnect digital services.\nPage: ${currentUrl}`);
     }
   };
 

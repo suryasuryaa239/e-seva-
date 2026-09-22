@@ -186,6 +186,9 @@ function AppContent() {
 
           <Route path="/services/:category" element={<CategoryView />} />
           <Route path="/category/:slug" element={<CategoryView />} />
+          {/* Service Enquiry Routes */}
+          <Route path="/enquiry/:slug" element={<ServiceDetails />} />
+          <Route path="/enquiry/:serviceId" element={<ServiceDetails />} />
           <Route path="/service/:serviceId" element={<ServiceDetails />} />
           <Route path="/service/:slug" element={<ServiceDetails />} />
           {/* Protected Application Routes */}

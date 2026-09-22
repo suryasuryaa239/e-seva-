@@ -175,7 +175,7 @@ export default function RationCardServicesCatalog() {
                 </div>
 
                 <div className="p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
-                  <Link to={`/service/${service.id}`} className="text-xs font-bold text-slate-700 hover:text-teal-800 hover:underline">
+                  <Link to={`/enquiry/${service.id}`} className="text-xs font-bold text-slate-700 hover:text-teal-800 hover:underline">
                     {lang === 'ta' ? 'விவரங்கள்' : 'View Details'}
                   </Link>
                   <button onClick={() => navigate(`/apply/${service.id}`)} className="px-4 py-2 bg-teal-800 hover:bg-teal-900 text-white text-xs font-bold rounded-lg shadow-sm transition-colors flex items-center space-x-1.5">

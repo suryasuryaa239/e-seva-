@@ -103,12 +103,12 @@ export default function Navbar() {
           {/* LEFT: E-SEVA LOGO, BRAND NAME & TAGLINE */}
           {/* ========================================================================= */}
           <Link to="/" className="flex items-center gap-2 sm:gap-3 group shrink-0 py-1">
-            {/* E-Seva Emblem Icon */}
-            <div className="w-9 h-9 sm:w-10 sm:h-11 rounded-xl bg-slate-900 flex items-center justify-center text-white shadow-md group-hover:bg-slate-800 transition-all border border-slate-800 relative shrink-0">
-              <Landmark className="w-4 h-4 sm:w-5 sm:h-6 text-white" />
-              {/* Subtle orange accent badge dot */}
-              <span className="absolute -top-0.5 -right-0.5 sm:-top-1 sm:-right-1 w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-orange-500 ring-2 ring-white"></span>
-            </div>
+            {/* EConnect Official Brand Logo */}
+            <img 
+              src="/logo.png" 
+              alt="EConnect" 
+              className="w-10 h-10 sm:w-11 sm:h-11 object-contain rounded-xl drop-shadow-sm group-hover:scale-105 transition-transform shrink-0" 
+            />
             
             <div className="flex flex-col justify-center">
               <div className="flex items-center gap-1.5 sm:gap-2 leading-none">

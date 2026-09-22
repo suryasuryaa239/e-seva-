@@ -237,7 +237,7 @@ export default function VoterServicesCatalog() {
                 {/* Apply Action Bar */}
                 <div className="p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
                   <Link
-                    to={`/service/${service.id}`}
+                    to={`/enquiry/${service.id}`}
                     className="text-xs font-bold text-slate-700 hover:text-emerald-700 hover:underline"
                   >
                     {lang === 'ta' ? 'விவரங்கள்' : 'View Details'}

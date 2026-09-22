@@ -294,14 +294,14 @@ export default function ServicesDirectory() {
                 {/* BOTTOM ACTION BUTTONS */}
                 <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
                   <Link
-                    to={`/service/${srv.slug}`}
+                    to={`/enquiry/${srv.slug}`}
                     className="text-xs font-bold text-slate-700 hover:text-orange-600 transition-colors"
                   >
                     {t.viewDetailsBtn || (lang === 'ta' ? 'விவரங்களைப் பார்க்கவும்' : 'View Details')} →
                   </Link>
 
                   <Link
-                    to={`/service/${srv.slug}`}
+                    to={`/enquiry/${srv.slug}`}
                     className="bg-[#0b192c] hover:bg-orange-600 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl shadow-xs transition-colors flex items-center gap-1.5 group/btn"
                   >
                     <span>{t.applyNowBtn || (lang === 'ta' ? 'இப்போது விண்ணப்பிக்கவும்' : 'Apply Now')}</span>

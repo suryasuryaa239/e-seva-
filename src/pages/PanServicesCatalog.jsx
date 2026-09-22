@@ -249,7 +249,7 @@ export default function PanServicesCatalog() {
                 {/* Apply Action Bar */}
                 <div className="p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
                   <Link
-                    to={`/service/${service.id}`}
+                    to={`/enquiry/${service.id}`}
                     className="text-xs font-bold text-slate-700 hover:text-indigo-600 hover:underline"
                   >
                     {lang === 'ta' ? 'விவரங்கள்' : 'View Details'}

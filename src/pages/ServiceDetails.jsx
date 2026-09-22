@@ -449,7 +449,7 @@ export default function ServiceDetails() {
                   </div>
                   <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
                     <span className="font-extrabold text-slate-900">{relSrv.fee === 0 ? (lang === 'ta' ? 'இலவசம்' : 'FREE') : `₹${relSrv.fee}`}</span>
-                    <Link to={`/service/${relSrv.slug}`} className="font-bold text-orange-600 hover:text-orange-700 flex items-center gap-1">
+                    <Link to={`/enquiry/${relSrv.slug}`} className="font-bold text-orange-600 hover:text-orange-700 flex items-center gap-1">
                       <span>{t.viewDetailsBtn || (lang === 'ta' ? 'விவரங்களைப் பார்க்கவும்' : 'View Details')}</span> →
                     </Link>
                   </div>

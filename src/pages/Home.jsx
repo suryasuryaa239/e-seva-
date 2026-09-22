@@ -444,7 +444,7 @@ export default function Home() {
               {/* APPLY NOW BUTTON WITH ARROW */}
               <div className="pt-2">
                 <Link
-                  to={srv.slug === 'aadhaar' ? '/services/aadhaar' : `/service/${srv.slug}`}
+                  to={srv.slug === 'aadhaar' ? '/services/aadhaar' : `/enquiry/${srv.slug}`}
                   className="w-full bg-[#0b192c] hover:bg-orange-600 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-xs transition-colors flex items-center justify-center gap-1.5 group/btn"
                 >
                   <span>{t.applyNow || (lang === 'ta' ? 'இப்போது விண்ணப்பிக்கவும்' : 'Apply Now')}</span>

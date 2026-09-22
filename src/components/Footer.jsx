@@ -18,9 +18,11 @@ export default function Footer() {
           {/* COLUMN 1: E-SEVA BRAND IDENTITY */}
           <div className="space-y-4">
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-orange-500 flex items-center justify-center text-white shadow-md font-extrabold text-lg">
-                E
-              </div>
+              <img 
+                src="/logo.png" 
+                alt="EConnect" 
+                className="w-10 h-10 object-contain rounded-xl bg-white p-1 shadow-md shrink-0" 
+              />
               <div>
                 <span className="font-heading font-extrabold text-xl text-white tracking-tight block">
                   {t.portalName}

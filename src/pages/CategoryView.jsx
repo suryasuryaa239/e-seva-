@@ -315,7 +315,7 @@ export default function CategoryView() {
                     {/* Card Action Footer */}
                     <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between gap-3">
                       <Link
-                        to={`/service/${srv.slug || srv.id}`}
+                        to={`/enquiry/${srv.slug || srv.id}`}
                         className="text-xs font-bold text-slate-700 hover:text-indigo-600 px-3 py-2 rounded-lg hover:bg-slate-200 transition-colors"
                       >
                         {lang === 'ta' ? 'விவரங்கள்' : 'View Details'}
