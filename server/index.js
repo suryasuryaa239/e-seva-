@@ -11,6 +11,7 @@ import PaymentService from './paymentService.js';
 import NotificationService from './notificationService.js';
 import { initCronJobs } from './cronJobs.js';
 import { uploadToBackblaze } from './utils/b2Storage.js';
+import { uploadToFTP, uploadApplicationDataToFTP, downloadFromFTP, isFtpConfigured } from './utils/ftpStorage.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -66,6 +67,31 @@ const upload = multer({
   limits: { fileSize: 25 * 1024 * 1024 }, // 25MB limit for documents & camera photos
   fileFilter: fileFilter
 });
+
+// Helper for unified cloud / FTP / local document upload handling
+async function storeUploadedFile({ buffer, originalname, mimetype, filename, subDir = 'documents' }) {
+  if (isFtpConfigured()) {
+    try {
+      const ftpResult = await uploadToFTP({ buffer, originalname, mimetype, filename, subDir });
+      if (ftpResult && ftpResult.url) {
+        return ftpResult.url;
+      }
+    } catch (ftpErr) {
+      console.warn('[FTP Upload Warning]:', ftpErr.message);
+    }
+  }
+
+  try {
+    const b2Result = await uploadToBackblaze({ buffer, originalname, mimetype, filename });
+    if (b2Result && b2Result.url) {
+      return b2Result.url;
+    }
+  } catch (b2Err) {
+    console.warn('[B2 Storage Fallback Warning]:', b2Err.message);
+  }
+
+  return `/api/documents/preview-file/${filename}`;
+}
 
 // Document Audit Trail Helper
 const logDocumentAudit = (application_id, document_id, action, actor, actor_role, details = '') => {
@@ -922,18 +948,16 @@ app.post('/api/applications/draft', submitRateLimiter, upload.any(), async (req,
             try {
               const buffer = file.buffer || (file.path && fs.existsSync(file.path) ? fs.readFileSync(file.path) : null);
               if (buffer) {
-                const b2Result = await uploadToBackblaze({
+                uploadedUrl = await storeUploadedFile({
                   buffer,
                   originalname: file.originalname,
                   mimetype: file.mimetype,
-                  filename: file.filename
+                  filename: file.filename,
+                  subDir: 'documents'
                 });
-                if (b2Result && b2Result.url) {
-                  uploadedUrl = b2Result.url;
-                }
               }
-            } catch (b2Err) {
-              console.warn('[B2 Upload Draft Warning]:', b2Err.message);
+            } catch (uploadErr) {
+              console.warn('[Draft Upload Warning]:', uploadErr.message);
             }
 
             return {
@@ -1119,18 +1143,16 @@ app.post('/api/applications', submitRateLimiter, upload.any(), async (req, res) 
             try {
               const buffer = file.buffer || (file.path && fs.existsSync(file.path) ? fs.readFileSync(file.path) : null);
               if (buffer) {
-                const b2Result = await uploadToBackblaze({
+                uploadedUrl = await storeUploadedFile({
                   buffer,
                   originalname: file.originalname,
                   mimetype: file.mimetype,
-                  filename: file.filename
+                  filename: file.filename,
+                  subDir: 'documents'
                 });
-                if (b2Result && b2Result.url) {
-                  uploadedUrl = b2Result.url;
-                }
               }
             } catch (uploadErr) {
-              console.warn('[B2 Upload Submit Warning]:', uploadErr.message);
+              console.warn('[Submit Upload Warning]:', uploadErr.message);
             }
 
             return {
@@ -1219,6 +1241,18 @@ app.post('/api/applications', submitRateLimiter, upload.any(), async (req, res) 
       } catch (notifErr) {
         console.error('Submission notification error:', notifErr);
       }
+    }
+
+    // Archive application details snapshot to remote FTP if configured
+    if (isFtpConfigured()) {
+      uploadApplicationDataToFTP({
+        ...submissionResult,
+        user_name,
+        user_email,
+        user_phone,
+        service_name: service.name,
+        submitted_at: submissionResult.submitted_at || new Date().toISOString()
+      }).catch(e => console.warn('[FTP Archive Error]:', e.message));
     }
 
     res.status(201).json({
@@ -2056,7 +2090,7 @@ app.get('/api/documents/:id/preview', optionalAuthenticateToken, (req, res) => {
 });
 
 // Secure Document File Stream Endpoint (Internal / Authorized)
-app.get('/api/documents/preview-file/:filename', optionalAuthenticateToken, (req, res) => {
+app.get('/api/documents/preview-file/:filename', optionalAuthenticateToken, async (req, res) => {
   const filename = path.basename(req.params.filename);
   const doc = db.get('application_documents', d => d.stored_filename === filename || (d.file_path && d.file_path.includes(filename)));
   const appRecord = doc ? db.get('applications', a => a.id === doc.application_id) : null;
@@ -2084,13 +2118,34 @@ app.get('/api/documents/preview-file/:filename', optionalAuthenticateToken, (req
     return res.sendFile(tmpPath);
   }
 
+  // Stream from FTP if configured
+  if (isFtpConfigured()) {
+    try {
+      const ftpBuffer = await downloadFromFTP(filename, 'documents');
+      if (ftpBuffer) {
+        const ext = path.extname(filename).toLowerCase();
+        const mimeMap = {
+          '.jpg': 'image/jpeg',
+          '.jpeg': 'image/jpeg',
+          '.png': 'image/png',
+          '.webp': 'image/webp',
+          '.pdf': 'application/pdf'
+        };
+        res.setHeader('Content-Type', mimeMap[ext] || doc?.file_type || 'application/octet-stream');
+        return res.send(ftpBuffer);
+      }
+    } catch (ftpErr) {
+      console.warn('[FTP Stream Warning]:', ftpErr.message);
+    }
+  }
+
   // Fallback SVG Proof Renderer
   res.setHeader('Content-Type', 'image/svg+xml');
   return res.send(generateFallbackDocSvg(doc ? doc.document_name : 'Applicant Document Proof', appRecord ? appRecord.application_number : 'ESV-2026-ARCHIVE'));
 });
 
 // Document Protected Download Endpoint
-app.get('/api/documents/:id/download', optionalAuthenticateToken, (req, res) => {
+app.get('/api/documents/:id/download', optionalAuthenticateToken, async (req, res) => {
   const docId = Number(req.params.id);
   const doc = db.get('application_documents', d => d.id === docId);
   if (!doc) return res.status(404).json({ error: 'Document record not found' });
@@ -2106,6 +2161,17 @@ app.get('/api/documents/:id/download', optionalAuthenticateToken, (req, res) => 
 
   const absolutePath = path.join(uploadsDir, doc.stored_filename || path.basename(doc.file_path));
   if (!fs.existsSync(absolutePath)) {
+    if (isFtpConfigured()) {
+      try {
+        const ftpBuffer = await downloadFromFTP(doc.stored_filename || path.basename(doc.file_path), 'documents');
+        if (ftpBuffer) {
+          res.setHeader('Content-Disposition', `attachment; filename="${doc.original_filename || doc.document_name || 'document'}"`);
+          return res.send(ftpBuffer);
+        }
+      } catch (ftpErr) {
+        console.warn('[FTP Download Warning]:', ftpErr.message);
+      }
+    }
     return res.status(404).json({ error: 'Physical document file missing on server' });
   }
 
@@ -2129,18 +2195,16 @@ app.post('/api/documents/:id/replace', authenticateToken, upload.single('file'),
   try {
     const buffer = req.file.buffer || (req.file.path && fs.existsSync(req.file.path) ? fs.readFileSync(req.file.path) : null);
     if (buffer) {
-      const b2Result = await uploadToBackblaze({
+      uploadedUrl = await storeUploadedFile({
         buffer,
         originalname: req.file.originalname,
         mimetype: req.file.mimetype,
-        filename: req.file.filename
+        filename: req.file.filename,
+        subDir: 'documents'
       });
-      if (b2Result && b2Result.url) {
-        uploadedUrl = b2Result.url;
-      }
     }
   } catch (e) {
-    console.warn('[B2 Replace Warning]:', e.message);
+    console.warn('[Replace Document Upload Warning]:', e.message);
   }
 
   if (doc.stored_filename) {
@@ -3278,18 +3342,16 @@ app.post('/api/applications/:id/reupload-document', upload.single('file'), async
   try {
     const buffer = req.file.buffer || (req.file.path && fs.existsSync(req.file.path) ? fs.readFileSync(req.file.path) : null);
     if (buffer) {
-      const b2Result = await uploadToBackblaze({
+      uploadedUrl = await storeUploadedFile({
         buffer,
         originalname: req.file.originalname,
         mimetype: req.file.mimetype,
-        filename: req.file.filename
+        filename: req.file.filename,
+        subDir: 'documents'
       });
-      if (b2Result && b2Result.url) {
-        uploadedUrl = b2Result.url;
-      }
     }
   } catch (e) {
-    console.warn('[B2 Reupload Warning]:', e.message);
+    console.warn('[Reupload Document Upload Warning]:', e.message);
   }
 
   const existingDoc = db.get('application_documents', d => d.application_id === appId && d.document_name === document_name);

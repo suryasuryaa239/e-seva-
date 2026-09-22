@@ -1,17 +1,12 @@
-/**
- * Payment Service Abstraction Module
- * Supports PhonePe Payment Gateway (v1 Hermes / Production & Sandbox)
- * Environment variables: PHONEPE_MERCHANT_ID, PHONEPE_SALT_KEY, PHONEPE_SALT_INDEX, PHONEPE_HOST_URL
- */
-
+import 'dotenv/config';
 import crypto from 'crypto';
 
-const PHONEPE_MERCHANT_ID = process.env.PHONEPE_MERCHANT_ID || '';
-const PHONEPE_SALT_KEY = process.env.PHONEPE_SALT_KEY || '';
-const PHONEPE_SALT_INDEX = process.env.PHONEPE_SALT_INDEX || '1';
-const PHONEPE_ENV = process.env.PHONEPE_ENV || 'PROD';
-const PHONEPE_HOST_URL = process.env.PHONEPE_HOST_URL || (
-  PHONEPE_ENV === 'UAT' 
+const getMerchantId = () => process.env.PHONEPE_MERCHANT_ID || '';
+const getSaltKey = () => process.env.PHONEPE_SALT_KEY || '';
+const getSaltIndex = () => process.env.PHONEPE_SALT_INDEX || '1';
+const getEnv = () => process.env.PHONEPE_ENV || 'PROD';
+const getHostUrl = () => process.env.PHONEPE_HOST_URL || (
+  getEnv() === 'UAT' 
     ? 'https://api-preprod.phonepe.com/apis/pg-sandbox' 
     : 'https://api.phonepe.com/apis/hermes'
 );
@@ -39,7 +34,12 @@ class PaymentService {
     redirectUrl,
     callbackUrl
   }) {
-    if (!PHONEPE_MERCHANT_ID || !PHONEPE_SALT_KEY) {
+    const merchantId = getMerchantId();
+    const saltKey = getSaltKey();
+    const saltIndex = getSaltIndex();
+    const hostUrl = getHostUrl();
+
+    if (!merchantId || !saltKey) {
       console.error('[PhonePe Error]: PHONEPE_MERCHANT_ID or PHONEPE_SALT_KEY is missing from environment variables!');
       return {
         success: false,
@@ -52,7 +52,7 @@ class PaymentService {
     const cleanPhone = (userPhone || '9999999999').replace(/\D/g, '').slice(-10);
 
     const payload = {
-      merchantId: PHONEPE_MERCHANT_ID,
+      merchantId: merchantId,
       merchantTransactionId: merchantTransactionId,
       merchantUserId: `USR_${userId || 'GUEST'}_${Date.now()}`.slice(0, 36),
       amount: amountInPaise,
@@ -67,8 +67,8 @@ class PaymentService {
 
     const base64Payload = Buffer.from(JSON.stringify(payload)).toString('base64');
     const endpoint = '/pg/v1/pay';
-    const checksum = PaymentService.calculatePhonePeChecksum(base64Payload, endpoint, PHONEPE_SALT_KEY, PHONEPE_SALT_INDEX);
-    const targetUrl = `${PHONEPE_HOST_URL}${endpoint}`;
+    const checksum = PaymentService.calculatePhonePeChecksum(base64Payload, endpoint, saltKey, saltIndex);
+    const targetUrl = `${hostUrl}${endpoint}`;
 
     try {
       const response = await fetch(targetUrl, {
@@ -116,10 +116,15 @@ class PaymentService {
       throw new Error('merchantTransactionId is required for PhonePe status check');
     }
 
-    const endpoint = `/pg/v1/status/${PHONEPE_MERCHANT_ID}/${merchantTransactionId}`;
-    const hash = crypto.createHash('sha256').update(endpoint + PHONEPE_SALT_KEY).digest('hex');
-    const checksum = `${hash}###${PHONEPE_SALT_INDEX}`;
-    const targetUrl = `${PHONEPE_HOST_URL}${endpoint}`;
+    const merchantId = getMerchantId();
+    const saltKey = getSaltKey();
+    const saltIndex = getSaltIndex();
+    const hostUrl = getHostUrl();
+
+    const endpoint = `/pg/v1/status/${merchantId}/${merchantTransactionId}`;
+    const hash = crypto.createHash('sha256').update(endpoint + saltKey).digest('hex');
+    const checksum = `${hash}###${saltIndex}`;
+    const targetUrl = `${hostUrl}${endpoint}`;
 
     try {
       const response = await fetch(targetUrl, {
@@ -127,7 +132,7 @@ class PaymentService {
         headers: {
           'Content-Type': 'application/json',
           'X-VERIFY': checksum,
-          'X-MERCHANT-ID': PHONEPE_MERCHANT_ID,
+          'X-MERCHANT-ID': merchantId,
           'Accept': 'application/json'
         }
       });
