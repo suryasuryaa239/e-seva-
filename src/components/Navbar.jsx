@@ -113,7 +113,7 @@ export default function Navbar() {
             <div className="flex flex-col justify-center">
               <div className="flex items-center gap-1.5 sm:gap-2 leading-none">
                 <span className="font-heading font-extrabold text-lg sm:text-xl xl:text-2xl tracking-tight text-slate-900">
-                  E-SEVA
+                  ECONNECT
                 </span>
                 <span className="bg-orange-50 text-orange-600 border border-orange-200 text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider px-1.5 sm:px-2 py-0.5 rounded-md">
                   PORTAL

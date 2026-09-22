@@ -125,22 +125,22 @@ export default function Footer() {
               <li className="flex items-start gap-2.5">
                 <Phone className="w-4 h-4 text-orange-400 shrink-0 mt-0.5" />
                 <div>
-                  <span className="block text-white font-mono font-medium">1800-425-3738</span>
-                  <span className="text-[11px] text-slate-500">+91 44 2859 0000 ({lang === 'ta' ? 'கட்டணமில்லா சேவை' : 'Toll-Free'})</span>
+                  <span className="block text-white font-mono font-medium">+91 98940 59591</span>
+                  <span className="text-[11px] text-slate-500">9894059591</span>
                 </div>
               </li>
 
               <li className="flex items-start gap-2.5">
                 <Mail className="w-4 h-4 text-orange-400 shrink-0 mt-0.5" />
                 <div>
-                  <span className="block text-white font-medium">support@eseva.gov.in</span>
-                  <span className="text-[11px] text-slate-500">help@eseva.org</span>
+                  <span className="block text-white font-medium">econnectindia@gmail.com</span>
+                  <span className="text-[11px] text-slate-500">24/7 Support</span>
                 </div>
               </li>
 
               <li className="flex items-start gap-2.5">
                 <MapPin className="w-4 h-4 text-orange-400 shrink-0 mt-0.5" />
-                <span>Digital Seva Bhavan, 123 Service Street, Digital City - 600001</span>
+                <span>45, New Bus stand complex, Sathyamangalam-638402.</span>
               </li>
 
               <li className="flex items-start gap-2.5">

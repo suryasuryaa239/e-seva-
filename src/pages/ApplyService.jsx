@@ -2140,14 +2140,14 @@ export default function ApplyService() {
                   <div className="bg-slate-900/90 border border-slate-800 p-3 rounded-2xl flex items-center justify-between">
                     <div className="flex items-center gap-2.5 text-slate-300 font-medium">
                       <Phone className="w-4 h-4 text-orange-400 shrink-0" />
-                      <span className="font-mono font-semibold text-white">1800-425-3738</span>
+                      <span className="font-mono font-semibold text-white">+91 98940 59591</span>
                     </div>
-                    <span className="text-[10px] text-slate-400 font-medium">{lang === 'ta' ? 'கட்டணமில்லா சேவை' : 'Toll-Free'}</span>
+                    <span className="text-[10px] text-slate-400 font-medium">{lang === 'ta' ? 'உதவி எண்' : 'Support'}</span>
                   </div>
 
                   <div className="bg-slate-900/90 border border-slate-800 p-3 rounded-2xl flex items-center gap-2.5 text-slate-300 font-medium">
                     <Mail className="w-4 h-4 text-orange-400 shrink-0" />
-                    <span className="text-xs text-white">support@eseva.gov.in</span>
+                    <span className="text-xs text-white">econnectindia@gmail.com</span>
                   </div>
                 </div>
               </div>

@@ -202,13 +202,13 @@ class NotificationService {
       ` : ''}
 
       <div class="btn-container">
-        <a href="http://localhost:5173/login" class="btn" target="_blank">Log In to E-Seva Portal</a>
+        <a href="https://econnecthub.com/login" class="btn" target="_blank">Log In to EConnect Portal</a>
       </div>
     </div>
 
     <div class="footer">
-      <p style="margin: 0 0 6px 0;">This is an automated transactional email sent by <strong>Tamil Nadu e-Governance Agency (TNeGA)</strong>.</p>
-      <p style="margin: 0;">For assistance, visit your nearest e-Seva Center or email support at <strong>support@eseva.gov.in</strong>.</p>
+      <p style="margin: 0 0 6px 0;">This is an automated transactional email sent by <strong>EConnect Digital Services</strong>.</p>
+      <p style="margin: 0;">For assistance, call <strong>+91 98940 59591</strong> or email support at <strong>econnectindia@gmail.com</strong>.</p>
     </div>
   </div>
 </body>

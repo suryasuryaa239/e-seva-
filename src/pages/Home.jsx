@@ -897,8 +897,8 @@ export default function Home() {
                   <h4 className="font-heading font-extrabold text-sm text-slate-900 group-hover:text-orange-600 transition-colors">
                     {t.phoneSupport || (lang === 'ta' ? 'தொலைபேசி ஆதரவு' : 'Phone Support')}
                   </h4>
-                  <p className="text-xs text-slate-600 font-mono font-medium">1800-425-3738 / +91 44 2859 0000</p>
-                  <p className="text-[11px] text-slate-400 font-normal">{lang === 'ta' ? 'கட்டணமில்லா உதவி எண் (திங்கள் - சனி)' : 'Toll-Free Helpline (Mon - Sat)'}</p>
+                  <p className="text-xs text-slate-600 font-mono font-medium">+91 98940 59591 / 9894059591</p>
+                  <p className="text-[11px] text-slate-400 font-normal">{lang === 'ta' ? 'உதவி எண் (திங்கள் - சனி)' : 'Helpline (Mon - Sat)'}</p>
                 </div>
               </div>
 
@@ -911,7 +911,7 @@ export default function Home() {
                   <h4 className="font-heading font-extrabold text-sm text-slate-900 group-hover:text-orange-600 transition-colors">
                     {t.emailSupport || (lang === 'ta' ? 'மின்னஞ்சல் ஆதரவு' : 'Email Support')}
                   </h4>
-                  <p className="text-xs text-slate-600 font-medium">support@eseva.gov.in / help@eseva.org</p>
+                  <p className="text-xs text-slate-600 font-medium">econnectindia@gmail.com</p>
                   <p className="text-[11px] text-slate-400 font-normal">{lang === 'ta' ? '24 மணிநேர பதில் சேவை' : '24-hour response SLA'}</p>
                 </div>
               </div>
@@ -926,7 +926,7 @@ export default function Home() {
                     {t.serviceLocation || (lang === 'ta' ? 'சேவை மையம்' : 'Service Location')}
                   </h4>
                   <p className="text-xs text-slate-600 font-normal leading-relaxed">
-                    Digital Seva Bhavan, 123 Service Street, Digital City - 600001
+                    45, New Bus stand complex, Sathyamangalam-638402.
                   </p>
                 </div>
               </div>

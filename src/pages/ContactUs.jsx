@@ -59,8 +59,8 @@ export default function ContactUs() {
               <Phone className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="font-bold text-sm text-slate-900">Toll-Free Helpline</h4>
-              <p className="text-xs text-slate-500 mt-1 font-mono font-bold">+91 63748 89944 / 1800-123-ESEVA</p>
+              <h4 className="font-bold text-sm text-slate-900">Helpline Support</h4>
+              <p className="text-xs text-slate-500 mt-1 font-mono font-bold">+91 98940 59591 / 9894059591</p>
               <p className="text-[11px] text-slate-400">Mon - Sat: 8:00 AM - 8:00 PM</p>
             </div>
           </div>
@@ -71,7 +71,7 @@ export default function ContactUs() {
             </div>
             <div>
               <h4 className="font-bold text-sm text-slate-900">Official Support Email</h4>
-              <p className="text-xs text-slate-500 mt-1">support@eseva.gov.in</p>
+              <p className="text-xs text-slate-500 mt-1 font-medium">econnectindia@gmail.com</p>
               <p className="text-[11px] text-slate-400">Guaranteed 24-hour SLA response</p>
             </div>
           </div>
@@ -81,9 +81,9 @@ export default function ContactUs() {
               <MapPin className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="font-bold text-sm text-slate-900">Central Directorate Office</h4>
+              <h4 className="font-bold text-sm text-slate-900">EConnect Office</h4>
               <p className="text-xs text-slate-500 mt-1">
-                e-Governance Tower, Block 4, Digital Administrative Complex, New Delhi - 110001
+                45, New Bus stand complex, Sathyamangalam-638402.
               </p>
             </div>
           </div>

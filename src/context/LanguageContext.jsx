@@ -5,7 +5,7 @@ const LanguageContext = createContext();
 export const translations = {
   en: {
     // 1. HEADER
-    portalName: "E-SEVA PORTAL",
+    portalName: "EConnect",
     tagline: "Digital Services Made Easy",
     govTag: "GOVERNMENT OF TAMIL NADU E-SEVA SERVICES",
     home: "Home",
@@ -486,7 +486,7 @@ export const translations = {
   },
   ta: {
     // 1. HEADER
-    portalName: "இ-சேவை போர்ட்டல்",
+    portalName: "EConnect",
     tagline: "மின்னணு சேவைகள் எளிதாக",
     govTag: "தமிழ்நாடு அரசு மின்னணு இ-சேவை மையம்",
     home: "முகப்பு",
