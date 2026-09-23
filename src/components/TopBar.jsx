@@ -6,8 +6,8 @@ export default function TopBar() {
   const { lang, toggleLanguage, t } = useLanguage();
 
   return (
-    <div className="bg-slate-900 text-slate-300 text-[11px] sm:text-xs py-1.5 px-4 sm:px-6 lg:px-8 border-b border-slate-800">
-      <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
+    <div className="bg-slate-900 text-slate-300 text-[11px] sm:text-xs py-1.5 px-3 sm:px-4 lg:px-5 xl:px-8 border-b border-slate-800">
+      <div className="max-w-[1440px] w-full mx-auto flex items-center justify-between gap-3">
         <div className="flex items-center gap-2 sm:gap-4 truncate">
           <span className="flex items-center gap-1 font-medium text-emerald-400 shrink-0">
             <Landmark className="w-3.5 h-3.5" />

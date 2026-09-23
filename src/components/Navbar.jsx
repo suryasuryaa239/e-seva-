@@ -96,8 +96,8 @@ export default function Navbar() {
 
   return (
     <header className="bg-white/95 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50 shadow-xs text-slate-800 selection:bg-slate-900 selection:text-white">
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 xl:px-8">
-        <div className="flex items-center justify-between h-16 sm:h-20 gap-2 xl:gap-4 min-w-0">
+      <div className="max-w-[1440px] w-full mx-auto px-3 sm:px-4 lg:px-5 xl:px-8">
+        <div className="flex items-center justify-between h-16 sm:h-20 gap-1.5 lg:gap-2 xl:gap-4 min-w-0">
           
           {/* ========================================================================= */}
           {/* LEFT: E-SEVA LOGO, BRAND NAME & TAGLINE */}
@@ -119,7 +119,7 @@ export default function Navbar() {
                   PORTAL
                 </span>
               </div>
-              <p className="text-[10px] sm:text-[11px] text-slate-500 font-medium tracking-wide mt-0.5 sm:mt-1 truncate max-w-[140px] sm:max-w-none">
+              <p className="text-[10px] sm:text-[11px] text-slate-500 font-medium tracking-wide mt-0.5 sm:mt-1 truncate max-w-[140px] sm:max-w-none hidden sm:block lg:hidden xl:block">
                 {t.tagline}
               </p>
             </div>
@@ -128,12 +128,12 @@ export default function Navbar() {
           {/* ========================================================================= */}
           {/* CENTER: DESKTOP NAVIGATION LINKS */}
           {/* ========================================================================= */}
-          <nav className="hidden lg:flex items-center gap-0.5 xl:gap-1.5 text-[11px] xl:text-xs font-semibold text-slate-800 shrink-0">
+          <nav className="hidden lg:flex items-center gap-0.5 xl:gap-1 text-[11px] xl:text-xs font-semibold text-slate-800 shrink-0">
             
             {/* 1. HOME */}
             <Link
               to="/"
-              className={`h-9 inline-flex items-center px-2 xl:px-3 rounded-lg transition-all ${
+              className={`h-9 inline-flex items-center px-1.5 xl:px-2.5 2xl:px-3 rounded-lg transition-all ${
                 isActive('/') 
                   ? 'text-slate-900 bg-slate-100 font-extrabold' 
                   : 'hover:text-slate-900 hover:bg-slate-50'
@@ -149,7 +149,7 @@ export default function Navbar() {
                   setServicesMenuOpen(!servicesMenuOpen);
                   setMoreMenuOpen(false);
                 }}
-                className={`h-9 inline-flex items-center gap-1 px-2 xl:px-3 rounded-lg transition-all ${
+                className={`h-9 inline-flex items-center gap-1 px-1.5 xl:px-2.5 2xl:px-3 rounded-lg transition-all ${
                   isActive('/services') || location.pathname.startsWith('/services') || servicesMenuOpen
                     ? 'text-slate-900 bg-slate-100 font-extrabold'
                     : 'hover:text-slate-900 hover:bg-slate-50'
@@ -231,7 +231,7 @@ export default function Navbar() {
                   setMoreMenuOpen(!moreMenuOpen);
                   setServicesMenuOpen(false);
                 }}
-                className={`h-9 inline-flex items-center gap-1 px-2 xl:px-3 rounded-lg transition-all ${
+                className={`h-9 inline-flex items-center gap-1 px-1.5 xl:px-2.5 2xl:px-3 rounded-lg transition-all ${
                   moreMenuOpen ? 'text-slate-900 bg-slate-100 font-extrabold' : 'hover:text-slate-900 hover:bg-slate-50'
                 }`}
               >
@@ -277,7 +277,7 @@ export default function Navbar() {
             {/* 4. ABOUT */}
             <Link
               to="/about"
-              className={`h-9 inline-flex items-center px-2 xl:px-3 rounded-lg transition-all ${
+              className={`h-9 inline-flex items-center px-1.5 xl:px-2.5 2xl:px-3 rounded-lg transition-all ${
                 isActive('/about') 
                   ? 'text-slate-900 bg-slate-100 font-extrabold' 
                   : 'hover:text-slate-900 hover:bg-slate-50'
@@ -289,7 +289,7 @@ export default function Navbar() {
             {/* 5. CONTACT */}
             <Link
               to="/contact"
-              className={`h-9 inline-flex items-center px-2 xl:px-3 rounded-lg transition-all ${
+              className={`h-9 inline-flex items-center px-1.5 xl:px-2.5 2xl:px-3 rounded-lg transition-all ${
                 isActive('/contact') 
                   ? 'text-slate-900 bg-slate-100 font-extrabold' 
                   : 'hover:text-slate-900 hover:bg-slate-50'
@@ -302,13 +302,13 @@ export default function Navbar() {
           {/* ========================================================================= */}
           {/* RIGHT: BUTTONS & AUTH ACTIONS */}
           {/* ========================================================================= */}
-          <div className="hidden lg:flex items-center gap-1.5 xl:gap-2 shrink-0 whitespace-nowrap">
+          <div className="hidden lg:flex items-center gap-1 xl:gap-2 shrink-0 whitespace-nowrap">
             
             {/* LANGUAGE SWITCHER BUTTON (ENGLISH ↔ தமிழ்) */}
-            <div className="h-9 inline-flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200 text-[11px] xl:text-xs font-bold shadow-inner shrink-0">
+            <div className="h-8.5 xl:h-9 inline-flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200 text-[10.5px] xl:text-xs font-bold shadow-inner shrink-0">
               <button
                 onClick={() => setLanguage('en')}
-                className={`h-8 px-2 xl:px-2.5 inline-flex items-center justify-center rounded-md transition-all cursor-pointer whitespace-nowrap ${
+                className={`h-7.5 xl:h-8 px-1.5 xl:px-2.5 inline-flex items-center justify-center rounded-md transition-all cursor-pointer whitespace-nowrap ${
                   lang === 'en'
                     ? 'bg-slate-900 text-white font-extrabold shadow-xs'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
@@ -318,7 +318,7 @@ export default function Navbar() {
               </button>
               <button
                 onClick={() => setLanguage('ta')}
-                className={`h-8 px-2 xl:px-2.5 inline-flex items-center justify-center rounded-md transition-all cursor-pointer whitespace-nowrap ${
+                className={`h-7.5 xl:h-8 px-1.5 xl:px-2.5 inline-flex items-center justify-center rounded-md transition-all cursor-pointer whitespace-nowrap ${
                   lang === 'ta'
                     ? 'bg-orange-600 text-white font-extrabold shadow-xs'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
@@ -331,7 +331,7 @@ export default function Navbar() {
             {/* CHECK APPLICATION STATUS - Outlined Button */}
             <Link
               to="/track"
-              className={`h-9 inline-flex items-center gap-1 text-[11px] xl:text-xs font-bold px-2.5 xl:px-3 rounded-lg border border-slate-300 hover:border-slate-800 text-slate-800 hover:bg-slate-50 transition-all shrink-0 whitespace-nowrap ${
+              className={`h-8.5 xl:h-9 inline-flex items-center gap-1 text-[11px] xl:text-xs font-bold px-2 xl:px-2.5 rounded-lg border border-slate-300 hover:border-slate-800 text-slate-800 hover:bg-slate-50 transition-all shrink-0 whitespace-nowrap ${
                 isActive('/track') ? 'border-slate-900 bg-slate-50 ring-1 ring-slate-900' : ''
               }`}
             >
@@ -419,11 +419,11 @@ export default function Navbar() {
                 </div>
               </div>
             ) : (
-              <div className="flex items-center gap-1.5 xl:gap-2 shrink-0 whitespace-nowrap">
+              <div className="flex items-center gap-1 xl:gap-2 shrink-0 whitespace-nowrap">
                 {/* DIRECT LOGIN LINK */}
                 <Link
                   to="/login"
-                  className="h-9 inline-flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-[11px] xl:text-xs px-3.5 xl:px-4 rounded-lg shadow-sm transition-all border border-slate-800 uppercase shrink-0 whitespace-nowrap cursor-pointer hover:border-orange-500"
+                  className="h-8.5 xl:h-9 inline-flex items-center gap-1 bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-[11px] xl:text-xs px-2.5 xl:px-3.5 rounded-lg shadow-sm transition-all border border-slate-800 uppercase shrink-0 whitespace-nowrap cursor-pointer hover:border-orange-500"
                 >
                   <User className="w-3.5 h-3.5 text-orange-400 shrink-0" />
                   <span>{lang === 'ta' ? 'உள்நுழைக' : 'LOGIN'}</span>

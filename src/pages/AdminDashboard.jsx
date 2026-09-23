@@ -538,23 +538,57 @@ export default function AdminDashboard() {
   const [editingServiceForm, setEditingServiceForm] = useState(null);
   const [savingEditService, setSavingEditService] = useState(false);
 
-  const openEditServiceModal = (srv) => {
-    const docs = Array.isArray(srv.documents) ? srv.documents.map(d => typeof d === 'string' ? d : d.document_name) : ['Aadhaar Card Copy', 'Passport Size Photo'];
-    const fields = Array.isArray(srv.fields) ? srv.fields.map(f => ({
-      field_label: f.field_label || f.name || f.label || 'Field',
-      field_type: f.field_type || f.type || 'text',
-      is_required: f.is_required !== undefined ? Boolean(f.is_required) : true
-    })) : [
-      { field_label: 'Applicant Full Name', field_type: 'text', is_required: true },
-      { field_label: 'Mobile Number', field_type: 'text', is_required: true },
-      { field_label: 'Aadhaar / ID Number', field_type: 'text', is_required: true },
-      { field_label: 'Residential Address', field_type: 'textarea', is_required: true }
-    ];
+  const openEditServiceModal = async (srv) => {
+    let docs = [];
+    let fields = [];
+
+    if (Array.isArray(srv.documents) && srv.documents.length > 0) {
+      docs = srv.documents.map(d => typeof d === 'string' ? d : (d.document_name || d.name));
+    }
+    if (Array.isArray(srv.fields) && srv.fields.length > 0) {
+      fields = srv.fields.map(f => ({
+        field_label: f.field_label || f.name || f.label || 'Field',
+        field_type: f.field_type || f.type || 'text',
+        is_required: f.is_required !== undefined ? Boolean(f.is_required) : true
+      }));
+    }
+
+    // If documents or fields missing from row, fetch full single service details
+    if (docs.length === 0 || fields.length === 0) {
+      try {
+        const res = await fetch(`/api/services/${srv.id || srv.slug}`);
+        if (res.ok) {
+          const fullSrv = await res.json();
+          if (docs.length === 0 && Array.isArray(fullSrv.documents)) {
+            docs = fullSrv.documents.map(d => typeof d === 'string' ? d : (d.document_name || d.name));
+          }
+          if (fields.length === 0 && Array.isArray(fullSrv.fields)) {
+            fields = fullSrv.fields.map(f => ({
+              field_label: f.field_label || f.name || f.label || 'Field',
+              field_type: f.field_type || f.type || 'text',
+              is_required: f.is_required !== undefined ? Boolean(f.is_required) : true
+            }));
+          }
+        }
+      } catch (err) {}
+    }
+
+    if (docs.length === 0) {
+      docs = ['Aadhaar Card Copy', 'Passport Size Photo'];
+    }
+    if (fields.length === 0) {
+      fields = [
+        { field_label: 'Applicant Full Name', field_type: 'text', is_required: true },
+        { field_label: 'Mobile Number', field_type: 'text', is_required: true },
+        { field_label: 'Aadhaar / ID Number', field_type: 'text', is_required: true },
+        { field_label: 'Residential Address', field_type: 'textarea', is_required: true }
+      ];
+    }
 
     setEditingServiceForm({
       id: srv.id,
       name: srv.name || '',
-      category_name: srv.category_name || srv.category || 'Certificates & Official Documents',
+      category_name: srv.category_name || srv.category || 'Land & Patta Services',
       description: srv.description || '',
       fee: srv.total_fee || srv.govt_fee || srv.fee || 60,
       processing_time: srv.processing_time || '2-3 Business Days',
@@ -6061,15 +6095,19 @@ export default function AdminDashboard() {
                       onChange={(e) => setEditingServiceForm({ ...editingServiceForm, category_name: e.target.value })}
                       className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3.5 py-2.5 outline-none focus:border-amber-500 font-semibold"
                     >
-                      <option value="Certificate Services">Certificate Services</option>
+                      <option value="Land & Patta Services">Land & Patta Services</option>
+                      <option value="Land / Patta Services">Land / Patta Services</option>
                       <option value="Aadhaar Services">Aadhaar Services</option>
                       <option value="PAN Services">PAN Services</option>
+                      <option value="Certificates & Revenue">Certificates & Revenue</option>
+                      <option value="Certificate Services">Certificate Services</option>
                       <option value="Voter ID Services">Voter ID Services</option>
-                      <option value="Land / Patta Services">Land / Patta Services</option>
                       <option value="Passport Services">Passport Services</option>
+                      <option value="Driving & Vehicle Services">Driving & Vehicle Services</option>
                       <option value="Driving Licence / Vehicle Services">Driving Licence / Vehicle Services</option>
                       <option value="Business Services">Business Services</option>
                       <option value="Utility Services">Utility Services</option>
+                      <option value="Ration Card Services">Ration Card Services</option>
                       <option value="Other Digital Services">Other Digital Services</option>
                     </select>
                   </div>

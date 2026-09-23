@@ -256,7 +256,13 @@ export async function initializeDatabaseSchema() {
       "ALTER TABLE payments ADD COLUMN IF NOT EXISTS metadata JSON",
       "ALTER TABLE notifications ADD COLUMN IF NOT EXISTS application_id INT",
       "ALTER TABLE notifications ADD COLUMN IF NOT EXISTS admin_id INT",
-      "ALTER TABLE notifications ADD COLUMN IF NOT EXISTS metadata JSON"
+      "ALTER TABLE notifications ADD COLUMN IF NOT EXISTS metadata JSON",
+      "ALTER TABLE services ADD COLUMN IF NOT EXISTS total_fee DECIMAL(10, 2) DEFAULT 0.00",
+      "ALTER TABLE services ADD COLUMN IF NOT EXISTS govt_fee DECIMAL(10, 2) DEFAULT 0.00",
+      "ALTER TABLE services ADD COLUMN IF NOT EXISTS image_url TEXT",
+      "ALTER TABLE services ADD COLUMN IF NOT EXISTS is_active TINYINT(1) DEFAULT 1",
+      "ALTER TABLE services ADD COLUMN IF NOT EXISTS fields_json JSON",
+      "ALTER TABLE services ADD COLUMN IF NOT EXISTS documents_json JSON"
     ];
 
     for (const sql of migrations) {

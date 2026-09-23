@@ -778,15 +778,38 @@ app.get('/api/services', (req, res) => {
   const catMap = Object.fromEntries(categories.map(c => [c.id, c]));
 
   const result = services.map(s => {
-    const fieldsCount = db.all('service_fields', f => f.service_id === s.id).length;
-    const docsCount = db.all('service_documents', d => d.service_id === s.id).length;
+    let serviceFields = db.all('service_fields', f => f.service_id === s.id);
+    if ((!serviceFields || serviceFields.length === 0) && s.fields_json) {
+      serviceFields = Array.isArray(s.fields_json) ? s.fields_json : (typeof s.fields_json === 'string' ? JSON.parse(s.fields_json) : []);
+    }
+    let serviceDocs = db.all('service_documents', d => d.service_id === s.id);
+    if ((!serviceDocs || serviceDocs.length === 0) && (s.documents_json || s.documents_required)) {
+      const rawDocs = s.documents_json || s.documents_required;
+      const parsed = Array.isArray(rawDocs) ? rawDocs : (typeof rawDocs === 'string' ? JSON.parse(rawDocs) : []);
+      serviceDocs = parsed.map((d, idx) => ({
+        id: idx + 1,
+        service_id: s.id,
+        document_name: typeof d === 'string' ? d : (d.document_name || d.name),
+        description: `Upload clear copy of ${typeof d === 'string' ? d : (d.document_name || d.name)}`,
+        is_required: 1
+      }));
+    }
+    const fieldsCount = serviceFields.length;
+    const docsCount = serviceDocs.length;
     const parentCat = catMap[s.category_id];
     const cleanName = (s.name || '').replace(/\s*\((Varumaana Saanrithazh|Jaathi Saanrithazh|AnyTamilLand|Saanrithazh|Thunglish|Tanglish)\)/gi, '').trim();
+    const serviceFee = Number(s.total_fee || s.fee || s.govt_fee || 60);
+
     return {
       ...s,
       name: cleanName,
-      category_name: parentCat ? parentCat.name : s.category_name || 'General Service',
+      fee: serviceFee,
+      total_fee: serviceFee,
+      govt_fee: serviceFee,
+      category_name: parentCat ? parentCat.name : (s.category_name || (s.category_slug === 'land-patta-services' ? 'Land & Patta Services' : 'General Service')),
       category_slug: parentCat ? parentCat.slug : s.category_slug || '',
+      fields: serviceFields,
+      documents: serviceDocs,
       fields_count: fieldsCount,
       documents_count: docsCount,
       required_docs_count: docsCount
@@ -3073,13 +3096,15 @@ app.put('/api/admin/services/:id', authenticateAdmin, upload.any(), (req, res) =
       govt_fee: serviceFee,
       image_url: image_url || existing.image_url || 'https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=1200&auto=format&fit=crop',
       is_active: is_active !== undefined ? is_active : (status === 'Inactive' ? false : existing.is_active),
-      status: status || (is_active === false ? 'Inactive' : 'Active')
+      status: status || (is_active === false ? 'Inactive' : 'Active'),
+      fields_json: parsedFields || existing.fields_json || null,
+      documents_json: parsedDocs || existing.documents_json || null
     });
 
     // Update dynamic fields if provided
-    if (fields && Array.isArray(fields)) {
+    if (parsedFields && Array.isArray(parsedFields)) {
       db.delete('service_fields', f => f.service_id === sId);
-      fields.forEach((f, idx) => {
+      parsedFields.forEach((f, idx) => {
         const label = f.field_label || f.name || f.label || `Field ${idx + 1}`;
         db.insert('service_fields', {
           service_id: sId,
@@ -3094,9 +3119,9 @@ app.put('/api/admin/services/:id', authenticateAdmin, upload.any(), (req, res) =
     }
 
     // Update documents if provided
-    if (documents && Array.isArray(documents)) {
+    if (parsedDocs && Array.isArray(parsedDocs)) {
       db.delete('service_documents', d => d.service_id === sId);
-      documents.forEach(d => {
+      parsedDocs.forEach(d => {
         const docName = typeof d === 'string' ? d : (d.document_name || d.name);
         db.insert('service_documents', {
           service_id: sId,
