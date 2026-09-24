@@ -188,23 +188,25 @@ export default function ApplicationDetailView() {
                     target="_blank"
                     rel="noreferrer"
                     download
-                    className="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black text-xs rounded-xl shadow-md transition-all flex items-center space-x-2"
+                    className="px-5 py-2.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs rounded-xl shadow-md transition-all flex items-center space-x-2 cursor-pointer transform hover:-translate-y-0.5"
                   >
                     <Download className="w-4 h-4" />
-                    <span>{lang === 'ta' ? 'சான்றிதழ் பதிவிறக்குக' : 'Download Certificate'}</span>
+                    <span>{lang === 'ta' ? 'சான்றிதழ் பதிவிறக்கம்' : 'Download Certificate'}</span>
                   </a>
                 )}
                 <button
+                  type="button"
                   onClick={() => setShowCertModal(true)}
-                  className="px-5 py-2.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs rounded-xl shadow-md transition-all flex items-center space-x-2"
+                  className={`px-5 py-2.5 ${details.certificate_url ? 'bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-400/40' : 'bg-amber-400 hover:bg-amber-300 text-slate-950'} font-black text-xs rounded-xl shadow-md transition-all flex items-center space-x-2 cursor-pointer`}
                 >
                   <Award className="w-4 h-4" />
-                  <span>{lang === 'ta' ? 'சான்றிதழ் பார்க்க / அச்சிடுக' : 'View / Print Certificate'}</span>
+                  <span>{lang === 'ta' ? 'சான்றிதழைப் பார் / அச்சிடு' : 'View / Print Certificate'}</span>
                 </button>
               </>
             )}
 
             <button
+              type="button"
               onClick={() => setShowReceiptModal(true)}
               className="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black text-xs rounded-xl shadow-md transition-all flex items-center space-x-2 cursor-pointer"
             >
@@ -213,6 +215,82 @@ export default function ApplicationDetailView() {
             </button>
           </div>
         </div>
+
+        {/* OFFICIAL VERIFIED CERTIFICATE READY BANNER */}
+        {(details.status === 'Completed' || details.status === 'COMPLETED' || details.status === 'Approved' || details.status === 'APPROVED') && (
+          <div className="bg-gradient-to-r from-emerald-800 via-teal-900 to-slate-900 rounded-3xl p-6 sm:p-7 text-white shadow-xl border-2 border-emerald-500/40 relative overflow-hidden">
+            <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-emerald-500/10 pointer-events-none blur-2xl"></div>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 relative z-10">
+              <div className="flex items-start sm:items-center space-x-4">
+                <div className="w-14 h-14 rounded-2xl bg-emerald-400/20 text-emerald-300 border border-emerald-400/40 flex items-center justify-center shrink-0 shadow-lg">
+                  <Award className="w-8 h-8" />
+                </div>
+                <div className="space-y-1">
+                  <div className="flex items-center flex-wrap gap-2">
+                    <span className="text-[10px] font-black uppercase tracking-wider bg-emerald-500 text-slate-950 px-2.5 py-0.5 rounded-full font-mono">
+                      ✓ {lang === 'ta' ? 'அதிகாரப்பூர்வ சான்றிதழ் தயார்' : 'Official Certificate Issued'}
+                    </span>
+                    {details.certificate_number && (
+                      <span className="text-xs font-mono font-bold text-amber-300 bg-white/10 px-2.5 py-0.5 rounded-full border border-white/20">
+                        {details.certificate_number}
+                      </span>
+                    )}
+                  </div>
+                  <h3 className="text-lg sm:text-xl font-black text-white">
+                    {lang === 'ta' ? 'உங்கள் அதிகாரப்பூர்வ சான்றிதழ் தயாராக உள்ளது!' : 'Your Official Certificate is Ready!'}
+                  </h3>
+                  <p className="text-xs text-emerald-100/90 max-w-xl">
+                    {details.certificate_url
+                      ? (lang === 'ta' ? 'அலுவலகத்தால் சரிபார்க்கப்பட்டு பதிவேற்றப்பட்ட அசல் சான்றிதழ் ஆவணம் கீழே பதிவிறக்கம் செய்யத் தயாராக உள்ளது.' : 'Official verified certificate document uploaded by the desk officer is ready for instant download.')
+                      : (lang === 'ta' ? 'விண்ணப்பம் நிறைவுபெற்று சான்றிதழ் எண் ஒதுக்கப்பட்டுள்ளது. கீழே உள்ள பட்டனைப் பயன்படுத்தி சான்றிதழைப் பார்க்கலாம்/அச்சிடலாம்.' : 'Application is completed and verified. You can view, download, or print the certificate below.')}
+                  </p>
+                  {details.admin_remarks && (
+                    <div className="pt-1">
+                      <span className="text-[11px] text-emerald-200/90 bg-emerald-950/60 px-3 py-1 rounded-lg border border-emerald-500/30 inline-block font-mono">
+                        📝 {details.admin_remarks}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex items-center flex-wrap gap-3 shrink-0">
+                {details.certificate_url ? (
+                  <>
+                    <a
+                      href={details.certificate_url}
+                      target="_blank"
+                      rel="noreferrer"
+                      download
+                      className="px-6 py-3.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs sm:text-sm rounded-2xl shadow-xl transition-all flex items-center space-x-2 transform hover:-translate-y-0.5 cursor-pointer"
+                    >
+                      <Download className="w-5 h-5" />
+                      <span>{lang === 'ta' ? 'சான்றிதழைப் பதிவிறக்கவும்' : 'Download Certificate File'}</span>
+                    </a>
+                    <a
+                      href={details.certificate_url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="px-4 py-3.5 bg-white/15 hover:bg-white/25 text-white font-bold text-xs sm:text-sm rounded-2xl border border-white/20 transition-all flex items-center space-x-1.5 cursor-pointer"
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                      <span>{lang === 'ta' ? 'பார்க்க' : 'View File'}</span>
+                    </a>
+                  </>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setShowCertModal(true)}
+                    className="px-6 py-3.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs sm:text-sm rounded-2xl shadow-xl transition-all flex items-center space-x-2 cursor-pointer"
+                  >
+                    <Award className="w-5 h-5" />
+                    <span>{lang === 'ta' ? 'சான்றிதழைப் பார் / அச்சிடு' : 'View / Print Certificate'}</span>
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Application Rejection Banner */}
         {details.status?.toUpperCase() === 'REJECTED' && (
@@ -351,6 +429,55 @@ export default function ApplicationDetailView() {
                 </span>
                 <span className="text-xs font-semibold text-slate-500">Protected Document Access</span>
               </h3>
+
+              {/* OFFICIAL VERIFIED CERTIFICATE ISSUED CARD */}
+              {(details.status === 'Completed' || details.status === 'COMPLETED' || details.certificate_url) && (
+                <div className="p-4 bg-emerald-50 border-2 border-emerald-300 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white font-black flex items-center justify-center shrink-0 shadow-sm">
+                      <Award className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <div className="flex items-center space-x-2">
+                        <span className="font-extrabold text-slate-900 text-xs">
+                          {lang === 'ta' ? 'அதிகாரப்பூர்வ சான்றிதழ் (வழங்கப்பட்டது)' : 'Official Issued Certificate'}
+                        </span>
+                        <span className="text-[10px] bg-emerald-200 text-emerald-900 font-bold px-2 py-0.5 rounded-full uppercase">
+                          {details.certificate_number || 'Issued'}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-500 font-medium">
+                        {details.certificate_url
+                          ? (lang === 'ta' ? 'அதிகாரப்பூர்வ ஆவணம் பதிவிறக்கம் செய்யக் கிடைக்கிறது.' : 'Official verified certificate file attached by admin.')
+                          : (lang === 'ta' ? 'சான்றிதழ் சரிபார்க்கப்பட்டு வழங்கப்பட்டுள்ளது.' : 'Official verified certificate issued.')}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    {details.certificate_url && (
+                      <a
+                        href={details.certificate_url}
+                        target="_blank"
+                        rel="noreferrer"
+                        download
+                        className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-xl shadow transition-colors flex items-center gap-1.5 shrink-0"
+                      >
+                        <Download className="w-4 h-4" />
+                        <span>{lang === 'ta' ? 'பதிவிறக்கம்' : 'Download File'}</span>
+                      </a>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => setShowCertModal(true)}
+                      className="px-3.5 py-2 bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs rounded-xl shadow transition-colors flex items-center gap-1.5 shrink-0"
+                    >
+                      <Award className="w-4 h-4" />
+                      <span>{lang === 'ta' ? 'பார் / அச்சிடு' : 'View / Print'}</span>
+                    </button>
+                  </div>
+                </div>
+              )}
 
               {details.documents && details.documents.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">

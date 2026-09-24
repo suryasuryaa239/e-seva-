@@ -2140,18 +2140,29 @@ app.get('/api/documents/preview-file/:filename', optionalAuthenticateToken, asyn
   }
 
   const absolutePath = path.join(uploadsDir, filename);
+  const certPath = path.join(uploadsDir, 'certificates', filename);
   const tmpPath = path.join('/tmp', 'uploads', filename);
+  const tmpCertPath = path.join('/tmp', 'uploads', 'certificates', filename);
   if (fs.existsSync(absolutePath)) {
     return res.sendFile(absolutePath);
   }
+  if (fs.existsSync(certPath)) {
+    return res.sendFile(certPath);
+  }
   if (fs.existsSync(tmpPath)) {
     return res.sendFile(tmpPath);
+  }
+  if (fs.existsSync(tmpCertPath)) {
+    return res.sendFile(tmpCertPath);
   }
 
   // Stream from FTP if configured
   if (isFtpConfigured()) {
     try {
-      const ftpBuffer = await downloadFromFTP(filename, 'documents');
+      let ftpBuffer = await downloadFromFTP(filename, 'certificates');
+      if (!ftpBuffer) {
+        ftpBuffer = await downloadFromFTP(filename, 'documents');
+      }
       if (ftpBuffer) {
         const ext = path.extname(filename).toLowerCase();
         const mimeMap = {
