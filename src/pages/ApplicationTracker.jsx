@@ -3,7 +3,7 @@ import { useSearchParams, Link } from 'react-router-dom';
 import {
   FileSearch, Search, Clock, CheckCircle2, AlertCircle,
   FileText, ShieldCheck, Download, ExternalLink, RefreshCw, MessageSquare,
-  Copy, Check, Printer, ShieldAlert, Phone, HelpCircle, ArrowRight, XCircle, CreditCard, Key, X
+  Copy, Check, Printer, ShieldAlert, Award, Phone, HelpCircle, ArrowRight, XCircle, CreditCard, Key, X
 } from 'lucide-react';
 import Breadcrumbs from '../components/Breadcrumbs';
 import StatusBadge from '../components/StatusBadge';
@@ -523,6 +523,46 @@ export default function ApplicationTracker() {
             </div>
 
           </div>
+
+          {/* OFFICIAL CERTIFICATE DOWNLOAD BANNER */}
+          {trackResult.application?.certificate_url && (
+            <div className="bg-gradient-to-r from-emerald-600 to-teal-700 rounded-3xl p-6 text-white shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex items-center space-x-4">
+                <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-sm flex items-center justify-center shrink-0 border border-white/20">
+                  <Award className="w-6 h-6 text-amber-300" />
+                </div>
+                <div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-[10px] font-black uppercase tracking-wider bg-emerald-500/40 text-emerald-100 px-2 py-0.5 rounded-full border border-white/20">
+                      Official Document Ready
+                    </span>
+                    {trackResult.application.certificate_number && (
+                      <span className="text-[11px] font-mono font-bold text-amber-200">
+                        {trackResult.application.certificate_number}
+                      </span>
+                    )}
+                  </div>
+                  <h3 className="text-base font-extrabold mt-1 text-white">
+                    {lang === 'ta' ? 'அதிகாரப்பூர்வ சான்றிதழ் தயாராக உள்ளது!' : 'Official Digital Certificate is Ready!'}
+                  </h3>
+                  <p className="text-xs text-emerald-100/90">
+                    {lang === 'ta' ? 'உங்கள் சரிபார்க்கப்பட்ட சான்றிதழை பதிவிறக்கம் செய்து அச்சிட்டுக்கொள்ளலாம்.' : 'Your official verified certificate has been issued and is available for download.'}
+                  </p>
+                </div>
+              </div>
+
+              <a
+                href={trackResult.application.certificate_url}
+                target="_blank"
+                rel="noreferrer"
+                download
+                className="px-6 py-3 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs rounded-xl shadow-lg transition-all flex items-center space-x-2 shrink-0 cursor-pointer"
+              >
+                <Download className="w-4 h-4" />
+                <span>{lang === 'ta' ? 'சான்றிதழை பதிவிறக்குக' : 'Download Certificate'}</span>
+              </a>
+            </div>
+          )}
 
           {/* 6. RECEIPT PRINT & ACTIONS */}
           <ReceiptPrint

@@ -2744,10 +2744,10 @@ app.get('/api/admin/applications', authenticateAdmin, (req, res) => {
   res.json(result);
 });
 
-// Admin Update Application Status & Remarks
-app.put('/api/admin/applications/:id/status', authenticateAdmin, (req, res) => {
+// Admin Update Application Status & Remarks (with certificate upload support)
+app.put('/api/admin/applications/:id/status', authenticateAdmin, upload.single('certificate'), async (req, res) => {
   const appId = Number(req.params.id);
-  let { status, admin_remarks } = req.body;
+  let { status, admin_remarks, certificate_number } = req.body;
 
   if (status === 'UNDER_REVIEW') status = 'Under Review';
   if (status === 'In Process' || status === 'IN_PROCESS') status = 'Processing';
@@ -2762,25 +2762,66 @@ app.put('/api/admin/applications/:id/status', authenticateAdmin, (req, res) => {
 
   // State Machine Validation Rules
   const currentStatus = application.status;
-  if (currentStatus === 'COMPLETED' && status !== 'COMPLETED') {
+  if ((currentStatus === 'COMPLETED' || currentStatus === 'Completed') && (status !== 'COMPLETED' && status !== 'Completed')) {
     return res.status(400).json({ error: 'Completed applications cannot have their status downgraded or changed.' });
   }
-  if (currentStatus === 'REJECTED' && status === 'COMPLETED') {
+  if ((currentStatus === 'REJECTED' || currentStatus === 'Rejected') && (status === 'COMPLETED' || status === 'Completed')) {
     return res.status(400).json({ error: 'Rejected applications must be approved or re-processed before completion.' });
   }
 
   const remarks = admin_remarks ? admin_remarks.trim() : `Status updated to ${status} by admin.`;
 
-  db.update('applications', a => a.id === appId, {
+  // Handle uploaded certificate file if provided
+  let certificateUrl = null;
+  if (req.file) {
+    certificateUrl = `/api/documents/preview-file/${req.file.filename}`;
+    try {
+      const buffer = req.file.buffer || (req.file.path && fs.existsSync(req.file.path) ? fs.readFileSync(req.file.path) : null);
+      if (buffer) {
+        certificateUrl = await storeUploadedFile({
+          buffer,
+          originalname: req.file.originalname,
+          mimetype: req.file.mimetype,
+          filename: req.file.filename,
+          subDir: 'certificates'
+        });
+      }
+    } catch (e) {
+      console.warn('[Certificate Upload Error]:', e.message);
+    }
+  }
+
+  const certNum = certificate_number || application.certificate_number || `CERT-2026-${Math.floor(100000 + Math.random() * 900000)}`;
+
+  const updateFields = {
     status,
     admin_remarks: remarks
-  });
+  };
+
+  if (status === 'Completed' || status === 'COMPLETED') {
+    updateFields.certificate_number = certNum;
+    if (certificateUrl) {
+      updateFields.certificate_url = certificateUrl;
+      updateFields.certificate_generated_at = new Date().toISOString();
+      updateFields.certificate_issued_at = new Date().toISOString();
+    } else if (!application.certificate_issued_at) {
+      updateFields.certificate_issued_at = new Date().toISOString();
+    }
+  } else if (certificateUrl) {
+    updateFields.certificate_url = certificateUrl;
+  }
+
+  db.update('applications', a => a.id === appId, updateFields);
 
   // Record audit trail in ApplicationStatusHistory
+  const auditRemarks = (status === 'Completed' || status === 'COMPLETED') && certificateUrl
+    ? `${remarks} [Official Certificate Uploaded: ${certNum}]`
+    : remarks;
+
   db.insert('application_status_history', {
     application_id: appId,
     status,
-    admin_remarks: remarks,
+    admin_remarks: auditRemarks,
     updated_by: req.admin.name || 'Admin'
   });
 
@@ -2986,7 +3027,7 @@ app.post('/api/admin/services', authenticateAdmin, upload.any(), (req, res) => {
           field_label: label,
           field_type: f.field_type || 'text',
           is_required: f.is_required !== undefined ? (f.is_required ? 1 : 0) : 1,
-          options_json: f.options_json ? JSON.stringify(f.options_json) : null,
+          options_json: f.options_json ? (typeof f.options_json === 'string' ? f.options_json : JSON.stringify(f.options_json)) : (f.options ? (typeof f.options === 'string' ? f.options : JSON.stringify(f.options)) : null),
           sort_order: idx + 1
         });
       });
@@ -3494,8 +3535,8 @@ app.get('/api/admin/audit-logs', authenticateAdmin, (req, res) => {
   res.json(combined);
 });
 
-// Admin Generate / Attach Official Certificate Endpoint
-app.post('/api/admin/applications/:id/certificate', authenticateAdmin, (req, res) => {
+// Admin Generate / Attach Official Certificate Endpoint (with file upload support)
+app.post('/api/admin/applications/:id/certificate', authenticateAdmin, upload.single('certificate'), async (req, res) => {
   const appId = Number(req.params.id);
   const { certificate_number, notes } = req.body;
 
@@ -3504,17 +3545,42 @@ app.post('/api/admin/applications/:id/certificate', authenticateAdmin, (req, res
 
   const certNum = certificate_number || `CERT-2026-${Math.floor(100000 + Math.random() * 900000)}`;
 
-  db.update('applications', a => a.id === appId, {
+  let certificateUrl = null;
+  if (req.file) {
+    certificateUrl = `/api/documents/preview-file/${req.file.filename}`;
+    try {
+      const buffer = req.file.buffer || (req.file.path && fs.existsSync(req.file.path) ? fs.readFileSync(req.file.path) : null);
+      if (buffer) {
+        certificateUrl = await storeUploadedFile({
+          buffer,
+          originalname: req.file.originalname,
+          mimetype: req.file.mimetype,
+          filename: req.file.filename,
+          subDir: 'certificates'
+        });
+      }
+    } catch (e) {
+      console.warn('[Certificate Issue Upload Warning]:', e.message);
+    }
+  }
+
+  const updateData = {
     status: 'COMPLETED',
     certificate_number: certNum,
     certificate_issued_at: new Date().toISOString(),
     admin_remarks: notes || `Official certificate ${certNum} issued and verified.`
-  });
+  };
+  if (certificateUrl) {
+    updateData.certificate_url = certificateUrl;
+    updateData.certificate_generated_at = new Date().toISOString();
+  }
+
+  db.update('applications', a => a.id === appId, updateData);
 
   db.insert('application_status_history', {
     application_id: appId,
     status: 'COMPLETED',
-    admin_remarks: `Official Digital Certificate Issued: ${certNum}`,
+    admin_remarks: `Official Digital Certificate Issued: ${certNum}${certificateUrl ? ' [File Attached]' : ''}`,
     updated_by: req.admin.name || 'Admin'
   });
 

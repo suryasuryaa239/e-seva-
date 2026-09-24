@@ -237,6 +237,8 @@ export async function initializeDatabaseSchema() {
       "ALTER TABLE applications ADD COLUMN IF NOT EXISTS submitted_at TIMESTAMP NULL",
       "ALTER TABLE applications ADD COLUMN IF NOT EXISTS certificate_url TEXT",
       "ALTER TABLE applications ADD COLUMN IF NOT EXISTS certificate_generated_at TIMESTAMP NULL",
+      "ALTER TABLE applications ADD COLUMN IF NOT EXISTS certificate_number VARCHAR(100)",
+      "ALTER TABLE applications ADD COLUMN IF NOT EXISTS certificate_issued_at TIMESTAMP NULL",
       "ALTER TABLE applications ADD COLUMN IF NOT EXISTS field_values JSON",
       "ALTER TABLE applications ADD COLUMN IF NOT EXISTS payment_transaction_id VARCHAR(100)",
       "ALTER TABLE users ADD COLUMN IF NOT EXISTS aadhaar_no VARCHAR(50)",

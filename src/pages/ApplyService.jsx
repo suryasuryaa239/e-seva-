@@ -1169,9 +1169,9 @@ export default function ApplyService() {
                                 const fLabel = getLocalizedFieldLabel(rawLabel, lang);
                                 const hasErr = errors[key];
                                 const isTextArea = fType === 'textarea';
-                                const isSelect = fType === 'select';
-                                const isRadio = fType === 'radio';
-                                const isCheckbox = fType === 'checkbox';
+                                const isSelect = fType === 'select' || fType === 'dropdown';
+                                const isRadio = fType === 'radio' || fType === 'multiple choice' || fType === 'multiple_choice';
+                                const isCheckbox = fType === 'checkbox' || fType === 'checkboxes';
                                 const optionsList = parseOptions(f.options_json || f.options || f.field_options);
                                 const placeholderText = getLocalizedPlaceholder(f.placeholder, rawLabel, lang);
 

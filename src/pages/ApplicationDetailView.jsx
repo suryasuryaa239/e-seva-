@@ -181,13 +181,27 @@ export default function ApplicationDetailView() {
 
           <div className="flex items-center space-x-3 flex-wrap gap-2 relative z-10">
             {(details.status === 'Approved' || details.status === 'APPROVED' || details.status === 'Completed' || details.status === 'COMPLETED') && (
-              <button
-                onClick={() => setShowCertModal(true)}
-                className="px-5 py-2.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs rounded-xl shadow-md transition-all flex items-center space-x-2"
-              >
-                <Award className="w-4 h-4" />
-                <span>{lang === 'ta' ? 'சான்றிதழைப் பார் / அச்சிடு' : 'View / Print Certificate'}</span>
-              </button>
+              <>
+                {details.certificate_url && (
+                  <a
+                    href={details.certificate_url}
+                    target="_blank"
+                    rel="noreferrer"
+                    download
+                    className="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black text-xs rounded-xl shadow-md transition-all flex items-center space-x-2"
+                  >
+                    <Download className="w-4 h-4" />
+                    <span>{lang === 'ta' ? 'சான்றிதழ் பதிவிறக்குக' : 'Download Certificate'}</span>
+                  </a>
+                )}
+                <button
+                  onClick={() => setShowCertModal(true)}
+                  className="px-5 py-2.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs rounded-xl shadow-md transition-all flex items-center space-x-2"
+                >
+                  <Award className="w-4 h-4" />
+                  <span>{lang === 'ta' ? 'சான்றிதழ் பார்க்க / அச்சிடுக' : 'View / Print Certificate'}</span>
+                </button>
+              </>
             )}
 
             <button

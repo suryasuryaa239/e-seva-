@@ -1,5 +1,5 @@
 import React from 'react';
-import { Award, ShieldCheck, Printer, CheckCircle, QrCode } from 'lucide-react';
+import { Award, ShieldCheck, Printer, CheckCircle, QrCode, Download } from 'lucide-react';
 
 export default function CertificatePrint({ application, onClose }) {
   if (!application) return null;
@@ -31,6 +31,17 @@ export default function CertificatePrint({ application, onClose }) {
             <Award className="w-4 h-4" /> Official Digital Certificate Preview
           </div>
           <div className="flex items-center gap-2">
+            {application?.certificate_url && (
+              <a
+                href={application.certificate_url}
+                target="_blank"
+                rel="noreferrer"
+                download
+                className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 transition-colors shadow"
+              >
+                <Download className="w-3.5 h-3.5" /> Download Uploaded File
+              </a>
+            )}
             <button
               onClick={handlePrint}
               className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-4 py-1.5 rounded-lg text-xs flex items-center gap-1.5 transition-colors shadow"

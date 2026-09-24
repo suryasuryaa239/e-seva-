@@ -8,7 +8,7 @@ import {
   Filter, RotateCcw, Inbox, UserCheck, FileCheck, History, MessageSquare,
   User, Phone, Mail as MailIcon, Calendar, CheckCircle, Shield, Trash2,
   Settings, Key, Lock, EyeOff, Save, CheckCheck, Bell, CreditCard, Paperclip,
-  Sliders, Image as ImageIcon
+  Sliders, Image as ImageIcon, Upload, Download
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -63,6 +63,8 @@ export default function AdminDashboard() {
   const [updateStatus, setUpdateStatus] = useState('Processing');
   const [adminRemarks, setAdminRemarks] = useState('');
   const [savingStatus, setSavingStatus] = useState(false);
+  const [certFile, setCertFile] = useState(null);
+  const [certNumber, setCertNumber] = useState('');
 
   // User Inspector Modal State (STEP 27)
   const [selectedUser, setSelectedUser] = useState(null);
@@ -450,7 +452,8 @@ export default function AdminDashboard() {
       { field_label: 'Residential Address', field_type: 'textarea', is_required: true }
     ],
     newFieldLabel: '',
-    newFieldType: 'text'
+    newFieldType: 'text',
+    newFieldOptions: ''
   });
 
   const handleCreateServiceSubmit = async (e) => {
@@ -520,7 +523,8 @@ export default function AdminDashboard() {
             { field_label: 'Residential Address', field_type: 'textarea', is_required: true }
           ],
           newFieldLabel: '',
-          newFieldType: 'text'
+          newFieldType: 'text',
+          newFieldOptions: ''
         });
         fetchServices();
       } else {
@@ -545,12 +549,31 @@ export default function AdminDashboard() {
     if (Array.isArray(srv.documents) && srv.documents.length > 0) {
       docs = srv.documents.map(d => typeof d === 'string' ? d : (d.document_name || d.name));
     }
+    const extractOpts = (f) => {
+      if (f.options) {
+        return Array.isArray(f.options) ? f.options : (typeof f.options === 'string' ? f.options.split(',').map(s => s.trim()).filter(Boolean) : []);
+      }
+      if (f.options_json) {
+        try {
+          return typeof f.options_json === 'string' ? JSON.parse(f.options_json) : f.options_json;
+        } catch (e) {
+          return String(f.options_json).split(',').map(s => s.trim()).filter(Boolean);
+        }
+      }
+      return [];
+    };
+
     if (Array.isArray(srv.fields) && srv.fields.length > 0) {
-      fields = srv.fields.map(f => ({
-        field_label: f.field_label || f.name || f.label || 'Field',
-        field_type: f.field_type || f.type || 'text',
-        is_required: f.is_required !== undefined ? Boolean(f.is_required) : true
-      }));
+      fields = srv.fields.map(f => {
+        const opts = extractOpts(f);
+        return {
+          field_label: f.field_label || f.name || f.label || 'Field',
+          field_type: f.field_type || f.type || 'text',
+          is_required: f.is_required !== undefined ? Boolean(f.is_required) : true,
+          options: opts,
+          options_json: opts
+        };
+      });
     }
 
     // If documents or fields missing from row, fetch full single service details
@@ -563,11 +586,16 @@ export default function AdminDashboard() {
             docs = fullSrv.documents.map(d => typeof d === 'string' ? d : (d.document_name || d.name));
           }
           if (fields.length === 0 && Array.isArray(fullSrv.fields)) {
-            fields = fullSrv.fields.map(f => ({
-              field_label: f.field_label || f.name || f.label || 'Field',
-              field_type: f.field_type || f.type || 'text',
-              is_required: f.is_required !== undefined ? Boolean(f.is_required) : true
-            }));
+            fields = fullSrv.fields.map(f => {
+              const opts = extractOpts(f);
+              return {
+                field_label: f.field_label || f.name || f.label || 'Field',
+                field_type: f.field_type || f.type || 'text',
+                is_required: f.is_required !== undefined ? Boolean(f.is_required) : true,
+                options: opts,
+                options_json: opts
+              };
+            });
           }
         }
       } catch (err) {}
@@ -600,7 +628,8 @@ export default function AdminDashboard() {
       newDocInput: '',
       fields: fields,
       newFieldLabel: '',
-      newFieldType: 'text'
+      newFieldType: 'text',
+      newFieldOptions: ''
     });
     setShowEditServiceModal(true);
   };
@@ -1045,15 +1074,29 @@ export default function AdminDashboard() {
     fetchAdminDocuments();
   }, [docStatusFilter, docSearchQuery]);
 
+  const normalizeAppStatus = (raw) => {
+    if (!raw) return 'Processing';
+    const s = String(raw).toUpperCase().trim();
+    if (s === 'COMPLETED') return 'Completed';
+    if (s === 'UNDER_REVIEW' || s === 'UNDER REVIEW') return 'Under Review';
+    if (s === 'IN_PROCESS' || s === 'PROCESSING') return 'Processing';
+    if (s === 'APPROVED') return 'Approved';
+    if (s === 'REJECTED') return 'Rejected';
+    if (s === 'PENDING' || s === 'SUBMITTED') return 'Pending';
+    return raw;
+  };
+
   const openAppInspector = async (appId) => {
     setSelectedApp(appId);
+    setCertFile(null);
     try {
       const res = await fetch(`/api/applications/${appId}`);
       if (res.ok) {
         const data = await res.json();
         setAppDetails(data);
-        setUpdateStatus(data.status);
+        setUpdateStatus(normalizeAppStatus(data.status));
         setAdminRemarks(data.admin_remarks || '');
+        setCertNumber(data.certificate_number || `CERT-2026-${Math.floor(100000 + Math.random() * 900000)}`);
       }
     } catch (e) {
       console.error(e);
@@ -1065,20 +1108,39 @@ export default function AdminDashboard() {
     if (!selectedApp) return;
     setSavingStatus(true);
     try {
-      const res = await fetch(`/api/admin/applications/${selectedApp}/status`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${adminToken}`
-        },
-        body: JSON.stringify({
-          status: updateStatus,
-          admin_remarks: adminRemarks
-        })
-      });
+      let res;
+      if (certFile) {
+        const formData = new FormData();
+        formData.append('status', updateStatus);
+        formData.append('admin_remarks', adminRemarks);
+        if (certNumber) formData.append('certificate_number', certNumber);
+        formData.append('certificate', certFile);
+
+        res = await fetch(`/api/admin/applications/${selectedApp}/status`, {
+          method: 'PUT',
+          headers: {
+            Authorization: `Bearer ${adminToken}`
+          },
+          body: formData
+        });
+      } else {
+        res = await fetch(`/api/admin/applications/${selectedApp}/status`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${adminToken}`
+          },
+          body: JSON.stringify({
+            status: updateStatus,
+            admin_remarks: adminRemarks,
+            certificate_number: certNumber
+          })
+        });
+      }
       const data = await res.json();
       if (res.ok) {
-        addToast(`Application status updated to ${updateStatus}`, 'success');
+        addToast(`Application status updated to ${updateStatus}${certFile ? ' with Certificate attached' : ''}`, 'success');
+        setCertFile(null);
         fetchApplications();
         fetchDashboardStats();
         openAppInspector(selectedApp);
@@ -4924,8 +4986,14 @@ export default function AdminDashboard() {
                     <div>
                       <label className="text-xs font-bold text-slate-700 block mb-1">Target Status</label>
                       <select
-                        value={updateStatus}
-                        onChange={(e) => setUpdateStatus(e.target.value)}
+                        value={normalizeAppStatus(updateStatus)}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setUpdateStatus(val);
+                          if ((val === 'Completed' || (val && val.toUpperCase() === 'COMPLETED')) && (!adminRemarks || adminRemarks.startsWith('Status updated to'))) {
+                            setAdminRemarks(`Official certificate ${certNumber || 'document'} issued and verified.`);
+                          }
+                        }}
                         className="w-full bg-slate-50 text-slate-900 text-xs rounded-xl px-3 py-2.5 border border-slate-300 outline-none font-bold"
                       >
                         <option value="Pending">Pending Verification</option>
@@ -4936,6 +5004,111 @@ export default function AdminDashboard() {
                         <option value="Rejected">Rejected</option>
                       </select>
                     </div>
+
+                    {/* CERTIFICATE UPLOAD SECTION (SHOWN WHEN COMPLETED IS SELECTED) */}
+                    {(updateStatus === 'Completed' || (updateStatus && updateStatus.toUpperCase() === 'COMPLETED')) && (
+                      <div className="bg-amber-50/80 border-2 border-amber-300/80 rounded-2xl p-4 space-y-3 shadow-sm">
+                        <div className="flex items-center justify-between border-b border-amber-200/80 pb-2">
+                          <span className="text-xs font-black text-amber-950 uppercase tracking-wider flex items-center gap-1.5">
+                            <Award className="w-4 h-4 text-amber-600" />
+                            Official Certificate Upload
+                          </span>
+                          <span className="text-[10px] font-black bg-amber-200/90 text-amber-900 px-2 py-0.5 rounded-full uppercase tracking-wider">
+                            Citizen Downloadable
+                          </span>
+                        </div>
+
+                        <div>
+                          <label className="text-[11px] font-bold text-slate-700 block mb-1">
+                            Certificate Reference Number
+                          </label>
+                          <input
+                            type="text"
+                            value={certNumber}
+                            onChange={(e) => setCertNumber(e.target.value)}
+                            placeholder="CERT-2026-XXXXXX"
+                            className="w-full bg-white text-slate-900 text-xs rounded-xl px-3 py-2 border border-slate-300 outline-none font-mono font-bold focus:border-amber-500"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="text-[11px] font-bold text-slate-700 block mb-1">
+                            Upload Certificate File (PDF / JPG / PNG)
+                          </label>
+                          <div className="relative border-2 border-dashed border-amber-300 hover:border-amber-500 rounded-xl p-3 bg-white text-center transition-all cursor-pointer">
+                            <input
+                              type="file"
+                              accept=".pdf,.jpg,.jpeg,.png"
+                              onChange={(e) => {
+                                if (e.target.files && e.target.files[0]) {
+                                  setCertFile(e.target.files[0]);
+                                  if (!adminRemarks || adminRemarks.startsWith('Status updated to')) {
+                                    setAdminRemarks(`Official certificate ${certNumber || 'document'} issued and verified.`);
+                                  }
+                                }
+                              }}
+                              className="absolute inset-0 opacity-0 w-full h-full cursor-pointer z-10"
+                            />
+                            {certFile ? (
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-2 text-left">
+                                  <FileText className="w-5 h-5 text-emerald-600 shrink-0" />
+                                  <div className="min-w-0">
+                                    <div className="text-xs font-extrabold text-slate-800 truncate max-w-[170px]">
+                                      {certFile.name}
+                                    </div>
+                                    <div className="text-[10px] text-slate-400 font-medium">
+                                      {(certFile.size / 1024).toFixed(1)} KB
+                                    </div>
+                                  </div>
+                                </div>
+                                <button
+                                  type="button"
+                                  onClick={(ev) => {
+                                    ev.stopPropagation();
+                                    setCertFile(null);
+                                  }}
+                                  className="text-[10px] font-bold text-rose-600 hover:text-rose-700 bg-rose-50 px-2 py-1 rounded relative z-20"
+                                >
+                                  Remove
+                                </button>
+                              </div>
+                            ) : (
+                              <div className="py-2">
+                                <Upload className="w-5 h-5 text-amber-500 mx-auto mb-1" />
+                                <span className="text-xs font-bold text-slate-700 block">
+                                  Click or Drag Certificate File Here
+                                </span>
+                                <span className="text-[10px] text-slate-400">
+                                  PDF, JPG, PNG up to 25MB
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Existing Certificate View if already attached */}
+                        {appDetails?.certificate_url && (
+                          <div className="bg-white/90 p-2.5 rounded-xl border border-amber-200/90 flex items-center justify-between text-xs">
+                            <div className="flex items-center space-x-2 truncate mr-2">
+                              <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
+                              <span className="font-bold text-slate-700 truncate">
+                                Attached: {appDetails.certificate_number || 'Certificate'}
+                              </span>
+                            </div>
+                            <a
+                              href={appDetails.certificate_url}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-xs font-black text-amber-700 hover:text-amber-800 bg-amber-100 px-2.5 py-1 rounded-lg border border-amber-300 shrink-0 flex items-center gap-1"
+                            >
+                              <span>View File</span>
+                              <ExternalLink className="w-3 h-3" />
+                            </a>
+                          </div>
+                        )}
+                      </div>
+                    )}
 
                     <div>
                       <label className="text-xs font-bold text-slate-700 block mb-1">Official Remarks (Citizen Visible)</label>
@@ -4952,9 +5125,13 @@ export default function AdminDashboard() {
                     <button
                       type="submit"
                       disabled={savingStatus}
-                      className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs py-3 rounded-xl shadow transition-colors"
+                      className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs py-3 rounded-xl shadow transition-colors flex items-center justify-center space-x-1.5"
                     >
-                      {savingStatus ? 'Saving Status...' : 'Save & Publish Status Update'}
+                      {savingStatus ? (
+                        <span>{certFile ? 'Uploading Certificate & Updating...' : 'Saving Status...'}</span>
+                      ) : (
+                        <span>Save & Publish Status Update</span>
+                      )}
                     </button>
                   </div>
                 </form>
@@ -4965,17 +5142,64 @@ export default function AdminDashboard() {
                     <Award className="w-4 h-4 text-orange-500" />
                     <span>Digital Certificate Desk</span>
                   </h4>
-                  <p className="text-xs text-slate-500">
-                    Generate and issue an official verified digital certificate for this customer request.
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => handleIssueCertificate(appDetails.id)}
-                    className="w-full bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-xs py-3 rounded-xl shadow transition-colors flex items-center justify-center space-x-1.5"
-                  >
-                    <Award className="w-4 h-4" />
-                    <span>Issue Digital Certificate</span>
-                  </button>
+                  {appDetails?.certificate_url ? (
+                    <div className="space-y-3">
+                      <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl space-y-1">
+                        <div className="flex items-center space-x-1.5 text-emerald-700 font-black text-xs">
+                          <CheckCircle className="w-4 h-4" />
+                          <span>Official Certificate Issued</span>
+                        </div>
+                        <div className="text-[11px] text-emerald-800 font-mono font-bold">
+                          {appDetails.certificate_number || 'CERT-ISSUED'}
+                        </div>
+                        {appDetails.certificate_issued_at && (
+                          <div className="text-[10px] text-emerald-600">
+                            Issued: {new Date(appDetails.certificate_issued_at).toLocaleString()}
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2">
+                        <a
+                          href={appDetails.certificate_url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs py-2.5 rounded-xl shadow transition-colors flex items-center justify-center space-x-1.5"
+                        >
+                          <Download className="w-4 h-4" />
+                          <span>View/Download</span>
+                        </a>
+
+                        <button
+                          type="button"
+                          onClick={() => handleIssueCertificate(appDetails.id)}
+                          className="bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-xs py-2.5 rounded-xl shadow transition-colors flex items-center justify-center space-x-1"
+                        >
+                          <Award className="w-4 h-4" />
+                          <span>Re-Issue Cert</span>
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <p className="text-xs text-slate-500">
+                        Upload and issue an official verified digital certificate for this customer request.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setUpdateStatus('Completed');
+                          if (!adminRemarks || adminRemarks.startsWith('Status updated to')) {
+                            setAdminRemarks(`Official certificate ${certNumber || 'document'} issued and verified.`);
+                          }
+                        }}
+                        className="w-full bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-xs py-3 rounded-xl shadow transition-colors flex items-center justify-center space-x-1.5"
+                      >
+                        <Award className="w-4 h-4" />
+                        <span>Issue & Upload Certificate</span>
+                      </button>
+                    </>
+                  )}
                 </div>
 
               </div>
@@ -5951,68 +6175,160 @@ export default function AdminDashboard() {
 
               {/* Custom Citizen Applicant Form Fields */}
               <div className="space-y-3">
-                <h4 className="font-black text-slate-900 uppercase text-xs tracking-wider border-b border-slate-100 pb-1">3. Citizen Application Form Fields</h4>
-                
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                  <input
-                    type="text"
-                    placeholder="Field Label (e.g. Father Name)"
-                    value={newServiceForm.newFieldLabel || ''}
-                    onChange={(e) => setNewServiceForm({ ...newServiceForm, newFieldLabel: e.target.value })}
-                    className="bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3 py-2 outline-none font-medium"
-                  />
-                  <select
-                    value={newServiceForm.newFieldType || 'text'}
-                    onChange={(e) => setNewServiceForm({ ...newServiceForm, newFieldType: e.target.value })}
-                    className="bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3 py-2 outline-none font-medium"
-                  >
-                    <option value="text">Text Input</option>
-                    <option value="number">Number Input</option>
-                    <option value="textarea">Textarea / Address</option>
-                    <option value="date">Date Field</option>
-                  </select>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (newServiceForm.newFieldLabel && newServiceForm.newFieldLabel.trim()) {
-                        setNewServiceForm({
-                          ...newServiceForm,
-                          fields: [
-                            ...newServiceForm.fields,
-                            { field_label: newServiceForm.newFieldLabel.trim(), field_type: newServiceForm.newFieldType || 'text', is_required: true }
-                          ],
-                          newFieldLabel: '',
-                          newFieldType: 'text'
-                        });
-                      }
-                    }}
-                    className="py-2 bg-[#0b192c] text-white font-bold rounded-xl hover:bg-slate-800"
-                  >
-                    + Add Form Field
-                  </button>
+                <div className="flex items-center justify-between border-b border-slate-100 pb-1">
+                  <h4 className="font-black text-slate-900 uppercase text-xs tracking-wider">3. Citizen Application Form Fields</h4>
+                  <span className="text-[11px] font-bold text-slate-400">Customizable Inputs</span>
                 </div>
-
-                <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
-                  {newServiceForm.fields.map((f, idx) => (
-                    <div key={idx} className="p-2.5 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between font-medium text-xs">
-                      <div>
-                        <span className="font-bold text-slate-900">{f.field_label}</span>
-                        <span className="text-[10px] text-slate-400 font-mono ml-2">Type: {f.field_type}</span>
-                      </div>
+                
+                <div className="space-y-2 bg-slate-50/80 p-3 rounded-2xl border border-slate-200">
+                  <div className="grid grid-cols-1 sm:grid-cols-12 gap-2">
+                    <div className="sm:col-span-5">
+                      <input
+                        type="text"
+                        placeholder="Field Label (e.g. Blood Group, Qualification)"
+                        value={newServiceForm.newFieldLabel || ''}
+                        onChange={(e) => setNewServiceForm({ ...newServiceForm, newFieldLabel: e.target.value })}
+                        className="w-full bg-white border border-slate-200 text-slate-900 rounded-xl px-3 py-2 outline-none font-medium text-xs focus:ring-2 focus:ring-[#0b192c]"
+                      />
+                    </div>
+                    <div className="sm:col-span-4">
+                      <select
+                        value={newServiceForm.newFieldType || 'text'}
+                        onChange={(e) => setNewServiceForm({ ...newServiceForm, newFieldType: e.target.value })}
+                        className="w-full bg-white border border-slate-200 text-slate-900 rounded-xl px-3 py-2 outline-none font-medium text-xs focus:ring-2 focus:ring-[#0b192c]"
+                      >
+                        <option value="text">Short answer (Text Input)</option>
+                        <option value="textarea">Paragraph (Textarea / Address)</option>
+                        <option value="number">Number Input</option>
+                        <option value="date">Date Field</option>
+                        <option value="select">Drop-down (Select)</option>
+                        <option value="radio">Multiple choice (Radio)</option>
+                        <option value="checkbox">Checkbox (Yes / No)</option>
+                      </select>
+                    </div>
+                    <div className="sm:col-span-3">
                       <button
                         type="button"
                         onClick={() => {
-                          setNewServiceForm({
-                            ...newServiceForm,
-                            fields: newServiceForm.fields.filter((_, i) => i !== idx)
-                          });
+                          if (newServiceForm.newFieldLabel && newServiceForm.newFieldLabel.trim()) {
+                            const fType = newServiceForm.newFieldType || 'text';
+                            const isOptType = fType === 'select' || fType === 'radio';
+                            let opts = [];
+                            if (isOptType) {
+                              opts = (newServiceForm.newFieldOptions || '')
+                                .split(',')
+                                .map(s => s.trim())
+                                .filter(Boolean);
+                              if (opts.length === 0) {
+                                opts = ['Option 1', 'Option 2'];
+                              }
+                            }
+                            setNewServiceForm({
+                              ...newServiceForm,
+                              fields: [
+                                ...newServiceForm.fields,
+                                {
+                                  field_label: newServiceForm.newFieldLabel.trim(),
+                                  field_type: fType,
+                                  is_required: true,
+                                  options: isOptType ? opts : [],
+                                  options_json: isOptType ? opts : null
+                                }
+                              ],
+                              newFieldLabel: '',
+                              newFieldType: 'text',
+                              newFieldOptions: ''
+                            });
+                          }
                         }}
-                        className="text-rose-600 hover:text-rose-800 font-extrabold text-xs"
+                        className="w-full py-2 bg-[#0b192c] text-white font-bold rounded-xl hover:bg-slate-800 text-xs shadow-sm transition-colors"
                       >
-                        Remove
+                        + Add Form Field
                       </button>
                     </div>
-                  ))}
+                  </div>
+
+                  {/* Dropdown / Multiple Choice Options Configuration Box */}
+                  {(newServiceForm.newFieldType === 'select' || newServiceForm.newFieldType === 'radio') && (
+                    <div className="p-2.5 bg-blue-50/70 border border-blue-200/80 rounded-xl space-y-1 mt-1">
+                      <div className="flex items-center justify-between">
+                        <label className="text-xs font-extrabold text-blue-900 flex items-center gap-1.5">
+                          <span>{newServiceForm.newFieldType === 'radio' ? '🔘 Multiple Choice Options' : '▼ Drop-down Options'}</span>
+                        </label>
+                        <span className="text-[10px] text-blue-600 font-bold uppercase tracking-wider">Separate choices with commas ( , )</span>
+                      </div>
+                      <input
+                        type="text"
+                        placeholder={newServiceForm.newFieldType === 'radio' ? "e.g. Yes, No, Not Applicable" : "e.g. A+, B+, O+, AB+, A-, B-, O-, AB-"}
+                        value={newServiceForm.newFieldOptions || ''}
+                        onChange={(e) => setNewServiceForm({ ...newServiceForm, newFieldOptions: e.target.value })}
+                        className="w-full bg-white border border-blue-300 text-slate-900 rounded-lg px-3 py-1.5 text-xs outline-none focus:ring-2 focus:ring-blue-500 font-medium"
+                      />
+                      <p className="text-[10px] text-blue-600 font-medium">
+                        💡 Citizens will choose from these options when filling this field on the application form.
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
+                  {newServiceForm.fields.map((f, idx) => {
+                    const fOpts = Array.isArray(f.options) ? f.options : (typeof f.options === 'string' ? f.options.split(',').map(s => s.trim()).filter(Boolean) : (Array.isArray(f.options_json) ? f.options_json : (typeof f.options_json === 'string' ? JSON.parse(f.options_json || '[]') : [])));
+                    const fType = (f.field_type || 'text').toLowerCase();
+                    const isSelect = fType === 'select' || fType === 'dropdown';
+                    const isRadio = fType === 'radio' || fType === 'multiple choice';
+                    const isCheck = fType === 'checkbox';
+
+                    return (
+                      <div key={idx} className="p-2.5 bg-slate-50 hover:bg-slate-100/70 rounded-xl border border-slate-200 flex items-start justify-between font-medium text-xs transition-colors gap-2">
+                        <div className="space-y-1 flex-1 min-w-0">
+                          <div className="flex items-center flex-wrap gap-2">
+                            <span className="font-bold text-slate-900">{f.field_label}</span>
+                            <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${
+                              isSelect ? 'bg-blue-100 text-blue-800 border border-blue-200' :
+                              isRadio ? 'bg-purple-100 text-purple-800 border border-purple-200' :
+                              isCheck ? 'bg-amber-100 text-amber-800 border border-amber-200' :
+                              fType === 'date' ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' :
+                              fType === 'textarea' ? 'bg-cyan-100 text-cyan-800 border border-cyan-200' :
+                              'bg-slate-200 text-slate-700'
+                            }`}>
+                              {isSelect ? '▼ Dropdown' :
+                               isRadio ? '🔘 Multiple Choice' :
+                               isCheck ? '☑ Checkbox' :
+                               fType === 'date' ? '📅 Date' :
+                               fType === 'textarea' ? '📝 Paragraph' :
+                               '🔤 Text Input'}
+                            </span>
+                            {f.is_required && (
+                              <span className="text-[10px] text-rose-500 font-bold">*Required</span>
+                            )}
+                          </div>
+                          {fOpts.length > 0 && (
+                            <div className="flex items-center flex-wrap gap-1 pt-0.5">
+                              <span className="text-[10px] font-bold text-slate-400">Options:</span>
+                              {fOpts.map((opt, oIdx) => (
+                                <span key={oIdx} className="bg-white border border-slate-200 text-slate-700 font-medium px-1.5 py-0.5 rounded text-[10px]">
+                                  {String(opt)}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setNewServiceForm({
+                              ...newServiceForm,
+                              fields: newServiceForm.fields.filter((_, i) => i !== idx)
+                            });
+                          }}
+                          className="text-rose-600 hover:text-rose-800 font-extrabold text-xs ml-2 shrink-0"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -6279,68 +6595,160 @@ export default function AdminDashboard() {
 
               {/* Custom Citizen Applicant Form Fields */}
               <div className="space-y-3">
-                <h4 className="font-black text-slate-900 uppercase text-xs tracking-wider border-b border-slate-100 pb-1">3. Citizen Application Form Fields</h4>
-                
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                  <input
-                    type="text"
-                    placeholder="Field Label (e.g. Ration Card No)"
-                    value={editingServiceForm.newFieldLabel || ''}
-                    onChange={(e) => setEditingServiceForm({ ...editingServiceForm, newFieldLabel: e.target.value })}
-                    className="bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3 py-2 outline-none font-medium"
-                  />
-                  <select
-                    value={editingServiceForm.newFieldType || 'text'}
-                    onChange={(e) => setEditingServiceForm({ ...editingServiceForm, newFieldType: e.target.value })}
-                    className="bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3 py-2 outline-none font-medium"
-                  >
-                    <option value="text">Text Input</option>
-                    <option value="number">Number Input</option>
-                    <option value="textarea">Textarea / Address</option>
-                    <option value="date">Date Field</option>
-                  </select>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (editingServiceForm.newFieldLabel && editingServiceForm.newFieldLabel.trim()) {
-                        setEditingServiceForm({
-                          ...editingServiceForm,
-                          fields: [
-                            ...editingServiceForm.fields,
-                            { field_label: editingServiceForm.newFieldLabel.trim(), field_type: editingServiceForm.newFieldType || 'text', is_required: true }
-                          ],
-                          newFieldLabel: '',
-                          newFieldType: 'text'
-                        });
-                      }
-                    }}
-                    className="py-2 bg-[#0b192c] text-white font-bold rounded-xl hover:bg-slate-800"
-                  >
-                    + Add Form Field
-                  </button>
+                <div className="flex items-center justify-between border-b border-slate-100 pb-1">
+                  <h4 className="font-black text-slate-900 uppercase text-xs tracking-wider">3. Citizen Application Form Fields</h4>
+                  <span className="text-[11px] font-bold text-slate-400">Customizable Inputs</span>
                 </div>
-
-                <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
-                  {editingServiceForm.fields.map((f, idx) => (
-                    <div key={idx} className="p-2.5 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between font-medium text-xs">
-                      <div>
-                        <span className="font-bold text-slate-900">{f.field_label}</span>
-                        <span className="text-[10px] text-slate-400 font-mono ml-2">Type: {f.field_type}</span>
-                      </div>
+                
+                <div className="space-y-2 bg-slate-50/80 p-3 rounded-2xl border border-slate-200">
+                  <div className="grid grid-cols-1 sm:grid-cols-12 gap-2">
+                    <div className="sm:col-span-5">
+                      <input
+                        type="text"
+                        placeholder="Field Label (e.g. Blood Group, Qualification)"
+                        value={editingServiceForm.newFieldLabel || ''}
+                        onChange={(e) => setEditingServiceForm({ ...editingServiceForm, newFieldLabel: e.target.value })}
+                        className="w-full bg-white border border-slate-200 text-slate-900 rounded-xl px-3 py-2 outline-none font-medium text-xs focus:ring-2 focus:ring-[#0b192c]"
+                      />
+                    </div>
+                    <div className="sm:col-span-4">
+                      <select
+                        value={editingServiceForm.newFieldType || 'text'}
+                        onChange={(e) => setEditingServiceForm({ ...editingServiceForm, newFieldType: e.target.value })}
+                        className="w-full bg-white border border-slate-200 text-slate-900 rounded-xl px-3 py-2 outline-none font-medium text-xs focus:ring-2 focus:ring-[#0b192c]"
+                      >
+                        <option value="text">Short answer (Text Input)</option>
+                        <option value="textarea">Paragraph (Textarea / Address)</option>
+                        <option value="number">Number Input</option>
+                        <option value="date">Date Field</option>
+                        <option value="select">Drop-down (Select)</option>
+                        <option value="radio">Multiple choice (Radio)</option>
+                        <option value="checkbox">Checkbox (Yes / No)</option>
+                      </select>
+                    </div>
+                    <div className="sm:col-span-3">
                       <button
                         type="button"
                         onClick={() => {
-                          setEditingServiceForm({
-                            ...editingServiceForm,
-                            fields: editingServiceForm.fields.filter((_, i) => i !== idx)
-                          });
+                          if (editingServiceForm.newFieldLabel && editingServiceForm.newFieldLabel.trim()) {
+                            const fType = editingServiceForm.newFieldType || 'text';
+                            const isOptType = fType === 'select' || fType === 'radio';
+                            let opts = [];
+                            if (isOptType) {
+                              opts = (editingServiceForm.newFieldOptions || '')
+                                .split(',')
+                                .map(s => s.trim())
+                                .filter(Boolean);
+                              if (opts.length === 0) {
+                                opts = ['Option 1', 'Option 2'];
+                              }
+                            }
+                            setEditingServiceForm({
+                              ...editingServiceForm,
+                              fields: [
+                                ...editingServiceForm.fields,
+                                {
+                                  field_label: editingServiceForm.newFieldLabel.trim(),
+                                  field_type: fType,
+                                  is_required: true,
+                                  options: isOptType ? opts : [],
+                                  options_json: isOptType ? opts : null
+                                }
+                              ],
+                              newFieldLabel: '',
+                              newFieldType: 'text',
+                              newFieldOptions: ''
+                            });
+                          }
                         }}
-                        className="text-rose-600 hover:text-rose-800 font-extrabold text-xs"
+                        className="w-full py-2 bg-[#0b192c] text-white font-bold rounded-xl hover:bg-slate-800 text-xs shadow-sm transition-colors"
                       >
-                        Remove
+                        + Add Form Field
                       </button>
                     </div>
-                  ))}
+                  </div>
+
+                  {/* Dropdown / Multiple Choice Options Configuration Box */}
+                  {(editingServiceForm.newFieldType === 'select' || editingServiceForm.newFieldType === 'radio') && (
+                    <div className="p-2.5 bg-blue-50/70 border border-blue-200/80 rounded-xl space-y-1 mt-1">
+                      <div className="flex items-center justify-between">
+                        <label className="text-xs font-extrabold text-blue-900 flex items-center gap-1.5">
+                          <span>{editingServiceForm.newFieldType === 'radio' ? '🔘 Multiple Choice Options' : '▼ Drop-down Options'}</span>
+                        </label>
+                        <span className="text-[10px] text-blue-600 font-bold uppercase tracking-wider">Separate choices with commas ( , )</span>
+                      </div>
+                      <input
+                        type="text"
+                        placeholder={editingServiceForm.newFieldType === 'radio' ? "e.g. Yes, No, Not Applicable" : "e.g. A+, B+, O+, AB+, A-, B-, O-, AB-"}
+                        value={editingServiceForm.newFieldOptions || ''}
+                        onChange={(e) => setEditingServiceForm({ ...editingServiceForm, newFieldOptions: e.target.value })}
+                        className="w-full bg-white border border-blue-300 text-slate-900 rounded-lg px-3 py-1.5 text-xs outline-none focus:ring-2 focus:ring-blue-500 font-medium"
+                      />
+                      <p className="text-[10px] text-blue-600 font-medium">
+                        💡 Citizens will choose from these options when filling this field on the application form.
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
+                  {editingServiceForm.fields.map((f, idx) => {
+                    const fOpts = Array.isArray(f.options) ? f.options : (typeof f.options === 'string' ? f.options.split(',').map(s => s.trim()).filter(Boolean) : (Array.isArray(f.options_json) ? f.options_json : (typeof f.options_json === 'string' ? JSON.parse(f.options_json || '[]') : [])));
+                    const fType = (f.field_type || 'text').toLowerCase();
+                    const isSelect = fType === 'select' || fType === 'dropdown';
+                    const isRadio = fType === 'radio' || fType === 'multiple choice';
+                    const isCheck = fType === 'checkbox';
+
+                    return (
+                      <div key={idx} className="p-2.5 bg-slate-50 hover:bg-slate-100/70 rounded-xl border border-slate-200 flex items-start justify-between font-medium text-xs transition-colors gap-2">
+                        <div className="space-y-1 flex-1 min-w-0">
+                          <div className="flex items-center flex-wrap gap-2">
+                            <span className="font-bold text-slate-900">{f.field_label}</span>
+                            <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${
+                              isSelect ? 'bg-blue-100 text-blue-800 border border-blue-200' :
+                              isRadio ? 'bg-purple-100 text-purple-800 border border-purple-200' :
+                              isCheck ? 'bg-amber-100 text-amber-800 border border-amber-200' :
+                              fType === 'date' ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' :
+                              fType === 'textarea' ? 'bg-cyan-100 text-cyan-800 border border-cyan-200' :
+                              'bg-slate-200 text-slate-700'
+                            }`}>
+                              {isSelect ? '▼ Dropdown' :
+                               isRadio ? '🔘 Multiple Choice' :
+                               isCheck ? '☑ Checkbox' :
+                               fType === 'date' ? '📅 Date' :
+                               fType === 'textarea' ? '📝 Paragraph' :
+                               '🔤 Text Input'}
+                            </span>
+                            {f.is_required && (
+                              <span className="text-[10px] text-rose-500 font-bold">*Required</span>
+                            )}
+                          </div>
+                          {fOpts.length > 0 && (
+                            <div className="flex items-center flex-wrap gap-1 pt-0.5">
+                              <span className="text-[10px] font-bold text-slate-400">Options:</span>
+                              {fOpts.map((opt, oIdx) => (
+                                <span key={oIdx} className="bg-white border border-slate-200 text-slate-700 font-medium px-1.5 py-0.5 rounded text-[10px]">
+                                  {String(opt)}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditingServiceForm({
+                              ...editingServiceForm,
+                              fields: editingServiceForm.fields.filter((_, i) => i !== idx)
+                            });
+                          }}
+                          className="text-rose-600 hover:text-rose-800 font-extrabold text-xs ml-2 shrink-0"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 
