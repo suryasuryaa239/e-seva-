@@ -333,8 +333,24 @@ export default function ApplyService() {
       if (res.ok) {
         const data = await res.json();
 
+        // Fallback to catalog definition if API fields or documents are empty
+        let rawFields = Array.isArray(data.fields) ? data.fields : [];
+        if (rawFields.length === 0) {
+          const fallbackDef = getServiceDefinition(serviceParam, lang);
+          if (fallbackDef && fallbackDef.fields && fallbackDef.fields.length > 0) {
+            rawFields = fallbackDef.fields;
+          }
+        }
+        let rawDocs = Array.isArray(data.documents) ? data.documents : [];
+        if (rawDocs.length === 0) {
+          const fallbackDef = getServiceDefinition(serviceParam, lang);
+          if (fallbackDef && fallbackDef.documents && fallbackDef.documents.length > 0) {
+            rawDocs = fallbackDef.documents;
+          }
+        }
+        data.documents = rawDocs;
+
         // Deduplicate dynamic fields from API so each field key is strictly unique
-        const rawFields = Array.isArray(data.fields) ? data.fields : [];
         const seenFieldMap = new Set();
         const deduplicatedFields = rawFields.filter(f => {
           if (!f) return false;
@@ -534,6 +550,37 @@ export default function ApplyService() {
     return true;
   };
 
+  // Determine whether Aadhaar is strictly mandatory for current service
+  const isAadhaarRequired = React.useMemo(() => {
+    if (!service) return false;
+
+    // 1. Explicitly required Aadhaar field in service definition
+    const hasRequiredAadhaarField = (service.fields || []).some(f => {
+      if (!f) return false;
+      const name = String(f.field_name || f.name || '').toLowerCase().trim();
+      const label = String(f.field_label || f.label || '').toLowerCase().trim();
+      const isAadhaar = name.includes('aadhaar') || name.includes('aadhar') || label.includes('aadhaar') || label.includes('aadhar');
+      const isReq = f.is_required !== false && f.required !== false && f.is_required !== 0;
+      return isAadhaar && isReq;
+    });
+    if (hasRequiredAadhaarField) return true;
+
+    // 2. Aadhaar category update/link/correction services (excluding new enrollment assistance)
+    const catSlug = service.category_slug || '';
+    const catName = (service.category_name || '').toLowerCase();
+    const slug = (service.slug || '').toLowerCase();
+    const name = (service.name || '').toLowerCase();
+
+    const isAadhaarCategory = catSlug === 'aadhaar-services' || catName.includes('aadhaar') || service.category_id === 1;
+    const isNewEnrollment = slug.includes('enrollment') || name.includes('enrollment');
+
+    if (isAadhaarCategory && !isNewEnrollment) {
+      return true;
+    }
+
+    return false;
+  }, [service]);
+
   // Step 1 Validation (Applicant Details + Custom Fields)
   const validateStep1 = () => {
     const errs = {};
@@ -556,11 +603,16 @@ export default function ApplyService() {
       errs.user_email = lang === 'ta' ? 'செல்லுபடியாகும் மின்னஞ்சல் முகவரியை உள்ளிடவும்.' : 'Please enter a valid email address.';
     }
 
-    // Aadhaar Validation (Strictly 12 digits)
+    // Aadhaar Validation (Required only when service demands Aadhaar)
     const rawAadhaar = cleanAadhaar(applicantInfo.aadhaar_no);
-    if (!rawAadhaar) {
-      errs.aadhaar_no = lang === 'ta' ? 'உங்கள் 12-இலக்க ஆதார் எண்ணை உள்ளிடவும்.' : 'Please enter your 12-digit Aadhaar number.';
-    } else if (rawAadhaar.length !== 12) {
+    if (isAadhaarRequired) {
+      if (!rawAadhaar) {
+        errs.aadhaar_no = lang === 'ta' ? 'உங்கள் 12-இலக்க ஆதார் எண்ணை உள்ளிடவும்.' : 'Please enter your 12-digit Aadhaar number.';
+      } else if (rawAadhaar.length !== 12) {
+        errs.aadhaar_no = lang === 'ta' ? 'ஆதார் எண் சரியாக 12 இலக்கங்களாக இருக்க வேண்டும்.' : 'Aadhaar number must be exactly 12 digits.';
+      }
+    } else if (rawAadhaar && rawAadhaar.length !== 12) {
+      // Optional Aadhaar: validate only if user entered a value
       errs.aadhaar_no = lang === 'ta' ? 'ஆதார் எண் சரியாக 12 இலக்கங்களாக இருக்க வேண்டும்.' : 'Aadhaar number must be exactly 12 digits.';
     }
 
@@ -662,18 +714,22 @@ export default function ApplyService() {
       formData.append('current_step', currentStep || 1);
 
       const combinedDraftValues = {
+        ...applicantInfo,
         ...fieldValues,
-        full_name: applicantInfo.user_name || '',
-        applicant_name: applicantInfo.user_name || '',
-        user_name: applicantInfo.user_name || '',
-        mobile_number: applicantInfo.user_phone || '',
-        user_phone: applicantInfo.user_phone || '',
-        phone_number: applicantInfo.user_phone || '',
-        email: applicantInfo.user_email || '',
-        user_email: applicantInfo.user_email || '',
-        aadhaar_number: applicantInfo.aadhaar_no || '',
-        aadhaar_no: applicantInfo.aadhaar_no || '',
-        ...applicantInfo
+        full_name: applicantInfo.user_name || fieldValues.full_name || '',
+        applicant_name: applicantInfo.user_name || fieldValues.applicant_name || '',
+        user_name: applicantInfo.user_name || fieldValues.user_name || '',
+        mobile_number: applicantInfo.user_phone || fieldValues.mobile_number || '',
+        user_phone: applicantInfo.user_phone || fieldValues.user_phone || '',
+        phone_number: applicantInfo.user_phone || fieldValues.phone_number || '',
+        email: applicantInfo.user_email || fieldValues.email || '',
+        user_email: applicantInfo.user_email || fieldValues.user_email || '',
+        aadhaar_number: applicantInfo.aadhaar_no || fieldValues.aadhaar_number || fieldValues.aadhaar_no || '',
+        aadhaar_no: applicantInfo.aadhaar_no || fieldValues.aadhaar_no || fieldValues.aadhaar_number || '',
+        address: fieldValues.address || fieldValues.delivery_address || fieldValues.residential_address || applicantInfo.address || '',
+        district: fieldValues.district || applicantInfo.district || '',
+        state: fieldValues.state || applicantInfo.state || 'Tamil Nadu',
+        pincode: fieldValues.pincode || applicantInfo.pincode || ''
       };
       formData.append('field_values', JSON.stringify(combinedDraftValues));
 
@@ -736,18 +792,22 @@ export default function ApplyService() {
       formData.append('user_phone', applicantInfo.user_phone);
 
       const combinedSubmitValues = {
+        ...applicantInfo,
         ...fieldValues,
-        full_name: applicantInfo.user_name || '',
-        applicant_name: applicantInfo.user_name || '',
-        user_name: applicantInfo.user_name || '',
-        mobile_number: applicantInfo.user_phone || '',
-        user_phone: applicantInfo.user_phone || '',
-        phone_number: applicantInfo.user_phone || '',
-        email: applicantInfo.user_email || '',
-        user_email: applicantInfo.user_email || '',
-        aadhaar_number: applicantInfo.aadhaar_no || '',
-        aadhaar_no: applicantInfo.aadhaar_no || '',
-        ...applicantInfo
+        full_name: applicantInfo.user_name || fieldValues.full_name || '',
+        applicant_name: applicantInfo.user_name || fieldValues.applicant_name || '',
+        user_name: applicantInfo.user_name || fieldValues.user_name || '',
+        mobile_number: applicantInfo.user_phone || fieldValues.mobile_number || '',
+        user_phone: applicantInfo.user_phone || fieldValues.user_phone || '',
+        phone_number: applicantInfo.user_phone || fieldValues.phone_number || '',
+        email: applicantInfo.user_email || fieldValues.email || '',
+        user_email: applicantInfo.user_email || fieldValues.user_email || '',
+        aadhaar_number: applicantInfo.aadhaar_no || fieldValues.aadhaar_number || fieldValues.aadhaar_no || '',
+        aadhaar_no: applicantInfo.aadhaar_no || fieldValues.aadhaar_no || fieldValues.aadhaar_number || '',
+        address: fieldValues.address || fieldValues.delivery_address || fieldValues.residential_address || applicantInfo.address || '',
+        district: fieldValues.district || applicantInfo.district || '',
+        state: fieldValues.state || applicantInfo.state || 'Tamil Nadu',
+        pincode: fieldValues.pincode || applicantInfo.pincode || ''
       };
       formData.append('field_values', JSON.stringify(combinedSubmitValues));
 
@@ -1129,12 +1189,17 @@ export default function ApplyService() {
 
                     <div>
                       <label className="block text-xs font-extrabold text-slate-700 mb-1.5">
-                        {lang === 'ta' ? 'ஆதார் எண்' : 'Aadhaar Number'} <span className="text-rose-500">*</span>
+                        {lang === 'ta' ? 'ஆதார் எண்' : 'Aadhaar Number'}{' '}
+                        {isAadhaarRequired ? (
+                          <span className="text-rose-500">*</span>
+                        ) : (
+                          <span className="text-slate-400 font-normal">({lang === 'ta' ? 'விருப்பத்தேர்வு' : 'Optional'})</span>
+                        )}
                       </label>
                       <input
                         type="text"
                         name="aadhaar_no"
-                        placeholder="e.g. 9876 5432 1098"
+                        placeholder={isAadhaarRequired ? "e.g. 9876 5432 1098" : (lang === 'ta' ? 'ஆதார் எண் (தேவைப்பட்டால் மட்டும்)' : 'e.g. 9876 5432 1098 (Optional)')}
                         maxLength={14}
                         inputMode="numeric"
                         value={applicantInfo.aadhaar_no}
@@ -1600,6 +1665,26 @@ export default function ApplyService() {
                         <span className="text-slate-500 block text-[11px] font-medium tracking-normal capitalize leading-tight">{t.districtLabel} / {t.stateLabel}</span>
                         <span className="font-semibold text-slate-900 text-xs sm:text-sm block pt-0.5">{applicantInfo.district ? `${applicantInfo.district}, ${applicantInfo.state}` : applicantInfo.state}</span>
                       </div>
+                      {Boolean(fieldValues.address || fieldValues.delivery_address || fieldValues.residential_address || applicantInfo.address) && (
+                        <div className="bg-white p-4 rounded-xl border border-slate-200/70 shadow-2xs space-y-2 sm:col-span-2">
+                          <span className="text-slate-500 block text-[11px] font-medium tracking-normal capitalize leading-tight">
+                            {lang === 'ta' ? 'முகவரி' : 'Address'}
+                          </span>
+                          <span className="font-semibold text-slate-900 text-xs sm:text-sm block pt-0.5">
+                            {fieldValues.address || fieldValues.delivery_address || fieldValues.residential_address || applicantInfo.address}
+                          </span>
+                        </div>
+                      )}
+                      {Boolean(applicantInfo.aadhaar_no) && (
+                        <div className="bg-white p-4 rounded-xl border border-slate-200/70 shadow-2xs space-y-2 sm:col-span-2">
+                          <span className="text-slate-500 block text-[11px] font-medium tracking-normal capitalize leading-tight">
+                            {lang === 'ta' ? 'ஆதார் எண்' : 'Aadhaar Number'}
+                          </span>
+                          <span className="font-semibold text-slate-900 text-xs sm:text-sm block font-mono pt-0.5">
+                            {applicantInfo.aadhaar_no}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </div>
 
