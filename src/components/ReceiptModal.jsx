@@ -1,9 +1,27 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Printer, X, CheckCircle2 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 export default function ReceiptModal({ application, service, applicantInfo, fieldValues, onClose }) {
   const { lang } = useLanguage();
+
+  const handleClose = (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    if (e && e.stopPropagation) e.stopPropagation();
+    if (typeof onClose === 'function') {
+      onClose();
+    }
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        handleClose(e);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
 
   if (!application) return null;
 
@@ -28,8 +46,16 @@ export default function ReceiptModal({ application, service, applicantInfo, fiel
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto font-sans animate-in fade-in duration-200 eseva-modal-overlay">
-      <div className="bg-white rounded-3xl max-w-lg w-full max-h-[92vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden my-auto">
+    <div 
+      className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto font-sans animate-in fade-in duration-200 eseva-modal-overlay"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) handleClose(e);
+      }}
+    >
+      <div 
+        className="bg-white rounded-3xl max-w-lg w-full max-h-[92vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden my-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
         
         {/* MODAL ACTION HEADER (no-print) */}
         <div className="px-5 py-3 bg-[#0b192c] text-white flex items-center justify-between border-b border-slate-800 no-print">
@@ -59,7 +85,8 @@ export default function ReceiptModal({ application, service, applicantInfo, fiel
 
             <button
               type="button"
-              onClick={onClose}
+              onClick={handleClose}
+              aria-label="Close receipt modal"
               className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
             >
               <X className="w-4 h-4" />
@@ -228,7 +255,7 @@ export default function ReceiptModal({ application, service, applicantInfo, fiel
           <div className="flex items-center gap-2">
             <button
               type="button"
-              onClick={onClose}
+              onClick={handleClose}
               className="px-3 py-1 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-[11px] rounded-lg transition-colors cursor-pointer"
             >
               {lang === 'ta' ? 'மூடுக' : 'Close'}
