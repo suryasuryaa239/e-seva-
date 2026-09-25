@@ -216,6 +216,28 @@ export async function initializeDatabaseSchema() {
     `);
 
     await connection.query(`
+      CREATE TABLE IF NOT EXISTS site_settings (
+        id INT PRIMARY KEY,
+        payment_notice_ta TEXT,
+        payment_notice_en TEXT,
+        payment_terms_enabled TINYINT(1) DEFAULT 1,
+        social_facebook TEXT,
+        social_instagram TEXT,
+        social_youtube TEXT,
+        social_whatsapp TEXT,
+        social_twitter TEXT,
+        social_telegram TEXT,
+        social_linkedin TEXT,
+        contact_phone VARCHAR(100),
+        contact_email VARCHAR(255),
+        contact_address TEXT,
+        working_hours VARCHAR(255),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `);
+
+    await connection.query(`
       CREATE TABLE IF NOT EXISTS application_field_values (
         id INT AUTO_INCREMENT PRIMARY KEY,
         application_id INT,

@@ -24,7 +24,8 @@ const initialTables = {
   career_applications: [],
   banners: [],
   notifications: [],
-  document_audit_history: []
+  document_audit_history: [],
+  site_settings: []
 };
 
 class TiDBSupportedDatabase {
@@ -72,7 +73,7 @@ class TiDBSupportedDatabase {
     try {
       const conn = await pool.getConnection();
       try {
-        const tables = ['users', 'admins', 'categories', 'services', 'applications', 'payments', 'contact_messages', 'career_applications', 'notifications', 'application_documents', 'application_field_values'];
+        const tables = ['users', 'admins', 'categories', 'services', 'applications', 'payments', 'contact_messages', 'career_applications', 'notifications', 'application_documents', 'application_field_values', 'site_settings'];
         for (const tbl of tables) {
           try {
             const [rows] = await conn.query(`SELECT * FROM ${tbl}`);
@@ -207,7 +208,7 @@ class TiDBSupportedDatabase {
 
   async persistInsertToTiDB(tableName, row) {
     try {
-      const allowedTables = ['users', 'admins', 'categories', 'services', 'applications', 'payments', 'contact_messages', 'career_applications', 'notifications', 'application_documents', 'application_field_values'];
+      const allowedTables = ['users', 'admins', 'categories', 'services', 'applications', 'payments', 'contact_messages', 'career_applications', 'notifications', 'application_documents', 'application_field_values', 'site_settings'];
       if (!allowedTables.includes(tableName)) return;
 
       const validCols = await this.getTableColumns(tableName);
@@ -274,7 +275,7 @@ class TiDBSupportedDatabase {
 
   async persistUpdateToTiDB(tableName, id, updates) {
     try {
-      const allowedTables = ['users', 'admins', 'categories', 'services', 'applications', 'payments', 'contact_messages', 'career_applications', 'notifications', 'application_documents', 'application_field_values'];
+      const allowedTables = ['users', 'admins', 'categories', 'services', 'applications', 'payments', 'contact_messages', 'career_applications', 'notifications', 'application_documents', 'application_field_values', 'site_settings'];
       if (!allowedTables.includes(tableName) || !id) return;
 
       const validCols = await this.getTableColumns(tableName);

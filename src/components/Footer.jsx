@@ -1,12 +1,120 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  MapPin, Phone, Mail, Clock, Facebook, Instagram, Youtube, MessageCircle, ShieldCheck, ArrowRight, AlertTriangle
+  MapPin, Phone, Mail, Clock, Facebook, Instagram, Youtube, MessageCircle, 
+  ShieldCheck, ArrowRight, AlertTriangle, Send, Linkedin, Twitter, Globe
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 export default function Footer() {
   const { lang, t } = useLanguage();
+
+  const [settings, setSettings] = useState({
+    social_facebook: '',
+    social_instagram: '',
+    social_youtube: '',
+    social_whatsapp: '+919894059591',
+    social_twitter: '',
+    social_telegram: '',
+    social_linkedin: '',
+    contact_phone: '+91 98940 59591',
+    contact_email: 'econnectindia@gmail.com',
+    contact_address: '45, New Bus stand complex, Sathyamangalam-638402.',
+    working_hours: ''
+  });
+
+  useEffect(() => {
+    let isMounted = true;
+    fetch('/api/settings')
+      .then(res => res.ok ? res.json() : null)
+      .then(data => {
+        if (isMounted && data) {
+          setSettings(prev => ({ ...prev, ...data }));
+        }
+      })
+      .catch(() => {});
+    return () => { isMounted = false; };
+  }, []);
+
+  const formatExternalUrl = (url) => {
+    if (!url || url.trim() === '') return '#!';
+    const trimmed = url.trim();
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) return trimmed;
+    return `https://${trimmed}`;
+  };
+
+  const formatWhatsAppUrl = (val) => {
+    if (!val || val.trim() === '') return 'https://wa.me/919894059591';
+    const trimmed = val.trim();
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) return trimmed;
+    const digits = trimmed.replace(/\D/g, '');
+    if (digits.length === 10) return `https://wa.me/91${digits}`;
+    return `https://wa.me/${digits}`;
+  };
+
+  const socialLinks = [
+    {
+      id: 'whatsapp',
+      label: 'WhatsApp',
+      icon: MessageCircle,
+      url: formatWhatsAppUrl(settings.social_whatsapp),
+      active: Boolean(settings.social_whatsapp && settings.social_whatsapp.trim()),
+      hoverColor: 'hover:bg-emerald-600 hover:border-emerald-500 text-emerald-400 hover:text-white'
+    },
+    {
+      id: 'instagram',
+      label: 'Instagram',
+      icon: Instagram,
+      url: formatExternalUrl(settings.social_instagram),
+      active: Boolean(settings.social_instagram && settings.social_instagram.trim()),
+      hoverColor: 'hover:bg-pink-600 hover:border-pink-500 text-pink-400 hover:text-white'
+    },
+    {
+      id: 'facebook',
+      label: 'Facebook',
+      icon: Facebook,
+      url: formatExternalUrl(settings.social_facebook),
+      active: Boolean(settings.social_facebook && settings.social_facebook.trim()),
+      hoverColor: 'hover:bg-blue-600 hover:border-blue-500 text-blue-400 hover:text-white'
+    },
+    {
+      id: 'youtube',
+      label: 'YouTube',
+      icon: Youtube,
+      url: formatExternalUrl(settings.social_youtube),
+      active: Boolean(settings.social_youtube && settings.social_youtube.trim()),
+      hoverColor: 'hover:bg-red-600 hover:border-red-500 text-red-400 hover:text-white'
+    },
+    {
+      id: 'twitter',
+      label: 'X (Twitter)',
+      icon: Twitter,
+      url: formatExternalUrl(settings.social_twitter),
+      active: Boolean(settings.social_twitter && settings.social_twitter.trim()),
+      hoverColor: 'hover:bg-slate-700 hover:border-slate-500 text-slate-300 hover:text-white'
+    },
+    {
+      id: 'telegram',
+      label: 'Telegram',
+      icon: Send,
+      url: formatExternalUrl(settings.social_telegram),
+      active: Boolean(settings.social_telegram && settings.social_telegram.trim()),
+      hoverColor: 'hover:bg-sky-500 hover:border-sky-400 text-sky-400 hover:text-white'
+    },
+    {
+      id: 'linkedin',
+      label: 'LinkedIn',
+      icon: Linkedin,
+      url: formatExternalUrl(settings.social_linkedin),
+      active: Boolean(settings.social_linkedin && settings.social_linkedin.trim()),
+      hoverColor: 'hover:bg-indigo-600 hover:border-indigo-500 text-indigo-400 hover:text-white'
+    }
+  ];
+
+  // Display active links if any are configured, or fallback to the 4 primary social links
+  const visibleSocials = socialLinks.some(s => s.active)
+    ? socialLinks.filter(s => s.active)
+    : socialLinks.slice(0, 4);
 
   return (
     <footer className="bg-[#0b192c] text-slate-300 pt-16 pb-8 text-xs border-t border-slate-800 relative">
@@ -41,39 +149,25 @@ export default function Footer() {
               <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
                 {t.connectWithUs || (lang === 'ta' ? 'எங்களுடன் இணையுங்கள்' : 'Connect With Us')}
               </span>
-              <div className="flex items-center gap-2.5">
-                <a
-                  href="#!"
-                  onClick={(e) => e.preventDefault()}
-                  aria-label="Facebook"
-                  className="w-8 h-8 rounded-lg bg-slate-800/80 hover:bg-orange-500 text-slate-300 hover:text-white flex items-center justify-center transition-all border border-slate-700/50"
-                >
-                  <Facebook className="w-4 h-4" />
-                </a>
-                <a
-                  href="#!"
-                  onClick={(e) => e.preventDefault()}
-                  aria-label="Instagram"
-                  className="w-8 h-8 rounded-lg bg-slate-800/80 hover:bg-orange-500 text-slate-300 hover:text-white flex items-center justify-center transition-all border border-slate-700/50"
-                >
-                  <Instagram className="w-4 h-4" />
-                </a>
-                <a
-                  href="#!"
-                  onClick={(e) => e.preventDefault()}
-                  aria-label="YouTube"
-                  className="w-8 h-8 rounded-lg bg-slate-800/80 hover:bg-orange-500 text-slate-300 hover:text-white flex items-center justify-center transition-all border border-slate-700/50"
-                >
-                  <Youtube className="w-4 h-4" />
-                </a>
-                <a
-                  href="#!"
-                  onClick={(e) => e.preventDefault()}
-                  aria-label="WhatsApp"
-                  className="w-8 h-8 rounded-lg bg-slate-800/80 hover:bg-orange-500 text-slate-300 hover:text-white flex items-center justify-center transition-all border border-slate-700/50"
-                >
-                  <MessageCircle className="w-4 h-4" />
-                </a>
+              <div className="flex flex-wrap items-center gap-2">
+                {visibleSocials.map((item) => {
+                  const Icon = item.icon;
+                  const isPlaceholder = item.url === '#!';
+                  return (
+                    <a
+                      key={item.id}
+                      href={item.url}
+                      target={isPlaceholder ? undefined : "_blank"}
+                      rel={isPlaceholder ? undefined : "noopener noreferrer"}
+                      onClick={isPlaceholder ? (e) => e.preventDefault() : undefined}
+                      aria-label={item.label}
+                      title={item.label}
+                      className={`w-8 h-8 rounded-lg bg-slate-800/80 flex items-center justify-center transition-all border border-slate-700/60 shadow-sm ${item.hoverColor}`}
+                    >
+                      <Icon className="w-4 h-4" />
+                    </a>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -127,28 +221,40 @@ export default function Footer() {
               <li className="flex items-start gap-2.5">
                 <Phone className="w-4 h-4 text-orange-400 shrink-0 mt-0.5" />
                 <div>
-                  <span className="block text-white font-mono font-medium">+91 98940 59591</span>
-                  <span className="text-[11px] text-slate-500">9894059591</span>
+                  <a 
+                    href={`tel:${(settings.contact_phone || '+91 98940 59591').replace(/\s+/g, '')}`} 
+                    className="block text-white font-mono font-medium hover:text-orange-400 transition-colors"
+                  >
+                    {settings.contact_phone || '+91 98940 59591'}
+                  </a>
+                  <span className="text-[11px] text-slate-500">Official Helpline</span>
                 </div>
               </li>
 
               <li className="flex items-start gap-2.5">
                 <Mail className="w-4 h-4 text-orange-400 shrink-0 mt-0.5" />
                 <div>
-                  <span className="block text-white font-medium">econnectindia@gmail.com</span>
-                  <span className="text-[11px] text-slate-500">24/7 Support</span>
+                  <a 
+                    href={`mailto:${settings.contact_email || 'econnectindia@gmail.com'}`} 
+                    className="block text-white font-medium hover:text-orange-400 transition-colors"
+                  >
+                    {settings.contact_email || 'econnectindia@gmail.com'}
+                  </a>
+                  <span className="text-[11px] text-slate-500">24/7 Digital Support</span>
                 </div>
               </li>
 
               <li className="flex items-start gap-2.5">
                 <MapPin className="w-4 h-4 text-orange-400 shrink-0 mt-0.5" />
-                <span>45, New Bus stand complex, Sathyamangalam-638402.</span>
+                <span>{settings.contact_address || '45, New Bus stand complex, Sathyamangalam-638402.'}</span>
               </li>
 
               <li className="flex items-start gap-2.5">
                 <Clock className="w-4 h-4 text-orange-400 shrink-0 mt-0.5" />
                 <div>
-                  <span className="block text-white font-medium">{t.workingHours || (lang === 'ta' ? 'திங்கள் - சனி: காலை 08:00 - மாலை 08:00' : 'Mon - Sat: 08:00 AM - 08:00 PM')}</span>
+                  <span className="block text-white font-medium">
+                    {settings.working_hours || (lang === 'ta' ? 'திங்கள் - சனி: காலை 08:00 - மாலை 08:00' : 'Mon - Sat: 08:00 AM - 08:00 PM')}
+                  </span>
                   <span className="text-[11px] text-emerald-400 font-semibold flex items-center gap-1">
                     <ShieldCheck className="w-3 h-3" /> {lang === 'ta' ? '24/7 போர்ட்டல் சேவை வசதி' : '24/7 Portal Access'}
                   </span>

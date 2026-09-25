@@ -8,7 +8,8 @@ import {
   Filter, RotateCcw, Inbox, UserCheck, FileCheck, History, MessageSquare,
   User, Phone, Mail as MailIcon, Calendar, CheckCircle, Shield, Trash2,
   Settings, Key, Lock, EyeOff, Save, CheckCheck, Bell, CreditCard, Paperclip,
-  Sliders, Image as ImageIcon, Upload, Download
+  Sliders, Image as ImageIcon, Upload, Download,
+  Share2, Send, Linkedin, Twitter, Globe, Facebook, Instagram, Youtube, MessageCircle
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -164,7 +165,18 @@ export default function AdminDashboard() {
   const [siteSettingsForm, setSiteSettingsForm] = useState({
     payment_notice_ta: '',
     payment_notice_en: '',
-    payment_terms_enabled: true
+    payment_terms_enabled: true,
+    social_facebook: '',
+    social_instagram: '',
+    social_youtube: '',
+    social_whatsapp: '',
+    social_twitter: '',
+    social_telegram: '',
+    social_linkedin: '',
+    contact_phone: '',
+    contact_email: '',
+    contact_address: '',
+    working_hours: ''
   });
   const [savingSiteSettings, setSavingSiteSettings] = useState(false);
 
@@ -176,7 +188,18 @@ export default function AdminDashboard() {
         setSiteSettingsForm({
           payment_notice_ta: data.payment_notice_ta || '',
           payment_notice_en: data.payment_notice_en || '',
-          payment_terms_enabled: data.payment_terms_enabled !== false
+          payment_terms_enabled: data.payment_terms_enabled !== false,
+          social_facebook: data.social_facebook || '',
+          social_instagram: data.social_instagram || '',
+          social_youtube: data.social_youtube || '',
+          social_whatsapp: data.social_whatsapp || '',
+          social_twitter: data.social_twitter || '',
+          social_telegram: data.social_telegram || '',
+          social_linkedin: data.social_linkedin || '',
+          contact_phone: data.contact_phone || '',
+          contact_email: data.contact_email || '',
+          contact_address: data.contact_address || '',
+          working_hours: data.working_hours || ''
         });
       }
     } catch (e) {
@@ -3971,6 +3994,7 @@ export default function AdminDashboard() {
                 {[
                   { id: 'profile', label: 'Profile Details', icon: User },
                   { id: 'security', label: 'Security & Password', icon: Key },
+                  { id: 'social_media', label: 'Social Media & Footer', icon: Share2 },
                   { id: 'payment_notice', label: 'Payment Notice & Terms', icon: ShieldAlert },
                   { id: 'notifications', label: 'Notification Preferences', icon: Bell },
                   { id: 'audit', label: 'System Audit Logs', icon: History }
@@ -4288,6 +4312,341 @@ export default function AdminDashboard() {
                       </div>
                     ))}
                   </div>
+                </div>
+              )}
+
+              {/* SUB-TAB: SOCIAL MEDIA & FOOTER CONFIGURATION */}
+              {activeSettingsTab === 'social_media' && (
+                <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/90 shadow-sm space-y-8">
+                  {/* Header */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <Share2 className="w-5 h-5 text-orange-500" />
+                        <h4 className="font-extrabold text-base sm:text-lg text-slate-900">
+                          Social Media Channels & Footer Information
+                        </h4>
+                      </div>
+                      <p className="text-xs text-slate-500 mt-1">
+                        Configure the official social media URLs, WhatsApp helpline, and contact information displayed across the website footer.
+                      </p>
+                    </div>
+                    <span className="text-xs font-bold text-orange-600 bg-orange-50 px-3.5 py-1.5 rounded-xl border border-orange-200 shrink-0 self-start sm:self-center">
+                      Public Footer Branding
+                    </span>
+                  </div>
+
+                  {/* Live Footer Preview Pill Box */}
+                  <div className="p-5 bg-gradient-to-br from-slate-900 via-[#0b192c] to-slate-950 rounded-2xl border border-slate-800 text-white space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <Eye className="w-4 h-4 text-orange-400" />
+                        <span className="text-xs font-bold text-slate-200">Live Website Footer Preview</span>
+                      </div>
+                      <span className="text-[10px] text-slate-400 font-mono">Real-time Appearance</span>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-3 pt-2">
+                      <span className="text-xs text-slate-400 font-medium">Connect With Us:</span>
+                      
+                      {/* WhatsApp Preview */}
+                      {siteSettingsForm.social_whatsapp ? (
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-emerald-950/80 border border-emerald-600/40 text-emerald-300 text-xs font-semibold">
+                          <MessageCircle className="w-3.5 h-3.5 text-emerald-400" />
+                          <span>WhatsApp Active</span>
+                        </span>
+                      ) : null}
+
+                      {/* Instagram Preview */}
+                      {siteSettingsForm.social_instagram ? (
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-pink-950/80 border border-pink-600/40 text-pink-300 text-xs font-semibold">
+                          <Instagram className="w-3.5 h-3.5 text-pink-400" />
+                          <span>Instagram</span>
+                        </span>
+                      ) : null}
+
+                      {/* Facebook Preview */}
+                      {siteSettingsForm.social_facebook ? (
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-blue-950/80 border border-blue-600/40 text-blue-300 text-xs font-semibold">
+                          <Facebook className="w-3.5 h-3.5 text-blue-400" />
+                          <span>Facebook</span>
+                        </span>
+                      ) : null}
+
+                      {/* YouTube Preview */}
+                      {siteSettingsForm.social_youtube ? (
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-red-950/80 border border-red-600/40 text-red-300 text-xs font-semibold">
+                          <Youtube className="w-3.5 h-3.5 text-red-400" />
+                          <span>YouTube</span>
+                        </span>
+                      ) : null}
+
+                      {/* X (Twitter) Preview */}
+                      {siteSettingsForm.social_twitter ? (
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 text-xs font-semibold">
+                          <Twitter className="w-3.5 h-3.5 text-slate-300" />
+                          <span>X (Twitter)</span>
+                        </span>
+                      ) : null}
+
+                      {/* Telegram Preview */}
+                      {siteSettingsForm.social_telegram ? (
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-sky-950/80 border border-sky-600/40 text-sky-300 text-xs font-semibold">
+                          <Send className="w-3.5 h-3.5 text-sky-400" />
+                          <span>Telegram</span>
+                        </span>
+                      ) : null}
+
+                      {/* LinkedIn Preview */}
+                      {siteSettingsForm.social_linkedin ? (
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-indigo-950/80 border border-indigo-600/40 text-indigo-300 text-xs font-semibold">
+                          <Linkedin className="w-3.5 h-3.5 text-indigo-400" />
+                          <span>LinkedIn</span>
+                        </span>
+                      ) : null}
+
+                      {!siteSettingsForm.social_whatsapp && !siteSettingsForm.social_instagram && !siteSettingsForm.social_facebook && !siteSettingsForm.social_youtube && !siteSettingsForm.social_twitter && !siteSettingsForm.social_telegram && !siteSettingsForm.social_linkedin && (
+                        <span className="text-xs text-slate-400 italic">No custom social URLs set yet. Default icons shown.</span>
+                      )}
+                    </div>
+                  </div>
+
+                  <form onSubmit={handleSaveSiteSettings} className="space-y-6">
+                    
+                    {/* SECTION 1: SOCIAL MEDIA CHANNELS */}
+                    <div className="space-y-4">
+                      <h5 className="font-extrabold text-sm text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-2">
+                        <Share2 className="w-4 h-4 text-orange-600" />
+                        <span>Official Social Media Channel URLs</span>
+                      </h5>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        
+                        {/* WhatsApp */}
+                        <div className="space-y-1.5 p-4 rounded-2xl bg-slate-50 border border-slate-200 hover:border-emerald-300 transition-colors">
+                          <label className="text-xs font-bold text-slate-800 flex items-center justify-between">
+                            <span className="flex items-center gap-2">
+                              <span className="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                                <MessageCircle className="w-3.5 h-3.5" />
+                              </span>
+                              <span>WhatsApp Number or Chat Link</span>
+                            </span>
+                            <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-wider">Direct Connect</span>
+                          </label>
+                          <input
+                            type="text"
+                            value={siteSettingsForm.social_whatsapp}
+                            onChange={(e) => setSiteSettingsForm({ ...siteSettingsForm, social_whatsapp: e.target.value })}
+                            placeholder="e.g. +91 98940 59591 or https://wa.me/919894059591"
+                            className="w-full bg-white border border-slate-200 text-slate-900 text-xs rounded-xl px-3.5 py-2.5 focus:border-emerald-500 outline-none font-medium shadow-2xs"
+                          />
+                          <p className="text-[10px] text-slate-400">Citizens clicking WhatsApp in footer or floating support will chat with this number.</p>
+                        </div>
+
+                        {/* Instagram */}
+                        <div className="space-y-1.5 p-4 rounded-2xl bg-slate-50 border border-slate-200 hover:border-pink-300 transition-colors">
+                          <label className="text-xs font-bold text-slate-800 flex items-center justify-between">
+                            <span className="flex items-center gap-2">
+                              <span className="w-6 h-6 rounded-lg bg-pink-100 text-pink-700 flex items-center justify-center">
+                                <Instagram className="w-3.5 h-3.5" />
+                              </span>
+                              <span>Instagram Profile Page URL</span>
+                            </span>
+                            <span className="text-[10px] text-pink-600 font-bold uppercase tracking-wider">Social</span>
+                          </label>
+                          <input
+                            type="text"
+                            value={siteSettingsForm.social_instagram}
+                            onChange={(e) => setSiteSettingsForm({ ...siteSettingsForm, social_instagram: e.target.value })}
+                            placeholder="https://instagram.com/your_handle"
+                            className="w-full bg-white border border-slate-200 text-slate-900 text-xs rounded-xl px-3.5 py-2.5 focus:border-pink-500 outline-none font-medium shadow-2xs"
+                          />
+                          <p className="text-[10px] text-slate-400">Official Instagram account link for digital updates.</p>
+                        </div>
+
+                        {/* Facebook */}
+                        <div className="space-y-1.5 p-4 rounded-2xl bg-slate-50 border border-slate-200 hover:border-blue-300 transition-colors">
+                          <label className="text-xs font-bold text-slate-800 flex items-center justify-between">
+                            <span className="flex items-center gap-2">
+                              <span className="w-6 h-6 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center">
+                                <Facebook className="w-3.5 h-3.5" />
+                              </span>
+                              <span>Facebook Page URL</span>
+                            </span>
+                            <span className="text-[10px] text-blue-600 font-bold uppercase tracking-wider">Social</span>
+                          </label>
+                          <input
+                            type="text"
+                            value={siteSettingsForm.social_facebook}
+                            onChange={(e) => setSiteSettingsForm({ ...siteSettingsForm, social_facebook: e.target.value })}
+                            placeholder="https://facebook.com/your_page"
+                            className="w-full bg-white border border-slate-200 text-slate-900 text-xs rounded-xl px-3.5 py-2.5 focus:border-blue-500 outline-none font-medium shadow-2xs"
+                          />
+                          <p className="text-[10px] text-slate-400">Official Facebook business or community page link.</p>
+                        </div>
+
+                        {/* YouTube */}
+                        <div className="space-y-1.5 p-4 rounded-2xl bg-slate-50 border border-slate-200 hover:border-red-300 transition-colors">
+                          <label className="text-xs font-bold text-slate-800 flex items-center justify-between">
+                            <span className="flex items-center gap-2">
+                              <span className="w-6 h-6 rounded-lg bg-red-100 text-red-700 flex items-center justify-center">
+                                <Youtube className="w-3.5 h-3.5" />
+                              </span>
+                              <span>YouTube Channel URL</span>
+                            </span>
+                            <span className="text-[10px] text-red-600 font-bold uppercase tracking-wider">Video</span>
+                          </label>
+                          <input
+                            type="text"
+                            value={siteSettingsForm.social_youtube}
+                            onChange={(e) => setSiteSettingsForm({ ...siteSettingsForm, social_youtube: e.target.value })}
+                            placeholder="https://youtube.com/@your_channel"
+                            className="w-full bg-white border border-slate-200 text-slate-900 text-xs rounded-xl px-3.5 py-2.5 focus:border-red-500 outline-none font-medium shadow-2xs"
+                          />
+                          <p className="text-[10px] text-slate-400">Tutorial and announcement channel for service applicants.</p>
+                        </div>
+
+                        {/* X (Twitter) */}
+                        <div className="space-y-1.5 p-4 rounded-2xl bg-slate-50 border border-slate-200 hover:border-slate-400 transition-colors">
+                          <label className="text-xs font-bold text-slate-800 flex items-center justify-between">
+                            <span className="flex items-center gap-2">
+                              <span className="w-6 h-6 rounded-lg bg-slate-200 text-slate-800 flex items-center justify-center">
+                                <Twitter className="w-3.5 h-3.5" />
+                              </span>
+                              <span>X (Twitter) Profile URL</span>
+                            </span>
+                            <span className="text-[10px] text-slate-600 font-bold uppercase tracking-wider">Social</span>
+                          </label>
+                          <input
+                            type="text"
+                            value={siteSettingsForm.social_twitter}
+                            onChange={(e) => setSiteSettingsForm({ ...siteSettingsForm, social_twitter: e.target.value })}
+                            placeholder="https://x.com/your_handle"
+                            className="w-full bg-white border border-slate-200 text-slate-900 text-xs rounded-xl px-3.5 py-2.5 focus:border-slate-700 outline-none font-medium shadow-2xs"
+                          />
+                          <p className="text-[10px] text-slate-400">Official micro-blogging and update handle.</p>
+                        </div>
+
+                        {/* Telegram */}
+                        <div className="space-y-1.5 p-4 rounded-2xl bg-slate-50 border border-slate-200 hover:border-sky-300 transition-colors">
+                          <label className="text-xs font-bold text-slate-800 flex items-center justify-between">
+                            <span className="flex items-center gap-2">
+                              <span className="w-6 h-6 rounded-lg bg-sky-100 text-sky-700 flex items-center justify-center">
+                                <Send className="w-3.5 h-3.5" />
+                              </span>
+                              <span>Telegram Channel / Group Link</span>
+                            </span>
+                            <span className="text-[10px] text-sky-600 font-bold uppercase tracking-wider">Community</span>
+                          </label>
+                          <input
+                            type="text"
+                            value={siteSettingsForm.social_telegram}
+                            onChange={(e) => setSiteSettingsForm({ ...siteSettingsForm, social_telegram: e.target.value })}
+                            placeholder="https://t.me/your_channel"
+                            className="w-full bg-white border border-slate-200 text-slate-900 text-xs rounded-xl px-3.5 py-2.5 focus:border-sky-500 outline-none font-medium shadow-2xs"
+                          />
+                          <p className="text-[10px] text-slate-400">Community broadcast channel for scheme announcements.</p>
+                        </div>
+
+                        {/* LinkedIn */}
+                        <div className="space-y-1.5 p-4 rounded-2xl bg-slate-50 border border-slate-200 hover:border-indigo-300 transition-colors md:col-span-2">
+                          <label className="text-xs font-bold text-slate-800 flex items-center justify-between">
+                            <span className="flex items-center gap-2">
+                              <span className="w-6 h-6 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center">
+                                <Linkedin className="w-3.5 h-3.5" />
+                              </span>
+                              <span>LinkedIn Organization Page URL</span>
+                            </span>
+                            <span className="text-[10px] text-indigo-600 font-bold uppercase tracking-wider">Professional</span>
+                          </label>
+                          <input
+                            type="text"
+                            value={siteSettingsForm.social_linkedin}
+                            onChange={(e) => setSiteSettingsForm({ ...siteSettingsForm, social_linkedin: e.target.value })}
+                            placeholder="https://linkedin.com/company/your_organization"
+                            className="w-full bg-white border border-slate-200 text-slate-900 text-xs rounded-xl px-3.5 py-2.5 focus:border-indigo-500 outline-none font-medium shadow-2xs"
+                          />
+                          <p className="text-[10px] text-slate-400">Official enterprise LinkedIn profile page.</p>
+                        </div>
+
+                      </div>
+                    </div>
+
+                    {/* SECTION 2: FOOTER CONTACT INFORMATION */}
+                    <div className="space-y-4 pt-4 border-t border-slate-200">
+                      <h5 className="font-extrabold text-sm text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-2">
+                        <Phone className="w-4 h-4 text-orange-600" />
+                        <span>Public Footer Contact Details</span>
+                      </h5>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="space-y-1.5">
+                          <label className="text-xs font-bold text-slate-700 block">Support Phone / Helpline Number</label>
+                          <input
+                            type="text"
+                            value={siteSettingsForm.contact_phone}
+                            onChange={(e) => setSiteSettingsForm({ ...siteSettingsForm, contact_phone: e.target.value })}
+                            placeholder="+91 98940 59591"
+                            className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-xs rounded-xl px-4 py-2.5 focus:border-orange-500 focus:bg-white outline-none font-mono"
+                          />
+                        </div>
+
+                        <div className="space-y-1.5">
+                          <label className="text-xs font-bold text-slate-700 block">Official Support Email</label>
+                          <input
+                            type="email"
+                            value={siteSettingsForm.contact_email}
+                            onChange={(e) => setSiteSettingsForm({ ...siteSettingsForm, contact_email: e.target.value })}
+                            placeholder="econnectindia@gmail.com"
+                            className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-xs rounded-xl px-4 py-2.5 focus:border-orange-500 focus:bg-white outline-none font-medium"
+                          />
+                        </div>
+
+                        <div className="space-y-1.5 sm:col-span-2">
+                          <label className="text-xs font-bold text-slate-700 block">Center Address (Center / Office Location)</label>
+                          <input
+                            type="text"
+                            value={siteSettingsForm.contact_address}
+                            onChange={(e) => setSiteSettingsForm({ ...siteSettingsForm, contact_address: e.target.value })}
+                            placeholder="45, New Bus stand complex, Sathyamangalam-638402."
+                            className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-xs rounded-xl px-4 py-2.5 focus:border-orange-500 focus:bg-white outline-none font-medium"
+                          />
+                        </div>
+
+                        <div className="space-y-1.5 sm:col-span-2">
+                          <label className="text-xs font-bold text-slate-700 block">Operating Working Hours</label>
+                          <input
+                            type="text"
+                            value={siteSettingsForm.working_hours}
+                            onChange={(e) => setSiteSettingsForm({ ...siteSettingsForm, working_hours: e.target.value })}
+                            placeholder="Mon - Sat: 08:00 AM - 08:00 PM"
+                            className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-xs rounded-xl px-4 py-2.5 focus:border-orange-500 focus:bg-white outline-none font-medium"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Submit Bar */}
+                    <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <div className="text-xs text-slate-500">
+                        Changes will immediately reflect on the live website footer across all devices.
+                      </div>
+
+                      <button
+                        type="submit"
+                        disabled={savingSiteSettings}
+                        className="px-8 py-3 bg-orange-600 hover:bg-orange-700 text-white font-extrabold text-xs rounded-xl shadow-md transition-all flex items-center space-x-2 disabled:opacity-50 cursor-pointer self-start sm:self-auto"
+                      >
+                        {savingSiteSettings ? (
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <Save className="w-4 h-4" />
+                        )}
+                        <span>{savingSiteSettings ? 'Saving Settings...' : 'Save Social & Footer Settings'}</span>
+                      </button>
+                    </div>
+
+                  </form>
                 </div>
               )}
 

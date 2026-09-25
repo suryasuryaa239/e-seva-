@@ -282,7 +282,18 @@ const verifyResourceOwnership = (appRecord, user) => {
 const DEFAULT_SITE_SETTINGS = {
   payment_notice_ta: "முக்கிய கட்டண அறிவிப்பு: ஆன்லைன் கட்டணம் செலுத்துவதற்கு முன் உங்கள் விண்ணப்பப் படிவம் மற்றும் சான்று ஆவணங்கள் அனைத்தும் சரியானவை என்பதைச் சரிபார்க்கவும். அதிகாரி பரிசீலனை தொடங்கிய பின்னர் சேவைக் கட்டணம் திரும்ப வழங்கப்படாது.",
   payment_notice_en: "Important Payment Notice: Please verify that all your application form inputs and uploaded proof documents are clear and authentic before proceeding to payment. Service facilitation charges are non-refundable once desk review has commenced.",
-  payment_terms_enabled: true
+  payment_terms_enabled: true,
+  social_facebook: '',
+  social_instagram: '',
+  social_youtube: '',
+  social_whatsapp: '+919894059591',
+  social_twitter: '',
+  social_telegram: '',
+  social_linkedin: '',
+  contact_phone: '+91 98940 59591',
+  contact_email: 'econnectindia@gmail.com',
+  contact_address: '45, New Bus stand complex, Sathyamangalam-638402.',
+  working_hours: 'Mon - Sat: 08:00 AM - 08:00 PM'
 };
 
 app.get('/api/settings', (req, res) => {
@@ -299,13 +310,40 @@ app.get('/api/settings', (req, res) => {
 
 app.put('/api/admin/settings', authenticateAdmin, (req, res) => {
   try {
-    const { payment_notice_ta, payment_notice_en, payment_terms_enabled } = req.body;
+    const {
+      payment_notice_ta,
+      payment_notice_en,
+      payment_terms_enabled,
+      social_facebook,
+      social_instagram,
+      social_youtube,
+      social_whatsapp,
+      social_twitter,
+      social_telegram,
+      social_linkedin,
+      contact_phone,
+      contact_email,
+      contact_address,
+      working_hours
+    } = req.body;
     const list = db.all('site_settings');
+    const existing = (list && list.length > 0) ? list[0] : {};
 
     const updateData = {
-      payment_notice_ta: payment_notice_ta !== undefined ? payment_notice_ta : DEFAULT_SITE_SETTINGS.payment_notice_ta,
-      payment_notice_en: payment_notice_en !== undefined ? payment_notice_en : DEFAULT_SITE_SETTINGS.payment_notice_en,
-      payment_terms_enabled: payment_terms_enabled !== undefined ? Boolean(payment_terms_enabled) : true,
+      payment_notice_ta: payment_notice_ta !== undefined ? payment_notice_ta : (existing.payment_notice_ta || DEFAULT_SITE_SETTINGS.payment_notice_ta),
+      payment_notice_en: payment_notice_en !== undefined ? payment_notice_en : (existing.payment_notice_en || DEFAULT_SITE_SETTINGS.payment_notice_en),
+      payment_terms_enabled: payment_terms_enabled !== undefined ? Boolean(payment_terms_enabled) : (existing.payment_terms_enabled !== undefined ? existing.payment_terms_enabled : true),
+      social_facebook: social_facebook !== undefined ? String(social_facebook).trim() : (existing.social_facebook || ''),
+      social_instagram: social_instagram !== undefined ? String(social_instagram).trim() : (existing.social_instagram || ''),
+      social_youtube: social_youtube !== undefined ? String(social_youtube).trim() : (existing.social_youtube || ''),
+      social_whatsapp: social_whatsapp !== undefined ? String(social_whatsapp).trim() : (existing.social_whatsapp || DEFAULT_SITE_SETTINGS.social_whatsapp),
+      social_twitter: social_twitter !== undefined ? String(social_twitter).trim() : (existing.social_twitter || ''),
+      social_telegram: social_telegram !== undefined ? String(social_telegram).trim() : (existing.social_telegram || ''),
+      social_linkedin: social_linkedin !== undefined ? String(social_linkedin).trim() : (existing.social_linkedin || ''),
+      contact_phone: contact_phone !== undefined ? String(contact_phone).trim() : (existing.contact_phone || DEFAULT_SITE_SETTINGS.contact_phone),
+      contact_email: contact_email !== undefined ? String(contact_email).trim() : (existing.contact_email || DEFAULT_SITE_SETTINGS.contact_email),
+      contact_address: contact_address !== undefined ? String(contact_address).trim() : (existing.contact_address || DEFAULT_SITE_SETTINGS.contact_address),
+      working_hours: working_hours !== undefined ? String(working_hours).trim() : (existing.working_hours || DEFAULT_SITE_SETTINGS.working_hours),
       updated_at: new Date().toISOString()
     };
 
@@ -316,7 +354,7 @@ app.put('/api/admin/settings', authenticateAdmin, (req, res) => {
     }
 
     const current = db.all('site_settings')[0] || updateData;
-    res.json({ message: 'Site & payment settings updated successfully', settings: current });
+    res.json({ message: 'Site, social media & footer settings updated successfully', settings: current });
   } catch (err) {
     res.status(500).json({ error: 'Failed to update site settings: ' + err.message });
   }

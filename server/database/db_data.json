@@ -15207,6 +15207,26 @@
       "details": "Uploaded __1789836702650_optimized.jpg"
     }
   ],
+  "site_settings": [
+    {
+      "id": 1,
+      "payment_notice_ta": "முக்கிய கட்டண அறிவிப்பு: ஆன்லைன் கட்டணம் செலுத்துவதற்கு முன் உங்கள் விண்ணப்பப் படிவம் மற்றும் சான்று ஆவணங்கள் அனைத்தும் சரியானவை என்பதைச் சரிபார்க்கவும். அதிகாரி பரிசீலனை தொடங்கிய பின்னர் சேவைக் கட்டணம் திரும்ப வழங்கப்படாது.",
+      "payment_notice_en": "Important Payment Notice: Please verify that all your application form inputs and uploaded proof documents are clear and authentic before proceeding to payment. Service facilitation charges are non-refundable once desk review has commenced.",
+      "payment_terms_enabled": true,
+      "social_facebook": "https://facebook.com/econnectindia",
+      "social_instagram": "https://instagram.com/econnectindia",
+      "social_youtube": "https://youtube.com/@econnectindia",
+      "social_whatsapp": "+919894059591",
+      "social_twitter": "https://x.com/econnectindia",
+      "social_telegram": "https://t.me/econnectindia",
+      "social_linkedin": "https://linkedin.com/company/econnectindia",
+      "contact_phone": "+91 98940 59591",
+      "contact_email": "econnectindia@gmail.com",
+      "contact_address": "45, New Bus stand complex, Sathyamangalam-638402.",
+      "working_hours": "Mon - Sat: 08:00 AM - 08:00 PM",
+      "updated_at": "2026-09-25T17:54:43.597Z"
+    }
+  ],
   "notification_delivery_logs": [
     {
       "id": 1,
