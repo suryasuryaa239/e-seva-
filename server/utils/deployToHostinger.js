@@ -29,6 +29,19 @@ async function deployWithRetry(maxAttempts = 3) {
         }
       }
 
+      // Clean up any stale temporary files from interrupted uploads
+      try {
+        const existingFiles = await client.list();
+        for (const item of existingFiles) {
+          if (!item.isDirectory && item.name.startsWith('.in.')) {
+            console.log(`🧹 Removing stale temp file: ${item.name}`);
+            await client.remove(item.name).catch(() => {});
+          }
+        }
+      } catch (cleanErr) {
+        console.warn(`Temp file cleanup notice: ${cleanErr.message}`);
+      }
+
       console.log(`🚀 Uploading contents of ${distDir} to FTP...`);
       await client.uploadFromDir(distDir);
 

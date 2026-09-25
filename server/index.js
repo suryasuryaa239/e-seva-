@@ -873,7 +873,9 @@ const SERVICE_SLUG_ALIASES = {
   'passport-reissue-renewal': 'passport-renewal-reissue',
   'msme-udyam-registration': 'udyam-registration',
   'fssai-food-license-registration': 'fssai-food-license',
-  'aadhaar-download-print': 'aadhaar-download'
+  'aadhaar-download-print': 'aadhaar-download',
+  'patta-chitta': 'patta-chitta-copy',
+  'encumbrance-certificate-ec': 'encumbrance-certificate'
 };
 
 // Get Single Service Details (including custom form fields & document requirements)

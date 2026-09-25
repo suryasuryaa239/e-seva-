@@ -581,6 +581,16 @@ export default function ApplyService() {
     return false;
   }, [service]);
 
+  // Determine whether current service already defines a custom address field
+  const hasCustomAddressField = React.useMemo(() => {
+    if (!service || !Array.isArray(service.fields)) return false;
+    return service.fields.some(f => {
+      if (!f) return false;
+      const k = String(f.field_name || f.field_label || f.name || f.label || '').toLowerCase();
+      return k.includes('address') || k.includes('street') || k.includes('door') || k.includes('village');
+    });
+  }, [service]);
+
   // Step 1 Validation (Applicant Details + Custom Fields)
   const validateStep1 = () => {
     const errs = {};
@@ -1208,6 +1218,24 @@ export default function ApplyService() {
                       />
                       {errors.aadhaar_no && <p className="text-[11px] text-rose-600 font-bold mt-1">{errors.aadhaar_no}</p>}
                     </div>
+
+                    {/* APPLICANT RESIDENTIAL ADDRESS (FALLBACK WHEN SERVICE HAS NO SPECIFIC ADDRESS FIELD) */}
+                    {!hasCustomAddressField && (
+                      <div className="sm:col-span-2 lg:col-span-4 pt-1">
+                        <label className="block text-xs font-extrabold text-slate-700 mb-1.5">
+                          {lang === 'ta' ? 'விண்ணப்பதாரர் முகவரி' : 'Applicant Residential Address'}{' '}
+                          <span className="text-slate-400 font-normal">({lang === 'ta' ? 'விருப்பத்தேர்வு' : 'Optional'})</span>
+                        </label>
+                        <input
+                          type="text"
+                          name="address"
+                          placeholder={lang === 'ta' ? 'எ.கா. கதவு எண், தெரு பெயர், ஊர், மாவட்டம், அஞ்சல் குறியீடு' : 'e.g. Door No, Street Name, City/Town, District, Pincode'}
+                          value={applicantInfo.address}
+                          onChange={handleApplicantChange}
+                          className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-[#0b192c] focus:bg-white transition-all"
+                        />
+                      </div>
+                    )}
                   </div>
 
                   {/* DYNAMIC SERVICE SPECIFIC FIELDS */}
