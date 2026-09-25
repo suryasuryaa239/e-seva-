@@ -5,10 +5,12 @@ import {
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { getLocalizedService } from '../data/servicesCatalogData';
+import { useLiveServices } from '../utils/useLiveServices';
 
 export default function PassportServicesCatalog() {
   const navigate = useNavigate();
   const { lang, t } = useLanguage();
+  const { getServiceFeeText } = useLiveServices();
   const [searchTerm, setSearchTerm] = useState('');
 
   const services = [
@@ -154,7 +156,7 @@ export default function PassportServicesCatalog() {
                   <div className="space-y-2 pt-2 border-t border-slate-100 text-xs">
                     <div className="flex justify-between items-center text-slate-600">
                       <span>{lang === 'ta' ? 'சேவை கட்டணம்:' : 'Service Fee:'}</span>
-                      <span className="font-bold text-slate-900">{service.fee}</span>
+                      <span className="font-bold text-slate-900">{getServiceFeeText(service.id, service.fee, lang)}</span>
                     </div>
                     <div className="flex justify-between items-center text-slate-600">
                       <span>{lang === 'ta' ? 'செயலாக்க காலம்:' : 'Processing Time:'}</span>

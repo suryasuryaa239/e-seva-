@@ -5,10 +5,12 @@ import {
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { getLocalizedService } from '../data/servicesCatalogData';
+import { useLiveServices } from '../utils/useLiveServices';
 
 export default function BusinessServicesCatalog() {
   const navigate = useNavigate();
   const { lang, t } = useLanguage();
+  const { getServiceFeeText } = useLiveServices();
   const [searchTerm, setSearchTerm] = useState('');
 
   const services = [
@@ -16,7 +18,7 @@ export default function BusinessServicesCatalog() {
       id: 'gst-registration-application',
       title: 'GST Registration (New GSTIN)',
       description: 'Obtain 15-digit GSTIN number for sole proprietorship, partnership, OPC, or private limited business.',
-      fee: '₹499',
+      fee: '₹500',
       sla: '5–7 Working Days',
       docs: ['PAN Card of Business / Proprietor', 'Aadhaar Card', 'Electricity Bill of Business Premises', 'Bank Account Proof'],
       icon: Briefcase,
@@ -26,7 +28,7 @@ export default function BusinessServicesCatalog() {
       id: 'msme-udyam-registration',
       title: 'MSME Udyam Registration Certificate',
       description: 'Government MSME Udyam registration for micro, small, and medium enterprises to access priority credit.',
-      fee: '₹150',
+      fee: '₹100',
       sla: '1–2 Working Days',
       docs: ['Aadhaar Number of Proprietor / Director', 'PAN Number', 'Bank Account & IFSC Code'],
       icon: Building,
@@ -36,7 +38,7 @@ export default function BusinessServicesCatalog() {
       id: 'fssai-food-license-registration',
       title: 'FSSAI Food License / Registration',
       description: 'Food Safety and Standards Authority of India (FSSAI) license for food manufacturers, cloud kitchens & shops.',
-      fee: '₹350',
+      fee: '₹750',
       sla: '7–10 Working Days',
       docs: ['Passport Photo', 'Identity Proof (Aadhaar / Voter)', 'Business Premises Address Proof'],
       icon: ShieldCheck
@@ -45,7 +47,7 @@ export default function BusinessServicesCatalog() {
       id: 'trade-license-application',
       title: 'Commercial Trade License Assistance',
       description: 'Municipal trade license approval for operating retail outlets, commercial offices, and industrial units.',
-      fee: '₹600',
+      fee: '₹500',
       sla: '10–15 Working Days',
       docs: ['Property Tax Receipt / Lease Agreement', 'Building Plan Sanction', 'NOC from Fire / Health Dept'],
       icon: Landmark
@@ -153,7 +155,7 @@ export default function BusinessServicesCatalog() {
                   <div className="space-y-2 pt-2 border-t border-slate-100 text-xs">
                     <div className="flex justify-between items-center text-slate-600">
                       <span>{lang === 'ta' ? 'சேவை கட்டணம்:' : 'Service Fee:'}</span>
-                      <span className="font-bold text-slate-900">{service.fee}</span>
+                      <span className="font-bold text-slate-900">{getServiceFeeText(service.id, service.fee, lang)}</span>
                     </div>
                     <div className="flex justify-between items-center text-slate-600">
                       <span>{lang === 'ta' ? 'செயலாக்க காலம்:' : 'Processing Time:'}</span>

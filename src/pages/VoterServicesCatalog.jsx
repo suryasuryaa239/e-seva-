@@ -6,10 +6,12 @@ import {
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { getLocalizedService } from '../data/servicesCatalogData';
+import { useLiveServices } from '../utils/useLiveServices';
 
 export default function VoterServicesCatalog() {
   const navigate = useNavigate();
   const { lang, t } = useLanguage();
+  const { getServiceFeeText } = useLiveServices();
   const [searchTerm, setSearchTerm] = useState('');
 
   const voterServices = [
@@ -27,7 +29,7 @@ export default function VoterServicesCatalog() {
       id: 'voter-address-correction-form-8',
       title: 'Voter Address Transfer & Correction (Form 8)',
       description: 'Shift polling constituency address or correct spelling mistakes in EPIC name, age, or photo.',
-      fee: '₹30',
+      fee: '₹25',
       sla: '10–15 Working Days',
       docs: ['Existing EPIC Voter Card', 'New Residence Proof', 'Aadhaar Card'],
       icon: MapPin,
@@ -212,7 +214,7 @@ export default function VoterServicesCatalog() {
                   <div className="space-y-2 pt-2 border-t border-slate-100 text-xs">
                     <div className="flex justify-between items-center text-slate-600">
                       <span>{lang === 'ta' ? 'சேவை கட்டணம்:' : 'Service Fee:'}</span>
-                      <span className="font-bold text-slate-900">{service.fee}</span>
+                      <span className="font-bold text-slate-900">{getServiceFeeText(service.id, service.fee, lang)}</span>
                     </div>
                     <div className="flex justify-between items-center text-slate-600">
                       <span>{lang === 'ta' ? 'செயலாக்க காலம்:' : 'Processing Time:'}</span>

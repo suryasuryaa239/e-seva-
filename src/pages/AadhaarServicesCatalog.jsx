@@ -6,10 +6,12 @@ import {
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { getLocalizedService } from '../data/servicesCatalogData';
+import { useLiveServices } from '../utils/useLiveServices';
 
 export default function AadhaarServicesCatalog() {
   const navigate = useNavigate();
   const { lang, t } = useLanguage();
+  const { getServiceFeeText } = useLiveServices();
   const [searchTerm, setSearchTerm] = useState('');
 
   const aadhaarServices = [
@@ -17,7 +19,7 @@ export default function AadhaarServicesCatalog() {
       id: 'aadhaar-address-update',
       title: 'Aadhaar Address Update Assistance',
       description: 'Update home address on Aadhaar card using valid electricity bill, rent agreement, or passport proof.',
-      fee: '₹100',
+      fee: '₹50',
       sla: '3–5 Working Days',
       docs: ['Address Proof (Passport/Utility Bill)', 'Current Aadhaar Copy'],
       icon: MapPin,
@@ -37,7 +39,7 @@ export default function AadhaarServicesCatalog() {
       id: 'aadhaar-name-update',
       title: 'Aadhaar Name Correction / Update',
       description: 'Correct spelling errors or update name post-marriage/gazette notification with proof.',
-      fee: '₹100',
+      fee: '₹50',
       sla: '3–5 Working Days',
       docs: ['Identity Proof (PAN/Voter/Passport)', 'Gazette Certificate (if applicable)'],
       icon: UserCheck
@@ -55,7 +57,7 @@ export default function AadhaarServicesCatalog() {
       id: 'aadhaar-dob-update',
       title: 'Aadhaar Date of Birth Update',
       description: 'Update or correct date of birth with official Birth Certificate, SSLC Marksheet, or Passport.',
-      fee: '₹100',
+      fee: '₹50',
       sla: '3–5 Working Days',
       docs: ['Birth Certificate / SSLC Marksheet', 'Aadhaar Copy'],
       icon: Calendar
@@ -64,7 +66,7 @@ export default function AadhaarServicesCatalog() {
       id: 'aadhaar-photo-biometric',
       title: 'Aadhaar Photo & Biometric Update',
       description: 'Book appointment for photo, fingerprint scan, and iris scan updates for adults and children.',
-      fee: '₹125',
+      fee: '₹100',
       sla: 'Scheduled Desk Slot',
       docs: ['Existing Aadhaar Copy'],
       icon: ImageIcon
@@ -73,7 +75,7 @@ export default function AadhaarServicesCatalog() {
       id: 'aadhaar-pvc-card',
       title: 'Aadhaar PVC Smart Card Order',
       description: 'Order durable, water-resistant PVC Aadhaar card with secure hologram and microtext.',
-      fee: '₹75',
+      fee: '₹50',
       sla: '5–7 Delivery Days',
       docs: ['Aadhaar Number', 'Delivery Address'],
       icon: CreditCard,
@@ -110,7 +112,7 @@ export default function AadhaarServicesCatalog() {
       id: 'aadhaar-gender-update',
       title: 'Aadhaar Gender Update',
       description: 'Update gender record in Aadhaar database with valid identity self-declaration or medical proof.',
-      fee: '₹100',
+      fee: '₹50',
       sla: '3 Days',
       docs: ['Medical / Identity Self-Declaration'],
       icon: UserCheck
@@ -252,7 +254,7 @@ export default function AadhaarServicesCatalog() {
                   <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
                     <div>
                       <span className="text-[10px] text-slate-400 block uppercase font-bold">{lang === 'ta' ? 'சேவை கட்டணம்' : 'Service Fee'}</span>
-                      <span className="text-sm font-black text-slate-900">{service.fee}</span>
+                      <span className="text-sm font-black text-slate-900">{getServiceFeeText(service.id, service.fee, lang)}</span>
                     </div>
 
                     <button

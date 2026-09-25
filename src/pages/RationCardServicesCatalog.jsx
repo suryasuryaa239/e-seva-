@@ -5,10 +5,12 @@ import {
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { getLocalizedService } from '../data/servicesCatalogData';
+import { useLiveServices } from '../utils/useLiveServices';
 
 export default function RationCardServicesCatalog() {
   const navigate = useNavigate();
   const { lang, t } = useLanguage();
+  const { getServiceFeeText } = useLiveServices();
   const [searchTerm, setSearchTerm] = useState('');
 
   const services = [
@@ -16,7 +18,7 @@ export default function RationCardServicesCatalog() {
       id: 'ration-smart-card-member-update',
       title: 'Smart Ration Card - Add / Remove Member',
       description: 'Add newly born child or spouse or remove deceased/separated member in Smart Ration Card record.',
-      fee: '₹30',
+      fee: '₹50',
       sla: '7–15 Working Days',
       docs: ['Child Birth Certificate / Marriage Registration', 'Deletions/Surrender Certificate', 'Smart Ration Card Copy'],
       icon: UserPlus,
@@ -36,7 +38,7 @@ export default function RationCardServicesCatalog() {
       id: 'ration-family-head-change',
       title: 'Change Family Head in Smart Ration Card',
       description: 'Transfer family headship post demise or relocation of existing head of family in TNEPDS database.',
-      fee: '₹30',
+      fee: '₹50',
       sla: '7–10 Working Days',
       docs: ['Death Certificate (if applicable)', 'Consent Letter of Family Members', 'New Head Aadhaar & Photo'],
       icon: RefreshCw
@@ -45,7 +47,7 @@ export default function RationCardServicesCatalog() {
       id: 'ration-address-fps-change',
       title: 'Ration Address Shifting & FPS Shop Change',
       description: 'Change residence address and transfer Fair Price Shop (FPS) ration shop allocation to new locality.',
-      fee: '₹30',
+      fee: '₹50',
       sla: '5–7 Working Days',
       docs: ['New Address Proof (EB Bill / Property Tax)', 'Smart Ration Card Number'],
       icon: FileText
@@ -153,7 +155,7 @@ export default function RationCardServicesCatalog() {
                   <div className="space-y-2 pt-2 border-t border-slate-100 text-xs">
                     <div className="flex justify-between items-center text-slate-600">
                       <span>{lang === 'ta' ? 'சேவை கட்டணம்:' : 'Service Fee:'}</span>
-                      <span className="font-bold text-slate-900">{service.fee}</span>
+                      <span className="font-bold text-slate-900">{getServiceFeeText(service.id, service.fee, lang)}</span>
                     </div>
                     <div className="flex justify-between items-center text-slate-600">
                       <span>{lang === 'ta' ? 'செயலாக்க காலம்:' : 'Processing Time:'}</span>

@@ -6,10 +6,12 @@ import {
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { getLocalizedService } from '../data/servicesCatalogData';
+import { useLiveServices } from '../utils/useLiveServices';
 
 export default function PanServicesCatalog() {
   const navigate = useNavigate();
   const { lang, t } = useLanguage();
+  const { getServiceFeeText } = useLiveServices();
   const [searchTerm, setSearchTerm] = useState('');
 
   const panServices = [
@@ -17,7 +19,7 @@ export default function PanServicesCatalog() {
       id: 'new-pan-card-indian',
       title: 'New PAN Card Application (Form 49A)',
       description: 'Apply for fresh 10-digit Permanent Account Number for Indian citizens and resident individuals.',
-      fee: '₹125',
+      fee: '₹110',
       sla: '5–7 Working Days',
       docs: ['Proof of Identity (Aadhaar/Voter)', 'Proof of Address', 'Date of Birth Proof', '2 Passport Photos'],
       icon: CreditCard,
@@ -27,7 +29,7 @@ export default function PanServicesCatalog() {
       id: 'pan-card-correction',
       title: 'PAN Card Name, DOB & Photo Correction',
       description: 'Correct spelling mistakes in name, parent name, date of birth, photo, or signature in existing PAN record.',
-      fee: '₹125',
+      fee: '₹110',
       sla: '5–7 Working Days',
       docs: ['Copy of Existing PAN', 'Supporting Marriage/Gazette Proof', 'Aadhaar / Passport'],
       icon: UserCheck,
@@ -57,7 +59,7 @@ export default function PanServicesCatalog() {
       id: 'pan-reprint-lost-damaged',
       title: 'Reprint Lost or Damaged Physical PAN Card',
       description: 'Order exact duplicate physical plastic PAN card dispatched to your home address for lost/broken cards.',
-      fee: '₹90',
+      fee: '₹100',
       sla: '5–7 Delivery Days',
       docs: ['Existing PAN Number', 'Delivery Postal Address', 'Aadhaar Copy'],
       icon: RefreshCw
@@ -75,7 +77,7 @@ export default function PanServicesCatalog() {
       id: 'minor-to-major-pan-update',
       title: 'Minor to Major PAN Card Update',
       description: 'Update PAN record upon turning 18 years of age with new photo, adult signature, and updated records.',
-      fee: '₹125',
+      fee: '₹110',
       sla: '5–7 Working Days',
       docs: ['Proof of Age (18+)', 'Current Aadhaar Copy', 'Fresh Signature Scan'],
       icon: Calendar
@@ -224,7 +226,7 @@ export default function PanServicesCatalog() {
                   <div className="space-y-2 pt-2 border-t border-slate-100 text-xs">
                     <div className="flex justify-between items-center text-slate-600">
                       <span>{lang === 'ta' ? 'சேவை கட்டணம்:' : 'Service Fee:'}</span>
-                      <span className="font-bold text-slate-900">{service.fee}</span>
+                      <span className="font-bold text-slate-900">{getServiceFeeText(service.id, service.fee, lang)}</span>
                     </div>
                     <div className="flex justify-between items-center text-slate-600">
                       <span>{lang === 'ta' ? 'செயலாக்க காலம்:' : 'Processing Time:'}</span>

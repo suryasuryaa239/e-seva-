@@ -14,6 +14,7 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import StatusBadge from '../components/StatusBadge';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
+import { invalidateServicesCache } from '../utils/useLiveServices';
 
 export default function AdminDashboard() {
   const { admin, adminToken, logoutAdmin } = useAuth();
@@ -542,6 +543,55 @@ export default function AdminDashboard() {
   const [editingServiceForm, setEditingServiceForm] = useState(null);
   const [savingEditService, setSavingEditService] = useState(false);
 
+  // Quick Price Edit Modal State (Instant price editing)
+  const [quickPriceModal, setQuickPriceModal] = useState({
+    isOpen: false,
+    service: null,
+    fee: 0,
+    saving: false
+  });
+
+  const handleQuickPriceSave = async (e) => {
+    e.preventDefault();
+    if (!quickPriceModal.service) return;
+    setQuickPriceModal(prev => ({ ...prev, saving: true }));
+    try {
+      const token = getAuthToken();
+      if (!token) {
+        addToast('Admin token not found. Please log in again.', 'error');
+        setQuickPriceModal(prev => ({ ...prev, saving: false }));
+        return;
+      }
+
+      const srvId = quickPriceModal.service.id || quickPriceModal.service.slug;
+      const parsedFee = Number(quickPriceModal.fee);
+      const safeFee = !isNaN(parsedFee) ? Math.max(0, parsedFee) : 0;
+
+      const res = await fetch(`/api/admin/services/${srvId}/price`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ fee: safeFee, total_fee: safeFee })
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        addToast(data.message || `Price updated to ₹${safeFee}!`, 'success');
+        setQuickPriceModal({ isOpen: false, service: null, fee: 0, saving: false });
+        invalidateServicesCache();
+        await fetchServices();
+      } else {
+        addToast(data.error || 'Failed to update price', 'error');
+        setQuickPriceModal(prev => ({ ...prev, saving: false }));
+      }
+    } catch (err) {
+      addToast('Price update failed', 'error');
+      setQuickPriceModal(prev => ({ ...prev, saving: false }));
+    }
+  };
+
   const openEditServiceModal = async (srv) => {
     let docs = [];
     let fields = [];
@@ -613,12 +663,18 @@ export default function AdminDashboard() {
       ];
     }
 
+    const currentFee = (srv.fee !== undefined && srv.fee !== null)
+      ? srv.fee
+      : ((srv.total_fee !== undefined && srv.total_fee !== null)
+        ? srv.total_fee
+        : ((srv.govt_fee !== undefined && srv.govt_fee !== null) ? srv.govt_fee : 60));
+
     setEditingServiceForm({
       id: srv.id,
       name: srv.name || '',
       category_name: srv.category_name || srv.category || 'Land & Patta Services',
       description: srv.description || '',
-      fee: srv.total_fee || srv.govt_fee || srv.fee || 60,
+      fee: !isNaN(Number(currentFee)) ? Number(currentFee) : 60,
       processing_time: srv.processing_time || '2-3 Business Days',
       status: srv.status || (srv.is_active !== false ? 'Active' : 'Inactive'),
       image_url_input: srv.image_url || '',
@@ -641,13 +697,24 @@ export default function AdminDashboard() {
       return;
     }
 
+    const token = getAuthToken();
+    if (!token) {
+      addToast('Admin authorization token is missing. Please log in again.', 'error');
+      return;
+    }
+
     setSavingEditService(true);
     try {
+      const parsedFee = Number(editingServiceForm.fee);
+      const safeFee = !isNaN(parsedFee) ? Math.max(0, parsedFee) : 0;
+
       const formData = new FormData();
       formData.append('name', editingServiceForm.name.trim());
       formData.append('category_name', editingServiceForm.category_name);
       formData.append('description', editingServiceForm.description);
-      formData.append('fee', Number(editingServiceForm.fee) || 60);
+      formData.append('fee', safeFee);
+      formData.append('total_fee', safeFee);
+      formData.append('govt_fee', safeFee);
       formData.append('processing_time', editingServiceForm.processing_time);
       formData.append('status', editingServiceForm.status);
       formData.append('is_active', editingServiceForm.status === 'Active');
@@ -661,22 +728,23 @@ export default function AdminDashboard() {
       const res = await fetch(`/api/admin/services/${editingServiceForm.id}`, {
         method: 'PUT',
         headers: {
-          Authorization: `Bearer ${adminToken}`
+          Authorization: `Bearer ${token}`
         },
         body: formData
       });
 
       const data = await res.json();
       if (res.ok) {
-        addToast(`Service "${editingServiceForm.name}" updated successfully!`, 'success');
+        addToast(`Service "${editingServiceForm.name}" updated successfully (Fee: ₹${safeFee})!`, 'success');
         setShowEditServiceModal(false);
         setEditingServiceForm(null);
-        fetchServices();
+        invalidateServicesCache();
+        await fetchServices();
       } else {
         addToast(data.error || 'Failed to update service', 'error');
       }
     } catch (err) {
-      addToast('Service edit error', 'error');
+      addToast('Service edit error: ' + (err.message || 'Network error'), 'error');
     } finally {
       setSavingEditService(false);
     }
@@ -2349,8 +2417,30 @@ export default function AdminDashboard() {
                             </span>
                           </td>
                           <td className="py-4 px-4">
-                            <div className="font-black text-emerald-600 text-sm">₹{srv.total_fee || srv.govt_fee || 60}</div>
-                            <div className="text-[10px] text-slate-400 font-mono">Official Fee</div>
+                            <div className="flex items-center space-x-2">
+                              <div>
+                                {Number(srv.fee) === 0 ? (
+                                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-black bg-emerald-100 text-emerald-800 border border-emerald-300">
+                                    FREE (₹0)
+                                  </span>
+                                ) : (
+                                  <div className="font-black text-emerald-600 text-sm">₹{srv.fee !== undefined ? srv.fee : (srv.total_fee || 60)}</div>
+                                )}
+                                <div className="text-[10px] text-slate-400 font-mono">Official Fee</div>
+                              </div>
+                              <button
+                                onClick={() => setQuickPriceModal({
+                                  isOpen: true,
+                                  service: srv,
+                                  fee: srv.fee !== undefined ? srv.fee : (srv.total_fee || 60),
+                                  saving: false
+                                })}
+                                className="p-1.5 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors border border-transparent hover:border-amber-200"
+                                title="Quick Change Price (₹)"
+                              >
+                                <Edit3 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
                           </td>
                           <td className="py-4 px-4 font-semibold text-slate-700">
                             {srv.processing_time || '2-3 Business Days'}
@@ -2407,7 +2497,27 @@ export default function AdminDashboard() {
                         </span>
                         <h4 className="font-extrabold text-sm text-slate-900">{srv.name}</h4>
                       </div>
-                      <span className="font-black text-emerald-600 text-sm">₹{srv.total_fee || srv.govt_fee || 60}</span>
+                      <div className="flex items-center space-x-1.5">
+                        {Number(srv.fee) === 0 ? (
+                          <span className="px-2 py-0.5 rounded text-[11px] font-black bg-emerald-100 text-emerald-800 border border-emerald-300">
+                            FREE (₹0)
+                          </span>
+                        ) : (
+                          <span className="font-black text-emerald-600 text-sm">₹{srv.fee !== undefined ? srv.fee : (srv.total_fee || 60)}</span>
+                        )}
+                        <button
+                          onClick={() => setQuickPriceModal({
+                            isOpen: true,
+                            service: srv,
+                            fee: srv.fee !== undefined ? srv.fee : (srv.total_fee || 60),
+                            saving: false
+                          })}
+                          className="p-1 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded"
+                          title="Change Price"
+                        >
+                          <Edit3 className="w-3 h-3" />
+                        </button>
+                      </div>
                     </div>
 
                     <p className="text-xs text-slate-500 line-clamp-2">{srv.description || 'Digital e-Seva processing service'}</p>
@@ -5245,7 +5355,9 @@ export default function AdminDashboard() {
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
                   <span className="text-slate-500 block font-medium">Government & Service Fee</span>
-                  <span className="font-black text-emerald-600 text-base">₹{selectedService.total_fee || selectedService.govt_fee || 60}</span>
+                  <span className="font-black text-emerald-600 text-base">
+                    {Number(selectedService.fee) === 0 ? 'FREE (₹0)' : `₹${selectedService.fee !== undefined ? selectedService.fee : (selectedService.total_fee || 60)}`}
+                  </span>
                 </div>
                 <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
                   <span className="text-slate-500 block font-medium">Processing SLA</span>
@@ -6428,15 +6540,62 @@ export default function AdminDashboard() {
                     </select>
                   </div>
 
-                  <div className="space-y-1">
-                    <label className="font-bold text-slate-700 block">Government & Facilitation Fee (₹) *</label>
-                    <input
-                      type="number"
-                      value={editingServiceForm.fee}
-                      onChange={(e) => setEditingServiceForm({ ...editingServiceForm, fee: e.target.value })}
-                      className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3.5 py-2.5 outline-none focus:border-amber-500 font-semibold"
-                      required
-                    />
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <label className="font-bold text-slate-700 block">Service Fee Amount (₹) *</label>
+                      {Number(editingServiceForm.fee) === 0 ? (
+                        <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-300">
+                          🟢 Free Service (₹0)
+                        </span>
+                      ) : (
+                        <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-blue-100 text-blue-800 border border-blue-300">
+                          💳 Paid Service (₹{editingServiceForm.fee})
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="number"
+                        min="0"
+                        value={editingServiceForm.fee}
+                        onChange={(e) => setEditingServiceForm({ ...editingServiceForm, fee: e.target.value })}
+                        className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3.5 py-2.5 outline-none focus:border-amber-500 font-bold"
+                        placeholder="0 for Free service"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setEditingServiceForm({ ...editingServiceForm, fee: 0 })}
+                        className={`px-3 py-2.5 rounded-xl font-black text-xs shrink-0 transition-colors border ${
+                          Number(editingServiceForm.fee) === 0
+                            ? 'bg-emerald-600 text-white border-emerald-700'
+                            : 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
+                        }`}
+                      >
+                        Set ₹0 Free
+                      </button>
+                    </div>
+                    {/* Quick Amount Presets */}
+                    <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                      <span className="text-[10px] font-bold text-slate-400">Quick Fee Presets:</span>
+                      {[0, 25, 30, 50, 60, 100, 110, 125, 250, 500].map(amt => (
+                        <button
+                          key={amt}
+                          type="button"
+                          onClick={() => setEditingServiceForm({ ...editingServiceForm, fee: amt })}
+                          className={`px-2 py-0.5 rounded-lg text-[10px] font-extrabold transition-all border ${
+                            Number(editingServiceForm.fee) === amt
+                              ? 'bg-amber-600 text-white border-amber-700 shadow-sm'
+                              : 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200'
+                          }`}
+                        >
+                          {amt === 0 ? '₹0 (Free)' : `₹${amt}`}
+                        </button>
+                      ))}
+                    </div>
+                    <p className="text-[10px] text-slate-500">
+                      💡 Setting fee to ₹0 makes this service 100% free for citizens. Set any custom amount to collect fee online via PhonePe.
+                    </p>
                   </div>
 
                   <div className="space-y-1">
@@ -6784,7 +6943,110 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* ADD NEW CATEGORY MODAL */}
+      {/* QUICK PRICE EDIT MODAL */}
+      {quickPriceModal.isOpen && quickPriceModal.service && (
+        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 space-y-5 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex justify-between items-start border-b border-slate-100 pb-3">
+              <div>
+                <span className="text-[10px] font-black uppercase text-emerald-600 tracking-wider bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                  PRICE CONFIGURATION
+                </span>
+                <h3 className="font-extrabold text-lg text-slate-900 mt-1">
+                  Change Price: {quickPriceModal.service.name}
+                </h3>
+                <p className="text-xs text-slate-500">
+                  Category: {quickPriceModal.service.category_name || quickPriceModal.service.category || 'General'}
+                </p>
+              </div>
+              <button
+                onClick={() => setQuickPriceModal({ isOpen: false, service: null, fee: 0, saving: false })}
+                className="p-1.5 text-slate-400 hover:text-slate-600 bg-slate-100 rounded-xl"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleQuickPriceSave} className="space-y-4 text-xs">
+              <div className="space-y-2">
+                <label className="font-bold text-slate-700 block">Service Fee (₹)</label>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="number"
+                    min="0"
+                    value={quickPriceModal.fee}
+                    onChange={(e) => setQuickPriceModal(prev => ({ ...prev, fee: e.target.value }))}
+                    className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3.5 py-2.5 outline-none focus:border-emerald-500 font-extrabold text-base"
+                    placeholder="0"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setQuickPriceModal(prev => ({ ...prev, fee: 0 }))}
+                    className={`px-3 py-2.5 rounded-xl font-black text-xs shrink-0 transition-colors border ${
+                      Number(quickPriceModal.fee) === 0
+                        ? 'bg-emerald-600 text-white border-emerald-700'
+                        : 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
+                    }`}
+                  >
+                    Set ₹0 Free
+                  </button>
+                </div>
+
+                {/* Presets */}
+                <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                  <span className="text-[10px] font-bold text-slate-400">Presets:</span>
+                  {[0, 25, 30, 50, 60, 100, 110, 125, 250, 500].map(amt => (
+                    <button
+                      key={amt}
+                      type="button"
+                      onClick={() => setQuickPriceModal(prev => ({ ...prev, fee: amt }))}
+                      className={`px-2 py-0.5 rounded-lg text-[10px] font-extrabold transition-all border ${
+                        Number(quickPriceModal.fee) === amt
+                          ? 'bg-emerald-600 text-white border-emerald-700'
+                          : 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200'
+                      }`}
+                    >
+                      {amt === 0 ? 'Free' : `₹${amt}`}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="p-3 rounded-xl border text-xs font-medium space-y-1 mt-2 bg-slate-50 border-slate-200">
+                  <div className="flex items-center justify-between">
+                    <span className="text-slate-500">Citizen Payment Mode:</span>
+                    <span className="font-bold text-slate-900">
+                      {Number(quickPriceModal.fee) === 0 ? '🟢 100% Free (No payment)' : `💳 PhonePe PG (₹${quickPriceModal.fee})`}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end space-x-2 pt-3 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setQuickPriceModal({ isOpen: false, service: null, fee: 0, saving: false })}
+                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={quickPriceModal.saving}
+                  className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-xl shadow transition-colors flex items-center space-x-1.5 disabled:opacity-50"
+                >
+                  {quickPriceModal.saving ? (
+                    <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <CheckCircle className="w-3.5 h-3.5" />
+                  )}
+                  <span>{quickPriceModal.saving ? 'Saving...' : 'Save Price'}</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
       {showAddCategoryModal && (
         <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
           <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 space-y-6 shadow-2xl border border-slate-200 my-8">

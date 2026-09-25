@@ -449,7 +449,7 @@
       "slug": "aadhaar-address-update",
       "description": "Update your residential address in official UIDAI database with valid proof of address.",
       "eligibility": "Aadhaar cardholders relocating or correcting door/street/pincode details.",
-      "processing_time": "3-5 Working Days",
+      "processing_time": "2-3 Business Days",
       "fee": 50,
       "total_fee": 50,
       "govt_fee": 50,
@@ -555,7 +555,8 @@
       "documents": [
         "Aadhaar Card Copy",
         "Valid Address Proof"
-      ]
+      ],
+      "updated_at": "2026-09-25T16:41:07.560Z"
     },
     {
       "id": 9,
@@ -6992,6 +6993,779 @@
         "Indian Passport Original & Copy",
         "Present Address Proof",
         "Visa / Employment Offer Letter"
+      ]
+    },
+    {
+      "id": 94,
+      "category_id": 2,
+      "category_name": "PAN Services",
+      "category_slug": "pan-services",
+      "name": "PAN Active Status & Verification Check",
+      "slug": "pan-status-verification",
+      "description": "Check status of your new PAN or correction application.",
+      "eligibility": "All PAN applicants.",
+      "processing_time": "Instant",
+      "fee": 0,
+      "total_fee": 0,
+      "govt_fee": 0,
+      "image_url": "https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=1200&auto=format&fit=crop",
+      "is_active": true,
+      "status": "Active",
+      "documents_required": [],
+      "fields": [
+        {
+          "field_name": "pan_ack_no",
+          "field_label": "15-Digit Acknowledgement Number",
+          "field_type": "text",
+          "is_required": true,
+          "placeholder": "881020304050607",
+          "helpText": "",
+          "sort_order": 1
+        },
+        {
+          "field_name": "mobile_number",
+          "field_label": "Registered Mobile Number",
+          "field_type": "phone",
+          "is_required": true,
+          "placeholder": "9876543210",
+          "helpText": "",
+          "sort_order": 2
+        }
+      ],
+      "documents": []
+    },
+    {
+      "id": 95,
+      "category_id": 2,
+      "category_name": "PAN Services",
+      "category_slug": "pan-services",
+      "name": "PAN-Aadhaar Linking Assistance",
+      "slug": "pan-aadhaar-linking",
+      "description": "Link your 10-digit PAN with 12-digit Aadhaar number as per Income Tax regulations.",
+      "eligibility": "All PAN cardholders whose PAN is not yet linked to Aadhaar.",
+      "processing_time": "24-48 Hours",
+      "fee": 50,
+      "total_fee": 50,
+      "govt_fee": 50,
+      "image_url": "https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=1200&auto=format&fit=crop",
+      "is_active": true,
+      "status": "Active",
+      "documents_required": [
+        "PAN Copy",
+        "Aadhaar Copy"
+      ],
+      "fields": [
+        {
+          "field_name": "pan_number",
+          "field_label": "10-Digit PAN Number",
+          "field_type": "text",
+          "is_required": true,
+          "placeholder": "ABCDE1234F",
+          "helpText": "",
+          "sort_order": 1
+        },
+        {
+          "field_name": "aadhaar_number",
+          "field_label": "12-Digit Aadhaar Number",
+          "field_type": "text",
+          "is_required": true,
+          "placeholder": "1234 5678 9012",
+          "helpText": "",
+          "sort_order": 2
+        },
+        {
+          "field_name": "name_as_per_aadhaar",
+          "field_label": "Full Name as per Aadhaar",
+          "field_type": "text",
+          "is_required": true,
+          "placeholder": "Karthik Subramanian",
+          "helpText": "",
+          "sort_order": 3
+        },
+        {
+          "field_name": "mobile_number",
+          "field_label": "Linked Mobile Number",
+          "field_type": "phone",
+          "is_required": true,
+          "placeholder": "9876543210",
+          "helpText": "",
+          "sort_order": 4
+        }
+      ],
+      "documents": [
+        "PAN Copy",
+        "Aadhaar Copy"
+      ]
+    },
+    {
+      "id": 96,
+      "category_id": 2,
+      "category_name": "PAN Services",
+      "category_slug": "pan-services",
+      "name": "e-PAN Download Assistance",
+      "slug": "epan-download-instant",
+      "description": "Instant download of official e-PAN PDF document.",
+      "eligibility": "All PAN applicants.",
+      "processing_time": "Instant / 1 Hour",
+      "fee": 30,
+      "total_fee": 30,
+      "govt_fee": 30,
+      "image_url": "https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=1200&auto=format&fit=crop",
+      "is_active": true,
+      "status": "Active",
+      "documents_required": [],
+      "fields": [
+        {
+          "field_name": "pan_number",
+          "field_label": "10-Digit PAN Number / Acknowledgement No",
+          "field_type": "text",
+          "is_required": true,
+          "placeholder": "ABCDE1234F or Ack No",
+          "helpText": "",
+          "sort_order": 1
+        },
+        {
+          "field_name": "aadhaar_number",
+          "field_label": "12-Digit Aadhaar Number",
+          "field_type": "text",
+          "is_required": true,
+          "placeholder": "1234 5678 9012",
+          "helpText": "",
+          "sort_order": 2
+        },
+        {
+          "field_name": "mobile_number",
+          "field_label": "Registered Mobile Number",
+          "field_type": "phone",
+          "is_required": true,
+          "placeholder": "9876543210",
+          "helpText": "",
+          "sort_order": 3
+        }
+      ],
+      "documents": []
+    },
+    {
+      "id": 97,
+      "category_id": 10,
+      "category_name": "Ration Card Services",
+      "category_slug": "ration-card-services",
+      "name": "New Smart Ration Card Application",
+      "slug": "new-smart-ration-card-application",
+      "description": "Apply for family Smart Ration Card under Public Distribution System (PDS).",
+      "eligibility": "Newly married couples or families residing without an active family ration card.",
+      "processing_time": "15-30 Working Days",
+      "fee": 50,
+      "total_fee": 50,
+      "govt_fee": 50,
+      "image_url": "https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=1200&auto=format&fit=crop",
+      "is_active": true,
+      "status": "Active",
+      "documents_required": [
+        "Aadhaar Cards of All Members",
+        "Marriage Certificate / Deletion Certificate",
+        "Gas Connection Slip / Rental Agreement"
+      ],
+      "fields": [
+        {
+          "field_name": "head_family_name",
+          "field_label": "Head of Family Full Name",
+          "field_type": "text",
+          "is_required": true,
+          "placeholder": "Karthik Subramanian",
+          "helpText": "",
+          "sort_order": 1
+        },
+        {
+          "field_name": "father_husband_name",
+          "field_label": "Father / Husband Name",
+          "field_type": "text",
+          "is_required": true,
+          "placeholder": "Subramanian S",
+          "helpText": "",
+          "sort_order": 2
+        },
+        {
+          "field_name": "members_count",
+          "field_label": "Total Number of Family Members",
+          "field_type": "number",
+          "is_required": true,
+          "placeholder": "4",
+          "helpText": "",
+          "sort_order": 3
+        },
+        {
+          "field_name": "address",
+          "field_label": "Residential Address",
+          "field_type": "textarea",
+          "is_required": true,
+          "placeholder": "Door No, Street Name, Pincode",
+          "helpText": "",
+          "sort_order": 4
+        },
+        {
+          "field_name": "mobile_number",
+          "field_label": "Mobile Number",
+          "field_type": "phone",
+          "is_required": true,
+          "placeholder": "9876543210",
+          "helpText": "",
+          "sort_order": 5
+        }
+      ],
+      "documents": [
+        "Aadhaar Cards of All Members",
+        "Marriage Certificate / Deletion Certificate",
+        "Gas Connection Slip / Rental Agreement"
+      ]
+    },
+    {
+      "id": 98,
+      "category_id": 8,
+      "category_name": "Business Services",
+      "category_slug": "business-services",
+      "name": "Udyam MSME Registration",
+      "slug": "msme-udyam-registration",
+      "description": "Government MSME Registration for Businesses.",
+      "eligibility": "Business enterprises.",
+      "processing_time": "1-2 Working Days",
+      "fee": 100,
+      "total_fee": 100,
+      "govt_fee": 100,
+      "image_url": "https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=1200&auto=format&fit=crop",
+      "is_active": true,
+      "status": "Active",
+      "documents_required": [
+        "Aadhaar & PAN Copy",
+        "Bank Passbook / Cheque"
+      ],
+      "fields": [
+        {
+          "field_name": "owner_name",
+          "field_label": "Applicant / Owner Name",
+          "field_type": "text",
+          "is_required": true,
+          "placeholder": "Karthik Subramanian",
+          "helpText": "",
+          "sort_order": 1
+        },
+        {
+          "field_name": "aadhaar_number",
+          "field_label": "Aadhaar Number",
+          "field_type": "text",
+          "is_required": true,
+          "placeholder": "1234 5678 9012",
+          "helpText": "",
+          "sort_order": 2
+        },
+        {
+          "field_name": "pan_number",
+          "field_label": "PAN Number",
+          "field_type": "text",
+          "is_required": true,
+          "placeholder": "ABCDE1234F",
+          "helpText": "",
+          "sort_order": 3
+        },
+        {
+          "field_name": "business_name",
+          "field_label": "Business Name",
+          "field_type": "text",
+          "is_required": true,
+          "placeholder": "Apex Digital Solutions",
+          "helpText": "",
+          "sort_order": 4
+        },
+        {
+          "field_name": "business_type",
+          "field_label": "Business Type",
+          "field_type": "select",
+          "is_required": true,
+          "placeholder": "",
+          "helpText": "",
+          "sort_order": 5
+        },
+        {
+          "field_name": "business_activity",
+          "field_label": "Major Business Activity",
+          "field_type": "select",
+          "is_required": true,
+          "placeholder": "",
+          "helpText": "",
+          "sort_order": 6
+        },
+        {
+          "field_name": "address",
+          "field_label": "Business Address",
+          "field_type": "textarea",
+          "is_required": true,
+          "placeholder": "Door No, Street, City, District, State, Pincode",
+          "helpText": "",
+          "sort_order": 7
+        },
+        {
+          "field_name": "district",
+          "field_label": "District",
+          "field_type": "text",
+          "is_required": true,
+          "placeholder": "Chennai",
+          "helpText": "",
+          "sort_order": 8
+        },
+        {
+          "field_name": "state",
+          "field_label": "State",
+          "field_type": "text",
+          "is_required": true,
+          "placeholder": "Tamil Nadu",
+          "helpText": "",
+          "sort_order": 9
+        },
+        {
+          "field_name": "pincode",
+          "field_label": "Pincode",
+          "field_type": "text",
+          "is_required": true,
+          "placeholder": "600001",
+          "helpText": "",
+          "sort_order": 10
+        },
+        {
+          "field_name": "mobile_number",
+          "field_label": "Mobile Number",
+          "field_type": "phone",
+          "is_required": true,
+          "placeholder": "9876543210",
+          "helpText": "",
+          "sort_order": 11
+        },
+        {
+          "field_name": "email",
+          "field_label": "Email Address",
+          "field_type": "email",
+          "is_required": true,
+          "placeholder": "karthik@example.com",
+          "helpText": "",
+          "sort_order": 12
+        }
+      ],
+      "documents": [
+        "Aadhaar & PAN Copy",
+        "Bank Passbook / Cheque"
+      ]
+    },
+    {
+      "id": 99,
+      "category_id": 1,
+      "category_name": "Aadhaar Services",
+      "category_slug": "aadhaar-services",
+      "name": "Aadhaar Digital Download Assistance",
+      "slug": "aadhaar-download-print",
+      "description": "Instant assistance for downloading official password-protected e-Aadhaar PDF copy.",
+      "eligibility": "All Aadhaar cardholders with linked mobile number for OTP.",
+      "processing_time": "Instant / 1 Hour",
+      "fee": 30,
+      "total_fee": 30,
+      "govt_fee": 30,
+      "image_url": "https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=1200&auto=format&fit=crop",
+      "is_active": true,
+      "status": "Active",
+      "documents_required": [],
+      "fields": [
+        {
+          "field_name": "aadhaar_number",
+          "field_label": "12-Digit Aadhaar / Enrolment ID (EID)",
+          "field_type": "text",
+          "is_required": true,
+          "placeholder": "1234 5678 9012",
+          "helpText": "",
+          "sort_order": 1
+        },
+        {
+          "field_name": "applicant_name",
+          "field_label": "Full Name as in Aadhaar",
+          "field_type": "text",
+          "is_required": true,
+          "placeholder": "Karthik Subramanian",
+          "helpText": "",
+          "sort_order": 2
+        },
+        {
+          "field_name": "mobile_number",
+          "field_label": "Linked Mobile Number for OTP",
+          "field_type": "phone",
+          "is_required": true,
+          "placeholder": "9876543210",
+          "helpText": "",
+          "sort_order": 3
+        },
+        {
+          "field_name": "email",
+          "field_label": "Email for Sending PDF",
+          "field_type": "email",
+          "is_required": true,
+          "placeholder": "user@example.com",
+          "helpText": "",
+          "sort_order": 4
+        }
+      ],
+      "documents": []
+    },
+    {
+      "id": 100,
+      "category_id": 2,
+      "category_name": "PAN Services",
+      "category_slug": "pan-services",
+      "name": "New PAN Card Application (Form 49A)",
+      "slug": "new-pan-card-indian",
+      "description": "Apply for fresh Permanent Account Number (PAN) card for individuals and entities.",
+      "eligibility": "Indian citizens and entities requiring PAN for financial & tax purposes.",
+      "processing_time": "7-10 Working Days",
+      "fee": 110,
+      "total_fee": 110,
+      "govt_fee": 110,
+      "image_url": "https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=1200&auto=format&fit=crop",
+      "is_active": true,
+      "status": "Active",
+      "documents_required": [
+        "Identity Proof",
+        "Address Proof",
+        "DOB Proof"
+      ],
+      "fields": [
+        {
+          "field_name": "full_name",
+          "field_label": "Applicant Full Name",
+          "field_type": "text",
+          "is_required": true,
+          "placeholder": "Karthik Subramanian",
+          "helpText": "",
+          "sort_order": 1
+        },
+        {
+          "field_name": "father_name",
+          "field_label": "Father Full Name",
+          "field_type": "text",
+          "is_required": true,
+          "placeholder": "Subramanian S",
+          "helpText": "",
+          "sort_order": 2
+        },
+        {
+          "field_name": "dob",
+          "field_label": "Date of Birth",
+          "field_type": "date",
+          "is_required": true,
+          "placeholder": "",
+          "helpText": "",
+          "sort_order": 3
+        },
+        {
+          "field_name": "gender",
+          "field_label": "Gender",
+          "field_type": "select",
+          "is_required": true,
+          "placeholder": "",
+          "helpText": "",
+          "sort_order": 4
+        },
+        {
+          "field_name": "aadhaar_number",
+          "field_label": "12-Digit Aadhaar Number",
+          "field_type": "text",
+          "is_required": true,
+          "placeholder": "1234 5678 9012",
+          "helpText": "",
+          "sort_order": 5
+        },
+        {
+          "field_name": "mobile_number",
+          "field_label": "Mobile Number",
+          "field_type": "phone",
+          "is_required": true,
+          "placeholder": "9876543210",
+          "helpText": "",
+          "sort_order": 6
+        }
+      ],
+      "documents": [
+        "Identity Proof",
+        "Address Proof",
+        "DOB Proof"
+      ]
+    },
+    {
+      "id": 101,
+      "category_id": 6,
+      "category_name": "Passport Services",
+      "category_slug": "passport-services",
+      "name": "Tatkaal Urgent Passport Application",
+      "slug": "tatkaal-passport-urgent",
+      "description": "Complete assistance for filing fresh Indian Ordinary Passport application and appointment slot booking.",
+      "eligibility": "Indian citizens traveling abroad.",
+      "processing_time": "15-20 Working Days",
+      "fee": 3500,
+      "total_fee": 3500,
+      "govt_fee": 3500,
+      "image_url": "https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=1200&auto=format&fit=crop",
+      "is_active": true,
+      "status": "Active",
+      "documents_required": [
+        "Proof of Date of Birth",
+        "Proof of Address",
+        "Non-ECR Proof"
+      ],
+      "fields": [
+        {
+          "field_name": "given_name",
+          "field_label": "Given Name (First & Middle Name)",
+          "field_type": "text",
+          "is_required": true,
+          "placeholder": "Karthik",
+          "helpText": "",
+          "sort_order": 1
+        },
+        {
+          "field_name": "surname",
+          "field_label": "Surname",
+          "field_type": "text",
+          "is_required": true,
+          "placeholder": "Subramanian",
+          "helpText": "",
+          "sort_order": 2
+        },
+        {
+          "field_name": "dob",
+          "field_label": "Date of Birth",
+          "field_type": "date",
+          "is_required": true,
+          "placeholder": "",
+          "helpText": "",
+          "sort_order": 3
+        },
+        {
+          "field_name": "place_of_birth",
+          "field_label": "Place of Birth (City/Village)",
+          "field_type": "text",
+          "is_required": true,
+          "placeholder": "Chennai",
+          "helpText": "",
+          "sort_order": 4
+        },
+        {
+          "field_name": "employment_type",
+          "field_label": "Employment Category",
+          "field_type": "select",
+          "is_required": true,
+          "placeholder": "",
+          "helpText": "",
+          "sort_order": 5
+        },
+        {
+          "field_name": "mobile_number",
+          "field_label": "Mobile Number",
+          "field_type": "phone",
+          "is_required": true,
+          "placeholder": "9876543210",
+          "helpText": "",
+          "sort_order": 6
+        },
+        {
+          "field_name": "email",
+          "field_label": "Email Address",
+          "field_type": "email",
+          "is_required": true,
+          "placeholder": "user@example.com",
+          "helpText": "",
+          "sort_order": 7
+        }
+      ],
+      "documents": [
+        "Proof of Date of Birth",
+        "Proof of Address",
+        "Non-ECR Proof"
+      ]
+    },
+    {
+      "id": 102,
+      "category_id": 6,
+      "category_name": "Passport Services",
+      "category_slug": "passport-services",
+      "name": "Passport Reissue & Renewal Assistance",
+      "slug": "passport-reissue-renewal",
+      "description": "Application for passport renewal due to expiry, exhaustion of pages, or damage.",
+      "eligibility": "Existing passport holders nearing expiry or page exhaustion.",
+      "processing_time": "10-15 Working Days",
+      "fee": 1500,
+      "total_fee": 1500,
+      "govt_fee": 1500,
+      "image_url": "https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=1200&auto=format&fit=crop",
+      "is_active": true,
+      "status": "Active",
+      "documents_required": [
+        "Old Passport Original & Copy",
+        "Proof of Present Address"
+      ],
+      "fields": [
+        {
+          "field_name": "passport_number",
+          "field_label": "Existing Passport Number",
+          "field_type": "text",
+          "is_required": true,
+          "placeholder": "Z1234567",
+          "helpText": "",
+          "sort_order": 1
+        },
+        {
+          "field_name": "expiry_date",
+          "field_label": "Passport Expiry Date",
+          "field_type": "date",
+          "is_required": true,
+          "placeholder": "",
+          "helpText": "",
+          "sort_order": 2
+        },
+        {
+          "field_name": "reason_for_reissue",
+          "field_label": "Reason for Renewal/Re-issue",
+          "field_type": "select",
+          "is_required": true,
+          "placeholder": "",
+          "helpText": "",
+          "sort_order": 3
+        },
+        {
+          "field_name": "mobile_number",
+          "field_label": "Mobile Number",
+          "field_type": "phone",
+          "is_required": true,
+          "placeholder": "9876543210",
+          "helpText": "",
+          "sort_order": 4
+        }
+      ],
+      "documents": [
+        "Old Passport Original & Copy",
+        "Proof of Present Address"
+      ]
+    },
+    {
+      "id": 103,
+      "category_id": 8,
+      "category_name": "Business Services",
+      "category_slug": "business-services",
+      "name": "FSSAI Food Business License Registration",
+      "slug": "fssai-food-license-registration",
+      "description": "Food Safety and Standards Authority of India (FSSAI) License application.",
+      "eligibility": "All food business operators (restaurants, bakeries, caterers, food manufacturers).",
+      "processing_time": "5-10 Working Days",
+      "fee": 750,
+      "total_fee": 750,
+      "govt_fee": 750,
+      "image_url": "https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=1200&auto=format&fit=crop",
+      "is_active": true,
+      "status": "Active",
+      "documents_required": [
+        "Identity Proof",
+        "Business Premises Address Proof",
+        "FSSAI Self Declaration Form"
+      ],
+      "fields": [
+        {
+          "field_name": "establishment_name",
+          "field_label": "Food Business / Establishment Name",
+          "field_type": "text",
+          "is_required": true,
+          "placeholder": "Tasty Foods & Bakery",
+          "helpText": "",
+          "sort_order": 1
+        },
+        {
+          "field_name": "owner_name",
+          "field_label": "Owner Full Name",
+          "field_type": "text",
+          "is_required": true,
+          "placeholder": "Karthik Subramanian",
+          "helpText": "",
+          "sort_order": 2
+        },
+        {
+          "field_name": "business_type",
+          "field_label": "FSSAI Business Category",
+          "field_type": "select",
+          "is_required": true,
+          "placeholder": "",
+          "helpText": "",
+          "sort_order": 3
+        },
+        {
+          "field_name": "food_items",
+          "field_label": "Food Product Items Category",
+          "field_type": "textarea",
+          "is_required": true,
+          "placeholder": "Bakery items, cooked meals, beverages",
+          "helpText": "",
+          "sort_order": 4
+        },
+        {
+          "field_name": "address",
+          "field_label": "Business Premises Address",
+          "field_type": "textarea",
+          "is_required": true,
+          "placeholder": "Door No, Street, City, District, State, Pincode",
+          "helpText": "",
+          "sort_order": 5
+        },
+        {
+          "field_name": "district",
+          "field_label": "District",
+          "field_type": "text",
+          "is_required": true,
+          "placeholder": "Chennai",
+          "helpText": "",
+          "sort_order": 6
+        },
+        {
+          "field_name": "state",
+          "field_label": "State",
+          "field_type": "text",
+          "is_required": true,
+          "placeholder": "Tamil Nadu",
+          "helpText": "",
+          "sort_order": 7
+        },
+        {
+          "field_name": "pincode",
+          "field_label": "Pincode",
+          "field_type": "text",
+          "is_required": true,
+          "placeholder": "600001",
+          "helpText": "",
+          "sort_order": 8
+        },
+        {
+          "field_name": "mobile_number",
+          "field_label": "Mobile Number",
+          "field_type": "phone",
+          "is_required": true,
+          "placeholder": "9876543210",
+          "helpText": "",
+          "sort_order": 9
+        },
+        {
+          "field_name": "email",
+          "field_label": "Email Address",
+          "field_type": "email",
+          "is_required": true,
+          "placeholder": "karthik@example.com",
+          "helpText": "",
+          "sort_order": 10
+        }
+      ],
+      "documents": [
+        "Identity Proof",
+        "Business Premises Address Proof",
+        "FSSAI Self Declaration Form"
       ]
     }
   ],

@@ -2105,6 +2105,31 @@ export const DEFAULT_SERVICES_MAP = {
   }
 };
 
+// Register common catalog slug aliases
+const CATALOG_SLUG_ALIASES = {
+  'pan-status-verification': { base: 'pan-status', fee: 0, name: 'PAN Active Status & Verification Check' },
+  'pan-aadhaar-linking': { base: 'pan-aadhaar-link', fee: 50 },
+  'new-pan-card-indian': { base: 'pan-card-new', fee: 110 },
+  'epan-download-instant': { base: 'pan-download', fee: 30 },
+  'new-smart-ration-card-application': { base: 'smart-ration-card-application', fee: 50 },
+  'tatkaal-passport-urgent': { base: 'tatkal-passport-urgency', fee: 3500 },
+  'passport-reissue-renewal': { base: 'passport-renewal-reissue', fee: 1500 },
+  'msme-udyam-registration': { base: 'udyam-registration', fee: 100 },
+  'fssai-food-license-registration': { base: 'fssai-food-license', fee: 750 },
+  'aadhaar-download-print': { base: 'aadhaar-download', fee: 30 }
+};
+
+Object.entries(CATALOG_SLUG_ALIASES).forEach(([aliasSlug, config]) => {
+  if (DEFAULT_SERVICES_MAP[config.base]) {
+    DEFAULT_SERVICES_MAP[aliasSlug] = {
+      ...DEFAULT_SERVICES_MAP[config.base],
+      slug: aliasSlug,
+      ...(config.fee !== undefined ? { fee: config.fee } : {}),
+      ...(config.name ? { name: config.name } : {})
+    };
+  }
+});
+
 export const TAMIL_SERVICES_TRANSLATIONS = {
   'aadhaar-address-update': {
     name: 'ஆதார் முகவரி மாற்றம்',
@@ -2708,18 +2733,21 @@ export function getServiceDefinition(param, lang = 'en') {
   let srv = null;
   if (!param) srv = DEFAULT_SERVICES_MAP['aadhaar-address-update'];
   else {
-    const p = String(param).toLowerCase().trim();
+    const rawP = String(param).toLowerCase().trim();
+    const p = (typeof CATALOG_SLUG_ALIASES !== 'undefined' && CATALOG_SLUG_ALIASES[rawP]) ? CATALOG_SLUG_ALIASES[rawP].base : rawP;
     
-    if (DEFAULT_SERVICES_MAP[p]) {
+    if (DEFAULT_SERVICES_MAP[rawP]) {
+      srv = DEFAULT_SERVICES_MAP[rawP];
+    } else if (DEFAULT_SERVICES_MAP[p]) {
       srv = DEFAULT_SERVICES_MAP[p];
     } else {
       // 1. Try by numeric ID match
-      const idMatch = Object.values(DEFAULT_SERVICES_MAP).find(s => String(s.id) === p);
+      const idMatch = Object.values(DEFAULT_SERVICES_MAP).find(s => String(s.id) === rawP || String(s.id) === p);
       if (idMatch) {
         srv = idMatch;
       } else {
         // 2. Try by normalized slug string match
-        const normP = p.replace(/[^a-z0-9]/g, '');
+        const normP = rawP.replace(/[^a-z0-9]/g, '');
         const altKey = Object.keys(DEFAULT_SERVICES_MAP).find(key => {
           const normKey = key.replace(/[^a-z0-9]/g, '');
           return normKey === normP || normKey.includes(normP) || normP.includes(normKey);
@@ -2729,16 +2757,17 @@ export function getServiceDefinition(param, lang = 'en') {
           srv = DEFAULT_SERVICES_MAP[altKey];
         } else {
           // 3. Fallback to complete standard dynamic form for unknown services
+          const isFreeLikely = rawP.includes('free') || rawP.includes('status') || rawP.includes('search') || rawP.includes('verify') || rawP.includes('verification') || rawP.includes('check');
           srv = {
             id: 999,
             category_name: 'Digital E-Service',
             category_slug: 'general-services',
-            name: p.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
-            slug: p,
+            name: rawP.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
+            slug: rawP,
             description: 'Official digital e-governance service application facilitation desk online.',
             eligibility: 'Resident citizens holding valid identity and address proof documents.',
             processing_time: '3-7 Working Days',
-            fee: 60,
+            fee: isFreeLikely ? 0 : 60,
             fields: [
               { name: 'full_name', label: 'Full Name of Applicant', type: 'text', placeholder: 'Karthik Subramanian', required: true },
               { name: 'dob', label: 'Date of Birth', type: 'date', required: true },

@@ -5,10 +5,12 @@ import {
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { getLocalizedService } from '../data/servicesCatalogData';
+import { useLiveServices } from '../utils/useLiveServices';
 
 export default function DrivingVehicleServicesCatalog() {
   const navigate = useNavigate();
   const { lang, t } = useLanguage();
+  const { getServiceFeeText } = useLiveServices();
   const [searchTerm, setSearchTerm] = useState('');
 
   const services = [
@@ -16,7 +18,7 @@ export default function DrivingVehicleServicesCatalog() {
       id: 'learner-licence-llr-booking',
       title: 'Learner Licence (LLR) Slot Booking',
       description: 'Apply for Learners Driving Licence slot booking for 2-wheeler, 4-wheeler (LMV), or Transport commercial categories.',
-      fee: '₹350',
+      fee: '₹250',
       sla: '3–5 Working Days',
       docs: ['Aadhaar Card', 'Blood Group Certificate', 'Proof of Age', 'Passport Photo'],
       icon: Car,
@@ -26,7 +28,7 @@ export default function DrivingVehicleServicesCatalog() {
       id: 'permanent-driving-licence',
       title: 'Permanent Driving Licence (DL) Slot',
       description: 'Book RTO driving track test slot post completion of 30 days mandatory LLR period for permanent DL issuance.',
-      fee: '₹800',
+      fee: '₹300',
       sla: '7–10 Working Days',
       docs: ['Valid Active LLR Copy', 'Training School Certificate (Form 5)', 'Vehicle Registration Book (RC)'],
       icon: ShieldCheck,
@@ -36,7 +38,7 @@ export default function DrivingVehicleServicesCatalog() {
       id: 'dl-renewal-application',
       title: 'Driving Licence Renewal & Address Change',
       description: 'Renew expired driving licence or update residential address / change of surname in existing DL smart card.',
-      fee: '₹450',
+      fee: '₹250',
       sla: '5–7 Working Days',
       docs: ['Original DL Card', 'Medical Fitness Certificate (Form 1A)', 'New Address Proof'],
       icon: RefreshCw
@@ -45,7 +47,7 @@ export default function DrivingVehicleServicesCatalog() {
       id: 'vehicle-rc-transfer',
       title: 'Vehicle Registration Certificate (RC) Transfer',
       description: 'Transfer vehicle ownership RC smart card post secondhand vehicle purchase or family inheritance.',
-      fee: '₹650',
+      fee: '₹450',
       sla: '10–15 Working Days',
       docs: ['Form 29 & Form 30 Signed', 'Original RC Smart Card', 'Valid Insurance & PUC Certificate'],
       icon: FileText
@@ -153,7 +155,7 @@ export default function DrivingVehicleServicesCatalog() {
                   <div className="space-y-2 pt-2 border-t border-slate-100 text-xs">
                     <div className="flex justify-between items-center text-slate-600">
                       <span>{lang === 'ta' ? 'சேவை கட்டணம்:' : 'Service Fee:'}</span>
-                      <span className="font-bold text-slate-900">{service.fee}</span>
+                      <span className="font-bold text-slate-900">{getServiceFeeText(service.id, service.fee, lang)}</span>
                     </div>
                     <div className="flex justify-between items-center text-slate-600">
                       <span>{lang === 'ta' ? 'செயலாக்க காலம்:' : 'Processing Time:'}</span>

@@ -798,7 +798,12 @@ app.get('/api/services', (req, res) => {
     const docsCount = serviceDocs.length;
     const parentCat = catMap[s.category_id];
     const cleanName = (s.name || '').replace(/\s*\((Varumaana Saanrithazh|Jaathi Saanrithazh|AnyTamilLand|Saanrithazh|Thunglish|Tanglish)\)/gi, '').trim();
-    const serviceFee = Number(s.total_fee || s.fee || s.govt_fee || 60);
+    const rawFee = (s.fee !== undefined && s.fee !== null)
+      ? s.fee
+      : ((s.total_fee !== undefined && s.total_fee !== null)
+        ? s.total_fee
+        : ((s.govt_fee !== undefined && s.govt_fee !== null) ? s.govt_fee : 60));
+    const serviceFee = !isNaN(Number(rawFee)) ? Number(rawFee) : 60;
 
     return {
       ...s,
@@ -819,12 +824,27 @@ app.get('/api/services', (req, res) => {
   res.json(result);
 });
 
+// Alias mapping for common variations across catalog and forms
+const SERVICE_SLUG_ALIASES = {
+  'pan-status-verification': 'pan-status',
+  'pan-aadhaar-linking': 'pan-aadhaar-link',
+  'new-pan-card-indian': 'pan-card-new',
+  'epan-download-instant': 'pan-download',
+  'new-smart-ration-card-application': 'smart-ration-card-application',
+  'tatkaal-passport-urgent': 'tatkal-passport-urgency',
+  'passport-reissue-renewal': 'passport-renewal-reissue',
+  'msme-udyam-registration': 'udyam-registration',
+  'fssai-food-license-registration': 'fssai-food-license',
+  'aadhaar-download-print': 'aadhaar-download'
+};
+
 // Get Single Service Details (including custom form fields & document requirements)
 app.get('/api/services/:idOrSlug', (req, res) => {
-  const param = req.params.idOrSlug;
+  const rawParam = req.params.idOrSlug;
+  const param = SERVICE_SLUG_ALIASES[rawParam] || rawParam;
   const normParam = String(param).toLowerCase().trim().replace(/[^a-z0-9]/g, '');
 
-  let service = db.get('services', s => s.slug === param || String(s.id) === param);
+  let service = db.get('services', s => s.slug === param || s.slug === rawParam || String(s.id) === param);
   if (!service) {
     service = db.get('services', s => {
       const normSlug = String(s.slug || '').toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -847,9 +867,19 @@ app.get('/api/services/:idOrSlug', (req, res) => {
 
   const cleanName = (service.name || '').replace(/\s*\((Varumaana Saanrithazh|Jaathi Saanrithazh|AnyTamilLand|Saanrithazh|Thunglish|Tanglish)\)/gi, '').trim();
 
+  const rawFee = (service.fee !== undefined && service.fee !== null)
+    ? service.fee
+    : ((service.total_fee !== undefined && service.total_fee !== null)
+      ? service.total_fee
+      : ((service.govt_fee !== undefined && service.govt_fee !== null) ? service.govt_fee : 60));
+  const serviceFee = !isNaN(Number(rawFee)) ? Number(rawFee) : 60;
+
   res.json({
     ...service,
     name: cleanName,
+    fee: serviceFee,
+    total_fee: serviceFee,
+    govt_fee: serviceFee,
     category_name: category ? category.name : (service.category_name || ''),
     category_slug: category ? category.slug : (service.category_slug || ''),
     fields,
@@ -3095,10 +3125,14 @@ app.post('/api/admin/services', authenticateAdmin, upload.any(), (req, res) => {
 app.put('/api/admin/services/:id', authenticateAdmin, upload.any(), (req, res) => {
   try {
     const sId = Number(req.params.id);
-    const existing = db.get('services', s => s.id === sId);
+    let existing = !isNaN(sId) ? db.get('services', s => s.id === sId) : null;
+    if (!existing) {
+      existing = db.get('services', s => String(s.id) === String(req.params.id) || s.slug === req.params.id);
+    }
     if (!existing) {
       return res.status(404).json({ error: 'Service not found' });
     }
+    const targetId = existing.id;
 
     let { category_id, category_name, name, description, eligibility, processing_info, processing_time, fee, total_fee, govt_fee, is_active, status, fields, documents, image_url_input, image_url: bodyImageUrl } = req.body;
     
@@ -3130,11 +3164,12 @@ app.put('/api/admin/services/:id', authenticateAdmin, upload.any(), (req, res) =
       if (cat) catId = cat.id;
     }
 
-    const serviceFee = fee !== undefined ? Number(fee) : (total_fee !== undefined ? Number(total_fee) : existing.fee);
+    const rawFee = fee !== undefined ? fee : (total_fee !== undefined ? total_fee : existing.fee);
+    const serviceFee = !isNaN(Number(rawFee)) ? Number(rawFee) : 0;
     const serviceName = name ? name.trim() : existing.name;
-    const slug = serviceName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+    const slug = existing.slug || serviceName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
 
-    db.update('services', s => s.id === sId, {
+    db.update('services', s => s.id === targetId, {
       category_id: catId || existing.category_id,
       category_name: cat ? cat.name : (category_name || existing.category_name),
       name: serviceName,
@@ -3155,11 +3190,11 @@ app.put('/api/admin/services/:id', authenticateAdmin, upload.any(), (req, res) =
 
     // Update dynamic fields if provided
     if (parsedFields && Array.isArray(parsedFields)) {
-      db.delete('service_fields', f => f.service_id === sId);
+      db.delete('service_fields', f => f.service_id === targetId);
       parsedFields.forEach((f, idx) => {
         const label = f.field_label || f.name || f.label || `Field ${idx + 1}`;
         db.insert('service_fields', {
-          service_id: sId,
+          service_id: targetId,
           field_name: f.field_name || label.toLowerCase().replace(/[^a-z0-9]+/g, '_'),
           field_label: label,
           field_type: f.field_type || f.type || 'text',
@@ -3172,11 +3207,11 @@ app.put('/api/admin/services/:id', authenticateAdmin, upload.any(), (req, res) =
 
     // Update documents if provided
     if (parsedDocs && Array.isArray(parsedDocs)) {
-      db.delete('service_documents', d => d.service_id === sId);
+      db.delete('service_documents', d => d.service_id === targetId);
       parsedDocs.forEach(d => {
         const docName = typeof d === 'string' ? d : (d.document_name || d.name);
         db.insert('service_documents', {
-          service_id: sId,
+          service_id: targetId,
           document_name: docName,
           description: d.description || `Upload clear copy of ${docName}`,
           is_required: d.is_required !== undefined ? (d.is_required ? 1 : 0) : 1
@@ -3184,8 +3219,37 @@ app.put('/api/admin/services/:id', authenticateAdmin, upload.any(), (req, res) =
       });
     }
 
-    const updatedService = db.get('services', s => s.id === sId);
+    const updatedService = db.get('services', s => s.id === targetId);
     res.json({ message: 'Service updated successfully', service: updatedService });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Admin Quick Update Service Price (Amount)
+app.put('/api/admin/services/:id/price', authenticateAdmin, (req, res) => {
+  try {
+    const sId = Number(req.params.id);
+    let existing = !isNaN(sId) ? db.get('services', s => s.id === sId) : null;
+    if (!existing) {
+      existing = db.get('services', s => String(s.id) === String(req.params.id) || s.slug === req.params.id);
+    }
+    if (!existing) {
+      return res.status(404).json({ error: 'Service not found' });
+    }
+
+    const { fee, total_fee } = req.body;
+    const rawFee = fee !== undefined ? fee : (total_fee !== undefined ? total_fee : existing.fee);
+    const serviceFee = !isNaN(Number(rawFee)) ? Number(rawFee) : 0;
+
+    db.update('services', s => s.id === existing.id, {
+      fee: serviceFee,
+      total_fee: serviceFee,
+      govt_fee: serviceFee
+    });
+
+    const updatedService = db.get('services', s => s.id === existing.id);
+    res.json({ message: `Price for "${existing.name}" updated to ₹${serviceFee}`, service: updatedService });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

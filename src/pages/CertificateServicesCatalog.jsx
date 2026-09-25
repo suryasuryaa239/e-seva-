@@ -6,12 +6,14 @@ import {
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { getLocalizedService } from '../data/servicesCatalogData';
+import { useLiveServices } from '../utils/useLiveServices';
 
 import Breadcrumbs from '../components/Breadcrumbs';
 
 export default function CertificateServicesCatalog() {
   const navigate = useNavigate();
   const { lang, t } = useLanguage();
+  const { getServiceFeeText } = useLiveServices();
   const [searchTerm, setSearchTerm] = useState('');
 
   const certificateServices = [
@@ -68,7 +70,7 @@ export default function CertificateServicesCatalog() {
       id: 'legal-heir-certificate',
       title: 'Legal Heir Certificate Application',
       description: 'Official document identifying surviving legal heirs post deceased family member for asset transfer.',
-      fee: '₹120',
+      fee: '₹60',
       sla: '15–30 Working Days',
       docs: ['Death Certificate of Deceased', 'Aadhaar of All Legal Heirs', 'Smart Ration Card', 'VAO / RI Verification'],
       icon: ShieldCheck,
@@ -218,7 +220,7 @@ export default function CertificateServicesCatalog() {
                   <div className="space-y-2 pt-2 border-t border-slate-100 text-xs">
                     <div className="flex justify-between items-center text-slate-600">
                       <span>{lang === 'ta' ? 'சேவை கட்டணம்:' : 'Service Fee:'}</span>
-                      <span className="font-bold text-slate-900">{service.fee}</span>
+                      <span className="font-bold text-slate-900">{getServiceFeeText(service.id, service.fee, lang)}</span>
                     </div>
                     <div className="flex justify-between items-center text-slate-600">
                       <span>{lang === 'ta' ? 'செயலாக்க காலம்:' : 'Estimated Processing SLA:'}</span>
