@@ -850,17 +850,27 @@ app.get('/api/services', (req, res) => {
     let serviceDocs = db.all('service_documents', d => d.service_id === s.id);
     if ((!serviceDocs || serviceDocs.length === 0) && (s.documents_json || s.documents_required)) {
       const rawDocs = s.documents_json || s.documents_required;
-      const parsed = Array.isArray(rawDocs) ? rawDocs : (typeof rawDocs === 'string' ? JSON.parse(rawDocs) : []);
-      serviceDocs = parsed.map((d, idx) => ({
-        id: idx + 1,
-        service_id: s.id,
-        document_name: typeof d === 'string' ? d : (d.document_name || d.name),
-        description: `Upload clear copy of ${typeof d === 'string' ? d : (d.document_name || d.name)}`,
-        is_required: 1
-      }));
+      let parsed = Array.isArray(rawDocs) ? rawDocs : [];
+      if (typeof rawDocs === 'string') {
+        try { parsed = JSON.parse(rawDocs); } catch (e) {
+          parsed = rawDocs.split(',').map(x => x.trim()).filter(Boolean);
+        }
+      }
+      serviceDocs = parsed.map((d, idx) => {
+        const docName = typeof d === 'string' ? d : (d.document_name || d.name);
+        const isReq = (typeof d === 'object' && (d.is_required === 0 || d.is_required === false || d.is_required === '0' || d.required === false || d.required === 0)) ? 0 : 1;
+        return {
+          id: idx + 1,
+          service_id: s.id,
+          document_name: docName,
+          description: typeof d === 'object' && d.description ? d.description : (isReq ? `Upload clear copy of ${docName}` : `Upload clear copy of ${docName} (Optional)`),
+          is_required: isReq
+        };
+      });
     }
     const fieldsCount = serviceFields.length;
     const docsCount = serviceDocs.length;
+    const requiredDocsCount = serviceDocs.filter(d => d.is_required !== 0 && d.is_required !== false && d.is_required !== '0').length;
     const parentCat = catMap[s.category_id];
     const cleanName = (s.name || '').replace(/\s*\((Varumaana Saanrithazh|Jaathi Saanrithazh|AnyTamilLand|Saanrithazh|Thunglish|Tanglish)\)/gi, '').trim();
     const rawFee = (s.fee !== undefined && s.fee !== null)
@@ -882,7 +892,7 @@ app.get('/api/services', (req, res) => {
       documents: serviceDocs,
       fields_count: fieldsCount,
       documents_count: docsCount,
-      required_docs_count: docsCount
+      required_docs_count: requiredDocsCount
     };
   });
 
@@ -930,7 +940,27 @@ app.get('/api/services/:idOrSlug', (req, res) => {
     seenFieldKeys.add(k);
     return true;
   });
-  const documents = db.all('service_documents', d => d.service_id === service.id);
+  let documents = db.all('service_documents', d => d.service_id === service.id);
+  if ((!documents || documents.length === 0) && (service.documents_json || service.documents_required)) {
+    const rawDocs = service.documents_json || service.documents_required;
+    let parsed = Array.isArray(rawDocs) ? rawDocs : [];
+    if (typeof rawDocs === 'string') {
+      try { parsed = JSON.parse(rawDocs); } catch (e) {
+        parsed = rawDocs.split(',').map(x => x.trim()).filter(Boolean);
+      }
+    }
+    documents = parsed.map((d, idx) => {
+      const docName = typeof d === 'string' ? d : (d.document_name || d.name);
+      const isReq = (typeof d === 'object' && (d.is_required === 0 || d.is_required === false || d.is_required === '0' || d.required === false || d.required === 0)) ? 0 : 1;
+      return {
+        id: idx + 1,
+        service_id: service.id,
+        document_name: docName,
+        description: typeof d === 'object' && d.description ? d.description : (isReq ? `Upload clear copy of ${docName}` : `Upload clear copy of ${docName} (Optional)`),
+        is_required: isReq
+      };
+    });
+  }
 
   const cleanName = (service.name || '').replace(/\s*\((Varumaana Saanrithazh|Jaathi Saanrithazh|AnyTamilLand|Saanrithazh|Thunglish|Tanglish)\)/gi, '').trim();
 
@@ -3199,7 +3229,10 @@ app.post('/api/admin/services', authenticateAdmin, upload.any(), async (req, res
       govt_fee: serviceFee,
       image_url: image_url || 'https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=1200&auto=format&fit=crop',
       is_active: true,
-      status: 'Active'
+      status: 'Active',
+      fields_json: parsedFields || null,
+      documents_json: parsedDocs || null,
+      documents_required: JSON.stringify((parsedDocs || []).map(d => typeof d === 'string' ? d : (d.document_name || d.name)))
     });
 
     if (parsedFields && Array.isArray(parsedFields) && parsedFields.length > 0) {
@@ -3343,7 +3376,8 @@ app.put('/api/admin/services/:id', authenticateAdmin, upload.any(), async (req, 
       is_active: is_active !== undefined ? is_active : (status === 'Inactive' ? false : existing.is_active),
       status: status || (is_active === false ? 'Inactive' : 'Active'),
       fields_json: parsedFields || existing.fields_json || null,
-      documents_json: parsedDocs || existing.documents_json || null
+      documents_json: parsedDocs || existing.documents_json || null,
+      documents_required: parsedDocs ? JSON.stringify(parsedDocs.map(d => typeof d === 'string' ? d : (d.document_name || d.name))) : existing.documents_required
     });
 
     // Update dynamic fields if provided
