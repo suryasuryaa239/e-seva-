@@ -71,7 +71,7 @@ export default function Navbar() {
 
   // 11 Service Categories List
   const serviceCategories = [
-    { name: lang === 'ta' ? 'ஆதார் சேவைகள்' : 'Aadhaar Services', slug: 'aadhaar', icon: Fingerprint, desc: lang === 'ta' ? 'பதிவு, பெயர், முகவரி, மொபைல் & புகைப்பட புதுப்பிப்புகள்' : 'Enrollment, Name, Address, Mobile & Photo Updates', badge: lang === 'ta' ? '15 சேவைகள்' : '15 Services' },
+    { name: lang === 'ta' ? 'ஆதார் சேவைகள்' : 'Aadhaar Services', slug: 'aadhaar', icon: Fingerprint, desc: lang === 'ta' ? 'பதிவு, பெயர், முகவரி, மொபைல் & புகைப்பட புதுப்பிப்புகள்' : 'Enrollment, Name, Address, Mobile & Photo Updates', badge: lang === 'ta' ? 'விரைவு' : 'Fast Track' },
     { name: lang === 'ta' ? 'PAN அட்டை சேவைகள்' : 'PAN Card Services', slug: 'pan', icon: CreditCard, desc: lang === 'ta' ? 'புதிய PAN, திருத்தங்கள், மறுபதிப்பு & ஆதார் இணைப்பு' : 'New PAN, Corrections, Reprint & Aadhaar Link', badge: lang === 'ta' ? 'பிரபலமானது' : 'Popular' },
     { name: lang === 'ta' ? 'வாக்காளர் அட்டை சேவைகள்' : 'Voter ID Services', slug: 'voter', icon: Vote, desc: lang === 'ta' ? 'புதிய வாக்காளர் பதிவு, முகவரி மாற்றம் & EPIC பதிவிறக்கம்' : 'New Voter Registration, Address Change & EPIC Download', badge: lang === 'ta' ? 'இலவசம்' : 'Free' },
     { name: lang === 'ta' ? 'சான்றிதழ் சேவைகள்' : 'Certificates', slug: 'certificates', icon: FileText, desc: lang === 'ta' ? 'வருமானம், சாதி, இருப்பிடம், பிறப்பு & இறப்பு சான்றிதழ்கள்' : 'Income, Community, Native, Birth & Death Certificates', badge: lang === 'ta' ? 'முக்கியமானது' : 'Essential' },
