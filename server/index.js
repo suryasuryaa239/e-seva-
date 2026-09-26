@@ -753,10 +753,37 @@ app.get('/api/categories', (req, res) => {
   res.json(result);
 });
 
+// Helper to match category by slug, id, or common variations
+function findCategoryMatch(param) {
+  if (!param) return null;
+  const p = String(param).toLowerCase().trim();
+  return db.get('categories', c => {
+    if (!c) return false;
+    if (String(c.id) === p) return true;
+    const s = (c.slug || '').toLowerCase();
+    const n = (c.name || '').toLowerCase();
+    if (s === p) return true;
+    if (s === `${p}-services` || s.replace('-services', '') === p.replace('-services', '')) return true;
+    if (p.includes('ration') && (s.includes('ration') || s.includes('other') || n.includes('ration'))) return true;
+    if (p.includes('other') && (s.includes('other') || n.includes('other'))) return true;
+    if (p.includes('voter') && (s.includes('voter') || n.includes('voter'))) return true;
+    if (p.includes('driving') && (s.includes('driving') || s.includes('vehicle') || n.includes('driving'))) return true;
+    if (p.includes('vehicle') && (s.includes('driving') || s.includes('vehicle') || n.includes('driving'))) return true;
+    if (p.includes('land') && (s.includes('land') || s.includes('patta') || n.includes('land'))) return true;
+    if (p.includes('pan') && (s.includes('pan') || n.includes('pan'))) return true;
+    if (p.includes('aadhaar') && (s.includes('aadhaar') || n.includes('aadhaar'))) return true;
+    if (p.includes('passport') && (s.includes('passport') || n.includes('passport'))) return true;
+    if (p.includes('certificate') && (s.includes('certificate') || n.includes('certificate'))) return true;
+    if (p.includes('business') && (s.includes('business') || n.includes('business'))) return true;
+    if (p.includes('utility') && (s.includes('utility') || n.includes('utility'))) return true;
+    return false;
+  });
+}
+
 // Get Single Category by Slug or ID
 app.get('/api/categories/:slug', (req, res) => {
   const param = req.params.slug;
-  const category = db.get('categories', c => c.slug === param || String(c.id) === param || c.slug === `${param}-services` || c.slug.replace('-services', '') === param);
+  const category = findCategoryMatch(param);
   if (!category) return res.status(404).json({ error: 'Category not found' });
 
   const services = db.all('services', s => s.category_id === category.id && s.is_active !== false);
@@ -788,7 +815,7 @@ app.get('/api/services', (req, res) => {
   if (category_id) {
     services = services.filter(s => String(s.category_id) === String(category_id));
   } else if (category_slug) {
-    const cat = db.get('categories', c => c.slug === category_slug || c.slug === `${category_slug}-services`);
+    const cat = findCategoryMatch(category_slug);
     if (cat) {
       services = services.filter(s => s.category_id === cat.id);
     }

@@ -328,7 +328,7 @@ export default function Home() {
           ].map((cat, idx) => (
             <Link
               key={idx}
-              to={cat.slug === 'aadhaar' ? '/services/aadhaar' : `/services/${cat.slug}`}
+              to={`/services/${cat.slug}`}
               className="bg-white rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-xl hover:border-orange-500/50 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between group overflow-hidden relative"
             >
               {/* Subtle top accent background glow */}
@@ -405,16 +405,7 @@ export default function Home() {
         {/* POPULAR SERVICE CARDS GRID */}
         {/* Desktop: 4 per row, Tablet: 2 per row, Mobile: 1 per row */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {(popularServices.length > 0 ? popularServices : [
-            { id: 1, name: 'Aadhaar Enrollment', category_slug: 'aadhaar', slug: 'aadhaar-services', description: 'New Aadhaar enrollment services & appointment', fee: 0 },
-            { id: 2, name: 'Aadhaar Address Update', category_slug: 'aadhaar', slug: 'aadhaar-address-update', description: 'Update Aadhaar address details online', fee: 50 },
-            { id: 3, name: 'PAN Card Application', category_slug: 'pan', slug: 'pan-new-application', description: 'New PAN card application & correction', fee: 107 },
-            { id: 4, name: 'Voter ID Registration', category_slug: 'voter', slug: 'voter-form-6', description: 'New voter ID application & EPIC download', fee: 0 },
-            { id: 5, name: 'Income Certificate', category_slug: 'certificates', slug: 'income-certificate', description: 'Official income certificate application', fee: 60 },
-            { id: 6, name: 'Patta Chitta Transfer', category_slug: 'land', slug: 'patta-transfer-application', description: 'Land Patta transfer & Chitta extract', fee: 100 },
-            { id: 7, name: 'Passport Application', category_slug: 'passport', slug: 'fresh-passport-application', description: 'Fresh passport & Tatkaal application', fee: 1500 },
-            { id: 8, name: 'Driving Licence Renewal', category_slug: 'driving-licence', slug: 'driving-licence-renewal', description: 'Driving licence renewal & address update', fee: 400 }
-          ]).map(srv => getLocalizedService(srv, lang)).map((srv) => (
+          {popularServices.map(srv => getLocalizedService(srv, lang)).map((srv) => (
             <div
               key={srv.id}
               className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs hover:shadow-md hover:border-orange-500/40 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between space-y-4 group h-full"
@@ -441,13 +432,19 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* APPLY NOW BUTTON WITH ARROW */}
-              <div className="pt-2">
+              {/* ACTION BUTTONS */}
+              <div className="pt-2 flex items-center justify-between gap-2 border-t border-slate-100">
                 <Link
-                  to={srv.slug === 'aadhaar' ? '/services/aadhaar' : `/enquiry/${srv.slug}`}
-                  className="w-full bg-[#0b192c] hover:bg-orange-600 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-xs transition-colors flex items-center justify-center gap-1.5 group/btn"
+                  to={`/enquiry/${srv.slug || srv.id}`}
+                  className="text-xs font-bold text-slate-700 hover:text-orange-600 transition-colors"
                 >
-                  <span>{t.applyNow || (lang === 'ta' ? 'இப்போது விண்ணப்பிக்கவும்' : 'Apply Now')}</span>
+                  {lang === 'ta' ? 'விவரங்கள்' : 'Details'} →
+                </Link>
+                <Link
+                  to={`/apply/${srv.slug || srv.id}`}
+                  className="bg-[#0b192c] hover:bg-orange-600 text-white font-bold text-xs px-3.5 py-2 rounded-xl shadow-xs transition-colors flex items-center gap-1.5 group/btn"
+                >
+                  <span>{t.applyNow || (lang === 'ta' ? 'விண்ணப்பிக்க' : 'Apply Now')}</span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform" />
                 </Link>
               </div>

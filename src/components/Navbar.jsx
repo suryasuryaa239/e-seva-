@@ -184,12 +184,8 @@ export default function Navbar() {
                   {/* 11 Dynamic Categories Grid */}
                   <div className="grid grid-cols-3 gap-2.5">
                     {serviceCategories.map((cat, idx) => {
-                      const Icon = cat.icon;
-                      const catPath = cat.slug === 'aadhaar' 
-                        ? '/services/aadhaar' 
-                        : cat.slug === 'pan' 
-                        ? '/services/pan-services' 
-                        : `/services/${cat.slug}`;
+                      const Icon = cat.icon || Grid;
+                      const catPath = `/services/${cat.slug}`;
                       
                       return (
                         <Link
@@ -559,7 +555,7 @@ export default function Navbar() {
                       return (
                         <Link
                           key={i}
-                          to={cat.slug === 'aadhaar' ? '/services/aadhaar' : cat.slug === 'pan' ? '/services/pan-services' : `/services/${cat.slug}`}
+                          to={`/services/${cat.slug}`}
                           onClick={() => setMobileMenuOpen(false)}
                           className="flex items-center justify-between p-1.5 rounded-lg text-slate-700 hover:text-orange-600 hover:bg-orange-50/70 transition-colors group"
                         >

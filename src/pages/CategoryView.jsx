@@ -5,7 +5,7 @@ import {
   Search, ShieldAlert, Clock, FileCheck, ArrowRight, ArrowLeft, Info, Filter, ArrowUpDown
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
-import { DEFAULT_SERVICES_MAP, getLocalizedService } from '../data/servicesCatalogData';
+import { getLocalizedService } from '../data/servicesCatalogData';
 
 const ICON_MAP = {
   Fingerprint, CreditCard, Vote, FileText, MapPin, Globe, Car, Briefcase, Zap, Grid
@@ -73,14 +73,8 @@ export default function CategoryView() {
           icon: 'Grid',
           description: 'Official digital e-governance service category.'
         };
-
-        const matchingServices = Object.values(DEFAULT_SERVICES_MAP).filter(s => {
-          const sCat = (s.category_slug || s.category_name || '').toLowerCase();
-          return sCat.includes(catSlug) || catSlug.includes(sCat) || catSlug.split('-')[0] === sCat.split('-')[0];
-        });
-
         catInfo = fallbackCat;
-        rawServices = matchingServices.length > 0 ? matchingServices : Object.values(DEFAULT_SERVICES_MAP);
+        rawServices = [];
       }
 
       setCategoryData({
@@ -100,6 +94,7 @@ export default function CategoryView() {
 
       setServices(localizedList);
     } catch (err) {
+      console.warn('Failed to load category services:', err);
       const fallbackCat = OFFLINE_CATEGORIES[catSlug] || {
         name: catSlug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
         slug: catSlug,
@@ -107,27 +102,12 @@ export default function CategoryView() {
         description: 'Official digital e-governance service category.'
       };
 
-      const matchingServices = Object.values(DEFAULT_SERVICES_MAP).filter(s => {
-        const sCat = (s.category_slug || s.category_name || '').toLowerCase();
-        return sCat.includes(catSlug) || catSlug.includes(sCat) || catSlug.split('-')[0] === sCat.split('-')[0];
-      });
-
       setCategoryData({
         ...fallbackCat,
         displayName: lang === 'ta' && fallbackCat.name_ta ? fallbackCat.name_ta : fallbackCat.name,
         displayDesc: lang === 'ta' && fallbackCat.description_ta ? fallbackCat.description_ta : fallbackCat.description
       });
-
-      const localizedList = (matchingServices.length > 0 ? matchingServices : Object.values(DEFAULT_SERVICES_MAP)).map(s => {
-        const loc = getLocalizedService({ slug: s.slug || s.id, name: s.name, description: s.description }, lang);
-        return {
-          ...s,
-          name: loc.name || s.name,
-          description: loc.description || s.description
-        };
-      });
-
-      setServices(localizedList);
+      setServices([]);
     } finally {
       setLoading(false);
     }
