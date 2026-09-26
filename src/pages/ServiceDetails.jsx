@@ -7,6 +7,8 @@ import {
 } from 'lucide-react';
 import Breadcrumbs from '../components/Breadcrumbs';
 import { getServiceDefinition, DEFAULT_SERVICES_MAP, getLocalizedService } from '../data/servicesCatalogData';
+import { getLocalizedDocName, getLocalizedDocDesc } from '../utils/localizationHelpers';
+import { isDocMandatory } from './ApplyService';
 import { useLanguage } from '../context/LanguageContext';
 
 export default function ServiceDetails() {
@@ -317,20 +319,33 @@ export default function ServiceDetails() {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {documentsList.map((doc, idx) => (
-                  <div key={idx} className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-start space-x-3">
-                    <div className="w-6 h-6 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
-                      ✓
+                {documentsList.map((doc, idx) => {
+                  const docRawName = doc.name || doc.document_name;
+                  const displayDocName = getLocalizedDocName(docRawName, lang);
+                  const isMandatory = isDocMandatory(doc);
+                  return (
+                    <div key={idx} className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-start space-x-3">
+                      <div className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs shrink-0 mt-0.5 ${
+                        isMandatory ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-700'
+                      }`}>
+                        {isMandatory ? '✓' : '○'}
+                      </div>
+                      <div className="space-y-1">
+                        <h4 className="text-xs font-extrabold text-slate-900">{displayDocName}</h4>
+                        <p className="text-[11px] text-slate-500 font-normal leading-relaxed">
+                          {getLocalizedDocDesc(doc.description, docRawName, isMandatory, lang)}
+                        </p>
+                        <span className={`inline-block text-[10px] font-extrabold px-2 py-0.5 rounded-md mt-1 ${
+                          isMandatory
+                            ? 'text-amber-800 bg-amber-50 border border-amber-200'
+                            : 'text-slate-600 bg-slate-100 border border-slate-200'
+                        }`}>
+                          {isMandatory ? (lang === 'ta' ? 'கட்டாய ஆவணம்' : 'Required Document') : (lang === 'ta' ? 'விருப்பத்தேர்வு' : 'Optional')}
+                        </span>
+                      </div>
                     </div>
-                    <div className="space-y-1">
-                      <h4 className="text-xs font-extrabold text-slate-900">{doc.name || doc.document_name}</h4>
-                      <p className="text-[11px] text-slate-500 font-normal leading-relaxed">{doc.description || (lang === 'ta' ? 'PDF அல்லது பட வடிவில் செல்லுபடியாகும் ஆவணம்.' : 'Valid proof document in PDF or image format.')}</p>
-                      <span className="inline-block text-[10px] font-extrabold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md mt-1">
-                        {doc.required !== false ? (lang === 'ta' ? 'தேவையான ஆவணம்' : 'Required Document') : (lang === 'ta' ? 'விருப்பத் தேர்வு' : 'Optional')}
-                      </span>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 

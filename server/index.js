@@ -3216,11 +3216,12 @@ app.post('/api/admin/services', authenticateAdmin, upload.any(), (req, res) => {
     if (parsedDocs && Array.isArray(parsedDocs) && parsedDocs.length > 0) {
       parsedDocs.forEach(d => {
         const docName = typeof d === 'string' ? d : (d.document_name || d.name);
+        const isReq = (typeof d === 'object' && (d.is_required === 0 || d.is_required === false || d.is_required === '0' || d.required === false || d.required === 0)) ? 0 : 1;
         db.insert('service_documents', {
           service_id: service.id,
           document_name: docName,
-          description: d.description || `Upload clear copy of ${docName}`,
-          is_required: 1
+          description: d.description || (isReq ? `Upload clear copy of ${docName}` : `Upload clear copy of ${docName} (Optional)`),
+          is_required: isReq
         });
       });
     } else {
@@ -3331,11 +3332,12 @@ app.put('/api/admin/services/:id', authenticateAdmin, upload.any(), (req, res) =
       db.delete('service_documents', d => d.service_id === targetId);
       parsedDocs.forEach(d => {
         const docName = typeof d === 'string' ? d : (d.document_name || d.name);
+        const isReq = (typeof d === 'object' && (d.is_required === 0 || d.is_required === false || d.is_required === '0' || d.required === false || d.required === 0)) ? 0 : 1;
         db.insert('service_documents', {
           service_id: targetId,
           document_name: docName,
-          description: d.description || `Upload clear copy of ${docName}`,
-          is_required: d.is_required !== undefined ? (d.is_required ? 1 : 0) : 1
+          description: d.description || (isReq ? `Upload clear copy of ${docName}` : `Upload clear copy of ${docName} (Optional)`),
+          is_required: isReq
         });
       });
     }

@@ -15,10 +15,41 @@ import {
   formatPAN, formatVoterID, sanitizeRationCard, getFieldConstraints 
 } from '../utils/formFormatters';
 import { getServiceDefinition, DEFAULT_SERVICES_MAP, getLocalizedService } from '../data/servicesCatalogData';
-import { getLocalizedSectionTitle, getLocalizedFieldLabel, getLocalizedOption, getLocalizedPlaceholder, getLocalizedDocName } from '../utils/localizationHelpers';
+import { getLocalizedSectionTitle, getLocalizedFieldLabel, getLocalizedOption, getLocalizedPlaceholder, getLocalizedDocName, getLocalizedDocDesc } from '../utils/localizationHelpers';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+
+export function isDocMandatory(doc) {
+  if (!doc) return false;
+  // If explicitly 0, '0', false, 'false' -> Optional
+  if (doc.is_required === 0 || doc.is_required === false || doc.is_required === '0' || doc.is_required === 'false') return false;
+  if (doc.required === 0 || doc.required === false || doc.required === '0' || doc.required === 'false') return false;
+
+  // Textual check: if title or description mentions (Optional) or விருப்பத்தேர்வு
+  const docText = `${doc.document_name || doc.name || ''} ${doc.description || ''}`.toLowerCase();
+  if (docText.includes('(optional)') || docText.includes('optional') || docText.includes('விருப்பத்தேர்வு')) {
+    if (doc.is_required !== 1 && doc.is_required !== true && doc.is_required !== '1' && doc.is_required !== 'true' &&
+        doc.required !== 1 && doc.required !== true && doc.required !== '1' && doc.required !== 'true') {
+      return false;
+    }
+  }
+
+  // If explicitly 1, '1', true, 'true' -> Mandatory
+  if (doc.is_required === 1 || doc.is_required === true || doc.is_required === '1' || doc.is_required === 'true') return true;
+  if (doc.required === 1 || doc.required === true || doc.required === '1' || doc.required === 'true') return true;
+
+  return true;
+}
+
+export function isFieldRequired(f) {
+  if (!f) return false;
+  if (f.is_required === 0 || f.is_required === false || f.is_required === '0' || f.is_required === 'false') return false;
+  if (f.required === 0 || f.required === false || f.required === '0' || f.required === 'false') return false;
+  if (f.is_required === 1 || f.is_required === true || f.is_required === '1' || f.is_required === 'true') return true;
+  if (f.required === 1 || f.required === true || f.required === '1' || f.required === 'true') return true;
+  return true;
+}
 
 const PRIMARY_APPLICANT_KEYS = new Set([
   'user_name', 'full_name', 'applicant_name', 'name',
@@ -560,7 +591,7 @@ export default function ApplyService() {
       const name = String(f.field_name || f.name || '').toLowerCase().trim();
       const label = String(f.field_label || f.label || '').toLowerCase().trim();
       const isAadhaar = name.includes('aadhaar') || name.includes('aadhar') || label.includes('aadhaar') || label.includes('aadhar');
-      const isReq = f.is_required !== false && f.required !== false && f.is_required !== 0;
+      const isReq = isFieldRequired(f);
       return isAadhaar && isReq;
     });
     if (hasRequiredAadhaarField) return true;
@@ -653,7 +684,7 @@ export default function ApplyService() {
           const val = fieldValues[key];
           const fLabel = f.field_label || f.label || key;
           const localizedLabel = getLocalizedFieldLabel(fLabel, lang);
-          const isRequired = f.is_required !== false && f.required !== false;
+          const isRequired = isFieldRequired(f);
           const constraints = getFieldConstraints(f);
 
           if (isRequired && (!val || String(val).trim() === '')) {
@@ -678,7 +709,7 @@ export default function ApplyService() {
     const errs = {};
     if (service && service.documents) {
       service.documents.forEach(doc => {
-        if (doc.is_required !== false && doc.required !== false) {
+        if (isDocMandatory(doc)) {
           const docName = doc.document_name || doc.name;
           if (!files[docName]) {
             errs[`doc_${docName}`] = lang === 'ta' ? `${docName} பதிவேற்றவும்.` : `Please upload ${docName}.`;
@@ -1271,7 +1302,7 @@ export default function ApplyService() {
                                 return (
                                   <div key={fIdx} className={isTextArea ? 'sm:col-span-2' : ''}>
                                     <label className="block text-xs font-extrabold text-slate-800 mb-1.5">
-                                      {fLabel} {(f.is_required !== false && f.required !== false) && <span className="text-rose-500">*</span>}
+                                      {fLabel} {isFieldRequired(f) && <span className="text-rose-500">*</span>}
                                     </label>
 
                                     {isSelect ? (
@@ -1391,13 +1422,23 @@ export default function ApplyService() {
               {currentStep === 2 && (
                 <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
                   
-                  <div className="border-b pb-4 border-slate-100 flex items-center justify-between gap-2">
-                    <h3 className="font-heading font-extrabold text-base sm:text-lg text-slate-900 flex items-center gap-2">
-                      <Upload className="w-5 h-5 text-emerald-600" />
-                      <span>{t.uploadDocsStepTitle}</span>
-                    </h3>
-                    <span className="text-[11px] sm:text-xs text-slate-400 font-bold shrink-0">PDF, JPG, PNG ({t.maxFileSizeText})</span>
-                  </div>
+                  {(() => {
+                    const allDocs = service.documents || [];
+                    const hasMandatory = allDocs.some(d => isDocMandatory(d));
+                    const stepHeading = !hasMandatory && allDocs.length > 0
+                      ? (lang === 'ta' ? 'படி 02: சான்று ஆவணங்களைப் பதிவேற்றவும் (விருப்பத்தேர்வு)' : 'Step 02: Upload Supporting Documents (Optional)')
+                      : t.uploadDocsStepTitle;
+
+                    return (
+                      <div className="border-b pb-4 border-slate-100 flex items-center justify-between gap-2">
+                        <h3 className="font-heading font-extrabold text-base sm:text-lg text-slate-900 flex items-center gap-2">
+                          <Upload className="w-5 h-5 text-emerald-600" />
+                          <span>{stepHeading}</span>
+                        </h3>
+                        <span className="text-[11px] sm:text-xs text-slate-400 font-bold shrink-0">PDF, JPG, PNG ({t.maxFileSizeText})</span>
+                      </div>
+                    );
+                  })()}
 
                   {/* COMPACT APPLICATION SUMMARY CARD */}
                   <div className="p-5 bg-slate-900 text-white rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm border border-slate-800">
@@ -1456,14 +1497,14 @@ export default function ApplyService() {
                                 <span className="truncate">{displayDocName}</span>
                               </span>
                               <span className={`text-[10px] font-extrabold px-2.5 py-0.5 rounded-md uppercase shrink-0 ${
-                                doc.is_required !== false && doc.required !== false ? 'bg-amber-100 text-amber-800 border border-amber-200' : 'bg-slate-200 text-slate-700'
+                                isDocMandatory(doc) ? 'bg-amber-100 text-amber-800 border border-amber-200' : 'bg-slate-100 text-slate-700 border border-slate-300'
                               }`}>
-                                {doc.is_required !== false && doc.required !== false ? t.requiredTag : t.optionalTag}
+                                {isDocMandatory(doc) ? t.requiredTag : t.optionalTag}
                               </span>
                             </div>
 
                             <p className="text-[11px] text-slate-500 font-normal leading-relaxed">
-                              {doc.description || (lang === 'ta' ? 'தெளிவான ஸ்கேன் நகல் அல்லது புகைப்பட சான்றைப் பதிவேற்றவும்' : 'Upload clear scanned copy or photo proof')}
+                              {getLocalizedDocDesc(doc.description, docName, isDocMandatory(doc), lang)}
                             </p>
 
                             <div className="text-[10px] text-slate-400 font-bold flex items-center gap-2">
@@ -1809,14 +1850,23 @@ export default function ApplyService() {
                             const fObj = fileKey ? files[fileKey] : null;
 
                             if (!fObj) {
+                              const serviceDoc = service?.documents?.find(d => (d.document_name || d.name) === dName);
+                              const isMandatory = isDocMandatory(serviceDoc);
                               return (
                                 <div key={idx} className="p-4 bg-white rounded-2xl border border-slate-200/80 flex items-center justify-between">
                                   <span className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
                                     <FileText className="w-4 h-4 text-slate-400" />
                                     <span>{displayDocName}</span>
                                   </span>
-                                  <span className="text-[10px] font-extrabold text-amber-700 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-lg">
-                                    {lang === 'ta' ? 'பதிவேற்றப்படவில்லை' : 'Not Uploaded'}
+                                  <span className={`text-[10px] font-extrabold px-2.5 py-1 rounded-lg ${
+                                    isMandatory
+                                      ? 'text-amber-700 bg-amber-50 border border-amber-200'
+                                      : 'text-slate-600 bg-slate-100 border border-slate-200'
+                                  }`}>
+                                    {isMandatory
+                                      ? (lang === 'ta' ? 'பதிவேற்றப்படவில்லை' : 'Not Uploaded')
+                                      : (lang === 'ta' ? 'பதிவேற்றப்படவில்லை (விருப்பத்தேர்வு)' : 'Not Uploaded (Optional)')
+                                    }
                                   </span>
                                 </div>
                               );
@@ -2318,7 +2368,21 @@ export default function ApplyService() {
 
                     <div className="flex items-center justify-between py-1.5">
                       <span className="text-slate-500 font-medium">{lang === 'ta' ? 'தேவையான சான்றுகள்:' : 'Required Proofs:'}</span>
-                      <span className="font-semibold text-slate-900">{service.documents ? service.documents.length : 1} {lang === 'ta' ? 'ஆவணம்(கள்)' : 'File(s)'}</span>
+                      <span className="font-semibold text-slate-900">
+                        {(() => {
+                          const docs = service.documents || [];
+                          if (docs.length === 0) return lang === 'ta' ? 'இல்லை' : 'None';
+                          const mCount = docs.filter(d => isDocMandatory(d)).length;
+                          const optCount = docs.length - mCount;
+                          if (mCount === 0 && optCount > 0) {
+                            return lang === 'ta' ? `${optCount} விருப்பத்தேர்வு` : `${optCount} Optional`;
+                          }
+                          if (mCount > 0 && optCount > 0) {
+                            return lang === 'ta' ? `${mCount} கட்டாயம் (${optCount} விருப்பம்)` : `${mCount} Req (${optCount} Opt)`;
+                          }
+                          return `${mCount} ${lang === 'ta' ? 'ஆவணம்(கள்)' : 'File(s)'}`;
+                        })()}
+                      </span>
                     </div>
                   </div>
                 </div>

@@ -467,8 +467,12 @@ export default function AdminDashboard() {
     image_url_input: '',
     image_file: null,
     image_preview: '',
-    documents: ['Aadhaar Card Copy', 'Passport Size Photo'],
+    documents: [
+      { name: 'Aadhaar Card Copy', is_required: true },
+      { name: 'Passport Size Photo', is_required: true }
+    ],
     newDocInput: '',
+    newDocIsRequired: true,
     fields: [
       { field_label: 'Applicant Full Name', field_type: 'text', is_required: true },
       { field_label: 'Mobile Number', field_type: 'text', is_required: true },
@@ -508,7 +512,16 @@ export default function AdminDashboard() {
       formData.append('fee', Number(newServiceForm.fee) || 60);
       formData.append('processing_time', newServiceForm.processing_time);
       formData.append('image_url_input', newServiceForm.image_url_input || '');
-      formData.append('documents', JSON.stringify(newServiceForm.documents));
+      const formattedNewDocs = (newServiceForm.documents || []).map(d => {
+        if (typeof d === 'string') return { document_name: d, is_required: 1, description: `Upload clear copy of ${d}` };
+        const isReq = d.is_required !== false && d.is_required !== 0 && d.is_required !== '0';
+        return {
+          document_name: d.name || d.document_name,
+          is_required: isReq ? 1 : 0,
+          description: d.description || (isReq ? `Upload clear copy of ${d.name || d.document_name}` : `Upload clear copy of ${d.name || d.document_name} (Optional)`)
+        };
+      });
+      formData.append('documents', JSON.stringify(formattedNewDocs));
       formData.append('fields', JSON.stringify(newServiceForm.fields));
       if (newServiceForm.image_file) {
         formData.append('image', newServiceForm.image_file);
@@ -538,8 +551,12 @@ export default function AdminDashboard() {
           image_url_input: '',
           image_file: null,
           image_preview: '',
-          documents: ['Aadhaar Card Copy', 'Passport Size Photo'],
+          documents: [
+            { name: 'Aadhaar Card Copy', is_required: true },
+            { name: 'Passport Size Photo', is_required: true }
+          ],
           newDocInput: '',
+          newDocIsRequired: true,
           fields: [
             { field_label: 'Applicant Full Name', field_type: 'text', is_required: true },
             { field_label: 'Mobile Number', field_type: 'text', is_required: true },
@@ -656,7 +673,15 @@ export default function AdminDashboard() {
         if (res.ok) {
           const fullSrv = await res.json();
           if (docs.length === 0 && Array.isArray(fullSrv.documents)) {
-            docs = fullSrv.documents.map(d => typeof d === 'string' ? d : (d.document_name || d.name));
+            docs = fullSrv.documents.map(d => {
+              if (typeof d === 'string') return { name: d, is_required: true };
+              const isMandatory = d.is_required !== 0 && d.is_required !== false && d.is_required !== '0' && d.required !== false && d.required !== 0;
+              return {
+                name: d.document_name || d.name,
+                is_required: isMandatory,
+                description: d.description || ''
+              };
+            });
           }
           if (fields.length === 0 && Array.isArray(fullSrv.fields)) {
             fields = fullSrv.fields.map(f => {
@@ -675,7 +700,10 @@ export default function AdminDashboard() {
     }
 
     if (docs.length === 0) {
-      docs = ['Aadhaar Card Copy', 'Passport Size Photo'];
+      docs = [
+        { name: 'Aadhaar Card Copy', is_required: true },
+        { name: 'Passport Size Photo', is_required: true }
+      ];
     }
     if (fields.length === 0) {
       fields = [
@@ -705,6 +733,7 @@ export default function AdminDashboard() {
       image_preview: srv.image_url || '',
       documents: docs,
       newDocInput: '',
+      newDocIsRequired: true,
       fields: fields,
       newFieldLabel: '',
       newFieldType: 'text',
@@ -742,7 +771,16 @@ export default function AdminDashboard() {
       formData.append('status', editingServiceForm.status);
       formData.append('is_active', editingServiceForm.status === 'Active');
       formData.append('image_url_input', editingServiceForm.image_url_input || '');
-      formData.append('documents', JSON.stringify(editingServiceForm.documents));
+      const formattedEditDocs = (editingServiceForm.documents || []).map(d => {
+        if (typeof d === 'string') return { document_name: d, is_required: 1, description: `Upload clear copy of ${d}` };
+        const isReq = d.is_required !== false && d.is_required !== 0 && d.is_required !== '0';
+        return {
+          document_name: d.name || d.document_name,
+          is_required: isReq ? 1 : 0,
+          description: d.description || (isReq ? `Upload clear copy of ${d.name || d.document_name}` : `Upload clear copy of ${d.name || d.document_name} (Optional)`)
+        };
+      });
+      formData.append('documents', JSON.stringify(formattedEditDocs));
       formData.append('fields', JSON.stringify(editingServiceForm.fields));
       if (editingServiceForm.image_file) {
         formData.append('image', editingServiceForm.image_file);
@@ -6598,49 +6636,82 @@ export default function AdminDashboard() {
               <div className="space-y-3">
                 <h4 className="font-black text-slate-900 uppercase text-xs tracking-wider border-b border-slate-100 pb-1">2. Required Proof Documents</h4>
                 
-                <div className="flex items-center space-x-2">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                   <input
                     type="text"
                     placeholder="e.g. Income Slip / Ration Card"
                     value={newServiceForm.newDocInput || ''}
                     onChange={(e) => setNewServiceForm({ ...newServiceForm, newDocInput: e.target.value })}
-                    className="flex-1 bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3 py-2 outline-none font-medium"
+                    className="flex-1 bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3 py-2 outline-none font-medium text-xs"
                   />
+                  <select
+                    value={newServiceForm.newDocIsRequired !== false ? '1' : '0'}
+                    onChange={(e) => setNewServiceForm({ ...newServiceForm, newDocIsRequired: e.target.value === '1' })}
+                    className="bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-2.5 py-2 text-xs font-bold outline-none"
+                  >
+                    <option value="1">கட்டாயம் (Mandatory)</option>
+                    <option value="0">விருப்பத்தேர்வு (Optional)</option>
+                  </select>
                   <button
                     type="button"
                     onClick={() => {
                       if (newServiceForm.newDocInput && newServiceForm.newDocInput.trim()) {
+                        const isReq = newServiceForm.newDocIsRequired !== false;
                         setNewServiceForm({
                           ...newServiceForm,
-                          documents: [...newServiceForm.documents, newServiceForm.newDocInput.trim()],
-                          newDocInput: ''
+                          documents: [
+                            ...newServiceForm.documents,
+                            { name: newServiceForm.newDocInput.trim(), is_required: isReq }
+                          ],
+                          newDocInput: '',
+                          newDocIsRequired: true
                         });
                       }
                     }}
-                    className="px-3.5 py-2 bg-slate-800 text-white font-bold rounded-xl hover:bg-slate-900"
+                    className="px-3.5 py-2 bg-slate-800 text-white font-bold rounded-xl hover:bg-slate-900 text-xs shrink-0"
                   >
                     + Add Doc
                   </button>
                 </div>
 
                 <div className="flex flex-wrap gap-2 pt-1">
-                  {newServiceForm.documents.map((doc, idx) => (
-                    <span key={idx} className="bg-orange-50 border border-orange-200 text-orange-800 font-bold px-3 py-1 rounded-xl flex items-center space-x-1.5 text-xs">
-                      <span>{doc}</span>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setNewServiceForm({
-                            ...newServiceForm,
-                            documents: newServiceForm.documents.filter((_, i) => i !== idx)
-                          });
-                        }}
-                        className="text-orange-600 hover:text-orange-900 font-black ml-1"
-                      >
-                        ✕
-                      </button>
-                    </span>
-                  ))}
+                  {newServiceForm.documents.map((doc, idx) => {
+                    const docName = typeof doc === 'string' ? doc : (doc.name || doc.document_name);
+                    const isReq = typeof doc === 'string' ? true : (doc.is_required !== false && doc.is_required !== 0 && doc.is_required !== '0');
+                    return (
+                      <span key={idx} className={`border font-bold px-3 py-1 rounded-xl flex items-center space-x-2 text-xs transition-all ${
+                        isReq ? 'bg-amber-50 border-amber-200 text-amber-900' : 'bg-slate-100 border-slate-200 text-slate-700'
+                      }`}>
+                        <span>{docName}</span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const updated = [...newServiceForm.documents];
+                            updated[idx] = { name: docName, is_required: !isReq };
+                            setNewServiceForm({ ...newServiceForm, documents: updated });
+                          }}
+                          className={`text-[10px] px-1.5 py-0.5 rounded font-black cursor-pointer transition-colors ${
+                            isReq ? 'bg-amber-200/80 text-amber-900 hover:bg-amber-300' : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                          }`}
+                          title="Click to toggle Mandatory / Optional"
+                        >
+                          {isReq ? 'Mandatory' : 'Optional'}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setNewServiceForm({
+                              ...newServiceForm,
+                              documents: newServiceForm.documents.filter((_, i) => i !== idx)
+                            });
+                          }}
+                          className="text-slate-400 hover:text-rose-600 font-black ml-1"
+                        >
+                          ✕
+                        </button>
+                      </span>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -7065,49 +7136,82 @@ export default function AdminDashboard() {
               <div className="space-y-3">
                 <h4 className="font-black text-slate-900 uppercase text-xs tracking-wider border-b border-slate-100 pb-1">2. Required Proof Documents</h4>
                 
-                <div className="flex items-center space-x-2">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                   <input
                     type="text"
                     placeholder="e.g. Passport Copy / Birth Certificate"
                     value={editingServiceForm.newDocInput || ''}
                     onChange={(e) => setEditingServiceForm({ ...editingServiceForm, newDocInput: e.target.value })}
-                    className="flex-1 bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3.5 py-2 outline-none font-medium"
+                    className="flex-1 bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3.5 py-2 outline-none font-medium text-xs"
                   />
+                  <select
+                    value={editingServiceForm.newDocIsRequired !== false ? '1' : '0'}
+                    onChange={(e) => setEditingServiceForm({ ...editingServiceForm, newDocIsRequired: e.target.value === '1' })}
+                    className="bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-2.5 py-2 text-xs font-bold outline-none"
+                  >
+                    <option value="1">கட்டாயம் (Mandatory)</option>
+                    <option value="0">விருப்பத்தேர்வு (Optional)</option>
+                  </select>
                   <button
                     type="button"
                     onClick={() => {
                       if (editingServiceForm.newDocInput && editingServiceForm.newDocInput.trim()) {
+                        const isReq = editingServiceForm.newDocIsRequired !== false;
                         setEditingServiceForm({
                           ...editingServiceForm,
-                          documents: [...editingServiceForm.documents, editingServiceForm.newDocInput.trim()],
-                          newDocInput: ''
+                          documents: [
+                            ...editingServiceForm.documents,
+                            { name: editingServiceForm.newDocInput.trim(), is_required: isReq }
+                          ],
+                          newDocInput: '',
+                          newDocIsRequired: true
                         });
                       }
                     }}
-                    className="px-3.5 py-2 bg-slate-800 text-white font-bold rounded-xl hover:bg-slate-900"
+                    className="px-3.5 py-2 bg-slate-800 text-white font-bold rounded-xl hover:bg-slate-900 text-xs shrink-0"
                   >
                     + Add Doc
                   </button>
                 </div>
 
                 <div className="flex flex-wrap gap-2 pt-1">
-                  {editingServiceForm.documents.map((doc, idx) => (
-                    <span key={idx} className="bg-amber-50 border border-amber-200 text-amber-900 font-bold px-3 py-1 rounded-xl flex items-center space-x-1.5 text-xs">
-                      <span>{doc}</span>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setEditingServiceForm({
-                            ...editingServiceForm,
-                            documents: editingServiceForm.documents.filter((_, i) => i !== idx)
-                          });
-                        }}
-                        className="text-amber-600 hover:text-amber-900 font-black ml-1"
-                      >
-                        ✕
-                      </button>
-                    </span>
-                  ))}
+                  {editingServiceForm.documents.map((doc, idx) => {
+                    const docName = typeof doc === 'string' ? doc : (doc.name || doc.document_name);
+                    const isReq = typeof doc === 'string' ? true : (doc.is_required !== false && doc.is_required !== 0 && doc.is_required !== '0');
+                    return (
+                      <span key={idx} className={`border font-bold px-3 py-1 rounded-xl flex items-center space-x-2 text-xs transition-all ${
+                        isReq ? 'bg-amber-50 border-amber-200 text-amber-900' : 'bg-slate-100 border-slate-200 text-slate-700'
+                      }`}>
+                        <span>{docName}</span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const updated = [...editingServiceForm.documents];
+                            updated[idx] = { name: docName, is_required: !isReq };
+                            setEditingServiceForm({ ...editingServiceForm, documents: updated });
+                          }}
+                          className={`text-[10px] px-1.5 py-0.5 rounded font-black cursor-pointer transition-colors ${
+                            isReq ? 'bg-amber-200/80 text-amber-900 hover:bg-amber-300' : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                          }`}
+                          title="Click to toggle Mandatory / Optional"
+                        >
+                          {isReq ? 'Mandatory' : 'Optional'}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditingServiceForm({
+                              ...editingServiceForm,
+                              documents: editingServiceForm.documents.filter((_, i) => i !== idx)
+                            });
+                          }}
+                          className="text-slate-400 hover:text-rose-600 font-black ml-1"
+                        >
+                          ✕
+                        </button>
+                      </span>
+                    );
+                  })}
                 </div>
               </div>
 

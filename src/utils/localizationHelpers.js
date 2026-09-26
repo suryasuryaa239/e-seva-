@@ -302,7 +302,11 @@ const DOCUMENT_NAME_TRANSLATIONS = {
   'marriage certificate': 'திருமணச் சான்றிதழ்',
   'old pan card copy': 'பழைய PAN கார்டு நகல்',
   'voter id copy': 'வாக்காளர் அடையாள அட்டை நகல்',
-  'driving license copy': 'ஓட்டுநர் உரிம நகல்'
+  'driving license copy': 'ஓட்டுநர் உரிம நகல்',
+  'previous sale deed / property tax receipt': 'முந்தைய கிரைய பத்திரம் / சொத்து வரி ரசீது',
+  'previous sale deed': 'முந்தைய கிரைய பத்திரம்',
+  'property tax receipt': 'சொத்து வரி ரசீது',
+  'sale deed': 'கிரைய பத்திரம்'
 };
 
 export function getLocalizedDocName(docName, lang = 'en') {
@@ -317,6 +321,62 @@ export function getLocalizedDocName(docName, lang = 'en') {
   if (key.includes('photo') || key.includes('photograph')) return DOCUMENT_NAME_TRANSLATIONS['passport photograph'];
   if (key.includes('ration')) return DOCUMENT_NAME_TRANSLATIONS['ration card copy'];
   if (key.includes('bank') || key.includes('passbook')) return DOCUMENT_NAME_TRANSLATIONS['bank passbook copy'];
+  if (key.includes('deed') || key.includes('tax receipt') || key.includes('sale deed')) return DOCUMENT_NAME_TRANSLATIONS['previous sale deed / property tax receipt'];
 
   return docName;
+}
+
+// 6. DOCUMENT DESCRIPTIONS MAPPING
+export function getLocalizedDocDesc(desc, docName = '', isMandatory = true, lang = 'en') {
+  if (lang === 'ta') {
+    const lowerDesc = String(desc || '').toLowerCase();
+    const lowerName = String(docName || '').toLowerCase();
+
+    if (lowerName.includes('deed') || lowerDesc.includes('deed') || lowerDesc.includes('tax receipt') || lowerName.includes('tax receipt')) {
+      return isMandatory
+        ? 'முந்தைய கிரைய பத்திரம் அல்லது சொத்து வரி ரசீதின் தெளிவான நகலைப் பதிவேற்றவும்'
+        : 'முந்தைய பத்திரம் அல்லது சொத்து வரி ரசீதின் தெளிவான நகல் (விருப்பத்தேர்வு)';
+    }
+    if (lowerName.includes('aadhaar') || lowerDesc.includes('aadhaar')) {
+      return isMandatory ? 'விண்ணப்பதாரரின் தெளிவான ஆதார் அட்டை நகல்' : 'ஆதார் அட்டை நகல் (விருப்பத்தேர்வு)';
+    }
+    if (lowerName.includes('photo') || lowerName.includes('photograph')) {
+      return isMandatory ? 'சமீபத்திய பாஸ்போர்ட் அளவு புகைப்படம்' : 'புகைப்படம் (விருப்பத்தேர்வு)';
+    }
+    if (lowerName.includes('ration') || lowerName.includes('smart card')) {
+      return isMandatory ? 'குடும்ப அட்டை / ஸ்மார்ட் ரேஷன் கார்டு நகல்' : 'ரேஷன் கார்டு நகல் (விருப்பத்தேர்வு)';
+    }
+
+    if (desc) {
+      let translated = String(desc);
+      if (translated.includes('(Optional)')) translated = translated.replace(/\(Optional\)/gi, '(விருப்பத்தேர்வு)');
+      if (translated.includes('(optional)')) translated = translated.replace(/\(optional\)/gi, '(விருப்பத்தேர்வு)');
+      if (translated.startsWith('Upload clear copy of ')) {
+        const item = translated.replace('Upload clear copy of ', '').replace(/\s*\(விருப்பத்தேர்வு\)/gi, '').trim();
+        const locItem = getLocalizedDocName(item, 'ta');
+        return isMandatory 
+          ? `${locItem} தெளிவான நகலைப் பதிவேற்றவும்` 
+          : `${locItem} தெளிவான நகல் (விருப்பத்தேர்வு)`;
+      }
+      if (isMandatory) {
+        return translated.replace(/\s*\((விருப்பத்தேர்வு|optional)\)/gi, '').trim();
+      }
+      return translated;
+    }
+
+    return isMandatory 
+      ? 'தெளிவான ஸ்கேன் நகல் அல்லது புகைப்பட சான்றைப் பதிவேற்றவும்' 
+      : 'சான்று நகலைப் பதிவேற்றவும் (விருப்பத்தேர்வு)';
+  }
+
+  // English
+  if (isMandatory) {
+    return String(desc || 'Upload clear scanned copy or photo proof').replace(/\s*\((optional|விருப்பத்தேர்வு)\)/gi, '').trim();
+  } else {
+    let clean = String(desc || 'Upload clear copy or photo proof');
+    if (!clean.toLowerCase().includes('optional')) {
+      clean += ' (Optional)';
+    }
+    return clean;
+  }
 }
