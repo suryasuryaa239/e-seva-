@@ -9,6 +9,7 @@ import TopBar from './components/TopBar';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import WhatsAppSupport from './components/WhatsAppSupport';
+import FloatingBackButton from './components/FloatingBackButton';
 import ErrorBoundary from './components/ErrorBoundary';
 
 // Pages
@@ -159,8 +160,9 @@ function AppContent() {
         </Routes>
       </main>
 
-      {/* Global Footer & WhatsApp Floating Support - Hidden on Admin & Login Pages */}
+      {/* Global Footer, Back Navigation & WhatsApp Floating Support */}
       {!hideFooter && <Footer />}
+      {!hideFooter && <FloatingBackButton />}
       {!hideFooter && <WhatsAppSupport />}
 
     </div>

@@ -7,6 +7,7 @@ import {
 import CertificatePrint from '../components/CertificatePrint';
 import ReceiptModal from '../components/ReceiptModal';
 import StatusBadge from '../components/StatusBadge';
+import Breadcrumbs from '../components/Breadcrumbs';
 import { useLanguage } from '../context/LanguageContext';
 
 export default function ApplicationDetailView() {
@@ -110,14 +111,14 @@ export default function ApplicationDetailView() {
     <div className="min-h-screen bg-slate-100 py-8 px-4 sm:px-6 lg:px-8 font-sans selection:bg-orange-500 selection:text-white">
       <div className="max-w-6xl mx-auto space-y-6">
 
-        {/* Breadcrumb */}
-        <div className="flex items-center space-x-2 text-xs text-slate-500">
-          <Link to="/" className="hover:text-slate-900 transition-colors">{t.homeNav || (lang === 'ta' ? 'முகப்பு' : 'Portal Home')}</Link>
-          <span>/</span>
-          <Link to="/my-applications" className="hover:text-slate-900 transition-colors">{t.myApplicationsNav || (lang === 'ta' ? 'எனது விண்ணப்பங்கள்' : 'My Applications')}</Link>
-          <span>/</span>
-          <span className="font-bold text-orange-600 font-mono">{details.application_number}</span>
-        </div>
+        {/* Breadcrumb with Back Button */}
+        <Breadcrumbs
+          fallbackPath="/my-applications"
+          items={[
+            { label: t.myApplicationsNav || (lang === 'ta' ? 'எனது விண்ணப்பங்கள்' : 'My Applications'), path: '/my-applications' },
+            { label: details.application_number }
+          ]}
+        />
 
         {/* Notice Disclaimer */}
         <div className="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-2xl shadow-sm flex items-start space-x-3">

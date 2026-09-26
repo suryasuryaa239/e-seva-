@@ -103,10 +103,21 @@ export default function UserNotifications() {
         {/* Header Breadcrumb & Title */}
         <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
           <div>
-            <div className="flex items-center space-x-2 text-xs text-slate-500 mb-1">
-              <Link to="/dashboard" className="hover:text-indigo-600">{lang === 'ta' ? 'முகப்புப்பலகை' : 'Dashboard'}</Link>
-              <span>/</span>
-              <span className="font-semibold text-slate-800">{t.notificationsTitle || 'Notifications Center'}</span>
+            <div className="flex items-center space-x-3 mb-2">
+              <button
+                type="button"
+                onClick={() => navigate(-1)}
+                className="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-100 hover:bg-orange-50 text-slate-700 hover:text-orange-600 font-extrabold text-xs rounded-xl border border-slate-200 transition-all cursor-pointer"
+                title={lang === 'ta' ? 'முந்தைய பக்கத்திற்குச் செல்ல' : 'Go back'}
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+                <span>{lang === 'ta' ? 'பின்செல்ல' : 'Back'}</span>
+              </button>
+              <div className="flex items-center space-x-2 text-xs text-slate-500">
+                <Link to="/dashboard" className="hover:text-orange-600 font-medium">{lang === 'ta' ? 'முகப்புப்பலகை' : 'Dashboard'}</Link>
+                <span>/</span>
+                <span className="font-semibold text-slate-800">{t.notificationsTitle || 'Notifications Center'}</span>
+              </div>
             </div>
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-indigo-600 text-white rounded-xl flex items-center justify-center shadow">

@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { getLocalizedService } from '../data/servicesCatalogData';
+import Breadcrumbs from '../components/Breadcrumbs';
 
 const ICON_MAP = {
   Fingerprint, CreditCard, Vote, FileText, MapPin, Globe, Car, Briefcase, Zap, Grid
@@ -137,14 +138,14 @@ export default function CategoryView() {
     <div className="min-h-screen bg-slate-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto space-y-6">
 
-        {/* Navigation Breadcrumb */}
-        <div className="flex items-center space-x-2 text-sm text-slate-600">
-          <Link to="/" className="hover:text-indigo-600">{lang === 'ta' ? 'முகப்பு' : 'Home'}</Link>
-          <span>/</span>
-          <Link to="/services" className="hover:text-indigo-600">{lang === 'ta' ? 'சேவைகள்' : 'Services'}</Link>
-          <span>/</span>
-          <span className="font-semibold text-slate-800">{categoryData ? (categoryData.displayName || categoryData.name) : 'Category'}</span>
-        </div>
+        {/* Navigation Breadcrumb with Back Button */}
+        <Breadcrumbs
+          fallbackPath="/services"
+          items={[
+            { label: lang === 'ta' ? 'சேவைகள்' : 'Services', path: '/services' },
+            { label: categoryData ? (categoryData.displayName || categoryData.name) : 'Category' }
+          ]}
+        />
 
         {/* NEUTRAL SAFETY / FACILITATION DISCLAIMER NOTICE */}
         <div className="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-lg shadow-sm flex items-start space-x-3">
