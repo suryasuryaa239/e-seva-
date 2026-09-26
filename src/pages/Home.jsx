@@ -158,98 +158,101 @@ export default function Home() {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           
-          {heroBanners.length > 0 ? (
-            <div className="relative bg-[#0b192c] rounded-3xl overflow-hidden shadow-2xl border border-slate-800 text-white min-h-[380px] sm:min-h-[420px] flex items-center">
-              
-              {/* Active Banner Background Image */}
-              <div className="absolute inset-0 z-0">
-                <img
-                  src={heroBanners[currentSlide]?.image_url}
-                  alt={heroBanners[currentSlide]?.title || 'Hero Banner'}
-                  className={`w-full h-full object-cover transition-all duration-700 ${
-                    heroBanners[currentSlide]?.title ? 'opacity-35 scale-105' : 'opacity-100'
-                  }`}
-                  onError={(e) => {
-                    e.target.src = 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?q=80&w=1200&auto=format&fit=crop';
-                  }}
-                />
-                {heroBanners[currentSlide]?.title && (
-                  <div className="absolute inset-0 bg-gradient-to-r from-[#0b192c] via-[#0b192c]/90 to-transparent" />
-                )}
-              </div>
-
-              {/* Content Overlay */}
-              {heroBanners[currentSlide]?.title ? (
-                <div className="relative z-10 p-8 sm:p-12 lg:p-16 max-w-2xl space-y-5">
-                  <div className="flex items-center space-x-3">
-                    <span className="inline-block text-[11px] font-black uppercase text-orange-400 tracking-widest bg-orange-950/70 border border-orange-500/30 px-3 py-1 rounded-full">
-                      {t.portalName} • PROMOTION
-                    </span>
-                  </div>
-
-                  <h1 className="font-heading font-extrabold text-3xl sm:text-4xl lg:text-5xl tracking-tight leading-tight text-white animate-in fade-in duration-300">
-                    {heroBanners[currentSlide]?.title}
-                  </h1>
-
-                  {heroBanners[currentSlide]?.description && (
-                    <p className="text-slate-300 text-sm sm:text-base font-normal leading-relaxed line-clamp-3">
-                      {heroBanners[currentSlide]?.description}
-                    </p>
+          {heroBanners.length > 0 ? (() => {
+            const activeBanner = heroBanners[currentSlide] || heroBanners[0] || {};
+            return (
+              <div className="relative bg-[#0b192c] rounded-3xl overflow-hidden shadow-2xl border border-slate-800 text-white min-h-[380px] sm:min-h-[420px] flex items-center">
+                
+                {/* Active Banner Background Image */}
+                <div className="absolute inset-0 z-0">
+                  <img
+                    src={activeBanner.image_url}
+                    alt={activeBanner.title || 'Hero Banner'}
+                    className={`w-full h-full object-cover transition-all duration-700 ${
+                      activeBanner.title ? 'opacity-35 scale-105' : 'opacity-100'
+                    }`}
+                    onError={(e) => {
+                      e.target.src = 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?q=80&w=1200&auto=format&fit=crop';
+                    }}
+                  />
+                  {activeBanner.title && (
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#0b192c] via-[#0b192c]/90 to-transparent" />
                   )}
-
-                  {/* Actions */}
-                  <div className="pt-2 flex flex-wrap items-center gap-4">
-                    <Link
-                      to={heroBanners[currentSlide]?.link_url || '/services'}
-                      className="bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-xs sm:text-sm px-7 py-3.5 rounded-xl shadow-lg transition-all flex items-center gap-2 group"
-                    >
-                      <span>{t.exploreServices || (lang === 'ta' ? 'சேவைகளைப் பார்க்கவும்' : 'Explore Services')}</span>
-                      <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform" />
-                    </Link>
-
-                    <Link
-                      to="/track"
-                      className="bg-white/10 hover:bg-white/20 text-white font-bold text-xs sm:text-sm px-6 py-3.5 rounded-xl border border-white/20 transition-all"
-                    >
-                      {t.trackAppHero || t.trackApp || (lang === 'ta' ? 'விண்ணப்பத்தைக் கண்காணிக்கவும்' : 'Track Application')}
-                    </Link>
-                  </div>
                 </div>
-              ) : (
-                /* Pure Image Banner Overlay */
-                <div className="relative z-10 p-6 sm:p-8 flex flex-col justify-end h-full w-full pointer-events-none">
-                  {heroBanners[currentSlide]?.link_url && (
-                    <div className="pt-4 pointer-events-auto">
+
+                {/* Content Overlay */}
+                {activeBanner.title ? (
+                  <div className="relative z-10 p-8 sm:p-12 lg:p-16 max-w-2xl space-y-5">
+                    <div className="flex items-center space-x-3">
+                      <span className="inline-block text-[11px] font-black uppercase text-orange-400 tracking-widest bg-orange-950/70 border border-orange-500/30 px-3 py-1 rounded-full">
+                        {t.portalName} • PROMOTION
+                      </span>
+                    </div>
+
+                    <h1 className="font-heading font-extrabold text-3xl sm:text-4xl lg:text-5xl tracking-tight leading-tight text-white animate-in fade-in duration-300">
+                      {activeBanner.title}
+                    </h1>
+
+                    {activeBanner.description && (
+                      <p className="text-slate-300 text-sm sm:text-base font-normal leading-relaxed line-clamp-3">
+                        {activeBanner.description}
+                      </p>
+                    )}
+
+                    {/* Actions */}
+                    <div className="pt-2 flex flex-wrap items-center gap-4">
                       <Link
-                        to={heroBanners[currentSlide]?.link_url}
-                        className="inline-flex items-center gap-2 bg-[#0b192c]/90 hover:bg-orange-600 text-white font-extrabold text-xs sm:text-sm px-6 py-3 rounded-xl shadow-xl border border-slate-700/80 backdrop-blur-md transition-all group"
+                        to={activeBanner.link_url || '/services'}
+                        className="bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-xs sm:text-sm px-7 py-3.5 rounded-xl shadow-lg transition-all flex items-center gap-2 group"
                       >
-                        <span>{lang === 'ta' ? 'மேலும் விவரங்களுக்கு இங்கே கிளிக் செய்யவும்' : 'Click to View Details'}</span>
-                        <ArrowRight className="w-4 h-4 text-orange-400 group-hover:translate-x-1 transition-transform" />
+                        <span>{t.exploreServices || (lang === 'ta' ? 'சேவைகளைப் பார்க்கவும்' : 'Explore Services')}</span>
+                        <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform" />
+                      </Link>
+
+                      <Link
+                        to="/track"
+                        className="bg-white/10 hover:bg-white/20 text-white font-bold text-xs sm:text-sm px-6 py-3.5 rounded-xl border border-white/20 transition-all"
+                      >
+                        {t.trackAppHero || t.trackApp || (lang === 'ta' ? 'விண்ணப்பத்தைக் கண்காணிக்கவும்' : 'Track Application')}
                       </Link>
                     </div>
-                  )}
-                </div>
-              )}
+                  </div>
+                ) : (
+                  /* Pure Image Banner Overlay */
+                  <div className="relative z-10 p-6 sm:p-8 flex flex-col justify-end h-full w-full pointer-events-none">
+                    {activeBanner.link_url && (
+                      <div className="pt-4 pointer-events-auto">
+                        <Link
+                          to={activeBanner.link_url}
+                          className="inline-flex items-center gap-2 bg-[#0b192c]/90 hover:bg-orange-600 text-white font-extrabold text-xs sm:text-sm px-6 py-3 rounded-xl shadow-xl border border-slate-700/80 backdrop-blur-md transition-all group"
+                        >
+                          <span>{lang === 'ta' ? 'மேலும் விவரங்களுக்கு இங்கே கிளிக் செய்யவும்' : 'Click to View Details'}</span>
+                          <ArrowRight className="w-4 h-4 text-orange-400 group-hover:translate-x-1 transition-transform" />
+                        </Link>
+                      </div>
+                    )}
+                  </div>
+                )}
 
-              {/* Carousel Indicators / Controls */}
-              {heroBanners.length > 1 && (
-                <div className="absolute bottom-5 right-6 z-20 flex items-center space-x-2 bg-slate-950/60 backdrop-blur-md px-3.5 py-2 rounded-full border border-slate-800">
-                  {heroBanners.map((banner, idx) => (
-                    <button
-                      key={banner.id || idx}
-                      onClick={() => setCurrentSlide(idx)}
-                      className={`h-2 rounded-full transition-all cursor-pointer ${
-                        currentSlide === idx ? 'w-7 bg-orange-500' : 'w-2 bg-slate-600 hover:bg-slate-400'
-                      }`}
-                      title={`Go to slide ${idx + 1}: ${banner.title}`}
-                    />
-                  ))}
-                </div>
-              )}
+                {/* Carousel Indicators / Controls */}
+                {heroBanners.length > 1 && (
+                  <div className="absolute bottom-5 right-6 z-20 flex items-center space-x-2 bg-slate-950/60 backdrop-blur-md px-3.5 py-2 rounded-full border border-slate-800">
+                    {heroBanners.map((banner, idx) => (
+                      <button
+                        key={banner.id || idx}
+                        onClick={() => setCurrentSlide(idx)}
+                        className={`h-2 rounded-full transition-all cursor-pointer ${
+                          currentSlide === idx ? 'w-7 bg-orange-500' : 'w-2 bg-slate-600 hover:bg-slate-400'
+                        }`}
+                        title={`Go to slide ${idx + 1}: ${banner.title || 'Slide'}`}
+                      />
+                    ))}
+                  </div>
+                )}
 
-            </div>
-          ) : (
+              </div>
+            );
+          })() : (
             /* Default Static Hero Fallback if Banners Empty */
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
               <div className="lg:col-span-6 space-y-6 text-center lg:text-left">

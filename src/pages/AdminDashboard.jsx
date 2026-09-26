@@ -7770,13 +7770,48 @@ export default function AdminDashboard() {
 
               {/* Banner Artwork Image */}
               <div className="space-y-2">
-                <label className="font-extrabold text-slate-800 block">
-                  Banner Artwork Image
-                </label>
+                <div className="flex items-center justify-between">
+                  <label className="font-extrabold text-slate-800 block">
+                    Banner Artwork Image *
+                  </label>
+                  <span className="text-[10px] text-orange-600 font-bold">Recommended: 1200x500px</span>
+                </div>
+
+                {/* Live Image Preview Box */}
+                {(() => {
+                  let previewSrc = '';
+                  if (bannerForm.image_file) {
+                    try {
+                      previewSrc = URL.createObjectURL(bannerForm.image_file);
+                    } catch (e) {}
+                  } else if (bannerForm.image_url_input) {
+                    previewSrc = bannerForm.image_url_input;
+                  }
+
+                  if (!previewSrc) return null;
+
+                  return (
+                    <div className="relative h-32 rounded-2xl overflow-hidden border border-slate-200 bg-slate-900 group">
+                      <img
+                        src={previewSrc}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent flex items-end p-2.5">
+                        <span className="text-[10px] font-bold text-white bg-black/60 px-2 py-0.5 rounded backdrop-blur-sm">
+                          {bannerForm.image_file ? `File: ${bannerForm.image_file.name}` : 'Live Preview'}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })()}
 
                 {/* File Upload Input */}
                 <div className="space-y-1">
-                  <span className="text-[10px] text-slate-500 block">Upload Image File (JPG/PNG):</span>
+                  <span className="text-[10px] text-slate-500 block font-semibold">Upload Image File (JPG/PNG/WEBP):</span>
                   <input
                     type="file"
                     accept="image/*"
@@ -7785,20 +7820,42 @@ export default function AdminDashboard() {
                         setBannerForm({ ...bannerForm, image_file: e.target.files[0] });
                       }
                     }}
-                    className="w-full text-xs text-slate-500 bg-slate-50 border border-slate-300 rounded-xl p-2.5 cursor-pointer"
+                    className="w-full text-xs text-slate-600 bg-slate-50 border border-slate-300 rounded-xl p-2.5 cursor-pointer file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-extrabold file:bg-[#0b192c] file:text-white"
                   />
                 </div>
 
                 {/* Image URL Input */}
                 <div className="space-y-1">
-                  <span className="text-[10px] text-slate-500 block">OR Image URL:</span>
+                  <span className="text-[10px] text-slate-500 block font-semibold">OR Image Web URL:</span>
                   <input
                     type="url"
                     placeholder="https://images.unsplash.com/..."
                     value={bannerForm.image_url_input}
                     onChange={(e) => setBannerForm({ ...bannerForm, image_url_input: e.target.value })}
-                    className="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-slate-900 font-mono text-[11px] outline-none"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-slate-900 font-mono text-[11px] outline-none focus:border-orange-500"
                   />
+                </div>
+
+                {/* Quick High-Quality Presets */}
+                <div className="pt-1">
+                  <span className="text-[10px] font-bold text-slate-400 block mb-1">Quick Presets:</span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {[
+                      { name: '🏛️ Digital Governance', url: 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?q=80&w=1200&auto=format&fit=crop' },
+                      { name: '📑 Aadhaar Portal', url: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=1200&auto=format&fit=crop' },
+                      { name: '📜 Official Certificates', url: 'https://images.unsplash.com/photo-1450133064473-71024230f91b?q=80&w=1200&auto=format&fit=crop' },
+                      { name: '🏢 Tamil Nadu Seva', url: 'https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?q=80&w=1200&auto=format&fit=crop' }
+                    ].map((p, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => setBannerForm({ ...bannerForm, image_url_input: p.url, image_file: null })}
+                        className="px-2 py-1 text-[10px] font-bold bg-slate-100 hover:bg-orange-50 hover:text-orange-700 text-slate-700 rounded-lg border border-slate-200 transition-colors"
+                      >
+                        {p.name}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
 

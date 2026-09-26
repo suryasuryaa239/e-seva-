@@ -73,7 +73,7 @@ class TiDBSupportedDatabase {
     try {
       const conn = await pool.getConnection();
       try {
-        const tables = ['users', 'admins', 'categories', 'services', 'applications', 'payments', 'contact_messages', 'career_applications', 'notifications', 'application_documents', 'application_field_values', 'site_settings'];
+        const tables = ['users', 'admins', 'categories', 'services', 'applications', 'payments', 'contact_messages', 'career_applications', 'banners', 'notifications', 'application_documents', 'application_field_values', 'site_settings'];
         for (const tbl of tables) {
           try {
             const [rows] = await conn.query(`SELECT * FROM ${tbl}`);
@@ -136,6 +136,40 @@ class TiDBSupportedDatabase {
               }
             } else if (parsedRows.length > 0) {
               this.data[tbl] = parsedRows;
+            } else if (tbl === 'banners' && parsedRows.length === 0) {
+              const defaultBanners = (this.data['banners'] && this.data['banners'].length > 0) ? [...this.data['banners']] : [
+                {
+                  title: 'Government Services at Your Doorstep',
+                  description: 'Apply for Community, Birth, Income & Residence Certificates online with instant tracking.',
+                  image_url: 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?q=80&w=1200&auto=format&fit=crop',
+                  link_url: '/services',
+                  duration_seconds: 5,
+                  status: 'Active',
+                  display_order: 1
+                },
+                {
+                  title: 'Fast-Track Aadhaar & Ration Card Portals',
+                  description: 'Update your biometric details, mobile number, and address seamlessly.',
+                  image_url: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=1200&auto=format&fit=crop',
+                  link_url: '/category/aadhaar',
+                  duration_seconds: 6,
+                  status: 'Active',
+                  display_order: 2
+                },
+                {
+                  title: 'TNeGA Verified Digital Documentation',
+                  description: 'Upload, inspect, and download official certificate records with automated SMS notifications.',
+                  image_url: 'https://images.unsplash.com/photo-1450133064473-71024230f91b?q=80&w=1200&auto=format&fit=crop',
+                  link_url: '/track',
+                  duration_seconds: 5,
+                  status: 'Active',
+                  display_order: 3
+                }
+              ];
+              this.data['banners'] = [];
+              for (const b of defaultBanners) {
+                this.insert('banners', b);
+              }
             }
           } catch (e) {
             console.warn(`[SYNC WARNING] Table ${tbl}:`, e.message);
@@ -208,7 +242,7 @@ class TiDBSupportedDatabase {
 
   async persistInsertToTiDB(tableName, row) {
     try {
-      const allowedTables = ['users', 'admins', 'categories', 'services', 'applications', 'payments', 'contact_messages', 'career_applications', 'notifications', 'application_documents', 'application_field_values', 'site_settings'];
+      const allowedTables = ['users', 'admins', 'categories', 'services', 'applications', 'payments', 'contact_messages', 'career_applications', 'banners', 'notifications', 'application_documents', 'application_field_values', 'site_settings'];
       if (!allowedTables.includes(tableName)) return;
 
       const validCols = await this.getTableColumns(tableName);
@@ -275,7 +309,7 @@ class TiDBSupportedDatabase {
 
   async persistUpdateToTiDB(tableName, id, updates) {
     try {
-      const allowedTables = ['users', 'admins', 'categories', 'services', 'applications', 'payments', 'contact_messages', 'career_applications', 'notifications', 'application_documents', 'application_field_values', 'site_settings'];
+      const allowedTables = ['users', 'admins', 'categories', 'services', 'applications', 'payments', 'contact_messages', 'career_applications', 'banners', 'notifications', 'application_documents', 'application_field_values', 'site_settings'];
       if (!allowedTables.includes(tableName) || !id) return;
 
       const validCols = await this.getTableColumns(tableName);

@@ -248,6 +248,21 @@ export async function initializeDatabaseSchema() {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
 
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS banners (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        title VARCHAR(255),
+        description TEXT,
+        image_url TEXT NOT NULL,
+        link_url VARCHAR(255) DEFAULT '/services',
+        duration_seconds INT DEFAULT 5,
+        status VARCHAR(50) DEFAULT 'Active',
+        display_order INT DEFAULT 1,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `);
+
     // Automated Column Migrations for any pre-existing tables
     const migrations = [
       "ALTER TABLE applications ADD COLUMN IF NOT EXISTS user_name VARCHAR(255)",
@@ -286,7 +301,10 @@ export async function initializeDatabaseSchema() {
       "ALTER TABLE services ADD COLUMN IF NOT EXISTS image_url TEXT",
       "ALTER TABLE services ADD COLUMN IF NOT EXISTS is_active TINYINT(1) DEFAULT 1",
       "ALTER TABLE services ADD COLUMN IF NOT EXISTS fields_json JSON",
-      "ALTER TABLE services ADD COLUMN IF NOT EXISTS documents_json JSON"
+      "ALTER TABLE services ADD COLUMN IF NOT EXISTS documents_json JSON",
+      "ALTER TABLE banners ADD COLUMN IF NOT EXISTS duration_seconds INT DEFAULT 5",
+      "ALTER TABLE banners ADD COLUMN IF NOT EXISTS display_order INT DEFAULT 1",
+      "ALTER TABLE banners ADD COLUMN IF NOT EXISTS status VARCHAR(50) DEFAULT 'Active'"
     ];
 
     for (const sql of migrations) {

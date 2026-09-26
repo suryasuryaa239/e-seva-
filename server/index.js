@@ -2238,19 +2238,28 @@ app.get('/api/documents/preview-file/:filename', optionalAuthenticateToken, asyn
 
   const absolutePath = path.join(uploadsDir, filename);
   const certPath = path.join(uploadsDir, 'certificates', filename);
+  const bannerPath = path.join(uploadsDir, 'banners', filename);
   const tmpPath = path.join('/tmp', 'uploads', filename);
   const tmpCertPath = path.join('/tmp', 'uploads', 'certificates', filename);
+  const tmpBannerPath = path.join('/tmp', 'uploads', 'banners', filename);
+
   if (fs.existsSync(absolutePath)) {
     return res.sendFile(absolutePath);
   }
   if (fs.existsSync(certPath)) {
     return res.sendFile(certPath);
   }
+  if (fs.existsSync(bannerPath)) {
+    return res.sendFile(bannerPath);
+  }
   if (fs.existsSync(tmpPath)) {
     return res.sendFile(tmpPath);
   }
   if (fs.existsSync(tmpCertPath)) {
     return res.sendFile(tmpCertPath);
+  }
+  if (fs.existsSync(tmpBannerPath)) {
+    return res.sendFile(tmpBannerPath);
   }
 
   // Stream from FTP if configured
@@ -2259,6 +2268,12 @@ app.get('/api/documents/preview-file/:filename', optionalAuthenticateToken, asyn
       let ftpBuffer = await downloadFromFTP(filename, 'certificates');
       if (!ftpBuffer) {
         ftpBuffer = await downloadFromFTP(filename, 'documents');
+      }
+      if (!ftpBuffer) {
+        ftpBuffer = await downloadFromFTP(filename, 'banners');
+      }
+      if (!ftpBuffer) {
+        ftpBuffer = await downloadFromFTP(filename, '');
       }
       if (ftpBuffer) {
         const ext = path.extname(filename).toLowerCase();
@@ -2277,7 +2292,13 @@ app.get('/api/documents/preview-file/:filename', optionalAuthenticateToken, asyn
     }
   }
 
-  // Fallback SVG Proof Renderer
+  const fileExt = path.extname(filename).toLowerCase();
+  const isImageFile = ['.jpg', '.jpeg', '.png', '.webp', '.jfif', '.bmp'].includes(fileExt);
+  if (isImageFile) {
+    return res.redirect('https://images.unsplash.com/photo-1541872703-74c5e44368f9?q=80&w=1200&auto=format&fit=crop');
+  }
+
+  // Fallback SVG Proof Renderer for applicant documents
   res.setHeader('Content-Type', 'image/svg+xml');
   return res.send(generateFallbackDocSvg(doc ? doc.document_name : 'Applicant Document Proof', appRecord ? appRecord.application_number : 'ESV-2026-ARCHIVE'));
 });
@@ -2587,32 +2608,49 @@ try {
 
 // Public Banners Endpoint (Active Banners)
 app.get('/api/banners', (req, res) => {
-  const activeBanners = db.all('banners', b => b.status === 'Active')
-                         .sort((a, b) => (a.display_order || a.id) - (b.display_order || b.id));
+  const activeBanners = db.all('banners', b => (b.status || 'Active').toLowerCase() === 'active')
+                         .sort((a, b) => (Number(a.display_order) || a.id) - (Number(b.display_order) || b.id));
   res.json(activeBanners);
 });
 
 // Admin All Banners Endpoint
 app.get('/api/admin/banners', authenticateAdmin, (req, res) => {
   const allBanners = db.all('banners')
-                       .sort((a, b) => (a.display_order || a.id) - (b.display_order || b.id));
+                       .sort((a, b) => (Number(a.display_order) || a.id) - (Number(b.display_order) || b.id));
   res.json(allBanners);
 });
 
 // Admin Create Banner
-app.post('/api/admin/banners', authenticateAdmin, upload.single('image'), (req, res) => {
+app.post('/api/admin/banners', authenticateAdmin, upload.single('image'), async (req, res) => {
   try {
-    const { title, description, link_url, duration_seconds, status, display_order, image_url_input } = req.body;
+    const { title, description, link_url, duration_seconds, status, display_order, image_url_input } = req.body || {};
 
-    let image_url = image_url_input || '';
+    let image_url = (image_url_input || '').trim();
     if (req.file) {
-      image_url = `/api/documents/preview-file/${req.file.filename}`;
+      try {
+        const fileBuffer = req.file.buffer || (req.file.path && fs.existsSync(req.file.path) ? fs.readFileSync(req.file.path) : null);
+        if (fileBuffer) {
+          image_url = await storeUploadedFile({
+            buffer: fileBuffer,
+            originalname: req.file.originalname,
+            mimetype: req.file.mimetype,
+            filename: req.file.filename,
+            subDir: 'banners'
+          });
+        }
+      } catch (uploadErr) {
+        console.warn('[Banner Create Upload Error]:', uploadErr.message);
+      }
+      if (!image_url) {
+        image_url = `/api/documents/preview-file/${req.file.filename}`;
+      }
     }
 
     if (!image_url) {
       image_url = 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?q=80&w=1200&auto=format&fit=crop';
     }
 
+    const currentBanners = db.all('banners');
     const newBanner = db.insert('banners', {
       title: title ? title.trim() : '',
       description: description ? description.trim() : '',
@@ -2620,7 +2658,7 @@ app.post('/api/admin/banners', authenticateAdmin, upload.single('image'), (req, 
       link_url: link_url ? link_url.trim() : '/services',
       duration_seconds: duration_seconds ? Math.max(2, Math.min(60, Number(duration_seconds))) : 5,
       status: status || 'Active',
-      display_order: display_order ? Number(display_order) : 1
+      display_order: display_order ? Number(display_order) : (currentBanners.length + 1)
     });
 
     res.json({ message: 'Banner created successfully', banner: newBanner });
@@ -2630,18 +2668,34 @@ app.post('/api/admin/banners', authenticateAdmin, upload.single('image'), (req, 
 });
 
 // Admin Update Banner
-app.put('/api/admin/banners/:id', authenticateAdmin, upload.single('image'), (req, res) => {
+app.put('/api/admin/banners/:id', authenticateAdmin, upload.single('image'), async (req, res) => {
   try {
     const bannerId = Number(req.params.id);
     const banner = db.get('banners', b => b.id === bannerId);
     if (!banner) return res.status(404).json({ error: 'Banner not found' });
 
-    const { title, description, link_url, duration_seconds, status, display_order, image_url_input } = req.body;
+    const { title, description, link_url, duration_seconds, status, display_order, image_url_input } = req.body || {};
 
     let image_url = banner.image_url;
     if (req.file) {
-      image_url = `/api/documents/preview-file/${req.file.filename}`;
-    } else if (image_url_input) {
+      try {
+        const fileBuffer = req.file.buffer || (req.file.path && fs.existsSync(req.file.path) ? fs.readFileSync(req.file.path) : null);
+        if (fileBuffer) {
+          image_url = await storeUploadedFile({
+            buffer: fileBuffer,
+            originalname: req.file.originalname,
+            mimetype: req.file.mimetype,
+            filename: req.file.filename,
+            subDir: 'banners'
+          });
+        }
+      } catch (uploadErr) {
+        console.warn('[Banner Update Upload Error]:', uploadErr.message);
+      }
+      if (!image_url) {
+        image_url = `/api/documents/preview-file/${req.file.filename}`;
+      }
+    } else if (image_url_input && image_url_input.trim()) {
       image_url = image_url_input.trim();
     }
 
