@@ -259,8 +259,20 @@ export default function ServicesDirectory() {
                 <div className="space-y-3">
                   {/* CATEGORY ICON & FEE BADGE */}
                   <div className="flex items-center justify-between">
-                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-slate-50 to-orange-50/30 border border-slate-200/90 p-1.5 flex items-center justify-center shadow-xs group-hover:scale-110 group-hover:border-orange-300 transition-all duration-300">
-                      {getCategoryIcon(srv.category_slug)}
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-slate-50 to-orange-50/30 border border-slate-200/90 p-1 flex items-center justify-center shadow-xs group-hover:scale-110 group-hover:border-orange-300 transition-all duration-300 overflow-hidden shrink-0">
+                      {srv.image_url ? (
+                        <img 
+                          src={srv.image_url} 
+                          alt={srv.name} 
+                          className="w-full h-full object-cover rounded-xl"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                          }}
+                        />
+                      ) : null}
+                      <span className="flex items-center justify-center w-full h-full" style={{ display: srv.image_url ? 'none' : 'flex' }}>
+                        {getCategoryIcon(srv.category_slug)}
+                      </span>
                     </div>
                     <span className="text-[11px] font-extrabold text-orange-700 bg-orange-50 border border-orange-200/80 px-2.5 py-0.5 rounded-full">
                       {srv.fee > 0 ? `₹${srv.fee}` : (lang === 'ta' ? 'இலவசம்' : 'FREE')}

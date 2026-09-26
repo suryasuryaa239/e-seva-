@@ -2239,9 +2239,11 @@ app.get('/api/documents/preview-file/:filename', optionalAuthenticateToken, asyn
   const absolutePath = path.join(uploadsDir, filename);
   const certPath = path.join(uploadsDir, 'certificates', filename);
   const bannerPath = path.join(uploadsDir, 'banners', filename);
+  const servicePath = path.join(uploadsDir, 'services', filename);
   const tmpPath = path.join('/tmp', 'uploads', filename);
   const tmpCertPath = path.join('/tmp', 'uploads', 'certificates', filename);
   const tmpBannerPath = path.join('/tmp', 'uploads', 'banners', filename);
+  const tmpServicePath = path.join('/tmp', 'uploads', 'services', filename);
 
   if (fs.existsSync(absolutePath)) {
     return res.sendFile(absolutePath);
@@ -2252,6 +2254,9 @@ app.get('/api/documents/preview-file/:filename', optionalAuthenticateToken, asyn
   if (fs.existsSync(bannerPath)) {
     return res.sendFile(bannerPath);
   }
+  if (fs.existsSync(servicePath)) {
+    return res.sendFile(servicePath);
+  }
   if (fs.existsSync(tmpPath)) {
     return res.sendFile(tmpPath);
   }
@@ -2260,6 +2265,9 @@ app.get('/api/documents/preview-file/:filename', optionalAuthenticateToken, asyn
   }
   if (fs.existsSync(tmpBannerPath)) {
     return res.sendFile(tmpBannerPath);
+  }
+  if (fs.existsSync(tmpServicePath)) {
+    return res.sendFile(tmpServicePath);
   }
 
   // Stream from FTP if configured
@@ -3116,17 +3124,31 @@ app.delete(['/api/admin/users/:id', '/api/admin/customers/:id'], authenticateAdm
 });
 
 // Admin Services & Categories Management
-app.post('/api/admin/services', authenticateAdmin, upload.any(), (req, res) => {
+app.post('/api/admin/services', authenticateAdmin, upload.any(), async (req, res) => {
   try {
     let { category_id, category_name, name, description, eligibility, processing_info, processing_time, fee, total_fee, govt_fee, fields, documents, image_url_input, image_url: bodyImageUrl } = req.body;
     if ((!category_id && !category_name) || !name) return res.status(400).json({ error: 'Category and Service Name required' });
 
     let image_url = (image_url_input || bodyImageUrl || '').trim();
-    if (req.file) {
-      image_url = `/api/documents/preview-file/${req.file.filename}`;
-    } else if (req.files && req.files.length > 0) {
-      const imgFile = req.files.find(f => f.fieldname === 'image' || f.mimetype.startsWith('image/')) || req.files[0];
-      if (imgFile) image_url = `/api/documents/preview-file/${imgFile.filename}`;
+    const uploadedImg = req.file || (req.files && req.files.find(f => f.fieldname === 'image' || f.fieldname === 'image_file' || f.mimetype.startsWith('image/')));
+    if (uploadedImg) {
+      try {
+        const fileBuffer = uploadedImg.buffer || (uploadedImg.path && fs.existsSync(uploadedImg.path) ? fs.readFileSync(uploadedImg.path) : null);
+        if (fileBuffer) {
+          image_url = await storeUploadedFile({
+            buffer: fileBuffer,
+            originalname: uploadedImg.originalname,
+            mimetype: uploadedImg.mimetype,
+            filename: uploadedImg.filename,
+            subDir: 'services'
+          });
+        }
+      } catch (uploadErr) {
+        console.warn('[Service Create Upload Error]:', uploadErr.message);
+      }
+      if (!image_url) {
+        image_url = `/api/documents/preview-file/${uploadedImg.filename}`;
+      }
     }
 
     let parsedFields = fields;
@@ -3244,7 +3266,7 @@ app.post('/api/admin/services', authenticateAdmin, upload.any(), (req, res) => {
 });
 
 // Admin Edit Service
-app.put('/api/admin/services/:id', authenticateAdmin, upload.any(), (req, res) => {
+app.put('/api/admin/services/:id', authenticateAdmin, upload.any(), async (req, res) => {
   try {
     const sId = Number(req.params.id);
     let existing = !isNaN(sId) ? db.get('services', s => s.id === sId) : null;
@@ -3259,11 +3281,25 @@ app.put('/api/admin/services/:id', authenticateAdmin, upload.any(), (req, res) =
     let { category_id, category_name, name, description, eligibility, processing_info, processing_time, fee, total_fee, govt_fee, is_active, status, fields, documents, image_url_input, image_url: bodyImageUrl } = req.body;
     
     let image_url = existing.image_url || '';
-    if (req.file) {
-      image_url = `/api/documents/preview-file/${req.file.filename}`;
-    } else if (req.files && req.files.length > 0) {
-      const imgFile = req.files.find(f => f.fieldname === 'image' || f.mimetype.startsWith('image/')) || req.files[0];
-      if (imgFile) image_url = `/api/documents/preview-file/${imgFile.filename}`;
+    const uploadedImg = req.file || (req.files && req.files.find(f => f.fieldname === 'image' || f.fieldname === 'image_file' || f.mimetype.startsWith('image/')));
+    if (uploadedImg) {
+      try {
+        const fileBuffer = uploadedImg.buffer || (uploadedImg.path && fs.existsSync(uploadedImg.path) ? fs.readFileSync(uploadedImg.path) : null);
+        if (fileBuffer) {
+          image_url = await storeUploadedFile({
+            buffer: fileBuffer,
+            originalname: uploadedImg.originalname,
+            mimetype: uploadedImg.mimetype,
+            filename: uploadedImg.filename,
+            subDir: 'services'
+          });
+        }
+      } catch (uploadErr) {
+        console.warn('[Service Edit Upload Error]:', uploadErr.message);
+      }
+      if (!image_url) {
+        image_url = `/api/documents/preview-file/${uploadedImg.filename}`;
+      }
     } else if (image_url_input !== undefined || bodyImageUrl !== undefined) {
       const inputVal = (image_url_input !== undefined ? image_url_input : bodyImageUrl) || '';
       if (inputVal.trim()) image_url = inputVal.trim();

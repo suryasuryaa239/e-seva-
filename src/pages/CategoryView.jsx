@@ -270,13 +270,27 @@ export default function CategoryView() {
                       </div>
 
                       {/* Title & Description */}
-                      <div className="space-y-1.5">
-                        <h3 className="text-lg font-bold text-slate-900 group-hover:text-indigo-600 transition-colors leading-snug">
-                          {srv.name}
-                        </h3>
-                        <p className="text-xs text-slate-600 line-clamp-3 leading-relaxed">
-                          {srv.description}
-                        </p>
+                      <div className="flex items-start space-x-3">
+                        {srv.image_url ? (
+                          <div className="w-12 h-12 rounded-xl border border-slate-200 overflow-hidden shrink-0 shadow-xs">
+                            <img 
+                              src={srv.image_url} 
+                              alt={srv.name} 
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                e.currentTarget.parentElement.style.display = 'none';
+                              }}
+                            />
+                          </div>
+                        ) : null}
+                        <div className="space-y-1.5 flex-1 min-w-0">
+                          <h3 className="text-lg font-bold text-slate-900 group-hover:text-indigo-600 transition-colors leading-snug">
+                            {srv.name}
+                          </h3>
+                          <p className="text-xs text-slate-600 line-clamp-3 leading-relaxed">
+                            {srv.description}
+                          </p>
+                        </div>
                       </div>
 
                       {/* Meta Pills */}

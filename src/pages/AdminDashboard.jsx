@@ -17,6 +17,19 @@ import StatusBadge from '../components/StatusBadge';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import { invalidateServicesCache } from '../utils/useLiveServices';
 
+const SERVICE_IMAGE_PRESETS = [
+  { name: '🆔 Aadhaar', url: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=800&auto=format&fit=crop' },
+  { name: '💳 PAN Card', url: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?q=80&w=800&auto=format&fit=crop' },
+  { name: '🗳️ Voter ID', url: 'https://images.unsplash.com/photo-1540910419892-4a36d2c3266c?q=80&w=800&auto=format&fit=crop' },
+  { name: '🌾 Ration Card', url: 'https://images.unsplash.com/photo-1586769852044-692d6e3703f0?q=80&w=800&auto=format&fit=crop' },
+  { name: '📜 Certificates', url: 'https://images.unsplash.com/photo-1450133064473-71024230f91b?q=80&w=800&auto=format&fit=crop' },
+  { name: '🏛️ Land & Patta', url: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=800&auto=format&fit=crop' },
+  { name: '✈️ Passport', url: 'https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=800&auto=format&fit=crop' },
+  { name: '🚗 Driving & RTO', url: 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?q=80&w=800&auto=format&fit=crop' },
+  { name: '💼 Business & MSME', url: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=800&auto=format&fit=crop' },
+  { name: '⚡ Utility Bills', url: 'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?q=80&w=800&auto=format&fit=crop' }
+];
+
 export default function AdminDashboard() {
   const { admin, adminToken, logoutAdmin } = useAuth();
   const { addToast } = useToast();
@@ -567,7 +580,8 @@ export default function AdminDashboard() {
           newFieldType: 'text',
           newFieldOptions: ''
         });
-        fetchServices();
+        invalidateServicesCache();
+        await fetchServices();
       } else {
         addToast(data.error || 'Failed to create service', 'error');
       }
@@ -2461,10 +2475,16 @@ export default function AdminDashboard() {
                             <div className="flex items-center space-x-3">
                               <div className="w-10 h-10 rounded-xl bg-orange-500/10 text-orange-600 font-black flex items-center justify-center text-sm shadow-sm overflow-hidden shrink-0 border border-slate-200">
                                 {srv.image_url ? (
-                                  <img src={srv.image_url} alt={srv.name} className="w-full h-full object-cover" />
-                                ) : (
-                                  <Grid className="w-4 h-4" />
-                                )}
+                                  <img 
+                                    src={srv.image_url} 
+                                    alt={srv.name} 
+                                    className="w-full h-full object-cover" 
+                                    onError={(e) => {
+                                      e.currentTarget.style.display = 'none';
+                                    }}
+                                  />
+                                ) : null}
+                                <Grid className="w-4 h-4" style={{ display: srv.image_url ? 'none' : 'block' }} />
                               </div>
                               <div>
                                 <div className="font-extrabold text-slate-900 text-sm">{srv.name}</div>
@@ -6614,6 +6634,32 @@ export default function AdminDashboard() {
                     </div>
                   </div>
 
+                  {/* Quick Presets */}
+                  <div className="pt-1">
+                    <span className="text-[10px] font-bold text-slate-500 block mb-1.5">⚡ Or Choose Fast Preset Icon:</span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {SERVICE_IMAGE_PRESETS.map((p, idx) => (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => setNewServiceForm(prev => ({
+                            ...prev,
+                            image_url_input: p.url,
+                            image_file: null,
+                            image_preview: p.url
+                          }))}
+                          className={`px-2.5 py-1 text-[11px] font-bold rounded-lg border transition-colors cursor-pointer ${
+                            newServiceForm.image_url_input === p.url && !newServiceForm.image_file
+                              ? 'bg-orange-500 text-white border-orange-600 shadow-xs'
+                              : 'bg-slate-100 hover:bg-orange-50 hover:text-orange-700 text-slate-700 border-slate-200'
+                          }`}
+                        >
+                          {p.name}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
                   {newServiceForm.image_preview && (
                     <div className="relative w-full h-28 bg-slate-100 rounded-2xl border border-slate-200 overflow-hidden group">
                       <img src={newServiceForm.image_preview} alt="Service Banner Preview" className="w-full h-full object-cover" />
@@ -7111,6 +7157,32 @@ export default function AdminDashboard() {
                         }}
                         className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3.5 py-2.5 outline-none focus:border-amber-500 font-medium"
                       />
+                    </div>
+                  </div>
+
+                  {/* Quick Presets */}
+                  <div className="pt-1">
+                    <span className="text-[10px] font-bold text-slate-500 block mb-1.5">⚡ Or Choose Fast Preset Icon:</span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {SERVICE_IMAGE_PRESETS.map((p, idx) => (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => setEditingServiceForm(prev => ({
+                            ...prev,
+                            image_url_input: p.url,
+                            image_file: null,
+                            image_preview: p.url
+                          }))}
+                          className={`px-2.5 py-1 text-[11px] font-bold rounded-lg border transition-colors cursor-pointer ${
+                            editingServiceForm.image_url_input === p.url && !editingServiceForm.image_file
+                              ? 'bg-amber-600 text-white border-amber-700 shadow-xs'
+                              : 'bg-slate-100 hover:bg-amber-50 hover:text-amber-800 text-slate-700 border-slate-200'
+                          }`}
+                        >
+                          {p.name}
+                        </button>
+                      ))}
                     </div>
                   </div>
 
