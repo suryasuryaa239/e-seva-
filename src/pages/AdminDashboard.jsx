@@ -494,7 +494,8 @@ export default function AdminDashboard() {
     ],
     newFieldLabel: '',
     newFieldType: 'text',
-    newFieldOptions: ''
+    newFieldOptions: '',
+    newFieldIsRequired: true
   });
 
   const handleCreateServiceSubmit = async (e) => {
@@ -535,7 +536,18 @@ export default function AdminDashboard() {
         };
       });
       formData.append('documents', JSON.stringify(formattedNewDocs));
-      formData.append('fields', JSON.stringify(newServiceForm.fields));
+      const formattedNewFields = (newServiceForm.fields || []).map((f, idx) => {
+        const isReq = f.is_required !== false && f.is_required !== 0 && f.is_required !== '0' && f.is_required !== 'false';
+        return {
+          field_name: f.field_name || (f.field_label || f.name || `field_${idx + 1}`).toLowerCase().replace(/[^a-z0-9]+/g, '_'),
+          field_label: f.field_label || f.name || f.label || `Field ${idx + 1}`,
+          field_type: f.field_type || 'text',
+          is_required: isReq ? 1 : 0,
+          options: f.options || [],
+          options_json: f.options_json || null
+        };
+      });
+      formData.append('fields', JSON.stringify(formattedNewFields));
       if (newServiceForm.image_file) {
         formData.append('image', newServiceForm.image_file);
       }
@@ -578,7 +590,8 @@ export default function AdminDashboard() {
           ],
           newFieldLabel: '',
           newFieldType: 'text',
-          newFieldOptions: ''
+          newFieldOptions: '',
+          newFieldIsRequired: true
         });
         invalidateServicesCache();
         await fetchServices();
@@ -693,14 +706,34 @@ export default function AdminDashboard() {
     if (Array.isArray(srv.fields) && srv.fields.length > 0) {
       fields = srv.fields.map(f => {
         const opts = extractOpts(f);
+        const isMandatory = f.is_required !== 0 && f.is_required !== false && f.is_required !== '0' && f.is_required !== 'false' && f.required !== false && f.required !== 0 && f.required !== '0' && f.required !== 'false';
         return {
+          field_name: f.field_name || f.name,
           field_label: f.field_label || f.name || f.label || 'Field',
           field_type: f.field_type || f.type || 'text',
-          is_required: f.is_required !== undefined ? Boolean(f.is_required) : true,
+          is_required: isMandatory,
           options: opts,
           options_json: opts
         };
       });
+    } else if (srv.fields_json) {
+      try {
+        const parsed = typeof srv.fields_json === 'string' ? JSON.parse(srv.fields_json) : srv.fields_json;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          fields = parsed.map(f => {
+            const opts = extractOpts(f);
+            const isMandatory = f.is_required !== 0 && f.is_required !== false && f.is_required !== '0' && f.is_required !== 'false' && f.required !== false && f.required !== 0 && f.required !== '0' && f.required !== 'false';
+            return {
+              field_name: f.field_name || f.name,
+              field_label: f.field_label || f.name || f.label || 'Field',
+              field_type: f.field_type || f.type || 'text',
+              is_required: isMandatory,
+              options: opts,
+              options_json: opts
+            };
+          });
+        }
+      } catch (e) {}
     }
 
     // If documents or fields missing from row, fetch full single service details
@@ -723,10 +756,12 @@ export default function AdminDashboard() {
           if (fields.length === 0 && Array.isArray(fullSrv.fields)) {
             fields = fullSrv.fields.map(f => {
               const opts = extractOpts(f);
+              const isMandatory = f.is_required !== 0 && f.is_required !== false && f.is_required !== '0' && f.is_required !== 'false' && f.required !== false && f.required !== 0 && f.required !== '0' && f.required !== 'false';
               return {
+                field_name: f.field_name || f.name,
                 field_label: f.field_label || f.name || f.label || 'Field',
                 field_type: f.field_type || f.type || 'text',
-                is_required: f.is_required !== undefined ? Boolean(f.is_required) : true,
+                is_required: isMandatory,
                 options: opts,
                 options_json: opts
               };
@@ -774,7 +809,8 @@ export default function AdminDashboard() {
       fields: fields,
       newFieldLabel: '',
       newFieldType: 'text',
-      newFieldOptions: ''
+      newFieldOptions: '',
+      newFieldIsRequired: true
     });
     setShowEditServiceModal(true);
   };
@@ -818,7 +854,18 @@ export default function AdminDashboard() {
         };
       });
       formData.append('documents', JSON.stringify(formattedEditDocs));
-      formData.append('fields', JSON.stringify(editingServiceForm.fields));
+      const formattedEditFields = (editingServiceForm.fields || []).map((f, idx) => {
+        const isReq = f.is_required !== false && f.is_required !== 0 && f.is_required !== '0' && f.is_required !== 'false';
+        return {
+          field_name: f.field_name || (f.field_label || f.name || `field_${idx + 1}`).toLowerCase().replace(/[^a-z0-9]+/g, '_'),
+          field_label: f.field_label || f.name || f.label || `Field ${idx + 1}`,
+          field_type: f.field_type || 'text',
+          is_required: isReq ? 1 : 0,
+          options: f.options || [],
+          options_json: f.options_json || null
+        };
+      });
+      formData.append('fields', JSON.stringify(formattedEditFields));
       if (editingServiceForm.image_file) {
         formData.append('image', editingServiceForm.image_file);
       }
@@ -5826,19 +5873,22 @@ export default function AdminDashboard() {
 
                 {selectedService.fields && selectedService.fields.length > 0 ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    {selectedService.fields.map((fld, idx) => (
-                      <div key={idx} className="p-3 bg-slate-50 rounded-xl border border-slate-200 flex justify-between items-center">
-                        <div>
-                          <span className="font-bold text-slate-900 block">{fld.label || fld.name || `Field #${idx+1}`}</span>
-                          <span className="text-[10px] text-slate-500 font-mono">Type: {fld.type || 'text'}</span>
+                    {selectedService.fields.map((fld, idx) => {
+                      const isReq = fld.is_required !== 0 && fld.is_required !== false && fld.is_required !== '0' && fld.is_required !== 'false' && fld.required !== 0 && fld.required !== false && fld.required !== '0' && fld.required !== 'false';
+                      return (
+                        <div key={idx} className="p-3 bg-slate-50 rounded-xl border border-slate-200 flex justify-between items-center">
+                          <div>
+                            <span className="font-bold text-slate-900 block text-xs">{fld.field_label || fld.label || fld.name || `Field #${idx+1}`}</span>
+                            <span className="text-[10px] text-slate-500 font-mono">Type: {fld.field_type || fld.type || 'text'}</span>
+                          </div>
+                          <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-md ${
+                            isReq ? 'bg-amber-100 text-amber-800 border border-amber-200' : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                          }`}>
+                            {isReq ? '🔴 Mandatory' : '🟢 Optional'}
+                          </span>
                         </div>
-                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${
-                          fld.required ? 'bg-orange-100 text-orange-800' : 'bg-slate-200 text-slate-600'
-                        }`}>
-                          {fld.required ? 'Required' : 'Optional'}
-                        </span>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 ) : (
                   <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-1">
@@ -6865,27 +6915,37 @@ export default function AdminDashboard() {
 
               {/* Custom Citizen Applicant Form Fields */}
               <div className="space-y-3">
-                <div className="flex items-center justify-between border-b border-slate-100 pb-1">
-                  <h4 className="font-black text-slate-900 uppercase text-xs tracking-wider">3. Citizen Application Form Fields</h4>
-                  <span className="text-[11px] font-bold text-slate-400">Customizable Inputs</span>
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-1">
+                  <div className="flex items-center space-x-2">
+                    <h4 className="font-black text-slate-900 uppercase text-xs tracking-wider">3. Citizen Application Form Fields (படிவ புலங்கள்)</h4>
+                    <span className="text-[11px] font-bold text-slate-400">Customizable Inputs</span>
+                  </div>
+                  <div className="flex items-center space-x-1.5 text-xs font-bold">
+                    <span className="px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 border border-amber-200">
+                      🔴 {(newServiceForm.fields || []).filter(f => (f.is_required !== false && f.is_required !== 0 && f.is_required !== '0' && f.is_required !== 'false')).length} Mandatory
+                    </span>
+                    <span className="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 border border-emerald-200">
+                      🟢 {(newServiceForm.fields || []).filter(f => (f.is_required === false || f.is_required === 0 || f.is_required === '0' || f.is_required === 'false')).length} Optional
+                    </span>
+                  </div>
                 </div>
                 
                 <div className="space-y-2 bg-slate-50/80 p-3 rounded-2xl border border-slate-200">
                   <div className="grid grid-cols-1 sm:grid-cols-12 gap-2">
-                    <div className="sm:col-span-5">
+                    <div className="sm:col-span-4">
                       <input
                         type="text"
                         placeholder="Field Label (e.g. Blood Group, Qualification)"
                         value={newServiceForm.newFieldLabel || ''}
                         onChange={(e) => setNewServiceForm({ ...newServiceForm, newFieldLabel: e.target.value })}
-                        className="w-full bg-white border border-slate-200 text-slate-900 rounded-xl px-3 py-2 outline-none font-medium text-xs focus:ring-2 focus:ring-[#0b192c]"
+                        className="w-full bg-white border border-slate-300 text-slate-900 rounded-xl px-3 py-2 outline-none font-medium text-xs focus:ring-2 focus:ring-orange-500 shadow-xs"
                       />
                     </div>
-                    <div className="sm:col-span-4">
+                    <div className="sm:col-span-3">
                       <select
                         value={newServiceForm.newFieldType || 'text'}
                         onChange={(e) => setNewServiceForm({ ...newServiceForm, newFieldType: e.target.value })}
-                        className="w-full bg-white border border-slate-200 text-slate-900 rounded-xl px-3 py-2 outline-none font-medium text-xs focus:ring-2 focus:ring-[#0b192c]"
+                        className="w-full bg-white border border-slate-300 text-slate-900 rounded-xl px-3 py-2 outline-none font-medium text-xs focus:ring-2 focus:ring-orange-500 shadow-xs cursor-pointer"
                       >
                         <option value="text">Short answer (Text Input)</option>
                         <option value="textarea">Paragraph (Textarea / Address)</option>
@@ -6897,6 +6957,16 @@ export default function AdminDashboard() {
                       </select>
                     </div>
                     <div className="sm:col-span-3">
+                      <select
+                        value={newServiceForm.newFieldIsRequired !== false ? '1' : '0'}
+                        onChange={(e) => setNewServiceForm({ ...newServiceForm, newFieldIsRequired: e.target.value === '1' })}
+                        className="w-full bg-white border border-slate-300 text-slate-900 rounded-xl px-3 py-2 text-xs font-bold outline-none focus:ring-2 focus:ring-orange-500 shadow-xs cursor-pointer"
+                      >
+                        <option value="1">🔴 கட்டாயம் (Mandatory)</option>
+                        <option value="0">🟢 விருப்பத்தேர்வு (Optional)</option>
+                      </select>
+                    </div>
+                    <div className="sm:col-span-2">
                       <button
                         type="button"
                         onClick={() => {
@@ -6913,6 +6983,7 @@ export default function AdminDashboard() {
                                 opts = ['Option 1', 'Option 2'];
                               }
                             }
+                            const isReq = newServiceForm.newFieldIsRequired !== false;
                             setNewServiceForm({
                               ...newServiceForm,
                               fields: [
@@ -6920,20 +6991,22 @@ export default function AdminDashboard() {
                                 {
                                   field_label: newServiceForm.newFieldLabel.trim(),
                                   field_type: fType,
-                                  is_required: true,
+                                  is_required: isReq,
                                   options: isOptType ? opts : [],
                                   options_json: isOptType ? opts : null
                                 }
                               ],
                               newFieldLabel: '',
                               newFieldType: 'text',
-                              newFieldOptions: ''
+                              newFieldOptions: '',
+                              newFieldIsRequired: true
                             });
                           }
                         }}
-                        className="w-full py-2 bg-[#0b192c] text-white font-bold rounded-xl hover:bg-slate-800 text-xs shadow-sm transition-colors"
+                        className="w-full py-2 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-xl text-xs shadow-xs transition-colors flex items-center justify-center space-x-1 cursor-pointer"
                       >
-                        + Add Form Field
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>Add Field</span>
                       </button>
                     </div>
                   </div>
@@ -6961,65 +7034,116 @@ export default function AdminDashboard() {
                   )}
                 </div>
 
-                <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
-                  {newServiceForm.fields.map((f, idx) => {
-                    const fOpts = Array.isArray(f.options) ? f.options : (typeof f.options === 'string' ? f.options.split(',').map(s => s.trim()).filter(Boolean) : (Array.isArray(f.options_json) ? f.options_json : (typeof f.options_json === 'string' ? JSON.parse(f.options_json || '[]') : [])));
-                    const fType = (f.field_type || 'text').toLowerCase();
-                    const isSelect = fType === 'select' || fType === 'dropdown';
-                    const isRadio = fType === 'radio' || fType === 'multiple choice';
-                    const isCheck = fType === 'checkbox';
+                {(!newServiceForm.fields || newServiceForm.fields.length === 0) ? (
+                  <p className="text-xs text-slate-400 italic py-2 text-center bg-white rounded-xl border border-slate-200">
+                    No custom form fields added yet. Add fields above.
+                  </p>
+                ) : (
+                  <div className="space-y-2 pt-1 max-h-60 overflow-y-auto pr-1">
+                    {newServiceForm.fields.map((f, idx) => {
+                      const fOpts = Array.isArray(f.options) ? f.options : (typeof f.options === 'string' ? f.options.split(',').map(s => s.trim()).filter(Boolean) : (Array.isArray(f.options_json) ? f.options_json : (typeof f.options_json === 'string' ? JSON.parse(f.options_json || '[]') : [])));
+                      const fType = (f.field_type || 'text').toLowerCase();
+                      const isSelect = fType === 'select' || fType === 'dropdown';
+                      const isRadio = fType === 'radio' || fType === 'multiple choice';
+                      const isCheck = fType === 'checkbox';
+                      const isReq = f.is_required !== false && f.is_required !== 0 && f.is_required !== '0' && f.is_required !== 'false';
 
-                    return (
-                      <div key={idx} className="p-2.5 bg-slate-50 hover:bg-slate-100/70 rounded-xl border border-slate-200 flex items-start justify-between font-medium text-xs transition-colors gap-2">
-                        <div className="space-y-1 flex-1 min-w-0">
-                          <div className="flex items-center flex-wrap gap-2">
-                            <span className="font-bold text-slate-900">{f.field_label}</span>
-                            <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${
-                              isSelect ? 'bg-blue-100 text-blue-800 border border-blue-200' :
-                              isRadio ? 'bg-purple-100 text-purple-800 border border-purple-200' :
-                              isCheck ? 'bg-amber-100 text-amber-800 border border-amber-200' :
-                              fType === 'date' ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' :
-                              fType === 'textarea' ? 'bg-cyan-100 text-cyan-800 border border-cyan-200' :
-                              'bg-slate-200 text-slate-700'
-                            }`}>
-                              {isSelect ? '▼ Dropdown' :
-                               isRadio ? '🔘 Multiple Choice' :
-                               isCheck ? '☑ Checkbox' :
-                               fType === 'date' ? '📅 Date' :
-                               fType === 'textarea' ? '📝 Paragraph' :
-                               '🔤 Text Input'}
-                            </span>
-                            {f.is_required && (
-                              <span className="text-[10px] text-rose-500 font-bold">*Required</span>
+                      return (
+                        <div
+                          key={idx}
+                          className={`p-2.5 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-2 transition-all ${
+                            isReq
+                              ? 'bg-amber-50/70 border-amber-200'
+                              : 'bg-emerald-50/70 border-emerald-200'
+                          }`}
+                        >
+                          <div className="space-y-1 flex-1 min-w-0">
+                            <div className="flex items-center flex-wrap gap-2">
+                              <span className="text-base shrink-0">{isReq ? '📝' : '📄'}</span>
+                              <span className="font-bold text-slate-900 text-xs truncate">{f.field_label}</span>
+                              <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${
+                                isSelect ? 'bg-blue-100 text-blue-800 border border-blue-200' :
+                                isRadio ? 'bg-purple-100 text-purple-800 border border-purple-200' :
+                                isCheck ? 'bg-amber-100 text-amber-800 border border-amber-200' :
+                                fType === 'date' ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' :
+                                fType === 'textarea' ? 'bg-cyan-100 text-cyan-800 border border-cyan-200' :
+                                'bg-slate-200 text-slate-700'
+                              }`}>
+                                {isSelect ? '▼ Dropdown' :
+                                 isRadio ? '🔘 Multiple Choice' :
+                                 isCheck ? '☑ Checkbox' :
+                                 fType === 'date' ? '📅 Date' :
+                                 fType === 'textarea' ? '📝 Paragraph' :
+                                 '🔤 Text Input'}
+                              </span>
+                            </div>
+                            {fOpts.length > 0 && (
+                              <div className="flex items-center flex-wrap gap-1 pt-0.5">
+                                <span className="text-[10px] font-bold text-slate-400">Options:</span>
+                                {fOpts.map((opt, oIdx) => (
+                                  <span key={oIdx} className="bg-white border border-slate-200 text-slate-700 font-medium px-1.5 py-0.5 rounded text-[10px]">
+                                    {String(opt)}
+                                  </span>
+                                ))}
+                              </div>
                             )}
                           </div>
-                          {fOpts.length > 0 && (
-                            <div className="flex items-center flex-wrap gap-1 pt-0.5">
-                              <span className="text-[10px] font-bold text-slate-400">Options:</span>
-                              {fOpts.map((opt, oIdx) => (
-                                <span key={oIdx} className="bg-white border border-slate-200 text-slate-700 font-medium px-1.5 py-0.5 rounded text-[10px]">
-                                  {String(opt)}
-                                </span>
-                              ))}
+
+                          <div className="flex items-center space-x-2 shrink-0 self-end sm:self-center">
+                            {/* Segmented Button: Mandatory vs Optional */}
+                            <div className="inline-flex rounded-lg p-0.5 bg-white border border-slate-200 shadow-2xs">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const updated = [...newServiceForm.fields];
+                                  updated[idx] = { ...f, is_required: true };
+                                  setNewServiceForm({ ...newServiceForm, fields: updated });
+                                }}
+                                className={`px-2.5 py-1 text-[11px] font-extrabold rounded-md transition-all cursor-pointer ${
+                                  isReq
+                                    ? 'bg-amber-500 text-white shadow-xs'
+                                    : 'text-slate-600 hover:text-amber-800 hover:bg-slate-50'
+                                }`}
+                              >
+                                🔴 கட்டாயம் (Mandatory)
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const updated = [...newServiceForm.fields];
+                                  updated[idx] = { ...f, is_required: false };
+                                  setNewServiceForm({ ...newServiceForm, fields: updated });
+                                }}
+                                className={`px-2.5 py-1 text-[11px] font-extrabold rounded-md transition-all cursor-pointer ${
+                                  !isReq
+                                    ? 'bg-emerald-600 text-white shadow-xs'
+                                    : 'text-slate-600 hover:text-emerald-800 hover:bg-slate-50'
+                                }`}
+                              >
+                                🟢 விருப்பத்தேர்வு (Optional)
+                              </button>
                             </div>
-                          )}
+
+                            {/* Delete button */}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setNewServiceForm({
+                                  ...newServiceForm,
+                                  fields: newServiceForm.fields.filter((_, i) => i !== idx)
+                                });
+                              }}
+                              className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                              title="Delete Field"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
                         </div>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setNewServiceForm({
-                              ...newServiceForm,
-                              fields: newServiceForm.fields.filter((_, i) => i !== idx)
-                            });
-                          }}
-                          className="text-rose-600 hover:text-rose-800 font-extrabold text-xs ml-2 shrink-0"
-                        >
-                          Remove
-                        </button>
-                      </div>
-                    );
-                  })}
-                </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
 
               {/* Actions */}
@@ -7470,27 +7594,37 @@ export default function AdminDashboard() {
 
               {/* Custom Citizen Applicant Form Fields */}
               <div className="space-y-3">
-                <div className="flex items-center justify-between border-b border-slate-100 pb-1">
-                  <h4 className="font-black text-slate-900 uppercase text-xs tracking-wider">3. Citizen Application Form Fields</h4>
-                  <span className="text-[11px] font-bold text-slate-400">Customizable Inputs</span>
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-1">
+                  <div className="flex items-center space-x-2">
+                    <h4 className="font-black text-slate-900 uppercase text-xs tracking-wider">3. Citizen Application Form Fields (படிவ புலங்கள்)</h4>
+                    <span className="text-[11px] font-bold text-slate-400">Customizable Inputs</span>
+                  </div>
+                  <div className="flex items-center space-x-1.5 text-xs font-bold">
+                    <span className="px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 border border-amber-200">
+                      🔴 {(editingServiceForm.fields || []).filter(f => (f.is_required !== false && f.is_required !== 0 && f.is_required !== '0' && f.is_required !== 'false')).length} Mandatory
+                    </span>
+                    <span className="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 border border-emerald-200">
+                      🟢 {(editingServiceForm.fields || []).filter(f => (f.is_required === false || f.is_required === 0 || f.is_required === '0' || f.is_required === 'false')).length} Optional
+                    </span>
+                  </div>
                 </div>
                 
                 <div className="space-y-2 bg-slate-50/80 p-3 rounded-2xl border border-slate-200">
                   <div className="grid grid-cols-1 sm:grid-cols-12 gap-2">
-                    <div className="sm:col-span-5">
+                    <div className="sm:col-span-4">
                       <input
                         type="text"
                         placeholder="Field Label (e.g. Blood Group, Qualification)"
                         value={editingServiceForm.newFieldLabel || ''}
                         onChange={(e) => setEditingServiceForm({ ...editingServiceForm, newFieldLabel: e.target.value })}
-                        className="w-full bg-white border border-slate-200 text-slate-900 rounded-xl px-3 py-2 outline-none font-medium text-xs focus:ring-2 focus:ring-[#0b192c]"
+                        className="w-full bg-white border border-slate-300 text-slate-900 rounded-xl px-3 py-2 outline-none font-medium text-xs focus:ring-2 focus:ring-amber-500 shadow-xs"
                       />
                     </div>
-                    <div className="sm:col-span-4">
+                    <div className="sm:col-span-3">
                       <select
                         value={editingServiceForm.newFieldType || 'text'}
                         onChange={(e) => setEditingServiceForm({ ...editingServiceForm, newFieldType: e.target.value })}
-                        className="w-full bg-white border border-slate-200 text-slate-900 rounded-xl px-3 py-2 outline-none font-medium text-xs focus:ring-2 focus:ring-[#0b192c]"
+                        className="w-full bg-white border border-slate-300 text-slate-900 rounded-xl px-3 py-2 outline-none font-medium text-xs focus:ring-2 focus:ring-amber-500 shadow-xs cursor-pointer"
                       >
                         <option value="text">Short answer (Text Input)</option>
                         <option value="textarea">Paragraph (Textarea / Address)</option>
@@ -7502,6 +7636,16 @@ export default function AdminDashboard() {
                       </select>
                     </div>
                     <div className="sm:col-span-3">
+                      <select
+                        value={editingServiceForm.newFieldIsRequired !== false ? '1' : '0'}
+                        onChange={(e) => setEditingServiceForm({ ...editingServiceForm, newFieldIsRequired: e.target.value === '1' })}
+                        className="w-full bg-white border border-slate-300 text-slate-900 rounded-xl px-3 py-2 text-xs font-bold outline-none focus:ring-2 focus:ring-amber-500 shadow-xs cursor-pointer"
+                      >
+                        <option value="1">🔴 கட்டாயம் (Mandatory)</option>
+                        <option value="0">🟢 விருப்பத்தேர்வு (Optional)</option>
+                      </select>
+                    </div>
+                    <div className="sm:col-span-2">
                       <button
                         type="button"
                         onClick={() => {
@@ -7518,6 +7662,7 @@ export default function AdminDashboard() {
                                 opts = ['Option 1', 'Option 2'];
                               }
                             }
+                            const isReq = editingServiceForm.newFieldIsRequired !== false;
                             setEditingServiceForm({
                               ...editingServiceForm,
                               fields: [
@@ -7525,20 +7670,22 @@ export default function AdminDashboard() {
                                 {
                                   field_label: editingServiceForm.newFieldLabel.trim(),
                                   field_type: fType,
-                                  is_required: true,
+                                  is_required: isReq,
                                   options: isOptType ? opts : [],
                                   options_json: isOptType ? opts : null
                                 }
                               ],
                               newFieldLabel: '',
                               newFieldType: 'text',
-                              newFieldOptions: ''
+                              newFieldOptions: '',
+                              newFieldIsRequired: true
                             });
                           }
                         }}
-                        className="w-full py-2 bg-[#0b192c] text-white font-bold rounded-xl hover:bg-slate-800 text-xs shadow-sm transition-colors"
+                        className="w-full py-2 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl text-xs shadow-xs transition-colors flex items-center justify-center space-x-1 cursor-pointer"
                       >
-                        + Add Form Field
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>Add Field</span>
                       </button>
                     </div>
                   </div>
@@ -7566,65 +7713,116 @@ export default function AdminDashboard() {
                   )}
                 </div>
 
-                <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
-                  {editingServiceForm.fields.map((f, idx) => {
-                    const fOpts = Array.isArray(f.options) ? f.options : (typeof f.options === 'string' ? f.options.split(',').map(s => s.trim()).filter(Boolean) : (Array.isArray(f.options_json) ? f.options_json : (typeof f.options_json === 'string' ? JSON.parse(f.options_json || '[]') : [])));
-                    const fType = (f.field_type || 'text').toLowerCase();
-                    const isSelect = fType === 'select' || fType === 'dropdown';
-                    const isRadio = fType === 'radio' || fType === 'multiple choice';
-                    const isCheck = fType === 'checkbox';
+                {(!editingServiceForm.fields || editingServiceForm.fields.length === 0) ? (
+                  <p className="text-xs text-slate-400 italic py-2 text-center bg-white rounded-xl border border-slate-200">
+                    No custom form fields added yet. Add fields above.
+                  </p>
+                ) : (
+                  <div className="space-y-2 pt-1 max-h-60 overflow-y-auto pr-1">
+                    {editingServiceForm.fields.map((f, idx) => {
+                      const fOpts = Array.isArray(f.options) ? f.options : (typeof f.options === 'string' ? f.options.split(',').map(s => s.trim()).filter(Boolean) : (Array.isArray(f.options_json) ? f.options_json : (typeof f.options_json === 'string' ? JSON.parse(f.options_json || '[]') : [])));
+                      const fType = (f.field_type || 'text').toLowerCase();
+                      const isSelect = fType === 'select' || fType === 'dropdown';
+                      const isRadio = fType === 'radio' || fType === 'multiple choice';
+                      const isCheck = fType === 'checkbox';
+                      const isReq = f.is_required !== false && f.is_required !== 0 && f.is_required !== '0' && f.is_required !== 'false';
 
-                    return (
-                      <div key={idx} className="p-2.5 bg-slate-50 hover:bg-slate-100/70 rounded-xl border border-slate-200 flex items-start justify-between font-medium text-xs transition-colors gap-2">
-                        <div className="space-y-1 flex-1 min-w-0">
-                          <div className="flex items-center flex-wrap gap-2">
-                            <span className="font-bold text-slate-900">{f.field_label}</span>
-                            <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${
-                              isSelect ? 'bg-blue-100 text-blue-800 border border-blue-200' :
-                              isRadio ? 'bg-purple-100 text-purple-800 border border-purple-200' :
-                              isCheck ? 'bg-amber-100 text-amber-800 border border-amber-200' :
-                              fType === 'date' ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' :
-                              fType === 'textarea' ? 'bg-cyan-100 text-cyan-800 border border-cyan-200' :
-                              'bg-slate-200 text-slate-700'
-                            }`}>
-                              {isSelect ? '▼ Dropdown' :
-                               isRadio ? '🔘 Multiple Choice' :
-                               isCheck ? '☑ Checkbox' :
-                               fType === 'date' ? '📅 Date' :
-                               fType === 'textarea' ? '📝 Paragraph' :
-                               '🔤 Text Input'}
-                            </span>
-                            {f.is_required && (
-                              <span className="text-[10px] text-rose-500 font-bold">*Required</span>
+                      return (
+                        <div
+                          key={idx}
+                          className={`p-2.5 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-2 transition-all ${
+                            isReq
+                              ? 'bg-amber-50/70 border-amber-200'
+                              : 'bg-emerald-50/70 border-emerald-200'
+                          }`}
+                        >
+                          <div className="space-y-1 flex-1 min-w-0">
+                            <div className="flex items-center flex-wrap gap-2">
+                              <span className="text-base shrink-0">{isReq ? '📝' : '📄'}</span>
+                              <span className="font-bold text-slate-900 text-xs truncate">{f.field_label}</span>
+                              <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${
+                                isSelect ? 'bg-blue-100 text-blue-800 border border-blue-200' :
+                                isRadio ? 'bg-purple-100 text-purple-800 border border-purple-200' :
+                                isCheck ? 'bg-amber-100 text-amber-800 border border-amber-200' :
+                                fType === 'date' ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' :
+                                fType === 'textarea' ? 'bg-cyan-100 text-cyan-800 border border-cyan-200' :
+                                'bg-slate-200 text-slate-700'
+                              }`}>
+                                {isSelect ? '▼ Dropdown' :
+                                 isRadio ? '🔘 Multiple Choice' :
+                                 isCheck ? '☑ Checkbox' :
+                                 fType === 'date' ? '📅 Date' :
+                                 fType === 'textarea' ? '📝 Paragraph' :
+                                 '🔤 Text Input'}
+                              </span>
+                            </div>
+                            {fOpts.length > 0 && (
+                              <div className="flex items-center flex-wrap gap-1 pt-0.5">
+                                <span className="text-[10px] font-bold text-slate-400">Options:</span>
+                                {fOpts.map((opt, oIdx) => (
+                                  <span key={oIdx} className="bg-white border border-slate-200 text-slate-700 font-medium px-1.5 py-0.5 rounded text-[10px]">
+                                    {String(opt)}
+                                  </span>
+                                ))}
+                              </div>
                             )}
                           </div>
-                          {fOpts.length > 0 && (
-                            <div className="flex items-center flex-wrap gap-1 pt-0.5">
-                              <span className="text-[10px] font-bold text-slate-400">Options:</span>
-                              {fOpts.map((opt, oIdx) => (
-                                <span key={oIdx} className="bg-white border border-slate-200 text-slate-700 font-medium px-1.5 py-0.5 rounded text-[10px]">
-                                  {String(opt)}
-                                </span>
-                              ))}
+
+                          <div className="flex items-center space-x-2 shrink-0 self-end sm:self-center">
+                            {/* Segmented Button: Mandatory vs Optional */}
+                            <div className="inline-flex rounded-lg p-0.5 bg-white border border-slate-200 shadow-2xs">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const updated = [...editingServiceForm.fields];
+                                  updated[idx] = { ...f, is_required: true };
+                                  setEditingServiceForm({ ...editingServiceForm, fields: updated });
+                                }}
+                                className={`px-2.5 py-1 text-[11px] font-extrabold rounded-md transition-all cursor-pointer ${
+                                  isReq
+                                    ? 'bg-amber-500 text-white shadow-xs'
+                                    : 'text-slate-600 hover:text-amber-800 hover:bg-slate-50'
+                                }`}
+                              >
+                                🔴 கட்டாயம் (Mandatory)
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const updated = [...editingServiceForm.fields];
+                                  updated[idx] = { ...f, is_required: false };
+                                  setEditingServiceForm({ ...editingServiceForm, fields: updated });
+                                }}
+                                className={`px-2.5 py-1 text-[11px] font-extrabold rounded-md transition-all cursor-pointer ${
+                                  !isReq
+                                    ? 'bg-emerald-600 text-white shadow-xs'
+                                    : 'text-slate-600 hover:text-emerald-800 hover:bg-slate-50'
+                                }`}
+                              >
+                                🟢 விருப்பத்தேர்வு (Optional)
+                              </button>
                             </div>
-                          )}
+
+                            {/* Delete button */}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setEditingServiceForm({
+                                  ...editingServiceForm,
+                                  fields: editingServiceForm.fields.filter((_, i) => i !== idx)
+                                });
+                              }}
+                              className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                              title="Delete Field"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
                         </div>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setEditingServiceForm({
-                              ...editingServiceForm,
-                              fields: editingServiceForm.fields.filter((_, i) => i !== idx)
-                            });
-                          }}
-                          className="text-rose-600 hover:text-rose-800 font-extrabold text-xs ml-2 shrink-0"
-                        >
-                          Remove
-                        </button>
-                      </div>
-                    );
-                  })}
-                </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
 
               {/* Actions */}

@@ -933,13 +933,48 @@ app.get('/api/services/:idOrSlug', (req, res) => {
 
   const category = db.get('categories', c => c.id === service.category_id);
   const rawFields = db.all('service_fields', f => f.service_id === service.id).sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
-  const seenFieldKeys = new Set();
-  const fields = rawFields.filter(f => {
-    const k = String(f.field_name || f.name || f.field_label || '').trim().toLowerCase();
-    if (!k || seenFieldKeys.has(k)) return false;
-    seenFieldKeys.add(k);
-    return true;
-  });
+  let fields = [];
+  if (rawFields && rawFields.length > 0) {
+    const seenFieldKeys = new Set();
+    fields = rawFields.filter(f => {
+      const k = String(f.field_name || f.name || f.field_label || '').trim().toLowerCase();
+      if (!k || seenFieldKeys.has(k)) return false;
+      seenFieldKeys.add(k);
+      return true;
+    }).map(f => {
+      const isReq = (f.is_required === 0 || f.is_required === false || f.is_required === '0' || f.is_required === 'false' || f.required === 0 || f.required === false || f.required === '0' || f.required === 'false') ? 0 : 1;
+      return {
+        ...f,
+        is_required: isReq
+      };
+    });
+  } else if (service.fields_json) {
+    let parsed = Array.isArray(service.fields_json) ? service.fields_json : [];
+    if (typeof service.fields_json === 'string') {
+      try { parsed = JSON.parse(service.fields_json); } catch (e) {}
+    }
+    const seenFieldKeys = new Set();
+    fields = (parsed || []).filter(f => {
+      const k = String(f.field_name || f.name || f.field_label || '').trim().toLowerCase();
+      if (!k || seenFieldKeys.has(k)) return false;
+      seenFieldKeys.add(k);
+      return true;
+    }).map((f, idx) => {
+      const label = f.field_label || f.name || f.label || `Field ${idx + 1}`;
+      const isReq = (f.is_required === 0 || f.is_required === false || f.is_required === '0' || f.is_required === 'false' || f.required === 0 || f.required === false || f.required === '0' || f.required === 'false') ? 0 : 1;
+      return {
+        id: idx + 1,
+        service_id: service.id,
+        field_name: f.field_name || label.toLowerCase().replace(/[^a-z0-9]+/g, '_'),
+        field_label: label,
+        field_type: f.field_type || f.type || 'text',
+        is_required: isReq,
+        options: f.options || f.options_json || null,
+        options_json: f.options_json || f.options || null,
+        sort_order: idx + 1
+      };
+    });
+  }
   let documents = db.all('service_documents', d => d.service_id === service.id);
   if ((!documents || documents.length === 0) && (service.documents_json || service.documents_required)) {
     const rawDocs = service.documents_json || service.documents_required;
@@ -3230,7 +3265,10 @@ app.post('/api/admin/services', authenticateAdmin, upload.any(), async (req, res
       image_url: image_url || 'https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=1200&auto=format&fit=crop',
       is_active: true,
       status: 'Active',
-      fields_json: parsedFields || null,
+      fields_json: parsedFields ? parsedFields.map(f => ({
+        ...f,
+        is_required: (f.is_required === 0 || f.is_required === false || f.is_required === '0' || f.is_required === 'false' || f.required === 0 || f.required === false || f.required === '0' || f.required === 'false') ? 0 : 1
+      })) : null,
       documents_json: parsedDocs || null,
       documents_required: JSON.stringify((parsedDocs || []).map(d => typeof d === 'string' ? d : (d.document_name || d.name)))
     });
@@ -3238,12 +3276,13 @@ app.post('/api/admin/services', authenticateAdmin, upload.any(), async (req, res
     if (parsedFields && Array.isArray(parsedFields) && parsedFields.length > 0) {
       parsedFields.forEach((f, idx) => {
         const label = f.field_label || f.name || f.label || `Field ${idx + 1}`;
+        const isReq = (f.is_required === 0 || f.is_required === false || f.is_required === '0' || f.is_required === 'false' || f.required === 0 || f.required === false || f.required === '0' || f.required === 'false') ? 0 : 1;
         db.insert('service_fields', {
           service_id: service.id,
           field_name: f.field_name || label.toLowerCase().replace(/[^a-z0-9]+/g, '_'),
           field_label: label,
           field_type: f.field_type || 'text',
-          is_required: f.is_required !== undefined ? (f.is_required ? 1 : 0) : 1,
+          is_required: isReq,
           options_json: f.options_json ? (typeof f.options_json === 'string' ? f.options_json : JSON.stringify(f.options_json)) : (f.options ? (typeof f.options === 'string' ? f.options : JSON.stringify(f.options)) : null),
           sort_order: idx + 1
         });
@@ -3375,7 +3414,10 @@ app.put('/api/admin/services/:id', authenticateAdmin, upload.any(), async (req, 
       image_url: image_url || existing.image_url || 'https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=1200&auto=format&fit=crop',
       is_active: is_active !== undefined ? is_active : (status === 'Inactive' ? false : existing.is_active),
       status: status || (is_active === false ? 'Inactive' : 'Active'),
-      fields_json: parsedFields || existing.fields_json || null,
+      fields_json: parsedFields ? parsedFields.map(f => ({
+        ...f,
+        is_required: (f.is_required === 0 || f.is_required === false || f.is_required === '0' || f.is_required === 'false' || f.required === 0 || f.required === false || f.required === '0' || f.required === 'false') ? 0 : 1
+      })) : (existing.fields_json || null),
       documents_json: parsedDocs || existing.documents_json || null,
       documents_required: parsedDocs ? JSON.stringify(parsedDocs.map(d => typeof d === 'string' ? d : (d.document_name || d.name))) : existing.documents_required
     });
@@ -3385,12 +3427,13 @@ app.put('/api/admin/services/:id', authenticateAdmin, upload.any(), async (req, 
       db.delete('service_fields', f => f.service_id === targetId);
       parsedFields.forEach((f, idx) => {
         const label = f.field_label || f.name || f.label || `Field ${idx + 1}`;
+        const isReq = (f.is_required === 0 || f.is_required === false || f.is_required === '0' || f.is_required === 'false' || f.required === 0 || f.required === false || f.required === '0' || f.required === 'false') ? 0 : 1;
         db.insert('service_fields', {
           service_id: targetId,
           field_name: f.field_name || label.toLowerCase().replace(/[^a-z0-9]+/g, '_'),
           field_label: label,
           field_type: f.field_type || f.type || 'text',
-          is_required: f.is_required !== undefined ? (f.is_required ? 1 : 0) : (f.required ? 1 : 0),
+          is_required: isReq,
           options_json: f.options_json ? (typeof f.options_json === 'string' ? f.options_json : JSON.stringify(f.options_json)) : (f.options ? JSON.stringify(f.options) : null),
           sort_order: idx + 1
         });

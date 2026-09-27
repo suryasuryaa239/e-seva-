@@ -1302,7 +1302,14 @@ export default function ApplyService() {
                                 return (
                                   <div key={fIdx} className={isTextArea ? 'sm:col-span-2' : ''}>
                                     <label className="block text-xs font-extrabold text-slate-800 mb-1.5">
-                                      {fLabel} {isFieldRequired(f) && <span className="text-rose-500">*</span>}
+                                      {fLabel}{' '}
+                                      {isFieldRequired(f) ? (
+                                        <span className="text-rose-500 font-bold">*</span>
+                                      ) : (
+                                        <span className="text-slate-400 font-normal ml-1 text-[11px]">
+                                          ({lang === 'ta' ? 'விருப்பத்தேர்வு' : 'Optional'})
+                                        </span>
+                                      )}
                                     </label>
 
                                     {isSelect ? (
