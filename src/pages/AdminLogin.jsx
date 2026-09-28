@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { 
   ShieldAlert, Lock, Mail, ArrowRight, Eye, EyeOff, ShieldCheck, 
-  Sparkles, Layers, ArrowLeft, KeyRound
+  Sparkles, Layers, ArrowLeft
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -201,16 +201,7 @@ export default function AdminLogin() {
                 </div>
               </div>
 
-              {/* Default Admin Credentials Helper Box */}
-              <div className="bg-amber-50 p-2.5 rounded-xl border border-amber-200 text-xs text-amber-950 space-y-0.5">
-                <div className="font-extrabold text-amber-900 flex items-center space-x-1 text-[10px] uppercase tracking-wider">
-                  <KeyRound className="w-3 h-3 text-amber-700" />
-                  <span>Admin Credentials:</span>
-                </div>
-                <div className="font-mono text-[10px] text-amber-900">
-                  Email: <strong className="text-slate-950">admin@eseva.gov.in</strong> | Pass: <strong className="text-slate-950">AdminSecret123</strong>
-                </div>
-              </div>
+
 
               <button
                 type="submit"
