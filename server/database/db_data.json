@@ -339,317 +339,7 @@
         "Aadhaar Card Copy",
         "Valid Address Proof"
       ],
-      "display_order": 0
-    },
-    {
-      "id": 2,
-      "category_id": 2,
-      "category_slug": "pan-services",
-      "name": "New PAN Card Application (Form 49A)",
-      "slug": "new-pan-card",
-      "description": "Apply for fresh Permanent Account Number (PAN) card for individuals and entities.",
-      "fee": "107.00",
-      "processing_time": "7-10 Working Days",
-      "documents_required": [
-        "Identity Proof",
-        "Address Proof",
-        "DOB Proof"
-      ],
-      "eligibility": [
-        "Indian citizens and entities requiring PAN for financial & tax purposes."
-      ],
-      "status": "active",
-      "created_at": "2026-09-11T12:40:08.000Z",
-      "total_fee": "107.00",
-      "govt_fee": "107.00",
-      "image_url": null,
-      "is_active": 1,
-      "fields_json": [
-        {
-          "field_label": "Applicant Full Name",
-          "field_name": "full_name",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "Karthik Subramanian",
-          "sort_order": 1
-        },
-        {
-          "field_label": "Father Full Name",
-          "field_name": "father_name",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "Subramanian S",
-          "sort_order": 2
-        },
-        {
-          "field_label": "Date of Birth",
-          "field_name": "dob",
-          "field_type": "date",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "",
-          "sort_order": 3
-        },
-        {
-          "field_label": "Gender",
-          "field_name": "gender",
-          "field_type": "select",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "",
-          "sort_order": 4
-        },
-        {
-          "field_label": "12-Digit Aadhaar Number",
-          "field_name": "aadhaar_number",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "1234 5678 9012",
-          "sort_order": 5
-        },
-        {
-          "field_label": "Mobile Number",
-          "field_name": "mobile_number",
-          "field_type": "phone",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "9876543210",
-          "sort_order": 6
-        }
-      ],
-      "documents_json": [
-        "Identity Proof",
-        "Address Proof",
-        "DOB Proof"
-      ],
-      "display_order": 0
-    },
-    {
-      "id": 3,
-      "category_id": 4,
-      "category_slug": "certificate-services",
-      "name": "Income Certificate Application",
-      "slug": "income-certificate",
-      "description": "Official revenue certificate certifying total annual family income for education & subsidies.",
-      "fee": "60.00",
-      "processing_time": "7 Working Days",
-      "documents_required": [
-        "Applicant Photograph",
-        "Address Proof",
-        "Income Proof"
-      ],
-      "eligibility": [
-        "Permanent state residents seeking income verification for government schemes."
-      ],
-      "status": "active",
-      "created_at": "2026-09-11T12:40:08.000Z",
-      "total_fee": "60.00",
-      "govt_fee": "60.00",
-      "image_url": null,
-      "is_active": 1,
-      "fields_json": [
-        {
-          "field_label": "Applicant Name",
-          "field_name": "applicant_name",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "Karthik Subramanian",
-          "sort_order": 1
-        },
-        {
-          "field_label": "Father / Husband Name",
-          "field_name": "father_husband_name",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "Subramanian S",
-          "sort_order": 2
-        },
-        {
-          "field_label": "Total Family Annual Income (₹)",
-          "field_name": "annual_income",
-          "field_type": "number",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "120000",
-          "sort_order": 3
-        },
-        {
-          "field_label": "Primary Occupation",
-          "field_name": "occupation",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "Private Job / Agriculture",
-          "sort_order": 4
-        },
-        {
-          "field_label": "Residential Address",
-          "field_name": "address",
-          "field_type": "textarea",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "Door No, Street, Village, Pincode",
-          "sort_order": 5
-        },
-        {
-          "field_label": "Mobile Number",
-          "field_name": "mobile_number",
-          "field_type": "phone",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "9876543210",
-          "sort_order": 6
-        }
-      ],
-      "documents_json": [
-        "Applicant Photograph",
-        "Address Proof",
-        "Income Proof"
-      ],
-      "display_order": 0
-    },
-    {
-      "id": 4,
-      "category_id": 4,
-      "category_slug": "certificate-services",
-      "name": "Community / Caste Certificate",
-      "slug": "community-certificate",
-      "description": "Official revenue certificate confirming caste/community category (BC / MBC / SC / ST).",
-      "fee": "60.00",
-      "processing_time": "15 Working Days",
-      "documents_required": [
-        "Applicant Photograph",
-        "Address Proof",
-        "Parent Community Certificate"
-      ],
-      "eligibility": [
-        "Citizens seeking quota or reservation benefits for education & government jobs."
-      ],
-      "status": "active",
-      "created_at": "2026-09-11T12:40:08.000Z",
-      "total_fee": "60.00",
-      "govt_fee": "60.00",
-      "image_url": null,
-      "is_active": 1,
-      "fields_json": [
-        {
-          "field_label": "Applicant Name",
-          "field_name": "applicant_name",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "Karthik Subramanian",
-          "sort_order": 1
-        },
-        {
-          "field_label": "Father Name",
-          "field_name": "father_name",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "Subramanian S",
-          "sort_order": 2
-        },
-        {
-          "field_label": "Community Category",
-          "field_name": "caste_category",
-          "field_type": "select",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "",
-          "sort_order": 3
-        },
-        {
-          "field_label": "Specific Sub-Caste",
-          "field_name": "sub_caste",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "Sub-caste name",
-          "sort_order": 4
-        },
-        {
-          "field_label": "Residential Address",
-          "field_name": "address",
-          "field_type": "textarea",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "Complete address",
-          "sort_order": 5
-        },
-        {
-          "field_label": "Mobile Number",
-          "field_name": "mobile_number",
-          "field_type": "phone",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "9876543210",
-          "sort_order": 6
-        }
-      ],
-      "documents_json": [
-        "Applicant Photograph",
-        "Address Proof",
-        "Parent Community Certificate"
-      ],
-      "display_order": 0
-    },
-    {
-      "id": 5,
-      "category_id": null,
-      "category_slug": "land-patta-services",
-      "name": "Patta Chitta Copy",
-      "slug": "patta-chitta-copy",
-      "description": "Extract official e-Patta and Chitta revenue record extracts online.",
-      "fee": "30.00",
-      "processing_time": "Instant / 24 Hours",
-      "documents_required": [
-        "District, Taluk & Village Details",
-        "Survey Number / Sub-division Number / Patta Number"
-      ],
-      "eligibility": [
-        "Land owner or authorized property search applicant"
-      ],
-      "status": "active",
-      "created_at": "2026-09-11T12:40:08.000Z",
-      "total_fee": "0.00",
-      "govt_fee": "0.00",
-      "image_url": null,
-      "is_active": 1,
-      "fields_json": null,
-      "documents_json": null,
-      "display_order": 0
-    },
-    {
-      "id": 6,
-      "category_id": null,
-      "category_slug": "land-patta-services",
-      "name": "Encumbrance Certificate",
-      "slug": "encumbrance-certificate",
-      "description": "Verify property ownership history and encumbrances registered at Sub-Registrar Office (SRO).",
-      "fee": "100.00",
-      "processing_time": "1-2 Working Days",
-      "documents_required": [
-        "Document Number or Survey Details",
-        "Registration Year Range"
-      ],
-      "eligibility": [
-        "Public service search available for all properties"
-      ],
-      "status": "active",
-      "created_at": "2026-09-11T12:40:08.000Z",
-      "total_fee": "0.00",
-      "govt_fee": "0.00",
-      "image_url": null,
-      "is_active": 1,
-      "fields_json": null,
-      "documents_json": null,
-      "display_order": 0
+      "display_order": 2
     },
     {
       "id": 16,
@@ -706,7 +396,7 @@
         "Identity Proof",
         "Address Proof"
       ],
-      "display_order": 0
+      "display_order": 7
     },
     {
       "id": 17,
@@ -766,7 +456,7 @@
         }
       ],
       "documents_json": [],
-      "display_order": 0
+      "display_order": 8
     },
     {
       "id": 18,
@@ -808,7 +498,7 @@
         }
       ],
       "documents_json": [],
-      "display_order": 0
+      "display_order": 9
     },
     {
       "id": 19,
@@ -973,7 +663,7 @@
         "Aadhaar Card Copy",
         "Supporting Correction Proof"
       ],
-      "display_order": 0
+      "display_order": 10
     },
     {
       "id": 20,
@@ -1064,7 +754,93 @@
       "documents_json": [
         "Aadhaar Card Copy"
       ],
-      "display_order": 0
+      "display_order": 11
+    },
+    {
+      "id": 2,
+      "category_id": 2,
+      "category_slug": "pan-services",
+      "name": "New PAN Card Application (Form 49A)",
+      "slug": "new-pan-card",
+      "description": "Apply for fresh Permanent Account Number (PAN) card for individuals and entities.",
+      "fee": "107.00",
+      "processing_time": "7-10 Working Days",
+      "documents_required": [
+        "Identity Proof",
+        "Address Proof",
+        "DOB Proof"
+      ],
+      "eligibility": [
+        "Indian citizens and entities requiring PAN for financial & tax purposes."
+      ],
+      "status": "active",
+      "created_at": "2026-09-11T12:40:08.000Z",
+      "total_fee": "107.00",
+      "govt_fee": "107.00",
+      "image_url": null,
+      "is_active": 1,
+      "fields_json": [
+        {
+          "field_label": "Applicant Full Name",
+          "field_name": "full_name",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "Karthik Subramanian",
+          "sort_order": 1
+        },
+        {
+          "field_label": "Father Full Name",
+          "field_name": "father_name",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "Subramanian S",
+          "sort_order": 2
+        },
+        {
+          "field_label": "Date of Birth",
+          "field_name": "dob",
+          "field_type": "date",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "",
+          "sort_order": 3
+        },
+        {
+          "field_label": "Gender",
+          "field_name": "gender",
+          "field_type": "select",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "",
+          "sort_order": 4
+        },
+        {
+          "field_label": "12-Digit Aadhaar Number",
+          "field_name": "aadhaar_number",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "1234 5678 9012",
+          "sort_order": 5
+        },
+        {
+          "field_label": "Mobile Number",
+          "field_name": "mobile_number",
+          "field_type": "phone",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "9876543210",
+          "sort_order": 6
+        }
+      ],
+      "documents_json": [
+        "Identity Proof",
+        "Address Proof",
+        "DOB Proof"
+      ],
+      "display_order": 3
     },
     {
       "id": 23,
@@ -1175,7 +951,7 @@
         "Existing PAN Card Copy",
         "Supporting Correction Proof"
       ],
-      "display_order": 0
+      "display_order": 12
     },
     {
       "id": 25,
@@ -1241,7 +1017,222 @@
         "PAN Copy",
         "Aadhaar Copy"
       ],
-      "display_order": 0
+      "display_order": 13
+    },
+    {
+      "id": 49,
+      "category_id": 2,
+      "category_slug": "pan-services",
+      "name": "PAN Application Status Check",
+      "slug": "pan-status",
+      "description": "Check status of your new PAN or correction application.",
+      "fee": "0.00",
+      "processing_time": "Instant",
+      "documents_required": [],
+      "eligibility": [
+        "All PAN applicants."
+      ],
+      "status": "active",
+      "created_at": "2026-09-23T01:32:02.000Z",
+      "total_fee": "0.00",
+      "govt_fee": "0.00",
+      "image_url": null,
+      "is_active": 1,
+      "fields_json": [
+        {
+          "field_label": "15-Digit Acknowledgement Number",
+          "field_name": "pan_ack_no",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "881020304050607",
+          "sort_order": 1
+        },
+        {
+          "field_label": "Registered Mobile Number",
+          "field_name": "mobile_number",
+          "field_type": "phone",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "9876543210",
+          "sort_order": 2
+        }
+      ],
+      "documents_json": [],
+      "display_order": 26
+    },
+    {
+      "id": 66,
+      "category_id": 2,
+      "category_slug": "pan-services",
+      "name": "Reprint Lost or Damaged PAN Card",
+      "slug": "pan-reprint-lost-damaged",
+      "description": "Reissue physical PAN card copy without changing existing data.",
+      "fee": "100.00",
+      "processing_time": "5-10 Working Days",
+      "documents_required": [
+        "Aadhaar Card Copy",
+        "Copy of Lost PAN / FIR"
+      ],
+      "eligibility": [
+        "PAN cardholders with lost or damaged physical card."
+      ],
+      "status": "active",
+      "created_at": "2026-09-23T01:32:05.000Z",
+      "total_fee": "100.00",
+      "govt_fee": "100.00",
+      "image_url": null,
+      "is_active": 1,
+      "fields_json": [
+        {
+          "field_label": "Existing 10-Digit PAN Number",
+          "field_name": "pan_number",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "ABCDE1234F",
+          "sort_order": 1
+        },
+        {
+          "field_label": "Reason for Reprint",
+          "field_name": "reason",
+          "field_type": "select",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "",
+          "sort_order": 2
+        },
+        {
+          "field_label": "Card Dispatch Address",
+          "field_name": "delivery_address",
+          "field_type": "textarea",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "Door No, Street Name, City, Pincode",
+          "sort_order": 3
+        }
+      ],
+      "documents_json": [
+        "Aadhaar Card Copy",
+        "Copy of Lost PAN / FIR"
+      ],
+      "display_order": 34
+    },
+    {
+      "id": 67,
+      "category_id": 2,
+      "category_slug": "pan-services",
+      "name": "PAN Card for Foreign Nationals (Form 49AA)",
+      "slug": "new-pan-foreign-national",
+      "description": "New PAN allocation for non-citizens, NRIs, and foreign companies.",
+      "fee": "1020.00",
+      "processing_time": "10-20 Working Days",
+      "documents_required": [
+        "Foreign Passport Copy",
+        "Overseas Bank Statement"
+      ],
+      "eligibility": [
+        "Foreign citizens or entities carrying out business in India."
+      ],
+      "status": "active",
+      "created_at": "2026-09-23T01:32:05.000Z",
+      "total_fee": "1020.00",
+      "govt_fee": "1020.00",
+      "image_url": null,
+      "is_active": 1,
+      "fields_json": [
+        {
+          "field_label": "Full Name of Foreign Applicant",
+          "field_name": "applicant_name",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "Johnathan Doe",
+          "sort_order": 1
+        },
+        {
+          "field_label": "Country of Citizenship",
+          "field_name": "country",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "United States",
+          "sort_order": 2
+        },
+        {
+          "field_label": "Passport Number",
+          "field_name": "passport_number",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "A12345678",
+          "sort_order": 3
+        }
+      ],
+      "documents_json": [
+        "Foreign Passport Copy",
+        "Overseas Bank Statement"
+      ],
+      "display_order": 35
+    },
+    {
+      "id": 68,
+      "category_id": 2,
+      "category_slug": "pan-services",
+      "name": "Minor to Major PAN Card Update",
+      "slug": "minor-to-major-pan-update",
+      "description": "Update signature and photo on Minor PAN card upon turning 18 years old.",
+      "fee": "110.00",
+      "processing_time": "7-12 Working Days",
+      "documents_required": [
+        "Existing Minor PAN Copy",
+        "Aadhaar Card Copy",
+        "Passport Photograph"
+      ],
+      "eligibility": [
+        "PAN holders who have recently attained 18 years of age."
+      ],
+      "status": "active",
+      "created_at": "2026-09-23T01:32:05.000Z",
+      "total_fee": "110.00",
+      "govt_fee": "110.00",
+      "image_url": null,
+      "is_active": 1,
+      "fields_json": [
+        {
+          "field_label": "Existing Minor PAN Number",
+          "field_name": "existing_pan",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "ABCDE1234F",
+          "sort_order": 1
+        },
+        {
+          "field_label": "Date of Birth (Major Status)",
+          "field_name": "dob",
+          "field_type": "date",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "",
+          "sort_order": 2
+        },
+        {
+          "field_label": "Father's Full Name",
+          "field_name": "father_name",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "Subramanian S",
+          "sort_order": 3
+        }
+      ],
+      "documents_json": [
+        "Existing Minor PAN Copy",
+        "Aadhaar Card Copy",
+        "Passport Photograph"
+      ],
+      "display_order": 36
     },
     {
       "id": 27,
@@ -1336,7 +1327,555 @@
         "Residence Proof",
         "Passport Photograph"
       ],
-      "display_order": 0
+      "display_order": 14
+    },
+    {
+      "id": 83,
+      "category_id": 3,
+      "category_slug": "voter-id-services",
+      "name": "Voter ID Address Change & Correction (Form 8)",
+      "slug": "voter-address-correction-form-8",
+      "description": "Correction of name, DOB, address, or constituency transfer in Voter EPIC card.",
+      "fee": "25.00",
+      "processing_time": "10-20 Working Days",
+      "documents_required": [
+        "Voter EPIC Card Copy",
+        "Valid New Address Proof"
+      ],
+      "eligibility": [
+        "Registered voters needing data updates."
+      ],
+      "status": "active",
+      "created_at": "2026-09-23T01:32:06.000Z",
+      "total_fee": "25.00",
+      "govt_fee": "25.00",
+      "image_url": null,
+      "is_active": 1,
+      "fields_json": [
+        {
+          "field_label": "10-Character Voter EPIC Number",
+          "field_name": "epic_no",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "ABC1234567",
+          "sort_order": 1
+        },
+        {
+          "field_label": "Modification Type",
+          "field_name": "correction_type",
+          "field_type": "select",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "",
+          "sort_order": 2
+        },
+        {
+          "field_label": "New Address / Corrected Information",
+          "field_name": "new_address",
+          "field_type": "textarea",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "Door No, Street, City, Pincode",
+          "sort_order": 3
+        }
+      ],
+      "documents_json": [
+        "Voter EPIC Card Copy",
+        "Valid New Address Proof"
+      ],
+      "display_order": 47
+    },
+    {
+      "id": 84,
+      "category_id": 3,
+      "category_slug": "voter-id-services",
+      "name": "Voter ID Aadhaar Linking (Form 6B)",
+      "slug": "voter-aadhaar-linking-form-6b",
+      "description": "Link 12-digit Aadhaar number with Voter EPIC card for authentication.",
+      "fee": "100.00",
+      "processing_time": "3-7 Working Days",
+      "documents_required": [
+        "Voter EPIC Card Copy",
+        "Aadhaar Card Copy"
+      ],
+      "eligibility": [
+        "All registered voters holding Aadhaar."
+      ],
+      "status": "active",
+      "created_at": "2026-09-23T01:32:06.000Z",
+      "total_fee": "100.00",
+      "govt_fee": "100.00",
+      "image_url": null,
+      "is_active": 1,
+      "fields_json": [
+        {
+          "field_label": "10-Character Voter EPIC Number",
+          "field_name": "epic_no",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "ABC1234567",
+          "sort_order": 1
+        },
+        {
+          "field_label": "12-Digit Aadhaar Number",
+          "field_name": "aadhaar_number",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "1234 5678 9012",
+          "sort_order": 2
+        },
+        {
+          "field_label": "Linked Mobile Number",
+          "field_name": "mobile_number",
+          "field_type": "phone",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "9876543210",
+          "sort_order": 3
+        }
+      ],
+      "documents_json": [
+        "Voter EPIC Card Copy",
+        "Aadhaar Card Copy"
+      ],
+      "display_order": 48
+    },
+    {
+      "id": 85,
+      "category_id": 3,
+      "category_slug": "voter-id-services",
+      "name": "Download Digital e-EPIC Voter Card",
+      "slug": "epic-digital-download",
+      "description": "Download official PDF copy of Voter ID card.",
+      "fee": "25.00",
+      "processing_time": "Instant / 1 Hour",
+      "documents_required": [],
+      "eligibility": [
+        "Voters registered with unique mobile number on ECI portal."
+      ],
+      "status": "active",
+      "created_at": "2026-09-23T01:32:06.000Z",
+      "total_fee": "25.00",
+      "govt_fee": "25.00",
+      "image_url": null,
+      "is_active": 1,
+      "fields_json": [
+        {
+          "field_label": "10-Character Voter EPIC Number",
+          "field_name": "epic_no",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "ABC1234567",
+          "sort_order": 1
+        },
+        {
+          "field_label": "Registered Mobile Number",
+          "field_name": "mobile_number",
+          "field_type": "phone",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "9876543210",
+          "sort_order": 2
+        }
+      ],
+      "documents_json": [],
+      "display_order": 49
+    },
+    {
+      "id": 86,
+      "category_id": 3,
+      "category_slug": "voter-id-services",
+      "name": "Order Replacement PVC Voter Card",
+      "slug": "replacement-voter-card",
+      "description": "Reissue physical plastic Voter ID card for lost or damaged EPIC card.",
+      "fee": "50.00",
+      "processing_time": "10-15 Working Days",
+      "documents_required": [
+        "Aadhaar Card Copy",
+        "FIR Copy / Damaged Card"
+      ],
+      "eligibility": [
+        "Registered voters with lost or damaged Voter card."
+      ],
+      "status": "active",
+      "created_at": "2026-09-23T01:32:06.000Z",
+      "total_fee": "50.00",
+      "govt_fee": "50.00",
+      "image_url": null,
+      "is_active": 1,
+      "fields_json": [
+        {
+          "field_label": "10-Character Voter EPIC Number",
+          "field_name": "epic_no",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "ABC1234567",
+          "sort_order": 1
+        },
+        {
+          "field_label": "Reason for Replacement",
+          "field_name": "reason",
+          "field_type": "select",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "",
+          "sort_order": 2
+        },
+        {
+          "field_label": "Delivery Address",
+          "field_name": "delivery_address",
+          "field_type": "textarea",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "Door No, Street Name, Area, City",
+          "sort_order": 3
+        }
+      ],
+      "documents_json": [
+        "Aadhaar Card Copy",
+        "FIR Copy / Damaged Card"
+      ],
+      "display_order": 50
+    },
+    {
+      "id": 87,
+      "category_id": 3,
+      "category_slug": "voter-id-services",
+      "name": "Overseas NRI Voter Registration (Form 6A)",
+      "slug": "nri-voter-registration-form-6a",
+      "description": "Voter registration for non-resident Indian citizens residing abroad.",
+      "fee": "250.00",
+      "processing_time": "15-30 Working Days",
+      "documents_required": [
+        "Indian Passport Copy",
+        "Native Indian Residence Proof"
+      ],
+      "eligibility": [
+        "Indian passport holders living abroad."
+      ],
+      "status": "active",
+      "created_at": "2026-09-23T01:32:07.000Z",
+      "total_fee": "250.00",
+      "govt_fee": "250.00",
+      "image_url": null,
+      "is_active": 1,
+      "fields_json": [
+        {
+          "field_label": "Indian Passport Number",
+          "field_name": "passport_number",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "Z1234567",
+          "sort_order": 1
+        },
+        {
+          "field_label": "Overseas Address Abroad",
+          "field_name": "overseas_address",
+          "field_type": "textarea",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "Building No, Street, City, Country",
+          "sort_order": 2
+        },
+        {
+          "field_label": "Native Assembly Constituency in India",
+          "field_name": "native_constituency",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "Mylapore",
+          "sort_order": 3
+        }
+      ],
+      "documents_json": [
+        "Indian Passport Copy",
+        "Native Indian Residence Proof"
+      ],
+      "display_order": 51
+    },
+    {
+      "id": 88,
+      "category_id": 3,
+      "category_slug": "voter-id-services",
+      "name": "Electoral Roll Name Search & Verification",
+      "slug": "electoral-roll-search",
+      "description": "Verify voter name inclusion in current voter list and find polling station details.",
+      "fee": "0.00",
+      "processing_time": "Instant",
+      "documents_required": [],
+      "eligibility": [
+        "All citizens."
+      ],
+      "status": "active",
+      "created_at": "2026-09-23T01:32:07.000Z",
+      "total_fee": "0.00",
+      "govt_fee": "0.00",
+      "image_url": null,
+      "is_active": 1,
+      "fields_json": [
+        {
+          "field_label": "Full Name of Voter",
+          "field_name": "voter_name",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "Karthik Subramanian",
+          "sort_order": 1
+        },
+        {
+          "field_label": "District Name",
+          "field_name": "district",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "Chennai",
+          "sort_order": 2
+        },
+        {
+          "field_label": "Father's / Husband's Name",
+          "field_name": "relative_name",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "Subramanian S",
+          "sort_order": 3
+        }
+      ],
+      "documents_json": [],
+      "display_order": 52
+    },
+    {
+      "id": 89,
+      "category_id": 3,
+      "category_slug": "voter-id-services",
+      "name": "Voter Deletion & Objection (Form 7)",
+      "slug": "voter-deletion-objection-form-7",
+      "description": "Application for deletion of deceased or shifted voter name from electoral roll.",
+      "fee": "100.00",
+      "processing_time": "15-25 Working Days",
+      "documents_required": [
+        "Death Certificate / Shifting Proof"
+      ],
+      "eligibility": [
+        "Registered voters in the constituency."
+      ],
+      "status": "active",
+      "created_at": "2026-09-23T01:32:07.000Z",
+      "total_fee": "100.00",
+      "govt_fee": "100.00",
+      "image_url": null,
+      "is_active": 1,
+      "fields_json": [
+        {
+          "field_label": "Objector EPIC Number",
+          "field_name": "objector_epic",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "ABC1234567",
+          "sort_order": 1
+        },
+        {
+          "field_label": "EPIC Number to be Deleted / Shifted",
+          "field_name": "target_epic",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "XYZ9876543",
+          "sort_order": 2
+        },
+        {
+          "field_label": "Deletion Reason",
+          "field_name": "reason",
+          "field_type": "select",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "",
+          "sort_order": 3
+        }
+      ],
+      "documents_json": [
+        "Death Certificate / Shifting Proof"
+      ],
+      "display_order": 53
+    },
+    {
+      "id": 3,
+      "category_id": 4,
+      "category_slug": "certificate-services",
+      "name": "Income Certificate Application",
+      "slug": "income-certificate",
+      "description": "Official revenue certificate certifying total annual family income for education & subsidies.",
+      "fee": "60.00",
+      "processing_time": "7 Working Days",
+      "documents_required": [
+        "Applicant Photograph",
+        "Address Proof",
+        "Income Proof"
+      ],
+      "eligibility": [
+        "Permanent state residents seeking income verification for government schemes."
+      ],
+      "status": "active",
+      "created_at": "2026-09-11T12:40:08.000Z",
+      "total_fee": "60.00",
+      "govt_fee": "60.00",
+      "image_url": null,
+      "is_active": 1,
+      "fields_json": [
+        {
+          "field_label": "Applicant Name",
+          "field_name": "applicant_name",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "Karthik Subramanian",
+          "sort_order": 1
+        },
+        {
+          "field_label": "Father / Husband Name",
+          "field_name": "father_husband_name",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "Subramanian S",
+          "sort_order": 2
+        },
+        {
+          "field_label": "Total Family Annual Income (₹)",
+          "field_name": "annual_income",
+          "field_type": "number",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "120000",
+          "sort_order": 3
+        },
+        {
+          "field_label": "Primary Occupation",
+          "field_name": "occupation",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "Private Job / Agriculture",
+          "sort_order": 4
+        },
+        {
+          "field_label": "Residential Address",
+          "field_name": "address",
+          "field_type": "textarea",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "Door No, Street, Village, Pincode",
+          "sort_order": 5
+        },
+        {
+          "field_label": "Mobile Number",
+          "field_name": "mobile_number",
+          "field_type": "phone",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "9876543210",
+          "sort_order": 6
+        }
+      ],
+      "documents_json": [
+        "Applicant Photograph",
+        "Address Proof",
+        "Income Proof"
+      ],
+      "display_order": 1
+    },
+    {
+      "id": 4,
+      "category_id": 4,
+      "category_slug": "certificate-services",
+      "name": "Community / Caste Certificate",
+      "slug": "community-certificate",
+      "description": "Official revenue certificate confirming caste/community category (BC / MBC / SC / ST).",
+      "fee": "60.00",
+      "processing_time": "15 Working Days",
+      "documents_required": [
+        "Applicant Photograph",
+        "Address Proof",
+        "Parent Community Certificate"
+      ],
+      "eligibility": [
+        "Citizens seeking quota or reservation benefits for education & government jobs."
+      ],
+      "status": "active",
+      "created_at": "2026-09-11T12:40:08.000Z",
+      "total_fee": "60.00",
+      "govt_fee": "60.00",
+      "image_url": null,
+      "is_active": 1,
+      "fields_json": [
+        {
+          "field_label": "Applicant Name",
+          "field_name": "applicant_name",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "Karthik Subramanian",
+          "sort_order": 1
+        },
+        {
+          "field_label": "Father Name",
+          "field_name": "father_name",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "Subramanian S",
+          "sort_order": 2
+        },
+        {
+          "field_label": "Community Category",
+          "field_name": "caste_category",
+          "field_type": "select",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "",
+          "sort_order": 3
+        },
+        {
+          "field_label": "Specific Sub-Caste",
+          "field_name": "sub_caste",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "Sub-caste name",
+          "sort_order": 4
+        },
+        {
+          "field_label": "Residential Address",
+          "field_name": "address",
+          "field_type": "textarea",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "Complete address",
+          "sort_order": 5
+        },
+        {
+          "field_label": "Mobile Number",
+          "field_name": "mobile_number",
+          "field_type": "phone",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "9876543210",
+          "sort_order": 6
+        }
+      ],
+      "documents_json": [
+        "Applicant Photograph",
+        "Address Proof",
+        "Parent Community Certificate"
+      ],
+      "display_order": 4
     },
     {
       "id": 29,
@@ -1411,7 +1950,7 @@
         "Photo & Aadhaar Card",
         "Proof of Continuous Residence"
       ],
-      "display_order": 0
+      "display_order": 15
     },
     {
       "id": 30,
@@ -1488,696 +2027,7 @@
         "Educational Certificates of Family",
         "Joint Self Declaration"
       ],
-      "display_order": 0
-    },
-    {
-      "id": 33,
-      "category_id": 5,
-      "category_slug": "land-patta-services",
-      "name": "A-Register & Chitta Extract Copy",
-      "slug": "chitta-extract-download",
-      "description": "Get officially verified digital extract of A-Register & land ownership Chitta statement.",
-      "fee": "50.00",
-      "processing_time": "1–2 Working Days",
-      "documents_required": [
-        "District, Taluk, Village Name",
-        "Survey Number / Sub-division"
-      ],
-      "eligibility": [
-        "Public record available to any citizen or property buyer"
-      ],
-      "status": "active",
-      "created_at": "2026-09-23T01:31:48.000Z",
-      "total_fee": "50.00",
-      "govt_fee": "50.00",
-      "image_url": null,
-      "is_active": 1,
-      "fields_json": [
-        {
-          "field_label": "District Name",
-          "field_name": "district",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "",
-          "sort_order": 1
-        },
-        {
-          "field_label": "Taluk Name",
-          "field_name": "taluk",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "",
-          "sort_order": 2
-        },
-        {
-          "field_label": "Village Name",
-          "field_name": "village",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "",
-          "sort_order": 3
-        },
-        {
-          "field_label": "Survey Number & Sub-division",
-          "field_name": "survey_no",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "",
-          "sort_order": 4
-        }
-      ],
-      "documents_json": [
-        "District, Taluk, Village Name",
-        "Survey Number / Sub-division"
-      ],
-      "display_order": 0
-    },
-    {
-      "id": 34,
-      "category_id": 5,
-      "category_slug": "land-patta-services",
-      "name": "Field Measurement Book (FMB) Sketch Copy",
-      "slug": "fmb-sketch-map",
-      "description": "Download field sketch map showing exact boundary measurements for your survey land number.",
-      "fee": "60.00",
-      "processing_time": "2–3 Working Days",
-      "documents_required": [
-        "Taluk & Village Details",
-        "Survey Number & Sub-division"
-      ],
-      "eligibility": [
-        "Land owner, boundary verification seeker, surveyor"
-      ],
-      "status": "active",
-      "created_at": "2026-09-23T01:31:49.000Z",
-      "total_fee": "60.00",
-      "govt_fee": "60.00",
-      "image_url": null,
-      "is_active": 1,
-      "fields_json": [
-        {
-          "field_label": "District Name",
-          "field_name": "district",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "",
-          "sort_order": 1
-        },
-        {
-          "field_label": "Taluk Name",
-          "field_name": "taluk",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "",
-          "sort_order": 2
-        },
-        {
-          "field_label": "Village Name",
-          "field_name": "village",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "",
-          "sort_order": 3
-        },
-        {
-          "field_label": "Survey Number & Sub-division",
-          "field_name": "survey_no",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "",
-          "sort_order": 4
-        }
-      ],
-      "documents_json": [
-        "Taluk & Village Details",
-        "Survey Number & Sub-division"
-      ],
-      "display_order": 0
-    },
-    {
-      "id": 37,
-      "category_id": 6,
-      "category_slug": "passport-services",
-      "name": "Passport Re-Issue / Renewal Application",
-      "slug": "passport-reissue-application",
-      "description": "Application for passport renewal due to expiry, exhaustion of pages, or damage.",
-      "fee": "1500.00",
-      "processing_time": "10-15 Working Days",
-      "documents_required": [
-        "Old Passport Original & Copy",
-        "Proof of Present Address"
-      ],
-      "eligibility": [
-        "Existing passport holders nearing expiry or page exhaustion."
-      ],
-      "status": "active",
-      "created_at": "2026-09-23T01:31:50.000Z",
-      "total_fee": "1500.00",
-      "govt_fee": "1500.00",
-      "image_url": null,
-      "is_active": 1,
-      "fields_json": [
-        {
-          "field_label": "Existing Passport Number",
-          "field_name": "passport_number",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "Z1234567",
-          "sort_order": 1
-        },
-        {
-          "field_label": "Passport Expiry Date",
-          "field_name": "expiry_date",
-          "field_type": "date",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "",
-          "sort_order": 2
-        },
-        {
-          "field_label": "Reason for Renewal/Re-issue",
-          "field_name": "reason_for_reissue",
-          "field_type": "select",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "",
-          "sort_order": 3
-        },
-        {
-          "field_label": "Mobile Number",
-          "field_name": "mobile_number",
-          "field_type": "phone",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "9876543210",
-          "sort_order": 4
-        }
-      ],
-      "documents_json": [
-        "Old Passport Original & Copy",
-        "Proof of Present Address"
-      ],
-      "display_order": 0
-    },
-    {
-      "id": 38,
-      "category_id": 7,
-      "category_slug": "driving-vehicle-services",
-      "name": "Learner Licence (LLR) Slot Booking",
-      "slug": "learner-licence-llr-booking",
-      "description": "Filing application and RTO appointment booking for Learner Driving Licence (LLR).",
-      "fee": "250.00",
-      "processing_time": "3-5 Working Days",
-      "documents_required": [
-        "Age Proof",
-        "Address Proof",
-        "Medical Certificate (Form 1A)"
-      ],
-      "eligibility": [
-        "Citizens aged 16+ for gearless 50cc or 18+ for motorcars & heavy transport."
-      ],
-      "status": "active",
-      "created_at": "2026-09-23T01:31:50.000Z",
-      "total_fee": "250.00",
-      "govt_fee": "250.00",
-      "image_url": null,
-      "is_active": 1,
-      "fields_json": [
-        {
-          "field_label": "Applicant Name as per ID",
-          "field_name": "applicant_name",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "Karthik Subramanian",
-          "sort_order": 1
-        },
-        {
-          "field_label": "Date of Birth",
-          "field_name": "dob",
-          "field_type": "date",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "",
-          "sort_order": 2
-        },
-        {
-          "field_label": "Vehicle Category",
-          "field_name": "vehicle_class",
-          "field_type": "select",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "",
-          "sort_order": 3
-        },
-        {
-          "field_label": "Nearest RTO Office",
-          "field_name": "rto_office",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "TN-07 Chennai South",
-          "sort_order": 4
-        },
-        {
-          "field_label": "Mobile Number",
-          "field_name": "mobile_number",
-          "field_type": "phone",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "9876543210",
-          "sort_order": 5
-        }
-      ],
-      "documents_json": [
-        "Age Proof",
-        "Address Proof",
-        "Medical Certificate (Form 1A)"
-      ],
-      "display_order": 0
-    },
-    {
-      "id": 39,
-      "category_id": 7,
-      "category_slug": "driving-vehicle-services",
-      "name": "Driving Licence (DL) Renewal",
-      "slug": "driving-licence-renewal",
-      "description": "Renewal application for expired Driving Licence with RTO desk facilitation.",
-      "fee": "450.00",
-      "processing_time": "7-10 Working Days",
-      "documents_required": [
-        "Original DL Copy",
-        "Address Proof"
-      ],
-      "eligibility": [
-        "Driving licence holders nearing expiry or within 1 year post expiry."
-      ],
-      "status": "active",
-      "created_at": "2026-09-23T01:31:50.000Z",
-      "total_fee": "450.00",
-      "govt_fee": "450.00",
-      "image_url": null,
-      "is_active": 1,
-      "fields_json": [
-        {
-          "field_label": "16-Digit DL Number",
-          "field_name": "dl_number",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "TN0720150012345",
-          "sort_order": 1
-        },
-        {
-          "field_label": "Date of Birth",
-          "field_name": "dob",
-          "field_type": "date",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "",
-          "sort_order": 2
-        },
-        {
-          "field_label": "Mobile Number",
-          "field_name": "mobile_number",
-          "field_type": "phone",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "9876543210",
-          "sort_order": 3
-        }
-      ],
-      "documents_json": [
-        "Original DL Copy",
-        "Address Proof"
-      ],
-      "display_order": 0
-    },
-    {
-      "id": 40,
-      "category_id": 8,
-      "category_slug": "business-services",
-      "name": "Udyam MSME Government Registration",
-      "slug": "udyam-msme-registration",
-      "description": "Official Ministry of MSME registration certificate for Micro, Small, and Medium Enterprises.",
-      "fee": "100.00",
-      "processing_time": "1-2 Working Days",
-      "documents_required": [
-        "Aadhaar & PAN Copy",
-        "Bank Passbook / Cancelled Cheque"
-      ],
-      "eligibility": [
-        "Sole proprietors, partnerships, LLPs, and companies starting business activities."
-      ],
-      "status": "active",
-      "created_at": "2026-09-23T01:31:51.000Z",
-      "total_fee": "100.00",
-      "govt_fee": "100.00",
-      "image_url": null,
-      "is_active": 1,
-      "fields_json": [
-        {
-          "field_label": "Enterprise / Business Name",
-          "field_name": "enterprise_name",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "Apex Digital Solutions",
-          "sort_order": 1
-        },
-        {
-          "field_label": "Proprietor / Managing Partner Name",
-          "field_name": "owner_name",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "Karthik Subramanian",
-          "sort_order": 2
-        },
-        {
-          "field_label": "Owner 12-Digit Aadhaar Number",
-          "field_name": "aadhaar_number",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "1234 5678 9012",
-          "sort_order": 3
-        },
-        {
-          "field_label": "Business / Owner PAN Number",
-          "field_name": "pan_number",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "ABCDE1234F",
-          "sort_order": 4
-        },
-        {
-          "field_label": "Major Activity",
-          "field_name": "business_type",
-          "field_type": "select",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "",
-          "sort_order": 5
-        },
-        {
-          "field_label": "Bank Account Number & IFSC",
-          "field_name": "bank_account",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "Account Number, HDFC0001234",
-          "sort_order": 6
-        },
-        {
-          "field_label": "Mobile Number for OTP",
-          "field_name": "mobile_number",
-          "field_type": "phone",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "9876543210",
-          "sort_order": 7
-        }
-      ],
-      "documents_json": [
-        "Aadhaar & PAN Copy",
-        "Bank Passbook / Cancelled Cheque"
-      ],
-      "display_order": 0
-    },
-    {
-      "id": 41,
-      "category_id": 8,
-      "category_slug": "business-services",
-      "name": "GST Registration Application",
-      "slug": "gst-registration-application",
-      "description": "Apply for 15-digit Goods and Services Tax Identification Number (GSTIN).",
-      "fee": "500.00",
-      "processing_time": "3-7 Working Days",
-      "documents_required": [
-        "PAN & Aadhaar of Proprietor/Partners",
-        "Business Address Proof",
-        "Bank Account Statement"
-      ],
-      "eligibility": [
-        "Businesses with turnover exceeding threshold or engaging in inter-state e-commerce."
-      ],
-      "status": "active",
-      "created_at": "2026-09-23T01:31:51.000Z",
-      "total_fee": "500.00",
-      "govt_fee": "500.00",
-      "image_url": null,
-      "is_active": 1,
-      "fields_json": [
-        {
-          "field_label": "Trade / Business Name",
-          "field_name": "business_name",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "Surya Enterprises",
-          "sort_order": 1
-        },
-        {
-          "field_label": "Constitution of Business",
-          "field_name": "constitution_type",
-          "field_type": "select",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "",
-          "sort_order": 2
-        },
-        {
-          "field_label": "10-Digit PAN Number",
-          "field_name": "pan_number",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "ABCDE1234F",
-          "sort_order": 3
-        },
-        {
-          "field_label": "Principal Place of Business Address",
-          "field_name": "business_address",
-          "field_type": "textarea",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "Door No, Street, City, Pincode",
-          "sort_order": 4
-        },
-        {
-          "field_label": "Authorized Mobile Number",
-          "field_name": "mobile_number",
-          "field_type": "phone",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "9876543210",
-          "sort_order": 5
-        }
-      ],
-      "documents_json": [
-        "PAN & Aadhaar of Proprietor/Partners",
-        "Business Address Proof",
-        "Bank Account Statement"
-      ],
-      "display_order": 0
-    },
-    {
-      "id": 42,
-      "category_id": 9,
-      "category_slug": "utility-services",
-      "name": "TANGEDCO Electricity (EB) Name Transfer",
-      "slug": "tnegedco-eb-name-transfer",
-      "description": "Transfer electricity service connection ownership post property purchase or legal inheritance.",
-      "fee": "200.00",
-      "processing_time": "7-10 Working Days",
-      "documents_required": [
-        "Registered Sale Deed Copy",
-        "Latest EB Bill Paid Receipt",
-        "Aadhaar Card Copy"
-      ],
-      "eligibility": [
-        "Property owners with registered deed in their name."
-      ],
-      "status": "active",
-      "created_at": "2026-09-23T01:31:51.000Z",
-      "total_fee": "200.00",
-      "govt_fee": "200.00",
-      "image_url": null,
-      "is_active": 1,
-      "fields_json": [
-        {
-          "field_label": "EB Service Connection Consumer Number",
-          "field_name": "eb_consumer_number",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "01123456789",
-          "sort_order": 1
-        },
-        {
-          "field_label": "Current Name in EB Card",
-          "field_name": "current_name",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "Old Owner Name",
-          "sort_order": 2
-        },
-        {
-          "field_label": "New Property Owner Name",
-          "field_name": "new_owner_name",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "New Owner Name",
-          "sort_order": 3
-        },
-        {
-          "field_label": "Mobile Number",
-          "field_name": "mobile_number",
-          "field_type": "phone",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "9876543210",
-          "sort_order": 4
-        }
-      ],
-      "documents_json": [
-        "Registered Sale Deed Copy",
-        "Latest EB Bill Paid Receipt",
-        "Aadhaar Card Copy"
-      ],
-      "display_order": 0
-    },
-    {
-      "id": 44,
-      "category_id": 10,
-      "category_slug": "ration-card-services",
-      "name": "New Smart Ration Card Application",
-      "slug": "smart-ration-card-application",
-      "description": "Apply for family Smart Ration Card under Public Distribution System (PDS).",
-      "fee": "50.00",
-      "processing_time": "15-30 Working Days",
-      "documents_required": [
-        "Aadhaar Cards of All Members",
-        "Marriage Certificate / Deletion Certificate",
-        "Gas Connection Slip / Rental Agreement"
-      ],
-      "eligibility": [
-        "Newly married couples or families residing without an active family ration card."
-      ],
-      "status": "active",
-      "created_at": "2026-09-23T01:31:52.000Z",
-      "total_fee": "50.00",
-      "govt_fee": "50.00",
-      "image_url": null,
-      "is_active": 1,
-      "fields_json": [
-        {
-          "field_label": "Head of Family Full Name",
-          "field_name": "head_family_name",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "Karthik Subramanian",
-          "sort_order": 1
-        },
-        {
-          "field_label": "Father / Husband Name",
-          "field_name": "father_husband_name",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "Subramanian S",
-          "sort_order": 2
-        },
-        {
-          "field_label": "Total Number of Family Members",
-          "field_name": "members_count",
-          "field_type": "number",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "4",
-          "sort_order": 3
-        },
-        {
-          "field_label": "Residential Address",
-          "field_name": "address",
-          "field_type": "textarea",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "Door No, Street Name, Pincode",
-          "sort_order": 4
-        },
-        {
-          "field_label": "Mobile Number",
-          "field_name": "mobile_number",
-          "field_type": "phone",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "9876543210",
-          "sort_order": 5
-        }
-      ],
-      "documents_json": [
-        "Aadhaar Cards of All Members",
-        "Marriage Certificate / Deletion Certificate",
-        "Gas Connection Slip / Rental Agreement"
-      ],
-      "display_order": 0
-    },
-    {
-      "id": 49,
-      "category_id": 2,
-      "category_slug": "pan-services",
-      "name": "PAN Application Status Check",
-      "slug": "pan-status",
-      "description": "Check status of your new PAN or correction application.",
-      "fee": "0.00",
-      "processing_time": "Instant",
-      "documents_required": [],
-      "eligibility": [
-        "All PAN applicants."
-      ],
-      "status": "active",
-      "created_at": "2026-09-23T01:32:02.000Z",
-      "total_fee": "0.00",
-      "govt_fee": "0.00",
-      "image_url": null,
-      "is_active": 1,
-      "fields_json": [
-        {
-          "field_label": "15-Digit Acknowledgement Number",
-          "field_name": "pan_ack_no",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "881020304050607",
-          "sort_order": 1
-        },
-        {
-          "field_label": "Registered Mobile Number",
-          "field_name": "mobile_number",
-          "field_type": "phone",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "9876543210",
-          "sort_order": 2
-        }
-      ],
-      "documents_json": [],
-      "display_order": 0
+      "display_order": 16
     },
     {
       "id": 50,
@@ -2254,7 +2104,377 @@
         "Address Proof",
         "Residence Proof"
       ],
-      "display_order": 0
+      "display_order": 27
+    },
+    {
+      "id": 70,
+      "category_id": 4,
+      "category_slug": "certificate-services",
+      "name": "Native / Domicile Certificate Application",
+      "slug": "native-domicile-certificate",
+      "description": "Official proof verifying permanent domicile & native residence status in Tamil Nadu.",
+      "fee": "60.00",
+      "processing_time": "7-10 Working Days",
+      "documents_required": [
+        "5-Year School Study Proof or Birth Certificate",
+        "Smart Ration Card / Property Tax",
+        "Aadhaar Card Copy"
+      ],
+      "eligibility": [
+        "Permanent residents of Tamil Nadu."
+      ],
+      "status": "active",
+      "created_at": "2026-09-23T01:32:05.000Z",
+      "total_fee": "60.00",
+      "govt_fee": "60.00",
+      "image_url": null,
+      "is_active": 1,
+      "fields_json": [
+        {
+          "field_label": "Years of Continuous Residence in TN",
+          "field_name": "years_residence",
+          "field_type": "number",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "e.g. 25",
+          "sort_order": 1
+        },
+        {
+          "field_label": "Ancestral Native Place / District",
+          "field_name": "father_native_place",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "Madurai",
+          "sort_order": 2
+        },
+        {
+          "field_label": "Purpose of Nativity Certificate",
+          "field_name": "purpose",
+          "field_type": "select",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "",
+          "sort_order": 3
+        }
+      ],
+      "documents_json": [
+        "5-Year School Study Proof or Birth Certificate",
+        "Smart Ration Card / Property Tax",
+        "Aadhaar Card Copy"
+      ],
+      "display_order": 37
+    },
+    {
+      "id": 71,
+      "category_id": 4,
+      "category_slug": "certificate-services",
+      "name": "No Male Child Certificate Application",
+      "slug": "no-male-child-certificate",
+      "description": "Revenue certificate issued to families having only female children for welfare schemes.",
+      "fee": "60.00",
+      "processing_time": "7-10 Working Days",
+      "documents_required": [
+        "Birth Certificates of Female Children",
+        "Sterilization Certificate / Doctor Report",
+        "Parents Aadhaar & Ration Card"
+      ],
+      "eligibility": [
+        "Parents with only female children and no male issue."
+      ],
+      "status": "active",
+      "created_at": "2026-09-23T01:32:05.000Z",
+      "total_fee": "60.00",
+      "govt_fee": "60.00",
+      "image_url": null,
+      "is_active": 1,
+      "fields_json": [
+        {
+          "field_label": "Number of Female Children",
+          "field_name": "female_children_count",
+          "field_type": "number",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "2",
+          "sort_order": 1
+        },
+        {
+          "field_label": "Mother's Full Name",
+          "field_name": "mother_name",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "Lakshmi S",
+          "sort_order": 2
+        },
+        {
+          "field_label": "Family Welfare Sterilization Done?",
+          "field_name": "sterilization_status",
+          "field_type": "select",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "",
+          "sort_order": 3
+        }
+      ],
+      "documents_json": [
+        "Birth Certificates of Female Children",
+        "Sterilization Certificate / Doctor Report",
+        "Parents Aadhaar & Ration Card"
+      ],
+      "display_order": 38
+    },
+    {
+      "id": 72,
+      "category_id": 4,
+      "category_slug": "certificate-services",
+      "name": "Solvency Certificate Application",
+      "slug": "solvency-certificate",
+      "description": "Financial stability certificate issued by Revenue Dept for contractors, tenders & bank guarantees.",
+      "fee": "150.00",
+      "processing_time": "15-20 Working Days",
+      "documents_required": [
+        "Property Sale Deed / Title Deed",
+        "Encumbrance Certificate (EC)",
+        "Engineer Valuation Report",
+        "Aadhaar & PAN Card Copy"
+      ],
+      "eligibility": [
+        "Property owners seeking solvency validation."
+      ],
+      "status": "active",
+      "created_at": "2026-09-23T01:32:05.000Z",
+      "total_fee": "150.00",
+      "govt_fee": "150.00",
+      "image_url": null,
+      "is_active": 1,
+      "fields_json": [
+        {
+          "field_label": "Estimated Solvency Value in ₹",
+          "field_name": "property_value",
+          "field_type": "number",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "500000",
+          "sort_order": 1
+        },
+        {
+          "field_label": "Property Survey No. & Village",
+          "field_name": "survey_number",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "Survey No 124/2A, Adyar",
+          "sort_order": 2
+        },
+        {
+          "field_label": "Solvency Purpose",
+          "field_name": "purpose",
+          "field_type": "select",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "",
+          "sort_order": 3
+        }
+      ],
+      "documents_json": [
+        "Property Sale Deed / Title Deed",
+        "Encumbrance Certificate (EC)",
+        "Engineer Valuation Report",
+        "Aadhaar & PAN Card Copy"
+      ],
+      "display_order": 39
+    },
+    {
+      "id": 73,
+      "category_id": 4,
+      "category_slug": "certificate-services",
+      "name": "Unmarried / Single Status Certificate",
+      "slug": "unmarried-certificate",
+      "description": "Revenue certificate certifying single status for visa, passport & employment requirements.",
+      "fee": "60.00",
+      "processing_time": "5-7 Working Days",
+      "documents_required": [
+        "Notarized Affidavit",
+        "Passport / Voter ID Copy",
+        "Aadhaar & Ration Card"
+      ],
+      "eligibility": [
+        "Unmarried citizens requiring official single status proof."
+      ],
+      "status": "active",
+      "created_at": "2026-09-23T01:32:05.000Z",
+      "total_fee": "60.00",
+      "govt_fee": "60.00",
+      "image_url": null,
+      "is_active": 1,
+      "fields_json": [
+        {
+          "field_label": "Current Age",
+          "field_name": "age",
+          "field_type": "number",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "26",
+          "sort_order": 1
+        },
+        {
+          "field_label": "Purpose of Certificate",
+          "field_name": "purpose",
+          "field_type": "select",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "",
+          "sort_order": 2
+        },
+        {
+          "field_label": "I declare that I have not been legally married",
+          "field_name": "declaration",
+          "field_type": "checkbox",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "",
+          "sort_order": 3
+        }
+      ],
+      "documents_json": [
+        "Notarized Affidavit",
+        "Passport / Voter ID Copy",
+        "Aadhaar & Ration Card"
+      ],
+      "display_order": 40
+    },
+    {
+      "id": 33,
+      "category_id": 5,
+      "category_slug": "land-patta-services",
+      "name": "A-Register & Chitta Extract Copy",
+      "slug": "chitta-extract-download",
+      "description": "Get officially verified digital extract of A-Register & land ownership Chitta statement.",
+      "fee": "50.00",
+      "processing_time": "1–2 Working Days",
+      "documents_required": [
+        "District, Taluk, Village Name",
+        "Survey Number / Sub-division"
+      ],
+      "eligibility": [
+        "Public record available to any citizen or property buyer"
+      ],
+      "status": "active",
+      "created_at": "2026-09-23T01:31:48.000Z",
+      "total_fee": "50.00",
+      "govt_fee": "50.00",
+      "image_url": null,
+      "is_active": 1,
+      "fields_json": [
+        {
+          "field_label": "District Name",
+          "field_name": "district",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "",
+          "sort_order": 1
+        },
+        {
+          "field_label": "Taluk Name",
+          "field_name": "taluk",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "",
+          "sort_order": 2
+        },
+        {
+          "field_label": "Village Name",
+          "field_name": "village",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "",
+          "sort_order": 3
+        },
+        {
+          "field_label": "Survey Number & Sub-division",
+          "field_name": "survey_no",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "",
+          "sort_order": 4
+        }
+      ],
+      "documents_json": [
+        "District, Taluk, Village Name",
+        "Survey Number / Sub-division"
+      ],
+      "display_order": 17
+    },
+    {
+      "id": 34,
+      "category_id": 5,
+      "category_slug": "land-patta-services",
+      "name": "Field Measurement Book (FMB) Sketch Copy",
+      "slug": "fmb-sketch-map",
+      "description": "Download field sketch map showing exact boundary measurements for your survey land number.",
+      "fee": "60.00",
+      "processing_time": "2–3 Working Days",
+      "documents_required": [
+        "Taluk & Village Details",
+        "Survey Number & Sub-division"
+      ],
+      "eligibility": [
+        "Land owner, boundary verification seeker, surveyor"
+      ],
+      "status": "active",
+      "created_at": "2026-09-23T01:31:49.000Z",
+      "total_fee": "60.00",
+      "govt_fee": "60.00",
+      "image_url": null,
+      "is_active": 1,
+      "fields_json": [
+        {
+          "field_label": "District Name",
+          "field_name": "district",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "",
+          "sort_order": 1
+        },
+        {
+          "field_label": "Taluk Name",
+          "field_name": "taluk",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "",
+          "sort_order": 2
+        },
+        {
+          "field_label": "Village Name",
+          "field_name": "village",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "",
+          "sort_order": 3
+        },
+        {
+          "field_label": "Survey Number & Sub-division",
+          "field_name": "survey_no",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "",
+          "sort_order": 4
+        }
+      ],
+      "documents_json": [
+        "Taluk & Village Details",
+        "Survey Number & Sub-division"
+      ],
+      "display_order": 18
     },
     {
       "id": 52,
@@ -2367,7 +2587,7 @@
         "Identity Proof",
         "Existing Patta Copy"
       ],
-      "display_order": 0
+      "display_order": 28
     },
     {
       "id": 53,
@@ -2471,7 +2691,73 @@
         "Existing Patta Copy",
         "Field Survey Map / Partition Deed"
       ],
-      "display_order": 0
+      "display_order": 29
+    },
+    {
+      "id": 37,
+      "category_id": 6,
+      "category_slug": "passport-services",
+      "name": "Passport Re-Issue / Renewal Application",
+      "slug": "passport-reissue-application",
+      "description": "Application for passport renewal due to expiry, exhaustion of pages, or damage.",
+      "fee": "1500.00",
+      "processing_time": "10-15 Working Days",
+      "documents_required": [
+        "Old Passport Original & Copy",
+        "Proof of Present Address"
+      ],
+      "eligibility": [
+        "Existing passport holders nearing expiry or page exhaustion."
+      ],
+      "status": "active",
+      "created_at": "2026-09-23T01:31:50.000Z",
+      "total_fee": "1500.00",
+      "govt_fee": "1500.00",
+      "image_url": null,
+      "is_active": 1,
+      "fields_json": [
+        {
+          "field_label": "Existing Passport Number",
+          "field_name": "passport_number",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "Z1234567",
+          "sort_order": 1
+        },
+        {
+          "field_label": "Passport Expiry Date",
+          "field_name": "expiry_date",
+          "field_type": "date",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "",
+          "sort_order": 2
+        },
+        {
+          "field_label": "Reason for Renewal/Re-issue",
+          "field_name": "reason_for_reissue",
+          "field_type": "select",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "",
+          "sort_order": 3
+        },
+        {
+          "field_label": "Mobile Number",
+          "field_name": "mobile_number",
+          "field_type": "phone",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "9876543210",
+          "sort_order": 4
+        }
+      ],
+      "documents_json": [
+        "Old Passport Original & Copy",
+        "Proof of Present Address"
+      ],
+      "display_order": 19
     },
     {
       "id": 56,
@@ -2620,7 +2906,508 @@
         "Proof of Present Address",
         "Non-ECR Educational Proof"
       ],
-      "display_order": 0
+      "display_order": 30
+    },
+    {
+      "id": 93,
+      "category_id": 6,
+      "category_slug": "passport-services",
+      "name": "Police Clearance Certificate (PCC) Passport",
+      "slug": "police-clearance-certificate-pcc",
+      "description": "PCC application assistance for emigration, employment, and foreign residence visas.",
+      "fee": "500.00",
+      "processing_time": "7-14 Working Days",
+      "documents_required": [
+        "Indian Passport Original & Copy",
+        "Present Address Proof",
+        "Visa / Employment Offer Letter"
+      ],
+      "eligibility": [
+        "Valid Indian Passport holders."
+      ],
+      "status": "active",
+      "created_at": "2026-09-23T01:32:07.000Z",
+      "total_fee": "500.00",
+      "govt_fee": "500.00",
+      "image_url": null,
+      "is_active": 1,
+      "fields_json": [
+        {
+          "field_label": "Valid Indian Passport Number",
+          "field_name": "passport_number",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "Z1234567",
+          "sort_order": 1
+        },
+        {
+          "field_label": "Passport Issue Date",
+          "field_name": "passport_issue_date",
+          "field_type": "date",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "",
+          "sort_order": 2
+        },
+        {
+          "field_label": "Country Requiring PCC",
+          "field_name": "country_applying_for",
+          "field_type": "select",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "",
+          "sort_order": 3
+        }
+      ],
+      "documents_json": [
+        "Indian Passport Original & Copy",
+        "Present Address Proof",
+        "Visa / Employment Offer Letter"
+      ],
+      "display_order": 56
+    },
+    {
+      "id": 38,
+      "category_id": 7,
+      "category_slug": "driving-vehicle-services",
+      "name": "Learner Licence (LLR) Slot Booking",
+      "slug": "learner-licence-llr-booking",
+      "description": "Filing application and RTO appointment booking for Learner Driving Licence (LLR).",
+      "fee": "250.00",
+      "processing_time": "3-5 Working Days",
+      "documents_required": [
+        "Age Proof",
+        "Address Proof",
+        "Medical Certificate (Form 1A)"
+      ],
+      "eligibility": [
+        "Citizens aged 16+ for gearless 50cc or 18+ for motorcars & heavy transport."
+      ],
+      "status": "active",
+      "created_at": "2026-09-23T01:31:50.000Z",
+      "total_fee": "250.00",
+      "govt_fee": "250.00",
+      "image_url": null,
+      "is_active": 1,
+      "fields_json": [
+        {
+          "field_label": "Applicant Name as per ID",
+          "field_name": "applicant_name",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "Karthik Subramanian",
+          "sort_order": 1
+        },
+        {
+          "field_label": "Date of Birth",
+          "field_name": "dob",
+          "field_type": "date",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "",
+          "sort_order": 2
+        },
+        {
+          "field_label": "Vehicle Category",
+          "field_name": "vehicle_class",
+          "field_type": "select",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "",
+          "sort_order": 3
+        },
+        {
+          "field_label": "Nearest RTO Office",
+          "field_name": "rto_office",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "TN-07 Chennai South",
+          "sort_order": 4
+        },
+        {
+          "field_label": "Mobile Number",
+          "field_name": "mobile_number",
+          "field_type": "phone",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "9876543210",
+          "sort_order": 5
+        }
+      ],
+      "documents_json": [
+        "Age Proof",
+        "Address Proof",
+        "Medical Certificate (Form 1A)"
+      ],
+      "display_order": 20
+    },
+    {
+      "id": 39,
+      "category_id": 7,
+      "category_slug": "driving-vehicle-services",
+      "name": "Driving Licence (DL) Renewal",
+      "slug": "driving-licence-renewal",
+      "description": "Renewal application for expired Driving Licence with RTO desk facilitation.",
+      "fee": "450.00",
+      "processing_time": "7-10 Working Days",
+      "documents_required": [
+        "Original DL Copy",
+        "Address Proof"
+      ],
+      "eligibility": [
+        "Driving licence holders nearing expiry or within 1 year post expiry."
+      ],
+      "status": "active",
+      "created_at": "2026-09-23T01:31:50.000Z",
+      "total_fee": "450.00",
+      "govt_fee": "450.00",
+      "image_url": null,
+      "is_active": 1,
+      "fields_json": [
+        {
+          "field_label": "16-Digit DL Number",
+          "field_name": "dl_number",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "TN0720150012345",
+          "sort_order": 1
+        },
+        {
+          "field_label": "Date of Birth",
+          "field_name": "dob",
+          "field_type": "date",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "",
+          "sort_order": 2
+        },
+        {
+          "field_label": "Mobile Number",
+          "field_name": "mobile_number",
+          "field_type": "phone",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "9876543210",
+          "sort_order": 3
+        }
+      ],
+      "documents_json": [
+        "Original DL Copy",
+        "Address Proof"
+      ],
+      "display_order": 21
+    },
+    {
+      "id": 76,
+      "category_id": 7,
+      "category_slug": "driving-vehicle-services",
+      "name": "Permanent Driving Licence (DL) Slot Booking",
+      "slug": "permanent-driving-licence",
+      "description": "Book RTO driving test appointment for permanent driving licence.",
+      "fee": "300.00",
+      "processing_time": "7-15 Working Days",
+      "documents_required": [
+        "Valid LLR Copy",
+        "Aadhaar Card Copy",
+        "Medical Fitness Form 1A"
+      ],
+      "eligibility": [
+        "Holders of valid LLR completed 30 days after issue."
+      ],
+      "status": "active",
+      "created_at": "2026-09-23T01:32:06.000Z",
+      "total_fee": "300.00",
+      "govt_fee": "300.00",
+      "image_url": null,
+      "is_active": 1,
+      "fields_json": [
+        {
+          "field_label": "Existing LLR Number",
+          "field_name": "llr_number",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "TN01/LLR/2026/12345",
+          "sort_order": 1
+        },
+        {
+          "field_label": "LLR Issue Date",
+          "field_name": "llr_issue_date",
+          "field_type": "date",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "",
+          "sort_order": 2
+        },
+        {
+          "field_label": "Vehicle Class Category",
+          "field_name": "vehicle_class",
+          "field_type": "select",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "",
+          "sort_order": 3
+        },
+        {
+          "field_label": "Assigned RTO Office Location",
+          "field_name": "rto_office",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "RTO Chennai South (TN-07)",
+          "sort_order": 4
+        }
+      ],
+      "documents_json": [
+        "Valid LLR Copy",
+        "Aadhaar Card Copy",
+        "Medical Fitness Form 1A"
+      ],
+      "display_order": 42
+    },
+    {
+      "id": 78,
+      "category_id": 7,
+      "category_slug": "driving-vehicle-services",
+      "name": "Vehicle RC Ownership Transfer Application",
+      "slug": "vehicle-rc-transfer",
+      "description": "Transfer vehicle registration certificate ownership to buyer upon sale.",
+      "fee": "450.00",
+      "processing_time": "15-20 Working Days",
+      "documents_required": [
+        "Original RC Smart Card",
+        "Form 29 & Form 30",
+        "Valid Insurance & PUC Certificate",
+        "Buyer Aadhaar Card Copy"
+      ],
+      "eligibility": [
+        "Buyers or sellers of secondhand motorized vehicles."
+      ],
+      "status": "active",
+      "created_at": "2026-09-23T01:32:06.000Z",
+      "total_fee": "450.00",
+      "govt_fee": "450.00",
+      "image_url": null,
+      "is_active": 1,
+      "fields_json": [
+        {
+          "field_label": "Vehicle Registration Number",
+          "field_name": "vehicle_reg_no",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "TN07AB1234",
+          "sort_order": 1
+        },
+        {
+          "field_label": "Seller / Original Owner Name",
+          "field_name": "seller_name",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "Ramesh K",
+          "sort_order": 2
+        },
+        {
+          "field_label": "Buyer / New Owner Name",
+          "field_name": "buyer_name",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "Karthik S",
+          "sort_order": 3
+        },
+        {
+          "field_label": "Ownership Transfer Reason",
+          "field_name": "transfer_reason",
+          "field_type": "select",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "",
+          "sort_order": 4
+        }
+      ],
+      "documents_json": [
+        "Original RC Smart Card",
+        "Form 29 & Form 30",
+        "Valid Insurance & PUC Certificate",
+        "Buyer Aadhaar Card Copy"
+      ],
+      "display_order": 43
+    },
+    {
+      "id": 40,
+      "category_id": 8,
+      "category_slug": "business-services",
+      "name": "Udyam MSME Government Registration",
+      "slug": "udyam-msme-registration",
+      "description": "Official Ministry of MSME registration certificate for Micro, Small, and Medium Enterprises.",
+      "fee": "100.00",
+      "processing_time": "1-2 Working Days",
+      "documents_required": [
+        "Aadhaar & PAN Copy",
+        "Bank Passbook / Cancelled Cheque"
+      ],
+      "eligibility": [
+        "Sole proprietors, partnerships, LLPs, and companies starting business activities."
+      ],
+      "status": "active",
+      "created_at": "2026-09-23T01:31:51.000Z",
+      "total_fee": "100.00",
+      "govt_fee": "100.00",
+      "image_url": null,
+      "is_active": 1,
+      "fields_json": [
+        {
+          "field_label": "Enterprise / Business Name",
+          "field_name": "enterprise_name",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "Apex Digital Solutions",
+          "sort_order": 1
+        },
+        {
+          "field_label": "Proprietor / Managing Partner Name",
+          "field_name": "owner_name",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "Karthik Subramanian",
+          "sort_order": 2
+        },
+        {
+          "field_label": "Owner 12-Digit Aadhaar Number",
+          "field_name": "aadhaar_number",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "1234 5678 9012",
+          "sort_order": 3
+        },
+        {
+          "field_label": "Business / Owner PAN Number",
+          "field_name": "pan_number",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "ABCDE1234F",
+          "sort_order": 4
+        },
+        {
+          "field_label": "Major Activity",
+          "field_name": "business_type",
+          "field_type": "select",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "",
+          "sort_order": 5
+        },
+        {
+          "field_label": "Bank Account Number & IFSC",
+          "field_name": "bank_account",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "Account Number, HDFC0001234",
+          "sort_order": 6
+        },
+        {
+          "field_label": "Mobile Number for OTP",
+          "field_name": "mobile_number",
+          "field_type": "phone",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "9876543210",
+          "sort_order": 7
+        }
+      ],
+      "documents_json": [
+        "Aadhaar & PAN Copy",
+        "Bank Passbook / Cancelled Cheque"
+      ],
+      "display_order": 22
+    },
+    {
+      "id": 41,
+      "category_id": 8,
+      "category_slug": "business-services",
+      "name": "GST Registration Application",
+      "slug": "gst-registration-application",
+      "description": "Apply for 15-digit Goods and Services Tax Identification Number (GSTIN).",
+      "fee": "500.00",
+      "processing_time": "3-7 Working Days",
+      "documents_required": [
+        "PAN & Aadhaar of Proprietor/Partners",
+        "Business Address Proof",
+        "Bank Account Statement"
+      ],
+      "eligibility": [
+        "Businesses with turnover exceeding threshold or engaging in inter-state e-commerce."
+      ],
+      "status": "active",
+      "created_at": "2026-09-23T01:31:51.000Z",
+      "total_fee": "500.00",
+      "govt_fee": "500.00",
+      "image_url": null,
+      "is_active": 1,
+      "fields_json": [
+        {
+          "field_label": "Trade / Business Name",
+          "field_name": "business_name",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "Surya Enterprises",
+          "sort_order": 1
+        },
+        {
+          "field_label": "Constitution of Business",
+          "field_name": "constitution_type",
+          "field_type": "select",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "",
+          "sort_order": 2
+        },
+        {
+          "field_label": "10-Digit PAN Number",
+          "field_name": "pan_number",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "ABCDE1234F",
+          "sort_order": 3
+        },
+        {
+          "field_label": "Principal Place of Business Address",
+          "field_name": "business_address",
+          "field_type": "textarea",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "Door No, Street, City, Pincode",
+          "sort_order": 4
+        },
+        {
+          "field_label": "Authorized Mobile Number",
+          "field_name": "mobile_number",
+          "field_type": "phone",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "9876543210",
+          "sort_order": 5
+        }
+      ],
+      "documents_json": [
+        "PAN & Aadhaar of Proprietor/Partners",
+        "Business Address Proof",
+        "Bank Account Statement"
+      ],
+      "display_order": 23
     },
     {
       "id": 58,
@@ -2742,7 +3529,143 @@
         "Business Premises Address Proof",
         "FSSAI Self Declaration Form"
       ],
-      "display_order": 0
+      "display_order": 31
+    },
+    {
+      "id": 75,
+      "category_id": 8,
+      "category_slug": "business-services",
+      "name": "Municipal Trade License Application",
+      "slug": "trade-license-application",
+      "description": "Local corporation/municipality commercial shop and trade license.",
+      "fee": "500.00",
+      "processing_time": "10-15 Working Days",
+      "documents_required": [
+        "Rental Agreement / Property Tax Receipt",
+        "Identity & Address Proof of Owner",
+        "NOC / Fire Safety Certificate"
+      ],
+      "eligibility": [
+        "Business owners operating commercial establishments."
+      ],
+      "status": "active",
+      "created_at": "2026-09-23T01:32:06.000Z",
+      "total_fee": "500.00",
+      "govt_fee": "500.00",
+      "image_url": null,
+      "is_active": 1,
+      "fields_json": [
+        {
+          "field_label": "Business / Shop Trade Name",
+          "field_name": "trade_name",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "Sri Krishna Supermarket",
+          "sort_order": 1
+        },
+        {
+          "field_label": "Category of Trade",
+          "field_name": "trade_category",
+          "field_type": "select",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "",
+          "sort_order": 2
+        },
+        {
+          "field_label": "Commercial Shop Address",
+          "field_name": "shop_address",
+          "field_type": "textarea",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "No 45, Main Road, Chennai",
+          "sort_order": 3
+        },
+        {
+          "field_label": "Premises Ownership",
+          "field_name": "premises_type",
+          "field_type": "select",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "",
+          "sort_order": 4
+        }
+      ],
+      "documents_json": [
+        "Rental Agreement / Property Tax Receipt",
+        "Identity & Address Proof of Owner",
+        "NOC / Fire Safety Certificate"
+      ],
+      "display_order": 41
+    },
+    {
+      "id": 42,
+      "category_id": 9,
+      "category_slug": "utility-services",
+      "name": "TANGEDCO Electricity (EB) Name Transfer",
+      "slug": "tnegedco-eb-name-transfer",
+      "description": "Transfer electricity service connection ownership post property purchase or legal inheritance.",
+      "fee": "200.00",
+      "processing_time": "7-10 Working Days",
+      "documents_required": [
+        "Registered Sale Deed Copy",
+        "Latest EB Bill Paid Receipt",
+        "Aadhaar Card Copy"
+      ],
+      "eligibility": [
+        "Property owners with registered deed in their name."
+      ],
+      "status": "active",
+      "created_at": "2026-09-23T01:31:51.000Z",
+      "total_fee": "200.00",
+      "govt_fee": "200.00",
+      "image_url": null,
+      "is_active": 1,
+      "fields_json": [
+        {
+          "field_label": "EB Service Connection Consumer Number",
+          "field_name": "eb_consumer_number",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "01123456789",
+          "sort_order": 1
+        },
+        {
+          "field_label": "Current Name in EB Card",
+          "field_name": "current_name",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "Old Owner Name",
+          "sort_order": 2
+        },
+        {
+          "field_label": "New Property Owner Name",
+          "field_name": "new_owner_name",
+          "field_type": "text",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "New Owner Name",
+          "sort_order": 3
+        },
+        {
+          "field_label": "Mobile Number",
+          "field_name": "mobile_number",
+          "field_type": "phone",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "9876543210",
+          "sort_order": 4
+        }
+      ],
+      "documents_json": [
+        "Registered Sale Deed Copy",
+        "Latest EB Bill Paid Receipt",
+        "Aadhaar Card Copy"
+      ],
+      "display_order": 24
     },
     {
       "id": 59,
@@ -2844,7 +3767,7 @@
         "Property Tax Receipt / Ownership Proof",
         "Aadhaar Card Copy"
       ],
-      "display_order": 0
+      "display_order": 32
     },
     {
       "id": 60,
@@ -2937,624 +3860,202 @@
         "Vehicle RC Copy",
         "Owner Identity Proof"
       ],
-      "display_order": 0
+      "display_order": 33
     },
     {
-      "id": 66,
-      "category_id": 2,
-      "category_slug": "pan-services",
-      "name": "Reprint Lost or Damaged PAN Card",
-      "slug": "pan-reprint-lost-damaged",
-      "description": "Reissue physical PAN card copy without changing existing data.",
-      "fee": "100.00",
-      "processing_time": "5-10 Working Days",
-      "documents_required": [
-        "Aadhaar Card Copy",
-        "Copy of Lost PAN / FIR"
-      ],
-      "eligibility": [
-        "PAN cardholders with lost or damaged physical card."
-      ],
-      "status": "active",
-      "created_at": "2026-09-23T01:32:05.000Z",
-      "total_fee": "100.00",
-      "govt_fee": "100.00",
-      "image_url": null,
-      "is_active": 1,
-      "fields_json": [
-        {
-          "field_label": "Existing 10-Digit PAN Number",
-          "field_name": "pan_number",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "ABCDE1234F",
-          "sort_order": 1
-        },
-        {
-          "field_label": "Reason for Reprint",
-          "field_name": "reason",
-          "field_type": "select",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "",
-          "sort_order": 2
-        },
-        {
-          "field_label": "Card Dispatch Address",
-          "field_name": "delivery_address",
-          "field_type": "textarea",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "Door No, Street Name, City, Pincode",
-          "sort_order": 3
-        }
-      ],
-      "documents_json": [
-        "Aadhaar Card Copy",
-        "Copy of Lost PAN / FIR"
-      ],
-      "display_order": 0
-    },
-    {
-      "id": 67,
-      "category_id": 2,
-      "category_slug": "pan-services",
-      "name": "PAN Card for Foreign Nationals (Form 49AA)",
-      "slug": "new-pan-foreign-national",
-      "description": "New PAN allocation for non-citizens, NRIs, and foreign companies.",
-      "fee": "1020.00",
-      "processing_time": "10-20 Working Days",
-      "documents_required": [
-        "Foreign Passport Copy",
-        "Overseas Bank Statement"
-      ],
-      "eligibility": [
-        "Foreign citizens or entities carrying out business in India."
-      ],
-      "status": "active",
-      "created_at": "2026-09-23T01:32:05.000Z",
-      "total_fee": "1020.00",
-      "govt_fee": "1020.00",
-      "image_url": null,
-      "is_active": 1,
-      "fields_json": [
-        {
-          "field_label": "Full Name of Foreign Applicant",
-          "field_name": "applicant_name",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "Johnathan Doe",
-          "sort_order": 1
-        },
-        {
-          "field_label": "Country of Citizenship",
-          "field_name": "country",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "United States",
-          "sort_order": 2
-        },
-        {
-          "field_label": "Passport Number",
-          "field_name": "passport_number",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "A12345678",
-          "sort_order": 3
-        }
-      ],
-      "documents_json": [
-        "Foreign Passport Copy",
-        "Overseas Bank Statement"
-      ],
-      "display_order": 0
-    },
-    {
-      "id": 68,
-      "category_id": 2,
-      "category_slug": "pan-services",
-      "name": "Minor to Major PAN Card Update",
-      "slug": "minor-to-major-pan-update",
-      "description": "Update signature and photo on Minor PAN card upon turning 18 years old.",
-      "fee": "110.00",
-      "processing_time": "7-12 Working Days",
-      "documents_required": [
-        "Existing Minor PAN Copy",
-        "Aadhaar Card Copy",
-        "Passport Photograph"
-      ],
-      "eligibility": [
-        "PAN holders who have recently attained 18 years of age."
-      ],
-      "status": "active",
-      "created_at": "2026-09-23T01:32:05.000Z",
-      "total_fee": "110.00",
-      "govt_fee": "110.00",
-      "image_url": null,
-      "is_active": 1,
-      "fields_json": [
-        {
-          "field_label": "Existing Minor PAN Number",
-          "field_name": "existing_pan",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "ABCDE1234F",
-          "sort_order": 1
-        },
-        {
-          "field_label": "Date of Birth (Major Status)",
-          "field_name": "dob",
-          "field_type": "date",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "",
-          "sort_order": 2
-        },
-        {
-          "field_label": "Father's Full Name",
-          "field_name": "father_name",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "Subramanian S",
-          "sort_order": 3
-        }
-      ],
-      "documents_json": [
-        "Existing Minor PAN Copy",
-        "Aadhaar Card Copy",
-        "Passport Photograph"
-      ],
-      "display_order": 0
-    },
-    {
-      "id": 70,
-      "category_id": 4,
-      "category_slug": "certificate-services",
-      "name": "Native / Domicile Certificate Application",
-      "slug": "native-domicile-certificate",
-      "description": "Official proof verifying permanent domicile & native residence status in Tamil Nadu.",
-      "fee": "60.00",
-      "processing_time": "7-10 Working Days",
-      "documents_required": [
-        "5-Year School Study Proof or Birth Certificate",
-        "Smart Ration Card / Property Tax",
-        "Aadhaar Card Copy"
-      ],
-      "eligibility": [
-        "Permanent residents of Tamil Nadu."
-      ],
-      "status": "active",
-      "created_at": "2026-09-23T01:32:05.000Z",
-      "total_fee": "60.00",
-      "govt_fee": "60.00",
-      "image_url": null,
-      "is_active": 1,
-      "fields_json": [
-        {
-          "field_label": "Years of Continuous Residence in TN",
-          "field_name": "years_residence",
-          "field_type": "number",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "e.g. 25",
-          "sort_order": 1
-        },
-        {
-          "field_label": "Ancestral Native Place / District",
-          "field_name": "father_native_place",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "Madurai",
-          "sort_order": 2
-        },
-        {
-          "field_label": "Purpose of Nativity Certificate",
-          "field_name": "purpose",
-          "field_type": "select",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "",
-          "sort_order": 3
-        }
-      ],
-      "documents_json": [
-        "5-Year School Study Proof or Birth Certificate",
-        "Smart Ration Card / Property Tax",
-        "Aadhaar Card Copy"
-      ],
-      "display_order": 0
-    },
-    {
-      "id": 71,
-      "category_id": 4,
-      "category_slug": "certificate-services",
-      "name": "No Male Child Certificate Application",
-      "slug": "no-male-child-certificate",
-      "description": "Revenue certificate issued to families having only female children for welfare schemes.",
-      "fee": "60.00",
-      "processing_time": "7-10 Working Days",
-      "documents_required": [
-        "Birth Certificates of Female Children",
-        "Sterilization Certificate / Doctor Report",
-        "Parents Aadhaar & Ration Card"
-      ],
-      "eligibility": [
-        "Parents with only female children and no male issue."
-      ],
-      "status": "active",
-      "created_at": "2026-09-23T01:32:05.000Z",
-      "total_fee": "60.00",
-      "govt_fee": "60.00",
-      "image_url": null,
-      "is_active": 1,
-      "fields_json": [
-        {
-          "field_label": "Number of Female Children",
-          "field_name": "female_children_count",
-          "field_type": "number",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "2",
-          "sort_order": 1
-        },
-        {
-          "field_label": "Mother's Full Name",
-          "field_name": "mother_name",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "Lakshmi S",
-          "sort_order": 2
-        },
-        {
-          "field_label": "Family Welfare Sterilization Done?",
-          "field_name": "sterilization_status",
-          "field_type": "select",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "",
-          "sort_order": 3
-        }
-      ],
-      "documents_json": [
-        "Birth Certificates of Female Children",
-        "Sterilization Certificate / Doctor Report",
-        "Parents Aadhaar & Ration Card"
-      ],
-      "display_order": 0
-    },
-    {
-      "id": 72,
-      "category_id": 4,
-      "category_slug": "certificate-services",
-      "name": "Solvency Certificate Application",
-      "slug": "solvency-certificate",
-      "description": "Financial stability certificate issued by Revenue Dept for contractors, tenders & bank guarantees.",
-      "fee": "150.00",
-      "processing_time": "15-20 Working Days",
-      "documents_required": [
-        "Property Sale Deed / Title Deed",
-        "Encumbrance Certificate (EC)",
-        "Engineer Valuation Report",
-        "Aadhaar & PAN Card Copy"
-      ],
-      "eligibility": [
-        "Property owners seeking solvency validation."
-      ],
-      "status": "active",
-      "created_at": "2026-09-23T01:32:05.000Z",
-      "total_fee": "150.00",
-      "govt_fee": "150.00",
-      "image_url": null,
-      "is_active": 1,
-      "fields_json": [
-        {
-          "field_label": "Estimated Solvency Value in ₹",
-          "field_name": "property_value",
-          "field_type": "number",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "500000",
-          "sort_order": 1
-        },
-        {
-          "field_label": "Property Survey No. & Village",
-          "field_name": "survey_number",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "Survey No 124/2A, Adyar",
-          "sort_order": 2
-        },
-        {
-          "field_label": "Solvency Purpose",
-          "field_name": "purpose",
-          "field_type": "select",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "",
-          "sort_order": 3
-        }
-      ],
-      "documents_json": [
-        "Property Sale Deed / Title Deed",
-        "Encumbrance Certificate (EC)",
-        "Engineer Valuation Report",
-        "Aadhaar & PAN Card Copy"
-      ],
-      "display_order": 0
-    },
-    {
-      "id": 73,
-      "category_id": 4,
-      "category_slug": "certificate-services",
-      "name": "Unmarried / Single Status Certificate",
-      "slug": "unmarried-certificate",
-      "description": "Revenue certificate certifying single status for visa, passport & employment requirements.",
-      "fee": "60.00",
-      "processing_time": "5-7 Working Days",
-      "documents_required": [
-        "Notarized Affidavit",
-        "Passport / Voter ID Copy",
-        "Aadhaar & Ration Card"
-      ],
-      "eligibility": [
-        "Unmarried citizens requiring official single status proof."
-      ],
-      "status": "active",
-      "created_at": "2026-09-23T01:32:05.000Z",
-      "total_fee": "60.00",
-      "govt_fee": "60.00",
-      "image_url": null,
-      "is_active": 1,
-      "fields_json": [
-        {
-          "field_label": "Current Age",
-          "field_name": "age",
-          "field_type": "number",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "26",
-          "sort_order": 1
-        },
-        {
-          "field_label": "Purpose of Certificate",
-          "field_name": "purpose",
-          "field_type": "select",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "",
-          "sort_order": 2
-        },
-        {
-          "field_label": "I declare that I have not been legally married",
-          "field_name": "declaration",
-          "field_type": "checkbox",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "",
-          "sort_order": 3
-        }
-      ],
-      "documents_json": [
-        "Notarized Affidavit",
-        "Passport / Voter ID Copy",
-        "Aadhaar & Ration Card"
-      ],
-      "display_order": 0
-    },
-    {
-      "id": 75,
-      "category_id": 8,
-      "category_slug": "business-services",
-      "name": "Municipal Trade License Application",
-      "slug": "trade-license-application",
-      "description": "Local corporation/municipality commercial shop and trade license.",
+      "id": 91,
+      "category_id": 9,
+      "category_slug": "utility-services",
+      "name": "New TNEB Electricity Connection Booking",
+      "slug": "new-eb-electricity-connection",
+      "description": "Apply for fresh domestic, commercial, or industrial TNEB electricity connection.",
       "fee": "500.00",
-      "processing_time": "10-15 Working Days",
+      "processing_time": "15-30 Working Days",
       "documents_required": [
-        "Rental Agreement / Property Tax Receipt",
-        "Identity & Address Proof of Owner",
-        "NOC / Fire Safety Certificate"
+        "Property Ownership / Patta Copy",
+        "Building Plan Approval / Tax Receipt",
+        "Aadhaar Card Copy"
       ],
       "eligibility": [
-        "Business owners operating commercial establishments."
+        "Property owners or authorized tenants."
       ],
       "status": "active",
-      "created_at": "2026-09-23T01:32:06.000Z",
+      "created_at": "2026-09-23T01:32:07.000Z",
       "total_fee": "500.00",
       "govt_fee": "500.00",
       "image_url": null,
       "is_active": 1,
       "fields_json": [
         {
-          "field_label": "Business / Shop Trade Name",
-          "field_name": "trade_name",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "Sri Krishna Supermarket",
-          "sort_order": 1
-        },
-        {
-          "field_label": "Category of Trade",
-          "field_name": "trade_category",
+          "field_label": "Tariff Category Required",
+          "field_name": "tariff_category",
           "field_type": "select",
           "helpText": "",
           "is_required": true,
           "placeholder": "",
+          "sort_order": 1
+        },
+        {
+          "field_label": "Required Connected Load in kW",
+          "field_name": "load_kw",
+          "field_type": "number",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "5",
           "sort_order": 2
         },
         {
-          "field_label": "Commercial Shop Address",
-          "field_name": "shop_address",
+          "field_label": "Premises Installation Address",
+          "field_name": "property_address",
           "field_type": "textarea",
           "helpText": "",
           "is_required": true,
-          "placeholder": "No 45, Main Road, Chennai",
+          "placeholder": "Door No, Street Name, City",
           "sort_order": 3
-        },
-        {
-          "field_label": "Premises Ownership",
-          "field_name": "premises_type",
-          "field_type": "select",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "",
-          "sort_order": 4
         }
       ],
       "documents_json": [
-        "Rental Agreement / Property Tax Receipt",
-        "Identity & Address Proof of Owner",
-        "NOC / Fire Safety Certificate"
+        "Property Ownership / Patta Copy",
+        "Building Plan Approval / Tax Receipt",
+        "Aadhaar Card Copy"
       ],
-      "display_order": 0
+      "display_order": 54
     },
     {
-      "id": 76,
-      "category_id": 7,
-      "category_slug": "driving-vehicle-services",
-      "name": "Permanent Driving Licence (DL) Slot Booking",
-      "slug": "permanent-driving-licence",
-      "description": "Book RTO driving test appointment for permanent driving licence.",
-      "fee": "300.00",
-      "processing_time": "7-15 Working Days",
+      "id": 92,
+      "category_id": 9,
+      "category_slug": "utility-services",
+      "name": "Property Tax Assessment & Name Transfer",
+      "slug": "property-tax-assessment",
+      "description": "New property tax assessment, door number allotment, and owner name transfer.",
+      "fee": "250.00",
+      "processing_time": "15-30 Working Days",
       "documents_required": [
-        "Valid LLR Copy",
-        "Aadhaar Card Copy",
-        "Medical Fitness Form 1A"
+        "Registered Sale Deed / Patta Copy",
+        "Approved Building Plan",
+        "Aadhaar Card Copy"
       ],
       "eligibility": [
-        "Holders of valid LLR completed 30 days after issue."
+        "Property owners in Municipal Corporations / Town Panchayats."
       ],
       "status": "active",
-      "created_at": "2026-09-23T01:32:06.000Z",
-      "total_fee": "300.00",
-      "govt_fee": "300.00",
+      "created_at": "2026-09-23T01:32:07.000Z",
+      "total_fee": "250.00",
+      "govt_fee": "250.00",
       "image_url": null,
       "is_active": 1,
       "fields_json": [
         {
-          "field_label": "Existing LLR Number",
-          "field_name": "llr_number",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "TN01/LLR/2026/12345",
-          "sort_order": 1
-        },
-        {
-          "field_label": "LLR Issue Date",
-          "field_name": "llr_issue_date",
-          "field_type": "date",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "",
-          "sort_order": 2
-        },
-        {
-          "field_label": "Vehicle Class Category",
-          "field_name": "vehicle_class",
+          "field_label": "Property Type",
+          "field_name": "property_type",
           "field_type": "select",
           "helpText": "",
           "is_required": true,
           "placeholder": "",
-          "sort_order": 3
+          "sort_order": 1
         },
         {
-          "field_label": "Assigned RTO Office Location",
-          "field_name": "rto_office",
+          "field_label": "Total Plinth Area in Sq.Ft",
+          "field_name": "plinth_area_sqft",
+          "field_type": "number",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "1250",
+          "sort_order": 2
+        },
+        {
+          "field_label": "Survey No. / Door No.",
+          "field_name": "survey_door_no",
           "field_type": "text",
           "helpText": "",
           "is_required": true,
-          "placeholder": "RTO Chennai South (TN-07)",
-          "sort_order": 4
+          "placeholder": "Door 14, Survey 45/2",
+          "sort_order": 3
         }
       ],
       "documents_json": [
-        "Valid LLR Copy",
-        "Aadhaar Card Copy",
-        "Medical Fitness Form 1A"
+        "Registered Sale Deed / Patta Copy",
+        "Approved Building Plan",
+        "Aadhaar Card Copy"
       ],
-      "display_order": 0
+      "display_order": 55
     },
     {
-      "id": 78,
-      "category_id": 7,
-      "category_slug": "driving-vehicle-services",
-      "name": "Vehicle RC Ownership Transfer Application",
-      "slug": "vehicle-rc-transfer",
-      "description": "Transfer vehicle registration certificate ownership to buyer upon sale.",
-      "fee": "450.00",
-      "processing_time": "15-20 Working Days",
+      "id": 44,
+      "category_id": 10,
+      "category_slug": "ration-card-services",
+      "name": "New Smart Ration Card Application",
+      "slug": "smart-ration-card-application",
+      "description": "Apply for family Smart Ration Card under Public Distribution System (PDS).",
+      "fee": "50.00",
+      "processing_time": "15-30 Working Days",
       "documents_required": [
-        "Original RC Smart Card",
-        "Form 29 & Form 30",
-        "Valid Insurance & PUC Certificate",
-        "Buyer Aadhaar Card Copy"
+        "Aadhaar Cards of All Members",
+        "Marriage Certificate / Deletion Certificate",
+        "Gas Connection Slip / Rental Agreement"
       ],
       "eligibility": [
-        "Buyers or sellers of secondhand motorized vehicles."
+        "Newly married couples or families residing without an active family ration card."
       ],
       "status": "active",
-      "created_at": "2026-09-23T01:32:06.000Z",
-      "total_fee": "450.00",
-      "govt_fee": "450.00",
+      "created_at": "2026-09-23T01:31:52.000Z",
+      "total_fee": "50.00",
+      "govt_fee": "50.00",
       "image_url": null,
       "is_active": 1,
       "fields_json": [
         {
-          "field_label": "Vehicle Registration Number",
-          "field_name": "vehicle_reg_no",
+          "field_label": "Head of Family Full Name",
+          "field_name": "head_family_name",
           "field_type": "text",
           "helpText": "",
           "is_required": true,
-          "placeholder": "TN07AB1234",
+          "placeholder": "Karthik Subramanian",
           "sort_order": 1
         },
         {
-          "field_label": "Seller / Original Owner Name",
-          "field_name": "seller_name",
+          "field_label": "Father / Husband Name",
+          "field_name": "father_husband_name",
           "field_type": "text",
           "helpText": "",
           "is_required": true,
-          "placeholder": "Ramesh K",
+          "placeholder": "Subramanian S",
           "sort_order": 2
         },
         {
-          "field_label": "Buyer / New Owner Name",
-          "field_name": "buyer_name",
-          "field_type": "text",
+          "field_label": "Total Number of Family Members",
+          "field_name": "members_count",
+          "field_type": "number",
           "helpText": "",
           "is_required": true,
-          "placeholder": "Karthik S",
+          "placeholder": "4",
           "sort_order": 3
         },
         {
-          "field_label": "Ownership Transfer Reason",
-          "field_name": "transfer_reason",
-          "field_type": "select",
+          "field_label": "Residential Address",
+          "field_name": "address",
+          "field_type": "textarea",
           "helpText": "",
           "is_required": true,
-          "placeholder": "",
+          "placeholder": "Door No, Street Name, Pincode",
           "sort_order": 4
+        },
+        {
+          "field_label": "Mobile Number",
+          "field_name": "mobile_number",
+          "field_type": "phone",
+          "helpText": "",
+          "is_required": true,
+          "placeholder": "9876543210",
+          "sort_order": 5
         }
       ],
       "documents_json": [
-        "Original RC Smart Card",
-        "Form 29 & Form 30",
-        "Valid Insurance & PUC Certificate",
-        "Buyer Aadhaar Card Copy"
+        "Aadhaar Cards of All Members",
+        "Marriage Certificate / Deletion Certificate",
+        "Gas Connection Slip / Rental Agreement"
       ],
-      "display_order": 0
+      "display_order": 25
     },
     {
       "id": 79,
@@ -3624,7 +4125,7 @@
         "Deletion Certificate / Death Certificate",
         "Aadhaar Card of Member"
       ],
-      "display_order": 0
+      "display_order": 44
     },
     {
       "id": 80,
@@ -3692,7 +4193,7 @@
         "Death Certificate of Previous Head",
         "New Head Aadhaar & Photo"
       ],
-      "display_order": 0
+      "display_order": 45
     },
     {
       "id": 81,
@@ -3751,560 +4252,59 @@
         "New Address Proof",
         "Aadhaar Card Copy"
       ],
-      "display_order": 0
+      "display_order": 46
     },
     {
-      "id": 83,
-      "category_id": 3,
-      "category_slug": "voter-id-services",
-      "name": "Voter ID Address Change & Correction (Form 8)",
-      "slug": "voter-address-correction-form-8",
-      "description": "Correction of name, DOB, address, or constituency transfer in Voter EPIC card.",
-      "fee": "25.00",
-      "processing_time": "10-20 Working Days",
+      "id": 5,
+      "category_id": null,
+      "category_slug": "land-patta-services",
+      "name": "Patta Chitta Copy",
+      "slug": "patta-chitta-copy",
+      "description": "Extract official e-Patta and Chitta revenue record extracts online.",
+      "fee": "30.00",
+      "processing_time": "Instant / 24 Hours",
       "documents_required": [
-        "Voter EPIC Card Copy",
-        "Valid New Address Proof"
+        "District, Taluk & Village Details",
+        "Survey Number / Sub-division Number / Patta Number"
       ],
       "eligibility": [
-        "Registered voters needing data updates."
+        "Land owner or authorized property search applicant"
       ],
       "status": "active",
-      "created_at": "2026-09-23T01:32:06.000Z",
-      "total_fee": "25.00",
-      "govt_fee": "25.00",
-      "image_url": null,
-      "is_active": 1,
-      "fields_json": [
-        {
-          "field_label": "10-Character Voter EPIC Number",
-          "field_name": "epic_no",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "ABC1234567",
-          "sort_order": 1
-        },
-        {
-          "field_label": "Modification Type",
-          "field_name": "correction_type",
-          "field_type": "select",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "",
-          "sort_order": 2
-        },
-        {
-          "field_label": "New Address / Corrected Information",
-          "field_name": "new_address",
-          "field_type": "textarea",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "Door No, Street, City, Pincode",
-          "sort_order": 3
-        }
-      ],
-      "documents_json": [
-        "Voter EPIC Card Copy",
-        "Valid New Address Proof"
-      ],
-      "display_order": 0
-    },
-    {
-      "id": 84,
-      "category_id": 3,
-      "category_slug": "voter-id-services",
-      "name": "Voter ID Aadhaar Linking (Form 6B)",
-      "slug": "voter-aadhaar-linking-form-6b",
-      "description": "Link 12-digit Aadhaar number with Voter EPIC card for authentication.",
-      "fee": "100.00",
-      "processing_time": "3-7 Working Days",
-      "documents_required": [
-        "Voter EPIC Card Copy",
-        "Aadhaar Card Copy"
-      ],
-      "eligibility": [
-        "All registered voters holding Aadhaar."
-      ],
-      "status": "active",
-      "created_at": "2026-09-23T01:32:06.000Z",
-      "total_fee": "100.00",
-      "govt_fee": "100.00",
-      "image_url": null,
-      "is_active": 1,
-      "fields_json": [
-        {
-          "field_label": "10-Character Voter EPIC Number",
-          "field_name": "epic_no",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "ABC1234567",
-          "sort_order": 1
-        },
-        {
-          "field_label": "12-Digit Aadhaar Number",
-          "field_name": "aadhaar_number",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "1234 5678 9012",
-          "sort_order": 2
-        },
-        {
-          "field_label": "Linked Mobile Number",
-          "field_name": "mobile_number",
-          "field_type": "phone",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "9876543210",
-          "sort_order": 3
-        }
-      ],
-      "documents_json": [
-        "Voter EPIC Card Copy",
-        "Aadhaar Card Copy"
-      ],
-      "display_order": 0
-    },
-    {
-      "id": 85,
-      "category_id": 3,
-      "category_slug": "voter-id-services",
-      "name": "Download Digital e-EPIC Voter Card",
-      "slug": "epic-digital-download",
-      "description": "Download official PDF copy of Voter ID card.",
-      "fee": "25.00",
-      "processing_time": "Instant / 1 Hour",
-      "documents_required": [],
-      "eligibility": [
-        "Voters registered with unique mobile number on ECI portal."
-      ],
-      "status": "active",
-      "created_at": "2026-09-23T01:32:06.000Z",
-      "total_fee": "25.00",
-      "govt_fee": "25.00",
-      "image_url": null,
-      "is_active": 1,
-      "fields_json": [
-        {
-          "field_label": "10-Character Voter EPIC Number",
-          "field_name": "epic_no",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "ABC1234567",
-          "sort_order": 1
-        },
-        {
-          "field_label": "Registered Mobile Number",
-          "field_name": "mobile_number",
-          "field_type": "phone",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "9876543210",
-          "sort_order": 2
-        }
-      ],
-      "documents_json": [],
-      "display_order": 0
-    },
-    {
-      "id": 86,
-      "category_id": 3,
-      "category_slug": "voter-id-services",
-      "name": "Order Replacement PVC Voter Card",
-      "slug": "replacement-voter-card",
-      "description": "Reissue physical plastic Voter ID card for lost or damaged EPIC card.",
-      "fee": "50.00",
-      "processing_time": "10-15 Working Days",
-      "documents_required": [
-        "Aadhaar Card Copy",
-        "FIR Copy / Damaged Card"
-      ],
-      "eligibility": [
-        "Registered voters with lost or damaged Voter card."
-      ],
-      "status": "active",
-      "created_at": "2026-09-23T01:32:06.000Z",
-      "total_fee": "50.00",
-      "govt_fee": "50.00",
-      "image_url": null,
-      "is_active": 1,
-      "fields_json": [
-        {
-          "field_label": "10-Character Voter EPIC Number",
-          "field_name": "epic_no",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "ABC1234567",
-          "sort_order": 1
-        },
-        {
-          "field_label": "Reason for Replacement",
-          "field_name": "reason",
-          "field_type": "select",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "",
-          "sort_order": 2
-        },
-        {
-          "field_label": "Delivery Address",
-          "field_name": "delivery_address",
-          "field_type": "textarea",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "Door No, Street Name, Area, City",
-          "sort_order": 3
-        }
-      ],
-      "documents_json": [
-        "Aadhaar Card Copy",
-        "FIR Copy / Damaged Card"
-      ],
-      "display_order": 0
-    },
-    {
-      "id": 87,
-      "category_id": 3,
-      "category_slug": "voter-id-services",
-      "name": "Overseas NRI Voter Registration (Form 6A)",
-      "slug": "nri-voter-registration-form-6a",
-      "description": "Voter registration for non-resident Indian citizens residing abroad.",
-      "fee": "250.00",
-      "processing_time": "15-30 Working Days",
-      "documents_required": [
-        "Indian Passport Copy",
-        "Native Indian Residence Proof"
-      ],
-      "eligibility": [
-        "Indian passport holders living abroad."
-      ],
-      "status": "active",
-      "created_at": "2026-09-23T01:32:07.000Z",
-      "total_fee": "250.00",
-      "govt_fee": "250.00",
-      "image_url": null,
-      "is_active": 1,
-      "fields_json": [
-        {
-          "field_label": "Indian Passport Number",
-          "field_name": "passport_number",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "Z1234567",
-          "sort_order": 1
-        },
-        {
-          "field_label": "Overseas Address Abroad",
-          "field_name": "overseas_address",
-          "field_type": "textarea",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "Building No, Street, City, Country",
-          "sort_order": 2
-        },
-        {
-          "field_label": "Native Assembly Constituency in India",
-          "field_name": "native_constituency",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "Mylapore",
-          "sort_order": 3
-        }
-      ],
-      "documents_json": [
-        "Indian Passport Copy",
-        "Native Indian Residence Proof"
-      ],
-      "display_order": 0
-    },
-    {
-      "id": 88,
-      "category_id": 3,
-      "category_slug": "voter-id-services",
-      "name": "Electoral Roll Name Search & Verification",
-      "slug": "electoral-roll-search",
-      "description": "Verify voter name inclusion in current voter list and find polling station details.",
-      "fee": "0.00",
-      "processing_time": "Instant",
-      "documents_required": [],
-      "eligibility": [
-        "All citizens."
-      ],
-      "status": "active",
-      "created_at": "2026-09-23T01:32:07.000Z",
+      "created_at": "2026-09-11T12:40:08.000Z",
       "total_fee": "0.00",
       "govt_fee": "0.00",
       "image_url": null,
       "is_active": 1,
-      "fields_json": [
-        {
-          "field_label": "Full Name of Voter",
-          "field_name": "voter_name",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "Karthik Subramanian",
-          "sort_order": 1
-        },
-        {
-          "field_label": "District Name",
-          "field_name": "district",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "Chennai",
-          "sort_order": 2
-        },
-        {
-          "field_label": "Father's / Husband's Name",
-          "field_name": "relative_name",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "Subramanian S",
-          "sort_order": 3
-        }
-      ],
-      "documents_json": [],
-      "display_order": 0
+      "fields_json": null,
+      "documents_json": null,
+      "display_order": 5
     },
     {
-      "id": 89,
-      "category_id": 3,
-      "category_slug": "voter-id-services",
-      "name": "Voter Deletion & Objection (Form 7)",
-      "slug": "voter-deletion-objection-form-7",
-      "description": "Application for deletion of deceased or shifted voter name from electoral roll.",
+      "id": 6,
+      "category_id": null,
+      "category_slug": "land-patta-services",
+      "name": "Encumbrance Certificate",
+      "slug": "encumbrance-certificate",
+      "description": "Verify property ownership history and encumbrances registered at Sub-Registrar Office (SRO).",
       "fee": "100.00",
-      "processing_time": "15-25 Working Days",
+      "processing_time": "1-2 Working Days",
       "documents_required": [
-        "Death Certificate / Shifting Proof"
+        "Document Number or Survey Details",
+        "Registration Year Range"
       ],
       "eligibility": [
-        "Registered voters in the constituency."
+        "Public service search available for all properties"
       ],
       "status": "active",
-      "created_at": "2026-09-23T01:32:07.000Z",
-      "total_fee": "100.00",
-      "govt_fee": "100.00",
+      "created_at": "2026-09-11T12:40:08.000Z",
+      "total_fee": "0.00",
+      "govt_fee": "0.00",
       "image_url": null,
       "is_active": 1,
-      "fields_json": [
-        {
-          "field_label": "Objector EPIC Number",
-          "field_name": "objector_epic",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "ABC1234567",
-          "sort_order": 1
-        },
-        {
-          "field_label": "EPIC Number to be Deleted / Shifted",
-          "field_name": "target_epic",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "XYZ9876543",
-          "sort_order": 2
-        },
-        {
-          "field_label": "Deletion Reason",
-          "field_name": "reason",
-          "field_type": "select",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "",
-          "sort_order": 3
-        }
-      ],
-      "documents_json": [
-        "Death Certificate / Shifting Proof"
-      ],
-      "display_order": 0
-    },
-    {
-      "id": 91,
-      "category_id": 9,
-      "category_slug": "utility-services",
-      "name": "New TNEB Electricity Connection Booking",
-      "slug": "new-eb-electricity-connection",
-      "description": "Apply for fresh domestic, commercial, or industrial TNEB electricity connection.",
-      "fee": "500.00",
-      "processing_time": "15-30 Working Days",
-      "documents_required": [
-        "Property Ownership / Patta Copy",
-        "Building Plan Approval / Tax Receipt",
-        "Aadhaar Card Copy"
-      ],
-      "eligibility": [
-        "Property owners or authorized tenants."
-      ],
-      "status": "active",
-      "created_at": "2026-09-23T01:32:07.000Z",
-      "total_fee": "500.00",
-      "govt_fee": "500.00",
-      "image_url": null,
-      "is_active": 1,
-      "fields_json": [
-        {
-          "field_label": "Tariff Category Required",
-          "field_name": "tariff_category",
-          "field_type": "select",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "",
-          "sort_order": 1
-        },
-        {
-          "field_label": "Required Connected Load in kW",
-          "field_name": "load_kw",
-          "field_type": "number",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "5",
-          "sort_order": 2
-        },
-        {
-          "field_label": "Premises Installation Address",
-          "field_name": "property_address",
-          "field_type": "textarea",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "Door No, Street Name, City",
-          "sort_order": 3
-        }
-      ],
-      "documents_json": [
-        "Property Ownership / Patta Copy",
-        "Building Plan Approval / Tax Receipt",
-        "Aadhaar Card Copy"
-      ],
-      "display_order": 0
-    },
-    {
-      "id": 92,
-      "category_id": 9,
-      "category_slug": "utility-services",
-      "name": "Property Tax Assessment & Name Transfer",
-      "slug": "property-tax-assessment",
-      "description": "New property tax assessment, door number allotment, and owner name transfer.",
-      "fee": "250.00",
-      "processing_time": "15-30 Working Days",
-      "documents_required": [
-        "Registered Sale Deed / Patta Copy",
-        "Approved Building Plan",
-        "Aadhaar Card Copy"
-      ],
-      "eligibility": [
-        "Property owners in Municipal Corporations / Town Panchayats."
-      ],
-      "status": "active",
-      "created_at": "2026-09-23T01:32:07.000Z",
-      "total_fee": "250.00",
-      "govt_fee": "250.00",
-      "image_url": null,
-      "is_active": 1,
-      "fields_json": [
-        {
-          "field_label": "Property Type",
-          "field_name": "property_type",
-          "field_type": "select",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "",
-          "sort_order": 1
-        },
-        {
-          "field_label": "Total Plinth Area in Sq.Ft",
-          "field_name": "plinth_area_sqft",
-          "field_type": "number",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "1250",
-          "sort_order": 2
-        },
-        {
-          "field_label": "Survey No. / Door No.",
-          "field_name": "survey_door_no",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "Door 14, Survey 45/2",
-          "sort_order": 3
-        }
-      ],
-      "documents_json": [
-        "Registered Sale Deed / Patta Copy",
-        "Approved Building Plan",
-        "Aadhaar Card Copy"
-      ],
-      "display_order": 0
-    },
-    {
-      "id": 93,
-      "category_id": 6,
-      "category_slug": "passport-services",
-      "name": "Police Clearance Certificate (PCC) Passport",
-      "slug": "police-clearance-certificate-pcc",
-      "description": "PCC application assistance for emigration, employment, and foreign residence visas.",
-      "fee": "500.00",
-      "processing_time": "7-14 Working Days",
-      "documents_required": [
-        "Indian Passport Original & Copy",
-        "Present Address Proof",
-        "Visa / Employment Offer Letter"
-      ],
-      "eligibility": [
-        "Valid Indian Passport holders."
-      ],
-      "status": "active",
-      "created_at": "2026-09-23T01:32:07.000Z",
-      "total_fee": "500.00",
-      "govt_fee": "500.00",
-      "image_url": null,
-      "is_active": 1,
-      "fields_json": [
-        {
-          "field_label": "Valid Indian Passport Number",
-          "field_name": "passport_number",
-          "field_type": "text",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "Z1234567",
-          "sort_order": 1
-        },
-        {
-          "field_label": "Passport Issue Date",
-          "field_name": "passport_issue_date",
-          "field_type": "date",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "",
-          "sort_order": 2
-        },
-        {
-          "field_label": "Country Requiring PCC",
-          "field_name": "country_applying_for",
-          "field_type": "select",
-          "helpText": "",
-          "is_required": true,
-          "placeholder": "",
-          "sort_order": 3
-        }
-      ],
-      "documents_json": [
-        "Indian Passport Original & Copy",
-        "Present Address Proof",
-        "Visa / Employment Offer Letter"
-      ],
-      "display_order": 0
+      "fields_json": null,
+      "documents_json": null,
+      "display_order": 6
     }
   ],
   "service_fields": [

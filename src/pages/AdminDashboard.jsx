@@ -501,15 +501,30 @@ export default function AdminDashboard() {
     newFieldIsRequired: true
   });
 
-  // Service Reordering & Drag-and-Drop State
-  const [draggedServiceIndex, setDraggedServiceIndex] = useState(null);
-  const [dragOverServiceIndex, setDragOverServiceIndex] = useState(null);
+  // Service Reordering & Drag-and-Drop State (Category-scoped)
+  const [draggedServiceInfo, setDraggedServiceInfo] = useState(null); // { catName, index, service }
+  const [dragOverServiceInfo, setDragOverServiceInfo] = useState(null); // { catName, index }
   const [isReorderingServices, setIsReorderingServices] = useState(false);
   const [positionModal, setPositionModal] = useState({ isOpen: false, service: null, targetPos: '' });
 
-  const handleReorderServices = async (newOrderedList) => {
+  const handleReorderCategoryServices = async (orderedCatServices, catId) => {
     const previousServices = [...services];
-    setServices(newOrderedList);
+
+    // Optimistically update services in local state preserving category order
+    const orderedIdsSet = new Set(orderedCatServices.map(s => s.id));
+    const newServices = [];
+    let insertedCat = false;
+    for (const s of services) {
+      if (orderedIdsSet.has(s.id)) {
+        if (!insertedCat) {
+          newServices.push(...orderedCatServices);
+          insertedCat = true;
+        }
+      } else {
+        newServices.push(s);
+      }
+    }
+    setServices(newServices);
     setIsReorderingServices(true);
 
     try {
@@ -520,14 +535,15 @@ export default function AdminDashboard() {
           Authorization: `Bearer ${adminToken}`
         },
         body: JSON.stringify({
-          orderedIds: newOrderedList.map(s => s.id)
+          category_id: catId,
+          orderedIds: orderedCatServices.map(s => s.id)
         })
       });
 
       const data = await res.json();
       if (res.ok) {
         invalidateServicesCache();
-        addToast('Service order updated! Live user portal reflects this order.', 'success');
+        addToast('Category service order updated! Live user portal reflects this order.', 'success');
         if (data.services && Array.isArray(data.services)) {
           setServices(data.services);
         }
@@ -543,14 +559,15 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleMoveService = (serviceId, direction) => {
-    const currentIndex = services.findIndex(s => s.id === serviceId);
+  const handleMoveService = (service, direction, catServices) => {
+    const list = catServices || services.filter(s => (service.category_id ? s.category_id === service.category_id : (s.category_name === service.category_name || s.category === service.category_name)));
+    const currentIndex = list.findIndex(s => s.id === service.id);
     if (currentIndex === -1) return;
 
     let targetIndex = currentIndex;
     if (direction === 'up' && currentIndex > 0) {
       targetIndex = currentIndex - 1;
-    } else if (direction === 'down' && currentIndex < services.length - 1) {
+    } else if (direction === 'down' && currentIndex < list.length - 1) {
       targetIndex = currentIndex + 1;
     } else if (direction === 'top') {
       targetIndex = 0;
@@ -558,87 +575,80 @@ export default function AdminDashboard() {
       return;
     }
 
-    const updated = [...services];
+    const updated = [...list];
     const [moved] = updated.splice(currentIndex, 1);
     updated.splice(targetIndex, 0, moved);
-    handleReorderServices(updated);
+    handleReorderCategoryServices(updated, service.category_id);
   };
 
   const handleDirectPositionSubmit = (e) => {
     e.preventDefault();
     if (!positionModal.service) return;
+    const srv = positionModal.service;
+    const catId = srv.category_id;
+    const catName = srv.category_name || srv.category;
+    const catServices = services.filter(s => (catId ? s.category_id === catId : (s.category_name === catName || s.category === catName)));
     const targetPos = parseInt(positionModal.targetPos, 10);
     if (isNaN(targetPos) || targetPos < 1) {
       addToast('Please enter a valid position number (e.g. 1 for 1st place)', 'error');
       return;
     }
 
-    const targetIndex = Math.min(Math.max(0, targetPos - 1), services.length - 1);
-    const currentIndex = services.findIndex(s => s.id === positionModal.service.id);
+    const targetIndex = Math.min(Math.max(0, targetPos - 1), catServices.length - 1);
+    const currentIndex = catServices.findIndex(s => s.id === srv.id);
     if (currentIndex === -1) return;
 
-    const updated = [...services];
+    const updated = [...catServices];
     const [moved] = updated.splice(currentIndex, 1);
     updated.splice(targetIndex, 0, moved);
 
     setPositionModal({ isOpen: false, service: null, targetPos: '' });
-    handleReorderServices(updated);
+    handleReorderCategoryServices(updated, catId);
   };
 
-  const handleDragStart = (e, index) => {
-    setDraggedServiceIndex(index);
+  const handleDragStart = (e, catName, index, srv) => {
+    setDraggedServiceInfo({ catName, index, service: srv });
     e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData('text/plain', String(index));
   };
 
-  const handleDragOver = (e, index) => {
+  const handleDragOver = (e, catName, index) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
-    if (dragOverServiceIndex !== index) {
-      setDragOverServiceIndex(index);
+    if (!dragOverServiceInfo || dragOverServiceInfo.catName !== catName || dragOverServiceInfo.index !== index) {
+      setDragOverServiceInfo({ catName, index });
     }
   };
 
   const handleDragLeave = () => {};
 
-  const handleDrop = (e, targetIndex) => {
+  const handleDrop = (e, catName, targetIndex, catServices) => {
     e.preventDefault();
-    if (draggedServiceIndex === null || draggedServiceIndex === targetIndex) {
-      setDraggedServiceIndex(null);
-      setDragOverServiceIndex(null);
+    if (!draggedServiceInfo || draggedServiceInfo.catName !== catName || draggedServiceInfo.index === targetIndex) {
+      setDraggedServiceInfo(null);
+      setDragOverServiceInfo(null);
       return;
     }
 
-    const sourceService = filteredServices[draggedServiceIndex];
-    const targetService = filteredServices[targetIndex];
-
-    if (!sourceService || !targetService) {
-      setDraggedServiceIndex(null);
-      setDragOverServiceIndex(null);
+    const sourceIndex = draggedServiceInfo.index;
+    if (sourceIndex < 0 || sourceIndex >= catServices.length || targetIndex < 0 || targetIndex >= catServices.length) {
+      setDraggedServiceInfo(null);
+      setDragOverServiceInfo(null);
       return;
     }
 
-    const sourceMasterIdx = services.findIndex(s => s.id === sourceService.id);
-    const targetMasterIdx = services.findIndex(s => s.id === targetService.id);
+    const updatedCatList = [...catServices];
+    const [moved] = updatedCatList.splice(sourceIndex, 1);
+    updatedCatList.splice(targetIndex, 0, moved);
 
-    if (sourceMasterIdx === -1 || targetMasterIdx === -1) {
-      setDraggedServiceIndex(null);
-      setDragOverServiceIndex(null);
-      return;
-    }
-
-    const updated = [...services];
-    const [moved] = updated.splice(sourceMasterIdx, 1);
-    updated.splice(targetMasterIdx, 0, moved);
-
-    setDraggedServiceIndex(null);
-    setDragOverServiceIndex(null);
-    handleReorderServices(updated);
+    setDraggedServiceInfo(null);
+    setDragOverServiceInfo(null);
+    handleReorderCategoryServices(updatedCatList, moved.category_id);
   };
 
   const handleDragEnd = () => {
-    setDraggedServiceIndex(null);
-    setDragOverServiceIndex(null);
+    setDraggedServiceInfo(null);
+    setDragOverServiceInfo(null);
   };
 
   const handleCreateServiceSubmit = async (e) => {
@@ -1567,6 +1577,22 @@ export default function AdminDashboard() {
     return matchesSearch && matchesStatus;
   });
 
+  // Category Emoji Helper
+  const getCategoryIconEmoji = (catName = '') => {
+    const name = (catName || '').toLowerCase();
+    if (name.includes('aadhaar')) return '🆔';
+    if (name.includes('pan')) return '💳';
+    if (name.includes('voter')) return '🗳️';
+    if (name.includes('certificate')) return '📜';
+    if (name.includes('land') || name.includes('patta')) return '🏛️';
+    if (name.includes('passport')) return '✈️';
+    if (name.includes('driving') || name.includes('rto') || name.includes('vehicle')) return '🚗';
+    if (name.includes('business') || name.includes('gst') || name.includes('msme')) return '💼';
+    if (name.includes('utility') || name.includes('electricity') || name.includes('bill')) return '⚡';
+    if (name.includes('ration') || name.includes('welfare')) return '🌾';
+    return '📂';
+  };
+
   // Filtered Services List & Categories (STEP 28)
   const serviceCategories = ['All', ...Array.from(new Set(services.map(s => s.category_name || s.category || 'General')))];
   
@@ -1580,6 +1606,20 @@ export default function AdminDashboard() {
       s.category === selectedServiceCategory;
     return matchesSearch && matchesCategory;
   });
+
+  // Services grouped strictly by category for categorized layout
+  const groupedServices = React.useMemo(() => {
+    const map = new Map();
+    filteredServices.forEach(s => {
+      const cat = s.category_name || s.category || 'General';
+      if (!map.has(cat)) map.set(cat, []);
+      map.get(cat).push(s);
+    });
+    return Array.from(map.entries()).map(([categoryName, catServices]) => ({
+      categoryName,
+      services: catServices
+    }));
+  }, [filteredServices]);
 
   // Filtered Payments List (STEP 29)
   const filteredPayments = adminPayments.filter(p => {
@@ -2657,19 +2697,30 @@ export default function AdminDashboard() {
 
                 {/* Category Chips Horizontal Scroll */}
                 <div className="flex items-center space-x-2 overflow-x-auto pt-2 border-t border-slate-100 pb-1 scrollbar-none">
-                  {serviceCategories.map((cat) => (
-                    <button
-                      key={cat}
-                      onClick={() => setSelectedServiceCategory(cat)}
-                      className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
-                        selectedServiceCategory === cat
-                          ? 'bg-[#0b192c] text-white shadow-sm font-black'
-                          : 'bg-slate-50 text-slate-600 hover:text-slate-900 border border-slate-200'
-                      }`}
-                    >
-                      {cat}
-                    </button>
-                  ))}
+                  {serviceCategories.map((cat) => {
+                    const count = cat === 'All' ? services.length : services.filter(s => (s.category_name === cat || s.category === cat)).length;
+                    const emoji = cat === 'All' ? '🌐' : getCategoryIconEmoji(cat);
+                    const isSelected = selectedServiceCategory === cat;
+                    return (
+                      <button
+                        key={cat}
+                        onClick={() => setSelectedServiceCategory(cat)}
+                        className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center space-x-1.5 ${
+                          isSelected
+                            ? 'bg-[#0b192c] text-white shadow-sm font-black ring-1 ring-orange-500'
+                            : 'bg-slate-50 text-slate-600 hover:text-slate-900 border border-slate-200 hover:bg-slate-100'
+                        }`}
+                      >
+                        <span>{emoji}</span>
+                        <span>{cat}</span>
+                        <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-extrabold ${
+                          isSelected ? 'bg-orange-500 text-white' : 'bg-slate-200/80 text-slate-700'
+                        }`}>
+                          {count}
+                        </span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -2681,318 +2732,435 @@ export default function AdminDashboard() {
                   </div>
                   <div>
                     <div className="text-xs font-black text-slate-900 flex items-center space-x-1.5">
-                      <span>Drag & Drop Service Position Ordering</span>
+                      <span>Category Priority & Position Ordering</span>
                       <span className="text-[10px] bg-orange-600 text-white px-2 py-0.5 rounded-full uppercase tracking-wider font-extrabold">Live User Sync</span>
                     </div>
                     <p className="text-[11px] text-slate-600 mt-0.5">
-                      Drag services using the <strong>⠿ handle</strong> or click <strong># Position</strong> to reorder. Exactly this order is shown on user homepage & catalog.
+                      Services are strictly grouped under their department category. Drag with <strong>⠿</strong> or click <strong># Position</strong> to reorder <strong>inside that category</strong>.
                     </p>
                   </div>
                 </div>
                 {isReorderingServices && (
                   <div className="flex items-center space-x-2 text-xs font-bold text-orange-700 bg-orange-100 px-3 py-1.5 rounded-xl animate-pulse">
                     <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                    <span>Saving live order...</span>
+                    <span>Saving category order...</span>
                   </div>
                 )}
               </div>
 
-              {/* Desktop Services Table (`hidden md:block`) */}
-              <div className="bg-white border border-slate-200/90 rounded-3xl overflow-hidden shadow-sm hidden md:block">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs text-slate-700">
-                    <thead className="bg-slate-50 text-slate-500 font-extrabold uppercase tracking-wider text-[10px] border-b border-slate-200 sticky top-0">
-                      <tr>
-                        <th className="py-3.5 px-3 w-36">Rank / Order</th>
-                        <th className="py-3.5 px-4">Service Details</th>
-                        <th className="py-3.5 px-4">Category</th>
-                        <th className="py-3.5 px-4">Govt & Portal Fee</th>
-                        <th className="py-3.5 px-4">Processing SLA</th>
-                        <th className="py-3.5 px-4">Status</th>
-                        <th className="py-3.5 px-4 text-right">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100">
-                      {filteredServices.map((srv, index) => (
-                        <tr
-                          key={srv.id}
-                          draggable
-                          onDragStart={(e) => handleDragStart(e, index)}
-                          onDragOver={(e) => handleDragOver(e, index)}
-                          onDragLeave={handleDragLeave}
-                          onDrop={(e) => handleDrop(e, index)}
-                          onDragEnd={handleDragEnd}
-                          className={`transition-all select-none ${
-                            draggedServiceIndex === index
-                              ? 'opacity-30 bg-orange-100/50 border-2 border-dashed border-orange-400'
-                              : dragOverServiceIndex === index && draggedServiceIndex !== index
-                              ? 'border-t-4 border-t-orange-600 bg-orange-50/80 shadow-md'
-                              : 'hover:bg-slate-50/80'
-                          }`}
-                        >
-                          <td className="py-4 px-3 whitespace-nowrap">
-                            <div className="flex items-center space-x-1.5">
-                              <div
-                                className="p-1.5 text-slate-400 hover:text-orange-600 hover:bg-orange-50 rounded-lg cursor-grab active:cursor-grabbing transition-colors"
-                                title="Click and drag to reposition service"
-                              >
-                                <GripVertical className="w-4 h-4" />
-                              </div>
+              {/* Empty Search / Filter State */}
+              {groupedServices.length === 0 && (
+                <div className="bg-white border border-slate-200 rounded-3xl p-10 text-center space-y-3">
+                  <div className="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto text-slate-400">
+                    <Search className="w-6 h-6" />
+                  </div>
+                  <h4 className="font-extrabold text-slate-900 text-base">No services found</h4>
+                  <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                    No services matched your search or category filter. Try clearing your search query or selecting a different category.
+                  </p>
+                  {(serviceSearchQuery || selectedServiceCategory !== 'All') && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setServiceSearchQuery('');
+                        setSelectedServiceCategory('All');
+                      }}
+                      className="px-4 py-2 bg-[#0b192c] text-white font-bold text-xs rounded-xl shadow-xs hover:bg-slate-800 transition-colors"
+                    >
+                      Clear Filters & Show All
+                    </button>
+                  )}
+                </div>
+              )}
 
-                              <button
-                                type="button"
-                                onClick={() => setPositionModal({ isOpen: true, service: srv, targetPos: String(index + 1) })}
-                                className={`px-2.5 py-1 rounded-xl text-xs font-black tracking-tight border transition-all cursor-pointer flex items-center space-x-1 shadow-sm ${
-                                  index === 0
-                                    ? 'bg-amber-500 text-white border-amber-600 ring-2 ring-amber-300'
-                                    : index === 1
-                                    ? 'bg-slate-800 text-white border-slate-900'
-                                    : index === 2
-                                    ? 'bg-orange-100 text-orange-900 border-orange-300'
-                                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border-slate-200'
+              {/* Desktop Services View: Grouped Category Blocks */}
+              <div className="space-y-6 hidden md:block">
+                {groupedServices.map((group) => {
+                  const catName = group.categoryName;
+                  const catEmoji = getCategoryIconEmoji(catName);
+                  const catServices = group.services;
+
+                  return (
+                    <div key={catName} className="bg-white border border-slate-200/90 rounded-3xl overflow-hidden shadow-sm">
+                      {/* Category Header Bar */}
+                      <div className="bg-gradient-to-r from-slate-50 via-slate-100/60 to-white px-5 py-3.5 border-b border-slate-200 flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <span className="text-xl">{catEmoji}</span>
+                          <div>
+                            <h3 className="font-extrabold text-sm text-slate-900 flex items-center space-x-2">
+                              <span>{catName}</span>
+                              <span className="text-[11px] font-black bg-orange-100 text-orange-800 px-2.5 py-0.5 rounded-full border border-orange-200">
+                                {catServices.length} {catServices.length === 1 ? 'Service' : 'Services'}
+                              </span>
+                            </h3>
+                            <p className="text-[11px] text-slate-500">
+                              Ordering #1 to #{catServices.length} controls display on User Homepage & {catName} catalog.
+                            </p>
+                          </div>
+                        </div>
+
+                        {selectedServiceCategory === 'All' ? (
+                          <button
+                            type="button"
+                            onClick={() => setSelectedServiceCategory(catName)}
+                            className="text-xs font-extrabold text-slate-700 hover:text-orange-600 bg-white hover:bg-orange-50 px-3.5 py-1.5 rounded-xl border border-slate-200 shadow-2xs transition-all flex items-center space-x-1 cursor-pointer"
+                          >
+                            <span>Focus {catName}</span>
+                            <ChevronRight className="w-3.5 h-3.5" />
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => setSelectedServiceCategory('All')}
+                            className="text-xs font-extrabold text-slate-700 hover:text-orange-600 bg-white hover:bg-orange-50 px-3.5 py-1.5 rounded-xl border border-slate-200 shadow-2xs transition-all flex items-center space-x-1 cursor-pointer"
+                          >
+                            <span>Show All Categories</span>
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Table for this Category */}
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-left text-xs text-slate-700">
+                          <thead className="bg-slate-50/70 text-slate-500 font-extrabold uppercase tracking-wider text-[10px] border-b border-slate-200 sticky top-0">
+                            <tr>
+                              <th className="py-3 px-3 w-40">Rank in Category</th>
+                              <th className="py-3 px-4">Service Details</th>
+                              <th className="py-3 px-4">Govt & Facilitation Fee</th>
+                              <th className="py-3 px-4">Processing SLA</th>
+                              <th className="py-3 px-4">Status</th>
+                              <th className="py-3 px-4 text-right">Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-slate-100">
+                            {catServices.map((srv, index) => (
+                              <tr
+                                key={srv.id}
+                                draggable
+                                onDragStart={(e) => handleDragStart(e, catName, index, srv)}
+                                onDragOver={(e) => handleDragOver(e, catName, index)}
+                                onDragLeave={handleDragLeave}
+                                onDrop={(e) => handleDrop(e, catName, index, catServices)}
+                                onDragEnd={handleDragEnd}
+                                className={`transition-all select-none ${
+                                  draggedServiceInfo && draggedServiceInfo.service?.id === srv.id
+                                    ? 'opacity-30 bg-orange-100/50 border-2 border-dashed border-orange-400'
+                                    : dragOverServiceInfo && dragOverServiceInfo.catName === catName && dragOverServiceInfo.index === index && (!draggedServiceInfo || draggedServiceInfo.service?.id !== srv.id)
+                                    ? 'border-t-4 border-t-orange-600 bg-orange-50/80 shadow-md'
+                                    : 'hover:bg-slate-50/80'
                                 }`}
-                                title="Click to set exact position number (e.g. 1st, 2nd, 3rd)"
                               >
-                                {index === 0 ? <Sparkles className="w-3 h-3 text-amber-200" /> : null}
-                                <span>#{index + 1}</span>
-                              </button>
+                                <td className="py-3.5 px-3 whitespace-nowrap">
+                                  <div className="flex items-center space-x-1.5">
+                                    <div
+                                      className="p-1.5 text-slate-400 hover:text-orange-600 hover:bg-orange-50 rounded-lg cursor-grab active:cursor-grabbing transition-colors"
+                                      title={`Drag to reposition within ${catName}`}
+                                    >
+                                      <GripVertical className="w-4 h-4" />
+                                    </div>
 
-                              <div className="flex flex-col space-y-0.5">
-                                <button
-                                  type="button"
-                                  disabled={index === 0 || isReorderingServices}
-                                  onClick={() => handleMoveService(srv.id, 'up')}
-                                  className="p-1 text-slate-400 hover:text-orange-600 disabled:opacity-20 hover:bg-orange-50 rounded transition-colors"
-                                  title="Move up (higher priority)"
-                                >
-                                  <MoveUp className="w-3 h-3" />
-                                </button>
-                                <button
-                                  type="button"
-                                  disabled={index === filteredServices.length - 1 || isReorderingServices}
-                                  onClick={() => handleMoveService(srv.id, 'down')}
-                                  className="p-1 text-slate-400 hover:text-orange-600 disabled:opacity-20 hover:bg-orange-50 rounded transition-colors"
-                                  title="Move down (lower priority)"
-                                >
-                                  <MoveDown className="w-3 h-3" />
-                                </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => setPositionModal({ isOpen: true, service: srv, targetPos: String(index + 1) })}
+                                      className={`px-2.5 py-1 rounded-xl text-xs font-black tracking-tight border transition-all cursor-pointer flex items-center space-x-1 shadow-sm ${
+                                        index === 0
+                                          ? 'bg-amber-500 text-white border-amber-600 ring-2 ring-amber-300'
+                                          : index === 1
+                                          ? 'bg-slate-800 text-white border-slate-900'
+                                          : index === 2
+                                          ? 'bg-orange-100 text-orange-900 border-orange-300'
+                                          : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border-slate-200'
+                                      }`}
+                                      title={`Click to set exact rank in ${catName}`}
+                                    >
+                                      {index === 0 ? <Sparkles className="w-3 h-3 text-amber-200" /> : null}
+                                      <span>#{index + 1}</span>
+                                    </button>
+
+                                    <div className="flex flex-col space-y-0.5">
+                                      <button
+                                        type="button"
+                                        disabled={index === 0 || isReorderingServices}
+                                        onClick={() => handleMoveService(srv, 'up', catServices)}
+                                        className="p-1 text-slate-400 hover:text-orange-600 disabled:opacity-20 hover:bg-orange-50 rounded transition-colors"
+                                        title="Move up (higher priority)"
+                                      >
+                                        <MoveUp className="w-3 h-3" />
+                                      </button>
+                                      <button
+                                        type="button"
+                                        disabled={index === catServices.length - 1 || isReorderingServices}
+                                        onClick={() => handleMoveService(srv, 'down', catServices)}
+                                        className="p-1 text-slate-400 hover:text-orange-600 disabled:opacity-20 hover:bg-orange-50 rounded transition-colors"
+                                        title="Move down (lower priority)"
+                                      >
+                                        <MoveDown className="w-3 h-3" />
+                                      </button>
+                                    </div>
+                                  </div>
+                                </td>
+
+                                {/* Service Details */}
+                                <td className="py-3.5 px-4">
+                                  <div className="flex items-center space-x-3">
+                                    <div className="w-10 h-10 rounded-xl bg-orange-500/10 text-orange-600 font-black flex items-center justify-center text-sm shadow-sm overflow-hidden shrink-0 border border-slate-200">
+                                      {srv.image_url ? (
+                                        <img 
+                                          src={srv.image_url} 
+                                          alt={srv.name} 
+                                          className="w-full h-full object-cover" 
+                                          onError={(e) => {
+                                            e.currentTarget.style.display = 'none';
+                                          }}
+                                        />
+                                      ) : null}
+                                      <Grid className="w-4 h-4" style={{ display: srv.image_url ? 'none' : 'block' }} />
+                                    </div>
+                                    <div>
+                                      <div className="font-extrabold text-slate-900 text-sm">{srv.name}</div>
+                                      <div className="text-[11px] text-slate-500 max-w-xs truncate">{srv.description || 'Digital e-Seva processing service'}</div>
+                                    </div>
+                                  </div>
+                                </td>
+
+                                {/* Fee */}
+                                <td className="py-3.5 px-4">
+                                  <div className="flex items-center space-x-2">
+                                    <div>
+                                      {Number(srv.fee) === 0 ? (
+                                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-black bg-emerald-100 text-emerald-800 border border-emerald-300">
+                                          FREE (₹0)
+                                        </span>
+                                      ) : (
+                                        <div className="font-black text-emerald-600 text-sm">₹{srv.fee !== undefined ? srv.fee : (srv.total_fee || 60)}</div>
+                                      )}
+                                      <div className="text-[10px] text-slate-400 font-mono">Facilitation Fee</div>
+                                    </div>
+                                    <button
+                                      onClick={() => setQuickPriceModal({
+                                        isOpen: true,
+                                        service: srv,
+                                        fee: srv.fee !== undefined ? srv.fee : (srv.total_fee || 60),
+                                        saving: false
+                                      })}
+                                      className="p-1.5 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors border border-transparent hover:border-amber-200"
+                                      title="Quick Change Price (₹)"
+                                    >
+                                      <Edit3 className="w-3.5 h-3.5" />
+                                    </button>
+                                  </div>
+                                </td>
+
+                                {/* SLA */}
+                                <td className="py-3.5 px-4 font-semibold text-slate-700">
+                                  <span className="bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md text-[11px] font-bold">
+                                    {srv.processing_time || '2-3 Business Days'}
+                                  </span>
+                                </td>
+
+                                {/* Status */}
+                                <td className="py-3.5 px-4">
+                                  <span className="inline-flex items-center space-x-1 bg-emerald-50 text-emerald-700 text-[11px] font-extrabold px-2.5 py-0.5 rounded-full border border-emerald-200">
+                                    <CheckCircle className="w-3 h-3 text-emerald-600" />
+                                    <span>Active</span>
+                                  </span>
+                                </td>
+
+                                {/* Actions */}
+                                <td className="py-3.5 px-4 text-right">
+                                  <div className="flex items-center justify-end space-x-1.5">
+                                    <button
+                                      onClick={() => setSelectedService(srv)}
+                                      className="bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold px-2.5 py-1.5 rounded-xl text-xs transition-colors shadow flex items-center space-x-1 cursor-pointer"
+                                      title="Inspect Configuration"
+                                    >
+                                      <Eye className="w-3.5 h-3.5 text-orange-400" />
+                                      <span className="hidden lg:inline">Inspect</span>
+                                    </button>
+                                    <button
+                                      onClick={() => openEditServiceModal(srv)}
+                                      className="bg-amber-50 hover:bg-amber-100 text-amber-800 font-extrabold px-2.5 py-1.5 rounded-xl text-xs transition-colors border border-amber-200 flex items-center space-x-1 cursor-pointer"
+                                      title="Edit Service"
+                                    >
+                                      <Edit3 className="w-3.5 h-3.5 text-amber-600" />
+                                      <span>Edit</span>
+                                    </button>
+                                    <button
+                                      onClick={() => handleDeleteService(srv)}
+                                      className="bg-rose-50 hover:bg-rose-100 text-rose-700 font-extrabold px-2.5 py-1.5 rounded-xl text-xs transition-colors border border-rose-200 flex items-center space-x-1 cursor-pointer"
+                                      title="Delete Service"
+                                    >
+                                      <Trash2 className="w-3.5 h-3.5 text-rose-600" />
+                                      <span>Delete</span>
+                                    </button>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Mobile View: Grouped Category Cards */}
+              <div className="space-y-6 md:hidden">
+                {groupedServices.map((group) => {
+                  const catName = group.categoryName;
+                  const catEmoji = getCategoryIconEmoji(catName);
+                  const catServices = group.services;
+
+                  return (
+                    <div key={catName} className="space-y-3">
+                      {/* Mobile Category Header */}
+                      <div className="flex items-center justify-between px-1">
+                        <div className="flex items-center space-x-2">
+                          <span className="text-lg">{catEmoji}</span>
+                          <h3 className="font-extrabold text-sm text-slate-900">{catName}</h3>
+                          <span className="text-[10px] font-black bg-orange-100 text-orange-800 px-2 py-0.5 rounded-full border border-orange-200">
+                            {catServices.length}
+                          </span>
+                        </div>
+                        {selectedServiceCategory === 'All' ? (
+                          <button
+                            type="button"
+                            onClick={() => setSelectedServiceCategory(catName)}
+                            className="text-[11px] font-extrabold text-orange-600"
+                          >
+                            Focus
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => setSelectedServiceCategory('All')}
+                            className="text-[11px] font-extrabold text-slate-500"
+                          >
+                            All
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Stacked Cards for Category */}
+                      <div className="space-y-2.5">
+                        {catServices.map((srv, index) => (
+                          <div
+                            key={srv.id}
+                            draggable
+                            onDragStart={(e) => handleDragStart(e, catName, index, srv)}
+                            onDragOver={(e) => handleDragOver(e, catName, index)}
+                            onDragLeave={handleDragLeave}
+                            onDrop={(e) => handleDrop(e, catName, index, catServices)}
+                            onDragEnd={handleDragEnd}
+                            className={`bg-white border p-4 rounded-2xl shadow-sm space-y-3 transition-all select-none ${
+                              draggedServiceInfo && draggedServiceInfo.service?.id === srv.id
+                                ? 'opacity-30 border-dashed border-orange-400 bg-orange-50/50'
+                                : dragOverServiceInfo && dragOverServiceInfo.catName === catName && dragOverServiceInfo.index === index && (!draggedServiceInfo || draggedServiceInfo.service?.id !== srv.id)
+                                ? 'border-t-4 border-t-orange-600 bg-orange-50/80 shadow-md'
+                                : 'border-slate-200'
+                            }`}
+                          >
+                            <div className="flex justify-between items-start gap-2">
+                              <div className="space-y-1.5 flex-1">
+                                <div className="flex items-center space-x-2">
+                                  <div
+                                    className="p-1 text-slate-400 cursor-grab active:cursor-grabbing"
+                                    title="Drag handle"
+                                  >
+                                    <GripVertical className="w-4 h-4" />
+                                  </div>
+                                  <button
+                                    type="button"
+                                    onClick={() => setPositionModal({ isOpen: true, service: srv, targetPos: String(index + 1) })}
+                                    className={`px-2 py-0.5 rounded-lg text-xs font-black tracking-tight border shadow-sm ${
+                                      index === 0
+                                        ? 'bg-amber-500 text-white border-amber-600 ring-1 ring-amber-300'
+                                        : index === 1
+                                        ? 'bg-slate-800 text-white border-slate-900'
+                                        : 'bg-slate-100 text-slate-700 border-slate-200'
+                                    }`}
+                                    title={`Click to set position in ${catName}`}
+                                  >
+                                    #{index + 1}
+                                  </button>
+                                  <div className="flex items-center space-x-1">
+                                    <button
+                                      type="button"
+                                      disabled={index === 0 || isReorderingServices}
+                                      onClick={() => handleMoveService(srv, 'up', catServices)}
+                                      className="p-1 rounded bg-slate-100 text-slate-600 hover:text-orange-600 disabled:opacity-20 transition-colors"
+                                      title="Move Up"
+                                    >
+                                      <MoveUp className="w-3 h-3" />
+                                    </button>
+                                    <button
+                                      type="button"
+                                      disabled={index === catServices.length - 1 || isReorderingServices}
+                                      onClick={() => handleMoveService(srv, 'down', catServices)}
+                                      className="p-1 rounded bg-slate-100 text-slate-600 hover:text-orange-600 disabled:opacity-20 transition-colors"
+                                      title="Move Down"
+                                    >
+                                      <MoveDown className="w-3 h-3" />
+                                    </button>
+                                  </div>
+                                </div>
+                                <h4 className="font-extrabold text-sm text-slate-900">{srv.name}</h4>
                               </div>
-                            </div>
-                          </td>
-                          <td className="py-4 px-4">
-                            <div className="flex items-center space-x-3">
-                              <div className="w-10 h-10 rounded-xl bg-orange-500/10 text-orange-600 font-black flex items-center justify-center text-sm shadow-sm overflow-hidden shrink-0 border border-slate-200">
-                                {srv.image_url ? (
-                                  <img 
-                                    src={srv.image_url} 
-                                    alt={srv.name} 
-                                    className="w-full h-full object-cover" 
-                                    onError={(e) => {
-                                      e.currentTarget.style.display = 'none';
-                                    }}
-                                  />
-                                ) : null}
-                                <Grid className="w-4 h-4" style={{ display: srv.image_url ? 'none' : 'block' }} />
-                              </div>
-                              <div>
-                                <div className="font-extrabold text-slate-900 text-sm">{srv.name}</div>
-                                <div className="text-[11px] text-slate-500 max-w-xs truncate">{srv.description || 'Digital e-Seva processing service'}</div>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="py-4 px-4">
-                            <span className="bg-slate-100 text-slate-700 font-bold px-2.5 py-1 rounded-lg border border-slate-200 text-[11px]">
-                              {srv.category_name || srv.category || 'General'}
-                            </span>
-                          </td>
-                          <td className="py-4 px-4">
-                            <div className="flex items-center space-x-2">
-                              <div>
+                              <div className="flex items-center space-x-1.5">
                                 {Number(srv.fee) === 0 ? (
-                                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-black bg-emerald-100 text-emerald-800 border border-emerald-300">
+                                  <span className="px-2 py-0.5 rounded text-[11px] font-black bg-emerald-100 text-emerald-800 border border-emerald-300">
                                     FREE (₹0)
                                   </span>
                                 ) : (
-                                  <div className="font-black text-emerald-600 text-sm">₹{srv.fee !== undefined ? srv.fee : (srv.total_fee || 60)}</div>
+                                  <span className="font-black text-emerald-600 text-sm">₹{srv.fee !== undefined ? srv.fee : (srv.total_fee || 60)}</span>
                                 )}
-                                <div className="text-[10px] text-slate-400 font-mono">Official Fee</div>
+                                <button
+                                  onClick={() => setQuickPriceModal({
+                                    isOpen: true,
+                                    service: srv,
+                                    fee: srv.fee !== undefined ? srv.fee : (srv.total_fee || 60),
+                                    saving: false
+                                  })}
+                                  className="p-1 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded"
+                                  title="Change Price"
+                                >
+                                  <Edit3 className="w-3 h-3" />
+                                </button>
                               </div>
-                              <button
-                                onClick={() => setQuickPriceModal({
-                                  isOpen: true,
-                                  service: srv,
-                                  fee: srv.fee !== undefined ? srv.fee : (srv.total_fee || 60),
-                                  saving: false
-                                })}
-                                className="p-1.5 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors border border-transparent hover:border-amber-200"
-                                title="Quick Change Price (₹)"
-                              >
-                                <Edit3 className="w-3.5 h-3.5" />
-                              </button>
                             </div>
-                          </td>
-                          <td className="py-4 px-4 font-semibold text-slate-700">
-                            {srv.processing_time || '2-3 Business Days'}
-                          </td>
-                          <td className="py-4 px-4">
-                            <span className="inline-flex items-center space-x-1 bg-emerald-50 text-emerald-700 text-[11px] font-extrabold px-2.5 py-0.5 rounded-full border border-emerald-200">
-                              <CheckCircle className="w-3 h-3 text-emerald-600" />
-                              <span>Active</span>
-                            </span>
-                          </td>
-                          <td className="py-4 px-4 text-right">
-                            <div className="flex items-center justify-end space-x-1.5">
+
+                            <p className="text-xs text-slate-500 line-clamp-2">{srv.description || 'Digital e-Seva processing service'}</p>
+
+                            <div className="grid grid-cols-3 gap-2 pt-2 border-t border-slate-100">
                               <button
                                 onClick={() => setSelectedService(srv)}
-                                className="bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold px-2.5 py-1.5 rounded-xl text-xs transition-colors shadow flex items-center space-x-1"
-                                title="Inspect Configuration"
+                                className="py-2 bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold text-[11px] rounded-xl transition-colors flex items-center justify-center space-x-1 cursor-pointer"
                               >
                                 <Eye className="w-3.5 h-3.5 text-orange-400" />
-                                <span className="hidden lg:inline">Inspect</span>
+                                <span>Inspect</span>
                               </button>
                               <button
                                 onClick={() => openEditServiceModal(srv)}
-                                className="bg-amber-50 hover:bg-amber-100 text-amber-800 font-extrabold px-2.5 py-1.5 rounded-xl text-xs transition-colors border border-amber-200 flex items-center space-x-1"
-                                title="Edit Service"
+                                className="py-2 bg-amber-50 hover:bg-amber-100 text-amber-800 font-extrabold text-[11px] rounded-xl border border-amber-200 transition-colors flex items-center justify-center space-x-1 cursor-pointer"
                               >
                                 <Edit3 className="w-3.5 h-3.5 text-amber-600" />
                                 <span>Edit</span>
                               </button>
                               <button
                                 onClick={() => handleDeleteService(srv)}
-                                className="bg-rose-50 hover:bg-rose-100 text-rose-700 font-extrabold px-2.5 py-1.5 rounded-xl text-xs transition-colors border border-rose-200 flex items-center space-x-1"
-                                title="Delete Service"
+                                className="py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 font-extrabold text-[11px] rounded-xl border border-rose-200 transition-colors flex items-center justify-center space-x-1 cursor-pointer"
                               >
                                 <Trash2 className="w-3.5 h-3.5 text-rose-600" />
                                 <span>Delete</span>
                               </button>
                             </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              {/* Mobile Stacked Service Cards (`md:hidden`) */}
-              <div className="space-y-3 md:hidden">
-                {filteredServices.map((srv, index) => (
-                  <div
-                    key={srv.id}
-                    draggable
-                    onDragStart={(e) => handleDragStart(e, index)}
-                    onDragOver={(e) => handleDragOver(e, index)}
-                    onDragLeave={handleDragLeave}
-                    onDrop={(e) => handleDrop(e, index)}
-                    onDragEnd={handleDragEnd}
-                    className={`bg-white border p-4 rounded-2xl shadow-sm space-y-3 transition-all select-none ${
-                      draggedServiceIndex === index
-                        ? 'opacity-30 border-dashed border-orange-400 bg-orange-50/50'
-                        : dragOverServiceIndex === index && draggedServiceIndex !== index
-                        ? 'border-t-4 border-t-orange-600 bg-orange-50/80 shadow-md'
-                        : 'border-slate-200'
-                    }`}
-                  >
-                    <div className="flex justify-between items-start gap-2">
-                      <div className="space-y-1.5 flex-1">
-                        <div className="flex items-center space-x-2">
-                          <div
-                            className="p-1 text-slate-400 cursor-grab active:cursor-grabbing"
-                            title="Drag handle"
-                          >
-                            <GripVertical className="w-4 h-4" />
                           </div>
-                          <button
-                            type="button"
-                            onClick={() => setPositionModal({ isOpen: true, service: srv, targetPos: String(index + 1) })}
-                            className={`px-2 py-0.5 rounded-lg text-xs font-black tracking-tight border shadow-sm ${
-                              index === 0
-                                ? 'bg-amber-500 text-white border-amber-600 ring-1 ring-amber-300'
-                                : index === 1
-                                ? 'bg-slate-800 text-white border-slate-900'
-                                : 'bg-slate-100 text-slate-700 border-slate-200'
-                            }`}
-                            title="Click to set position"
-                          >
-                            #{index + 1}
-                          </button>
-                          <div className="flex items-center space-x-1">
-                            <button
-                              type="button"
-                              disabled={index === 0 || isReorderingServices}
-                              onClick={() => handleMoveService(srv.id, 'up')}
-                              className="p-1 rounded bg-slate-100 text-slate-600 hover:text-orange-600 disabled:opacity-20 transition-colors"
-                              title="Move Up"
-                            >
-                              <MoveUp className="w-3 h-3" />
-                            </button>
-                            <button
-                              type="button"
-                              disabled={index === filteredServices.length - 1 || isReorderingServices}
-                              onClick={() => handleMoveService(srv.id, 'down')}
-                              className="p-1 rounded bg-slate-100 text-slate-600 hover:text-orange-600 disabled:opacity-20 transition-colors"
-                              title="Move Down"
-                            >
-                              <MoveDown className="w-3 h-3" />
-                            </button>
-                          </div>
-                          <span className="bg-slate-100 text-slate-700 font-bold px-2 py-0.5 rounded border border-slate-200 text-[10px]">
-                            {srv.category_name || srv.category || 'General'}
-                          </span>
-                        </div>
-                        <h4 className="font-extrabold text-sm text-slate-900">{srv.name}</h4>
-                      </div>
-                      <div className="flex items-center space-x-1.5">
-                        {Number(srv.fee) === 0 ? (
-                          <span className="px-2 py-0.5 rounded text-[11px] font-black bg-emerald-100 text-emerald-800 border border-emerald-300">
-                            FREE (₹0)
-                          </span>
-                        ) : (
-                          <span className="font-black text-emerald-600 text-sm">₹{srv.fee !== undefined ? srv.fee : (srv.total_fee || 60)}</span>
-                        )}
-                        <button
-                          onClick={() => setQuickPriceModal({
-                            isOpen: true,
-                            service: srv,
-                            fee: srv.fee !== undefined ? srv.fee : (srv.total_fee || 60),
-                            saving: false
-                          })}
-                          className="p-1 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded"
-                          title="Change Price"
-                        >
-                          <Edit3 className="w-3 h-3" />
-                        </button>
+                        ))}
                       </div>
                     </div>
-
-                    <p className="text-xs text-slate-500 line-clamp-2">{srv.description || 'Digital e-Seva processing service'}</p>
-
-                    <div className="grid grid-cols-3 gap-2 pt-2 border-t border-slate-100">
-                      <button
-                        onClick={() => setSelectedService(srv)}
-                        className="py-2 bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold text-[11px] rounded-xl transition-colors flex items-center justify-center space-x-1"
-                      >
-                        <Eye className="w-3.5 h-3.5 text-orange-400" />
-                        <span>Inspect</span>
-                      </button>
-                      <button
-                        onClick={() => openEditServiceModal(srv)}
-                        className="py-2 bg-amber-50 hover:bg-amber-100 text-amber-800 font-extrabold text-[11px] rounded-xl border border-amber-200 transition-colors flex items-center justify-center space-x-1"
-                      >
-                        <Edit3 className="w-3.5 h-3.5 text-amber-600" />
-                        <span>Edit</span>
-                      </button>
-                      <button
-                        onClick={() => handleDeleteService(srv)}
-                        className="py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 font-extrabold text-[11px] rounded-xl border border-rose-200 transition-colors flex items-center justify-center space-x-1"
-                      >
-                        <Trash2 className="w-3.5 h-3.5 text-rose-600" />
-                        <span>Delete</span>
-                      </button>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
             </div>
@@ -6916,88 +7084,97 @@ export default function AdminDashboard() {
                     )}
                   </div>
 
-                  {/* Position Selector on User Portal */}
-                  <div className="sm:col-span-2 bg-gradient-to-r from-orange-50 to-amber-50 p-4 rounded-2xl border border-orange-200 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <span className="p-1 rounded-lg bg-orange-600 text-white font-black text-[10px]"># RANK</span>
-                        <label className="font-extrabold text-slate-900 text-xs">
-                          Display Position on User Portal & Homepage *
-                        </label>
+                  {/* Position Selector on User Portal within Category */}
+                  {(() => {
+                    const currentCatName = newServiceForm.is_custom_category
+                      ? (newServiceForm.custom_category_name || 'Custom Category')
+                      : (newServiceForm.category_name || 'Selected Category');
+                    const currentCatCount = services.filter(s => s.category_name === currentCatName || s.category === currentCatName).length;
+
+                    return (
+                      <div className="sm:col-span-2 bg-gradient-to-r from-orange-50 to-amber-50 p-4 rounded-2xl border border-orange-200 space-y-3">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-2">
+                            <span className="p-1 rounded-lg bg-orange-600 text-white font-black text-[10px]"># RANK</span>
+                            <label className="font-extrabold text-slate-900 text-xs">
+                              Priority Position in {currentCatName} *
+                            </label>
+                          </div>
+                          <span className="text-[11px] text-orange-700 font-bold">{currentCatCount} current services in this category</span>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                          <button
+                            type="button"
+                            onClick={() => setNewServiceForm({ ...newServiceForm, position: 'top', custom_position: 1 })}
+                            className={`p-3 rounded-xl border text-left transition-all ${
+                              newServiceForm.position === 'top'
+                                ? 'bg-white border-orange-500 shadow-md ring-2 ring-orange-400/50 text-slate-900'
+                                : 'bg-white/70 border-slate-200 text-slate-600 hover:bg-white'
+                            }`}
+                          >
+                            <div className="flex items-center space-x-1.5 text-xs font-black text-orange-700">
+                              <Sparkles className="w-3.5 h-3.5" />
+                              <span>1st in {currentCatName}</span>
+                            </div>
+                            <p className="text-[10px] text-slate-500 mt-1">
+                              Appears as the top priority service inside {currentCatName}.
+                            </p>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => setNewServiceForm({ ...newServiceForm, position: 'bottom' })}
+                            className={`p-3 rounded-xl border text-left transition-all ${
+                              newServiceForm.position === 'bottom'
+                                ? 'bg-white border-orange-500 shadow-md ring-2 ring-orange-400/50 text-slate-900'
+                                : 'bg-white/70 border-slate-200 text-slate-600 hover:bg-white'
+                            }`}
+                          >
+                            <div className="text-xs font-black text-slate-800">
+                              ⬇️ Bottom of {currentCatName} (#{currentCatCount + 1})
+                            </div>
+                            <p className="text-[10px] text-slate-500 mt-1">
+                              Places after existing services in this category.
+                            </p>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => setNewServiceForm({ ...newServiceForm, position: 'custom', custom_position: newServiceForm.custom_position || 1 })}
+                            className={`p-3 rounded-xl border text-left transition-all ${
+                              newServiceForm.position === 'custom'
+                                ? 'bg-white border-orange-500 shadow-md ring-2 ring-orange-400/50 text-slate-900'
+                                : 'bg-white/70 border-slate-200 text-slate-600 hover:bg-white'
+                            }`}
+                          >
+                            <div className="text-xs font-black text-slate-800">
+                              🔢 Custom Rank in Category
+                            </div>
+                            <p className="text-[10px] text-slate-500 mt-1">
+                              Specify exact numerical rank (1 to {currentCatCount + 1}).
+                            </p>
+                          </button>
+                        </div>
+
+                        {newServiceForm.position === 'custom' && (
+                          <div className="pt-2 flex items-center space-x-2 bg-white p-2.5 rounded-xl border border-orange-200">
+                            <span className="text-xs font-bold text-slate-700">Enter Exact Position in {currentCatName}:</span>
+                            <span className="font-mono text-sm text-slate-400">#</span>
+                            <input
+                              type="number"
+                              min="1"
+                              max={currentCatCount + 1}
+                              value={newServiceForm.custom_position || 1}
+                              onChange={(e) => setNewServiceForm({ ...newServiceForm, custom_position: parseInt(e.target.value, 10) || 1 })}
+                              className="w-24 px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-xs font-extrabold text-slate-900 focus:outline-none focus:border-orange-500"
+                            />
+                            <span className="text-[11px] text-slate-500">out of {currentCatCount + 1} in {currentCatName}</span>
+                          </div>
+                        )}
                       </div>
-                      <span className="text-[11px] text-orange-700 font-bold">Where will users see this?</span>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                      <button
-                        type="button"
-                        onClick={() => setNewServiceForm({ ...newServiceForm, position: 'top', custom_position: 1 })}
-                        className={`p-3 rounded-xl border text-left transition-all ${
-                          newServiceForm.position === 'top'
-                            ? 'bg-white border-orange-500 shadow-md ring-2 ring-orange-400/50 text-slate-900'
-                            : 'bg-white/70 border-slate-200 text-slate-600 hover:bg-white'
-                        }`}
-                      >
-                        <div className="flex items-center space-x-1.5 text-xs font-black text-orange-700">
-                          <Sparkles className="w-3.5 h-3.5" />
-                          <span>1st Position (Top)</span>
-                        </div>
-                        <p className="text-[10px] text-slate-500 mt-1">
-                          Appears right at the top on User Homepage and Catalog.
-                        </p>
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => setNewServiceForm({ ...newServiceForm, position: 'bottom' })}
-                        className={`p-3 rounded-xl border text-left transition-all ${
-                          newServiceForm.position === 'bottom'
-                            ? 'bg-white border-orange-500 shadow-md ring-2 ring-orange-400/50 text-slate-900'
-                            : 'bg-white/70 border-slate-200 text-slate-600 hover:bg-white'
-                        }`}
-                      >
-                        <div className="text-xs font-black text-slate-800">
-                          ⬇️ Bottom of List
-                        </div>
-                        <p className="text-[10px] text-slate-500 mt-1">
-                          Appends to the bottom of the catalog.
-                        </p>
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => setNewServiceForm({ ...newServiceForm, position: 'custom', custom_position: newServiceForm.custom_position || 1 })}
-                        className={`p-3 rounded-xl border text-left transition-all ${
-                          newServiceForm.position === 'custom'
-                            ? 'bg-white border-orange-500 shadow-md ring-2 ring-orange-400/50 text-slate-900'
-                            : 'bg-white/70 border-slate-200 text-slate-600 hover:bg-white'
-                        }`}
-                      >
-                        <div className="text-xs font-black text-slate-800">
-                          🔢 Custom Position #
-                        </div>
-                        <p className="text-[10px] text-slate-500 mt-1">
-                          Specify exact numerical rank (e.g. 2nd, 3rd).
-                        </p>
-                      </button>
-                    </div>
-
-                    {newServiceForm.position === 'custom' && (
-                      <div className="pt-2 flex items-center space-x-2 bg-white p-2.5 rounded-xl border border-orange-200">
-                        <span className="text-xs font-bold text-slate-700">Enter Exact Position:</span>
-                        <span className="font-mono text-sm text-slate-400">#</span>
-                        <input
-                          type="number"
-                          min="1"
-                          max={services.length + 1}
-                          value={newServiceForm.custom_position || 1}
-                          onChange={(e) => setNewServiceForm({ ...newServiceForm, custom_position: parseInt(e.target.value, 10) || 1 })}
-                          className="w-24 px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-xs font-extrabold text-slate-900 focus:outline-none focus:border-orange-500"
-                        />
-                        <span className="text-[11px] text-slate-500">out of {services.length + 1} total services</span>
-                      </div>
-                    )}
-                  </div>
+                    );
+                  })()}
 
                   <div className="space-y-1">
                     <label className="font-bold text-slate-700 block">Government & Facilitation Fee (₹) *</label>
@@ -8235,112 +8412,126 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* QUICK POSITION CHANGER MODAL */}
-      {positionModal.isOpen && positionModal.service && (
-        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 space-y-5 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex justify-between items-start border-b border-slate-100 pb-3">
-              <div>
-                <span className="text-[10px] font-black uppercase text-orange-600 tracking-wider bg-orange-50 px-2.5 py-0.5 rounded border border-orange-200">
-                  PORTAL POSITION ORDER
-                </span>
-                <h3 className="font-extrabold text-lg text-slate-900 mt-1">
-                  Set Position for {positionModal.service.name}
-                </h3>
-                <p className="text-xs text-slate-500">
-                  Total {services.length} services in catalog
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setPositionModal({ isOpen: false, service: null, targetPos: '' })}
-                className="p-1.5 text-slate-400 hover:text-slate-600 bg-slate-100 rounded-xl"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
+      {/* QUICK POSITION CHANGER MODAL (Category Scoped) */}
+      {positionModal.isOpen && positionModal.service && (() => {
+        const srv = positionModal.service;
+        const catName = srv.category_name || srv.category || 'General';
+        const catServices = services.filter(s => (srv.category_id ? s.category_id === srv.category_id : (s.category_name === catName || s.category === catName)));
+        const catCount = catServices.length || 1;
 
-            <form onSubmit={handleDirectPositionSubmit} className="space-y-4 text-xs">
-              <div className="space-y-2">
-                <label className="font-bold text-slate-700 block">
-                  Desired Position Number (Rank)
-                </label>
-                <div className="flex items-center space-x-2">
-                  <span className="text-slate-400 font-black text-lg">#</span>
-                  <input
-                    type="number"
-                    min="1"
-                    max={services.length}
-                    value={positionModal.targetPos}
-                    onChange={(e) => setPositionModal(prev => ({ ...prev, targetPos: e.target.value }))}
-                    className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3.5 py-2.5 outline-none focus:border-orange-500 font-extrabold text-base"
-                    placeholder="1"
-                    autoFocus
-                    required
-                  />
-                </div>
-                <p className="text-[11px] text-slate-500">
-                  Position <strong>1</strong> makes it the first service seen on the User Homepage and Services catalog.
-                </p>
-
-                {/* Quick Shortcut Buttons */}
-                <div className="space-y-1.5 pt-2">
-                  <span className="text-[10px] font-bold text-slate-400 block uppercase tracking-wider">Quick Presets:</span>
-                  <div className="grid grid-cols-2 gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setPositionModal(prev => ({ ...prev, targetPos: '1' }))}
-                      className="px-3 py-2 rounded-xl text-xs font-black bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
-                    >
-                      <Sparkles className="w-3.5 h-3.5 text-amber-600" />
-                      <span>🥇 1st Place (Top)</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setPositionModal(prev => ({ ...prev, targetPos: '2' }))}
-                      className="px-3 py-2 rounded-xl text-xs font-black bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
-                    >
-                      <span>🥈 2nd Place</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setPositionModal(prev => ({ ...prev, targetPos: '3' }))}
-                      className="px-3 py-2 rounded-xl text-xs font-black bg-orange-50 hover:bg-orange-100 text-orange-800 border border-orange-200 transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
-                    >
-                      <span>🥉 3rd Place</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setPositionModal(prev => ({ ...prev, targetPos: String(services.length) }))}
-                      className="px-3 py-2 rounded-xl text-xs font-black bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-200 transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
-                    >
-                      <span>⬇️ Last ({services.length})</span>
-                    </button>
+        return (
+          <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 space-y-5 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 duration-150">
+              <div className="flex justify-between items-start border-b border-slate-100 pb-3">
+                <div>
+                  <div className="flex items-center space-x-1.5">
+                    <span className="text-[10px] font-black uppercase text-orange-600 tracking-wider bg-orange-50 px-2.5 py-0.5 rounded border border-orange-200">
+                      {catName}
+                    </span>
+                    <span className="text-[10px] text-slate-400 font-bold">
+                      {catCount} {catCount === 1 ? 'service' : 'services'}
+                    </span>
                   </div>
+                  <h3 className="font-extrabold text-lg text-slate-900 mt-1">
+                    Set Position for {srv.name}
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Reorder priority inside {catName}
+                  </p>
                 </div>
-              </div>
-
-              <div className="flex items-center justify-end space-x-2 pt-2 border-t border-slate-100">
                 <button
                   type="button"
                   onClick={() => setPositionModal({ isOpen: false, service: null, targetPos: '' })}
-                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold rounded-xl"
+                  className="p-1.5 text-slate-400 hover:text-slate-600 bg-slate-100 rounded-xl cursor-pointer"
                 >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isReorderingServices}
-                  className="px-5 py-2 bg-orange-600 hover:bg-orange-700 text-white font-extrabold rounded-xl shadow transition-colors flex items-center space-x-1.5 cursor-pointer"
-                >
-                  <Save className="w-3.5 h-3.5" />
-                  <span>{isReorderingServices ? 'Saving...' : 'Apply Position'}</span>
+                  <X className="w-4 h-4" />
                 </button>
               </div>
-            </form>
+
+              <form onSubmit={handleDirectPositionSubmit} className="space-y-4 text-xs">
+                <div className="space-y-2">
+                  <label className="font-bold text-slate-700 block">
+                    Desired Position Number in {catName} (1 to {catCount})
+                  </label>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-slate-400 font-black text-lg">#</span>
+                    <input
+                      type="number"
+                      min="1"
+                      max={catCount}
+                      value={positionModal.targetPos}
+                      onChange={(e) => setPositionModal(prev => ({ ...prev, targetPos: e.target.value }))}
+                      className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3.5 py-2.5 outline-none focus:border-orange-500 font-extrabold text-base"
+                      placeholder="1"
+                      autoFocus
+                      required
+                    />
+                  </div>
+                  <p className="text-[11px] text-slate-500">
+                    Position <strong>1</strong> makes it the first service shown under <strong>{catName}</strong> on the citizen portal.
+                  </p>
+
+                  {/* Quick Shortcut Buttons */}
+                  <div className="space-y-1.5 pt-2">
+                    <span className="text-[10px] font-bold text-slate-400 block uppercase tracking-wider">Quick Presets:</span>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setPositionModal(prev => ({ ...prev, targetPos: '1' }))}
+                        className="px-3 py-2 rounded-xl text-xs font-black bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
+                      >
+                        <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                        <span>🥇 1st in Category</span>
+                      </button>
+                      <button
+                        type="button"
+                        disabled={catCount < 2}
+                        onClick={() => setPositionModal(prev => ({ ...prev, targetPos: '2' }))}
+                        className="px-3 py-2 rounded-xl text-xs font-black bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 transition-all flex items-center justify-center space-x-1.5 cursor-pointer disabled:opacity-30"
+                      >
+                        <span>🥈 2nd Place</span>
+                      </button>
+                      <button
+                        type="button"
+                        disabled={catCount < 3}
+                        onClick={() => setPositionModal(prev => ({ ...prev, targetPos: '3' }))}
+                        className="px-3 py-2 rounded-xl text-xs font-black bg-orange-50 hover:bg-orange-100 text-orange-800 border border-orange-200 transition-all flex items-center justify-center space-x-1.5 cursor-pointer disabled:opacity-30"
+                      >
+                        <span>🥉 3rd Place</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setPositionModal(prev => ({ ...prev, targetPos: String(catCount) }))}
+                        className="px-3 py-2 rounded-xl text-xs font-black bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-200 transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
+                      >
+                        <span>⬇️ Last ({catCount})</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-end space-x-2 pt-2 border-t border-slate-100">
+                  <button
+                    type="button"
+                    onClick={() => setPositionModal({ isOpen: false, service: null, targetPos: '' })}
+                    className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold rounded-xl cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isReorderingServices}
+                    className="px-5 py-2 bg-orange-600 hover:bg-orange-700 text-white font-extrabold rounded-xl shadow transition-colors flex items-center space-x-1.5 cursor-pointer"
+                  >
+                    <Save className="w-3.5 h-3.5" />
+                    <span>{isReorderingServices ? 'Saving...' : 'Apply Position'}</span>
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* QUICK PRICE EDIT MODAL */}
       {quickPriceModal.isOpen && quickPriceModal.service && (

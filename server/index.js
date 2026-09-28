@@ -833,9 +833,15 @@ app.get('/api/services', (req, res) => {
     );
   }
 
-  // Sorting: default to display_order ascending
+  // Sorting: default to category_id + display_order ascending
   if (!sort || sort === 'popular' || sort === 'order' || sort === 'default') {
-    services.sort((a, b) => (Number(a.display_order) || 999999) - (Number(b.display_order) || 999999) || (a.id - b.id));
+    services.sort((a, b) => {
+      if (!category_id && !category_slug) {
+        const catDiff = (Number(a.category_id) || 99) - (Number(b.category_id) || 99);
+        if (catDiff !== 0) return catDiff;
+      }
+      return (Number(a.display_order) || 999) - (Number(b.display_order) || 999) || (a.id - b.id);
+    });
   } else if (sort === 'fee_asc') {
     services.sort((a, b) => a.fee - b.fee);
   } else if (sort === 'fee_desc') {
@@ -3253,7 +3259,7 @@ app.post('/api/admin/services', authenticateAdmin, upload.any(), async (req, res
 
     if (!catId) catId = 1;
 
-    const existingServices = db.all('services');
+    const existingServices = db.all('services', s => s.category_id === catId);
     let finalDisplayOrder = 1;
     if (position === 'bottom') {
       const maxOrder = existingServices.reduce((max, s) => Math.max(max, Number(s.display_order) || 0), 0);
@@ -3364,52 +3370,47 @@ app.post('/api/admin/services', authenticateAdmin, upload.any(), async (req, res
   }
 });
 
-// Admin Reorder Services (Drag-and-Drop & Custom Position Ordering)
+// Admin Reorder Services (Drag-and-Drop & Custom Position Ordering within Category)
 const handleReorderServices = async (req, res) => {
   try {
-    const { orderedIds, serviceId, targetPosition } = req.body;
+    const { orderedIds, serviceId, targetPosition, category_id } = req.body;
     let allServices = db.all('services');
 
     if (Array.isArray(orderedIds) && orderedIds.length > 0) {
-      const idToOrder = new Map();
       orderedIds.forEach((id, idx) => {
-        idToOrder.set(Number(id), idx + 1);
+        const numId = Number(id);
+        db.update('services', s => s.id === numId, { display_order: idx + 1 });
       });
-
-      // Update services that are in orderedIds
-      for (const [id, order] of idToOrder.entries()) {
-        db.update('services', s => s.id === id, { display_order: order });
-      }
-
-      // Any services not in orderedIds get positioned after the ordered ones
-      let nextPos = orderedIds.length + 1;
-      for (const s of allServices) {
-        if (!idToOrder.has(Number(s.id))) {
-          db.update('services', item => item.id === s.id, { display_order: nextPos++ });
-        }
-      }
     } else if (serviceId && targetPosition) {
       const sid = Number(serviceId);
       const targetPos = Math.max(1, Number(targetPosition));
+      const targetService = allServices.find(s => s.id === sid);
+      if (targetService) {
+        const catId = targetService.category_id;
+        const catServices = allServices
+          .filter(s => s.category_id === catId)
+          .sort((a, b) => (Number(a.display_order) || 999) - (Number(b.display_order) || 999) || (a.id - b.id));
+        const currIdx = catServices.findIndex(s => s.id === sid);
+        if (currIdx !== -1) {
+          const [moved] = catServices.splice(currIdx, 1);
+          const insertIdx = Math.min(catServices.length, targetPos - 1);
+          catServices.splice(insertIdx, 0, moved);
 
-      // Sort existing services by current display_order
-      allServices.sort((a, b) => (Number(a.display_order) || 999999) - (Number(b.display_order) || 999999) || (a.id - b.id));
-      const currIdx = allServices.findIndex(s => s.id === sid);
-      if (currIdx !== -1) {
-        const [movedItem] = allServices.splice(currIdx, 1);
-        const insertIdx = Math.min(allServices.length, targetPos - 1);
-        allServices.splice(insertIdx, 0, movedItem);
-
-        allServices.forEach((s, idx) => {
-          db.update('services', item => item.id === s.id, { display_order: idx + 1 });
-        });
+          catServices.forEach((s, idx) => {
+            db.update('services', item => item.id === s.id, { display_order: idx + 1 });
+          });
+        }
       }
     } else {
       return res.status(400).json({ error: 'orderedIds array or serviceId + targetPosition required' });
     }
 
     const updated = db.all('services');
-    updated.sort((a, b) => (Number(a.display_order) || 999999) - (Number(b.display_order) || 999999) || (a.id - b.id));
+    updated.sort((a, b) => {
+      const catDiff = (Number(a.category_id) || 99) - (Number(b.category_id) || 99);
+      if (catDiff !== 0) return catDiff;
+      return (Number(a.display_order) || 999) - (Number(b.display_order) || 999) || (a.id - b.id);
+    });
 
     res.json({
       success: true,
