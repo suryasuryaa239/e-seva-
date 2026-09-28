@@ -44,6 +44,14 @@ class TiDBSupportedDatabase {
         const raw = fs.readFileSync(targetFile, 'utf8');
         this.data = { ...initialTables, ...JSON.parse(raw) };
       }
+      if (Array.isArray(this.data.services)) {
+        this.data.services.forEach((s, idx) => {
+          if (s.display_order === undefined || s.display_order === null) {
+            s.display_order = idx + 1;
+          }
+        });
+        this.data.services.sort((a, b) => (Number(a.display_order) || 999999) - (Number(b.display_order) || 999999) || (a.id - b.id));
+      }
     } catch (err) {
       console.warn('[DB INIT WARNING] Using initial memory state:', err.message);
     }
@@ -135,6 +143,14 @@ class TiDBSupportedDatabase {
                 }
               }
             } else if (parsedRows.length > 0) {
+              if (tbl === 'services') {
+                parsedRows.forEach((s, idx) => {
+                  if (s.display_order === undefined || s.display_order === null) {
+                    s.display_order = idx + 1;
+                  }
+                });
+                parsedRows.sort((a, b) => (Number(a.display_order) || 999999) - (Number(b.display_order) || 999999) || (a.id - b.id));
+              }
               this.data[tbl] = parsedRows;
             } else if (tbl === 'banners' && parsedRows.length === 0) {
               const defaultBanners = (this.data['banners'] && this.data['banners'].length > 0) ? [...this.data['banners']] : [

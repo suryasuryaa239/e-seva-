@@ -736,6 +736,7 @@ app.get('/api/categories', (req, res) => {
 
   const result = categories.map(cat => {
     const catServices = services.filter(s => s.category_id === cat.id);
+    catServices.sort((a, b) => (Number(a.display_order) || 999999) - (Number(b.display_order) || 999999) || (a.id - b.id));
     return {
       ...cat,
       services_count: catServices.length,
@@ -745,7 +746,8 @@ app.get('/api/categories', (req, res) => {
         name: (s.name || '').replace(/\s*\((Varumaana Saanrithazh|Jaathi Saanrithazh|AnyTamilLand|Saanrithazh|Thunglish|Tanglish)\)/gi, '').trim(),
         slug: s.slug,
         fee: s.fee,
-        processing_time: s.processing_time
+        processing_time: s.processing_time,
+        display_order: s.display_order
       }))
     };
   });
@@ -787,6 +789,7 @@ app.get('/api/categories/:slug', (req, res) => {
   if (!category) return res.status(404).json({ error: 'Category not found' });
 
   const services = db.all('services', s => s.category_id === category.id && s.is_active !== false);
+  services.sort((a, b) => (Number(a.display_order) || 999999) - (Number(b.display_order) || 999999) || (a.id - b.id));
   const resultServices = services.map(s => {
     const fieldsCount = db.all('service_fields', f => f.service_id === s.id).length;
     const docsCount = db.all('service_documents', d => d.service_id === s.id).length;
@@ -830,8 +833,10 @@ app.get('/api/services', (req, res) => {
     );
   }
 
-  // Sorting
-  if (sort === 'fee_asc') {
+  // Sorting: default to display_order ascending
+  if (!sort || sort === 'popular' || sort === 'order' || sort === 'default') {
+    services.sort((a, b) => (Number(a.display_order) || 999999) - (Number(b.display_order) || 999999) || (a.id - b.id));
+  } else if (sort === 'fee_asc') {
     services.sort((a, b) => a.fee - b.fee);
   } else if (sort === 'fee_desc') {
     services.sort((a, b) => b.fee - a.fee);
@@ -3191,7 +3196,7 @@ app.delete(['/api/admin/users/:id', '/api/admin/customers/:id'], authenticateAdm
 // Admin Services & Categories Management
 app.post('/api/admin/services', authenticateAdmin, upload.any(), async (req, res) => {
   try {
-    let { category_id, category_name, name, description, eligibility, processing_info, processing_time, fee, total_fee, govt_fee, fields, documents, image_url_input, image_url: bodyImageUrl } = req.body;
+    let { category_id, category_name, name, description, eligibility, processing_info, processing_time, fee, total_fee, govt_fee, fields, documents, image_url_input, image_url: bodyImageUrl, position, display_order } = req.body;
     if ((!category_id && !category_name) || !name) return res.status(400).json({ error: 'Category and Service Name required' });
 
     let image_url = (image_url_input || bodyImageUrl || '').trim();
@@ -3248,6 +3253,27 @@ app.post('/api/admin/services', authenticateAdmin, upload.any(), async (req, res
 
     if (!catId) catId = 1;
 
+    const existingServices = db.all('services');
+    let finalDisplayOrder = 1;
+    if (position === 'bottom') {
+      const maxOrder = existingServices.reduce((max, s) => Math.max(max, Number(s.display_order) || 0), 0);
+      finalDisplayOrder = maxOrder + 1;
+    } else if (position === 'custom' && display_order && Number(display_order) > 0) {
+      finalDisplayOrder = Math.max(1, Number(display_order));
+      existingServices.forEach(s => {
+        if (Number(s.display_order) >= finalDisplayOrder) {
+          db.update('services', item => item.id === s.id, { display_order: Number(s.display_order) + 1 });
+        }
+      });
+    } else {
+      // Default: 'top' (Place at 1st position so it sits at the very top as requested!)
+      existingServices.forEach(s => {
+        const curOrder = Number(s.display_order) || 1;
+        db.update('services', item => item.id === s.id, { display_order: curOrder + 1 });
+      });
+      finalDisplayOrder = 1;
+    }
+
     const serviceFee = Number(fee || total_fee || govt_fee || 60);
     const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
     const service = db.insert('services', {
@@ -3265,6 +3291,7 @@ app.post('/api/admin/services', authenticateAdmin, upload.any(), async (req, res
       image_url: image_url || 'https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=1200&auto=format&fit=crop',
       is_active: true,
       status: 'Active',
+      display_order: finalDisplayOrder,
       fields_json: parsedFields ? parsedFields.map(f => ({
         ...f,
         is_required: (f.is_required === 0 || f.is_required === false || f.is_required === '0' || f.is_required === 'false' || f.required === 0 || f.required === false || f.required === '0' || f.required === 'false') ? 0 : 1
@@ -3336,6 +3363,67 @@ app.post('/api/admin/services', authenticateAdmin, upload.any(), async (req, res
     res.status(500).json({ error: err.message });
   }
 });
+
+// Admin Reorder Services (Drag-and-Drop & Custom Position Ordering)
+const handleReorderServices = async (req, res) => {
+  try {
+    const { orderedIds, serviceId, targetPosition } = req.body;
+    let allServices = db.all('services');
+
+    if (Array.isArray(orderedIds) && orderedIds.length > 0) {
+      const idToOrder = new Map();
+      orderedIds.forEach((id, idx) => {
+        idToOrder.set(Number(id), idx + 1);
+      });
+
+      // Update services that are in orderedIds
+      for (const [id, order] of idToOrder.entries()) {
+        db.update('services', s => s.id === id, { display_order: order });
+      }
+
+      // Any services not in orderedIds get positioned after the ordered ones
+      let nextPos = orderedIds.length + 1;
+      for (const s of allServices) {
+        if (!idToOrder.has(Number(s.id))) {
+          db.update('services', item => item.id === s.id, { display_order: nextPos++ });
+        }
+      }
+    } else if (serviceId && targetPosition) {
+      const sid = Number(serviceId);
+      const targetPos = Math.max(1, Number(targetPosition));
+
+      // Sort existing services by current display_order
+      allServices.sort((a, b) => (Number(a.display_order) || 999999) - (Number(b.display_order) || 999999) || (a.id - b.id));
+      const currIdx = allServices.findIndex(s => s.id === sid);
+      if (currIdx !== -1) {
+        const [movedItem] = allServices.splice(currIdx, 1);
+        const insertIdx = Math.min(allServices.length, targetPos - 1);
+        allServices.splice(insertIdx, 0, movedItem);
+
+        allServices.forEach((s, idx) => {
+          db.update('services', item => item.id === s.id, { display_order: idx + 1 });
+        });
+      }
+    } else {
+      return res.status(400).json({ error: 'orderedIds array or serviceId + targetPosition required' });
+    }
+
+    const updated = db.all('services');
+    updated.sort((a, b) => (Number(a.display_order) || 999999) - (Number(b.display_order) || 999999) || (a.id - b.id));
+
+    res.json({
+      success: true,
+      message: 'Service order updated successfully',
+      services: updated
+    });
+  } catch (err) {
+    console.error('[Reorder Services Error]:', err);
+    res.status(500).json({ error: 'Failed to reorder services: ' + err.message });
+  }
+};
+
+app.put('/api/admin/services/reorder', authenticateAdmin, handleReorderServices);
+app.post('/api/admin/services/reorder', authenticateAdmin, handleReorderServices);
 
 // Admin Edit Service
 app.put('/api/admin/services/:id', authenticateAdmin, upload.any(), async (req, res) => {

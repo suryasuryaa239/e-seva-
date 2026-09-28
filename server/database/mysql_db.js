@@ -86,6 +86,7 @@ export async function initializeDatabaseSchema() {
         documents_required JSON,
         eligibility JSON,
         status VARCHAR(50) DEFAULT 'active',
+        display_order INT DEFAULT 0,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
@@ -302,6 +303,7 @@ export async function initializeDatabaseSchema() {
       "ALTER TABLE services ADD COLUMN IF NOT EXISTS is_active TINYINT(1) DEFAULT 1",
       "ALTER TABLE services ADD COLUMN IF NOT EXISTS fields_json JSON",
       "ALTER TABLE services ADD COLUMN IF NOT EXISTS documents_json JSON",
+      "ALTER TABLE services ADD COLUMN IF NOT EXISTS display_order INT DEFAULT 0",
       "ALTER TABLE banners ADD COLUMN IF NOT EXISTS duration_seconds INT DEFAULT 5",
       "ALTER TABLE banners ADD COLUMN IF NOT EXISTS display_order INT DEFAULT 1",
       "ALTER TABLE banners ADD COLUMN IF NOT EXISTS status VARCHAR(50) DEFAULT 'Active'"
