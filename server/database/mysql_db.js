@@ -233,6 +233,12 @@ export async function initializeDatabaseSchema() {
         contact_email VARCHAR(255),
         contact_address TEXT,
         working_hours VARCHAR(255),
+        phonepe_merchant_id VARCHAR(255),
+        phonepe_salt_key VARCHAR(255),
+        phonepe_salt_index VARCHAR(50) DEFAULT '1',
+        phonepe_env VARCHAR(50) DEFAULT 'PROD',
+        phonepe_host_url TEXT,
+        phonepe_enabled TINYINT(1) DEFAULT 1,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -306,7 +312,13 @@ export async function initializeDatabaseSchema() {
       "ALTER TABLE services ADD COLUMN IF NOT EXISTS display_order INT DEFAULT 0",
       "ALTER TABLE banners ADD COLUMN IF NOT EXISTS duration_seconds INT DEFAULT 5",
       "ALTER TABLE banners ADD COLUMN IF NOT EXISTS display_order INT DEFAULT 1",
-      "ALTER TABLE banners ADD COLUMN IF NOT EXISTS status VARCHAR(50) DEFAULT 'Active'"
+      "ALTER TABLE banners ADD COLUMN IF NOT EXISTS status VARCHAR(50) DEFAULT 'Active'",
+      "ALTER TABLE site_settings ADD COLUMN IF NOT EXISTS phonepe_merchant_id VARCHAR(255)",
+      "ALTER TABLE site_settings ADD COLUMN IF NOT EXISTS phonepe_salt_key VARCHAR(255)",
+      "ALTER TABLE site_settings ADD COLUMN IF NOT EXISTS phonepe_salt_index VARCHAR(50) DEFAULT '1'",
+      "ALTER TABLE site_settings ADD COLUMN IF NOT EXISTS phonepe_env VARCHAR(50) DEFAULT 'PROD'",
+      "ALTER TABLE site_settings ADD COLUMN IF NOT EXISTS phonepe_host_url TEXT",
+      "ALTER TABLE site_settings ADD COLUMN IF NOT EXISTS phonepe_enabled TINYINT(1) DEFAULT 1"
     ];
 
     for (const sql of migrations) {

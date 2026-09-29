@@ -1,20 +1,77 @@
 import 'dotenv/config';
 import crypto from 'crypto';
 
-const getMerchantId = () => process.env.PHONEPE_MERCHANT_ID || '';
-const getSaltKey = () => process.env.PHONEPE_SALT_KEY || '';
-const getSaltIndex = () => process.env.PHONEPE_SALT_INDEX || '1';
-const getEnv = () => process.env.PHONEPE_ENV || 'PROD';
-const getHostUrl = () => process.env.PHONEPE_HOST_URL || (
-  getEnv() === 'UAT' 
+let currentDb = null;
+
+export const setPaymentDb = (db) => {
+  currentDb = db;
+};
+
+export const getPaymentConfig = () => {
+  let dbConfig = null;
+  try {
+    if (currentDb && typeof currentDb.all === 'function') {
+      const settings = currentDb.all('site_settings');
+      if (settings && settings.length > 0) {
+        dbConfig = settings[0];
+      }
+    }
+  } catch (e) {
+    console.warn('[PaymentService] Error reading settings from db:', e.message);
+  }
+
+  const merchantId = (dbConfig?.phonepe_merchant_id !== undefined && dbConfig?.phonepe_merchant_id !== '' 
+    ? dbConfig.phonepe_merchant_id 
+    : (process.env.PHONEPE_MERCHANT_ID || '')).trim();
+
+  const saltKey = (dbConfig?.phonepe_salt_key !== undefined && dbConfig?.phonepe_salt_key !== '' 
+    ? dbConfig.phonepe_salt_key 
+    : (process.env.PHONEPE_SALT_KEY || '')).trim();
+
+  const saltIndex = (dbConfig?.phonepe_salt_index !== undefined && dbConfig?.phonepe_salt_index !== '' 
+    ? dbConfig.phonepe_salt_index 
+    : (process.env.PHONEPE_SALT_INDEX || '1')).toString().trim();
+
+  const env = (dbConfig?.phonepe_env !== undefined && dbConfig?.phonepe_env !== '' 
+    ? dbConfig.phonepe_env 
+    : (process.env.PHONEPE_ENV || 'PROD')).trim().toUpperCase();
+
+  const enabled = dbConfig?.phonepe_enabled !== undefined 
+    ? (dbConfig.phonepe_enabled === 1 || dbConfig.phonepe_enabled === true || dbConfig.phonepe_enabled === 'true') 
+    : true;
+
+  const defaultHost = env === 'UAT' 
     ? 'https://api-preprod.phonepe.com/apis/pg-sandbox' 
-    : 'https://api.phonepe.com/apis/hermes'
-);
+    : 'https://api.phonepe.com/apis/hermes';
+
+  const hostUrl = (dbConfig?.phonepe_host_url !== undefined && dbConfig?.phonepe_host_url !== '' 
+    ? dbConfig.phonepe_host_url 
+    : (process.env.PHONEPE_HOST_URL || defaultHost)).trim();
+
+  return {
+    merchantId,
+    saltKey,
+    saltIndex,
+    env,
+    enabled,
+    hostUrl
+  };
+};
+
+const getMerchantId = () => getPaymentConfig().merchantId;
+const getSaltKey = () => getPaymentConfig().saltKey;
+const getSaltIndex = () => getPaymentConfig().saltIndex;
+const getEnv = () => getPaymentConfig().env;
+const getHostUrl = () => getPaymentConfig().hostUrl;
 
 const GATEWAY_KEY = process.env.PAYMENT_GATEWAY_KEY || 'rzp_test_eseva_2026';
 const GATEWAY_SECRET = process.env.PAYMENT_GATEWAY_SECRET || 'secret_eseva_key_2026';
 
 class PaymentService {
+  static getPaymentConfig() {
+    return getPaymentConfig();
+  }
+
   /**
    * Calculate PhonePe SHA256 checksum with salt index
    */
@@ -34,17 +91,27 @@ class PaymentService {
     redirectUrl,
     callbackUrl
   }) {
-    const merchantId = getMerchantId();
-    const saltKey = getSaltKey();
-    const saltIndex = getSaltIndex();
-    const hostUrl = getHostUrl();
+    const config = getPaymentConfig();
+    const merchantId = config.merchantId;
+    const saltKey = config.saltKey;
+    const saltIndex = config.saltIndex;
+    const hostUrl = config.hostUrl;
+
+    if (!config.enabled) {
+      console.warn('[PhonePe Warning]: Payment gateway is disabled in Admin Settings.');
+      return {
+        success: false,
+        code: 'GATEWAY_DISABLED',
+        message: 'PhonePe Payment Gateway is temporarily disabled in Admin Settings.'
+      };
+    }
 
     if (!merchantId || !saltKey) {
-      console.error('[PhonePe Error]: PHONEPE_MERCHANT_ID or PHONEPE_SALT_KEY is missing from environment variables!');
+      console.error('[PhonePe Error]: PhonePe Merchant ID or Salt Key is missing from Admin Settings!');
       return {
         success: false,
         code: 'MISSING_CREDENTIALS',
-        message: 'PhonePe credentials are not configured in environment variables on this server (Vercel).'
+        message: 'PhonePe credentials are not configured in Admin Dashboard Settings.'
       };
     }
 
@@ -148,9 +215,10 @@ class PaymentService {
   /**
    * Verify PhonePe S2S Webhook Checksum
    */
-  static verifyPhonePeWebhookSignature({ base64Response, xVerifyHeader, saltKey = PHONEPE_SALT_KEY }) {
+  static verifyPhonePeWebhookSignature({ base64Response, xVerifyHeader, saltKey }) {
     if (!base64Response || !xVerifyHeader) return false;
-    const expectedHash = crypto.createHash('sha256').update(base64Response + saltKey).digest('hex');
+    const key = saltKey || getSaltKey();
+    const expectedHash = crypto.createHash('sha256').update(base64Response + key).digest('hex');
     const receivedHash = xVerifyHeader.split('###')[0];
     return expectedHash === receivedHash;
   }
@@ -164,7 +232,7 @@ class PaymentService {
     return {
       success: true,
       provider: 'PHONEPE',
-      key_id: PHONEPE_MERCHANT_ID,
+      key_id: getMerchantId(),
       order_id: paymentOrderId,
       amount: Math.round(amount * 100), // Amount in paise for INR
       display_amount: amount,

@@ -7,7 +7,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import multer from 'multer';
 import { db } from './database/db.js';
-import PaymentService from './paymentService.js';
+import PaymentService, { setPaymentDb } from './paymentService.js';
 import NotificationService from './notificationService.js';
 import { initCronJobs } from './cronJobs.js';
 import { uploadToBackblaze } from './utils/b2Storage.js';
@@ -20,6 +20,9 @@ const app = express();
 app.set('trust proxy', 1);
 const PORT = process.env.PORT || 5000;
 const JWT_SECRET = process.env.JWT_SECRET || 'eseva_super_secret_jwt_key_2026';
+
+// Initialize dynamic DB reference for PaymentService
+setPaymentDb(db);
 
 // Initialize production background maintenance jobs (disable on Vercel serverless)
 if (!process.env.VERCEL) {
@@ -293,18 +296,25 @@ const DEFAULT_SITE_SETTINGS = {
   contact_phone: '+91 98940 59591',
   contact_email: 'econnectindia@gmail.com',
   contact_address: '45, New Bus stand complex, Sathyamangalam-638402.',
-  working_hours: 'Mon - Sat: 08:00 AM - 08:00 PM'
+  working_hours: 'Mon - Sat: 08:00 AM - 08:00 PM',
+  phonepe_merchant_id: 'M22KWW43XGUAZ',
+  phonepe_salt_key: '4ddeb847-17fb-4712-9851-2f72e9a2db6d',
+  phonepe_salt_index: '1',
+  phonepe_env: 'PROD',
+  phonepe_host_url: 'https://api.phonepe.com/apis/hermes',
+  phonepe_enabled: true
 };
 
 app.get('/api/settings', (req, res) => {
   try {
     const list = db.all('site_settings');
-    if (list && list.length > 0) {
-      return res.json({ ...DEFAULT_SITE_SETTINGS, ...list[0] });
-    }
-    res.json(DEFAULT_SITE_SETTINGS);
+    const settings = (list && list.length > 0) ? { ...DEFAULT_SITE_SETTINGS, ...list[0] } : { ...DEFAULT_SITE_SETTINGS };
+    // Omit sensitive PhonePe salt key from public endpoint
+    const { phonepe_salt_key, ...safeSettings } = settings;
+    res.json(safeSettings);
   } catch (err) {
-    res.json(DEFAULT_SITE_SETTINGS);
+    const { phonepe_salt_key, ...safeSettings } = DEFAULT_SITE_SETTINGS;
+    res.json(safeSettings);
   }
 });
 
@@ -357,6 +367,77 @@ app.put('/api/admin/settings', authenticateAdmin, (req, res) => {
     res.json({ message: 'Site, social media & footer settings updated successfully', settings: current });
   } catch (err) {
     res.status(500).json({ error: 'Failed to update site settings: ' + err.message });
+  }
+});
+
+// Admin Get PhonePe Payment Gateway Settings
+app.get('/api/admin/payment-gateway', authenticateAdmin, (req, res) => {
+  try {
+    const list = db.all('site_settings');
+    const settings = (list && list.length > 0) ? { ...DEFAULT_SITE_SETTINGS, ...list[0] } : { ...DEFAULT_SITE_SETTINGS };
+    res.json({
+      phonepe_merchant_id: settings.phonepe_merchant_id || '',
+      phonepe_salt_key: settings.phonepe_salt_key || '',
+      phonepe_salt_index: settings.phonepe_salt_index || '1',
+      phonepe_env: settings.phonepe_env || 'PROD',
+      phonepe_host_url: settings.phonepe_host_url || (settings.phonepe_env === 'UAT' ? 'https://api-preprod.phonepe.com/apis/pg-sandbox' : 'https://api.phonepe.com/apis/hermes'),
+      phonepe_enabled: settings.phonepe_enabled !== false
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to retrieve payment gateway settings: ' + err.message });
+  }
+});
+
+// Admin Update PhonePe Payment Gateway Settings
+app.put('/api/admin/payment-gateway', authenticateAdmin, (req, res) => {
+  try {
+    const {
+      phonepe_merchant_id,
+      phonepe_salt_key,
+      phonepe_salt_index,
+      phonepe_env,
+      phonepe_host_url,
+      phonepe_enabled
+    } = req.body;
+
+    const list = db.all('site_settings');
+    const existing = (list && list.length > 0) ? list[0] : {};
+
+    const envVal = phonepe_env ? String(phonepe_env).trim().toUpperCase() : (existing.phonepe_env || 'PROD');
+    const defaultHost = envVal === 'UAT' 
+      ? 'https://api-preprod.phonepe.com/apis/pg-sandbox' 
+      : 'https://api.phonepe.com/apis/hermes';
+
+    const updateData = {
+      phonepe_merchant_id: phonepe_merchant_id !== undefined ? String(phonepe_merchant_id).trim() : (existing.phonepe_merchant_id || ''),
+      phonepe_salt_key: phonepe_salt_key !== undefined ? String(phonepe_salt_key).trim() : (existing.phonepe_salt_key || ''),
+      phonepe_salt_index: phonepe_salt_index !== undefined ? String(phonepe_salt_index).trim() : (existing.phonepe_salt_index || '1'),
+      phonepe_env: envVal,
+      phonepe_host_url: phonepe_host_url !== undefined && String(phonepe_host_url).trim() ? String(phonepe_host_url).trim() : (existing.phonepe_host_url || defaultHost),
+      phonepe_enabled: phonepe_enabled !== undefined ? Boolean(phonepe_enabled) : (existing.phonepe_enabled !== false),
+      updated_at: new Date().toISOString()
+    };
+
+    if (list && list.length > 0) {
+      db.update('site_settings', item => item.id === list[0].id, updateData);
+    } else {
+      db.insert('site_settings', { id: 1, ...DEFAULT_SITE_SETTINGS, ...updateData });
+    }
+
+    const current = db.all('site_settings')[0] || updateData;
+    res.json({
+      message: 'PhonePe Payment Gateway configuration saved successfully',
+      gateway: {
+        phonepe_merchant_id: current.phonepe_merchant_id,
+        phonepe_salt_key: current.phonepe_salt_key,
+        phonepe_salt_index: current.phonepe_salt_index,
+        phonepe_env: current.phonepe_env,
+        phonepe_host_url: current.phonepe_host_url,
+        phonepe_enabled: current.phonepe_enabled !== false
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to update payment gateway settings: ' + err.message });
   }
 });
 

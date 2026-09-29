@@ -247,6 +247,76 @@ export default function AdminDashboard() {
     }
   };
 
+  // Payment Gateway (PhonePe) State & Handlers
+  const [paymentGatewayForm, setPaymentGatewayForm] = useState({
+    phonepe_merchant_id: '',
+    phonepe_salt_key: '',
+    phonepe_salt_index: '1',
+    phonepe_env: 'PROD',
+    phonepe_host_url: 'https://api.phonepe.com/apis/hermes',
+    phonepe_enabled: true
+  });
+  const [showSaltKey, setShowSaltKey] = useState(false);
+  const [savingPaymentGateway, setSavingPaymentGateway] = useState(false);
+  const [loadingPaymentGateway, setLoadingPaymentGateway] = useState(false);
+
+  const fetchPaymentGatewaySettings = async () => {
+    setLoadingPaymentGateway(true);
+    try {
+      const token = getAuthToken();
+      const res = await fetch('/api/admin/payment-gateway', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setPaymentGatewayForm({
+          phonepe_merchant_id: data.phonepe_merchant_id || '',
+          phonepe_salt_key: data.phonepe_salt_key || '',
+          phonepe_salt_index: data.phonepe_salt_index || '1',
+          phonepe_env: data.phonepe_env || 'PROD',
+          phonepe_host_url: data.phonepe_host_url || '',
+          phonepe_enabled: data.phonepe_enabled !== false
+        });
+      }
+    } catch (e) {
+      console.error('Fetch payment gateway settings error:', e);
+    } finally {
+      setLoadingPaymentGateway(false);
+    }
+  };
+
+  const handleSavePaymentGatewaySettings = async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    setSavingPaymentGateway(true);
+    try {
+      const token = getAuthToken();
+      const res = await fetch('/api/admin/payment-gateway', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(paymentGatewayForm)
+      });
+      const data = await res.json();
+      if (res.ok) {
+        addToast('PhonePe Payment Gateway settings saved successfully!', 'success');
+        if (data.gateway) {
+          setPaymentGatewayForm(prev => ({
+            ...prev,
+            ...data.gateway
+          }));
+        }
+      } else {
+        addToast(data.error || 'Failed to save payment gateway settings', 'error');
+      }
+    } catch (e) {
+      addToast('Failed to save payment gateway settings: ' + e.message, 'error');
+    } finally {
+      setSavingPaymentGateway(false);
+    }
+  };
+
   const openAddBannerModal = () => {
     setEditingBanner(null);
     setBannerForm({
@@ -427,6 +497,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     fetchCategories();
     fetchSiteSettings();
+    fetchPaymentGatewaySettings();
   }, []);
 
   const handleCreateCategorySubmit = async (e) => {
@@ -4585,6 +4656,7 @@ export default function AdminDashboard() {
                 {[
                   { id: 'profile', label: 'Profile Details', icon: User },
                   { id: 'security', label: 'Security & Password', icon: Key },
+                  { id: 'payment_gateway', label: 'Payment Gateway (PhonePe)', icon: CreditCard },
                   { id: 'social_media', label: 'Social Media & Footer', icon: Share2 },
                   { id: 'payment_notice', label: 'Payment Notice & Terms', icon: ShieldAlert },
                   { id: 'notifications', label: 'Notification Preferences', icon: Bell },
@@ -5238,6 +5310,244 @@ export default function AdminDashboard() {
                     </div>
 
                   </form>
+                </div>
+              )}
+
+              {/* SUB-TAB: PHONEPE PAYMENT GATEWAY SETTINGS */}
+              {activeSettingsTab === 'payment_gateway' && (
+                <div className="bg-white p-6 rounded-3xl border border-slate-200/90 shadow-sm space-y-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                    <div>
+                      <div className="flex items-center space-x-2">
+                        <div className="w-8 h-8 rounded-xl bg-purple-600/10 text-purple-600 flex items-center justify-center font-bold">
+                          <CreditCard className="w-4 h-4" />
+                        </div>
+                        <h4 className="font-extrabold text-base text-slate-900">PhonePe Payment Gateway Settings (PhonePe கட்டண நுழைவாயில்)</h4>
+                      </div>
+                      <p className="text-xs text-slate-500 mt-1">
+                        Configure PhonePe Merchant ID, Salt Key, and Environment directly from this dashboard. Changes take effect instantly for all citizen payments without server restart.
+                      </p>
+                    </div>
+                    <div className="flex items-center space-x-2 flex-wrap">
+                      <span className={`text-xs font-bold px-3 py-1 rounded-xl border flex items-center space-x-1.5 ${
+                        paymentGatewayForm.phonepe_enabled
+                          ? 'text-emerald-700 bg-emerald-50 border-emerald-200'
+                          : 'text-rose-700 bg-rose-50 border-rose-200'
+                      }`}>
+                        <span className={`w-2 h-2 rounded-full ${paymentGatewayForm.phonepe_enabled ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'}`} />
+                        <span>{paymentGatewayForm.phonepe_enabled ? 'Gateway Active' : 'Gateway Inactive'}</span>
+                      </span>
+                      <span className="text-xs font-bold text-purple-700 bg-purple-50 px-3 py-1 rounded-xl border border-purple-200">
+                        {paymentGatewayForm.phonepe_env === 'PROD' ? '🚀 Production Mode' : '🧪 UAT Sandbox'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {loadingPaymentGateway ? (
+                    <div className="py-12 flex flex-col items-center justify-center space-y-3">
+                      <div className="w-8 h-8 border-3 border-purple-600 border-t-transparent rounded-full animate-spin" />
+                      <p className="text-xs font-semibold text-slate-500">Loading PhonePe gateway configuration...</p>
+                    </div>
+                  ) : (
+                    <form onSubmit={handleSavePaymentGatewaySettings} className="space-y-6 max-w-3xl">
+                      {/* Master Gateway Toggle */}
+                      <div className="p-4 bg-gradient-to-r from-purple-50/60 to-indigo-50/40 rounded-2xl border border-purple-100/80 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <label className="text-xs font-bold text-slate-900 flex items-center space-x-2">
+                            <CreditCard className="w-4 h-4 text-purple-600" />
+                            <span>Enable PhonePe Checkout for Citizen Services</span>
+                          </label>
+                          <button
+                            type="button"
+                            onClick={() => setPaymentGatewayForm(prev => ({ ...prev, phonepe_enabled: !prev.phonepe_enabled }))}
+                            className={`w-11 h-6 rounded-full transition-colors relative flex-shrink-0 cursor-pointer ${
+                              paymentGatewayForm.phonepe_enabled ? 'bg-purple-600' : 'bg-slate-300'
+                            }`}
+                          >
+                            <span
+                              className={`w-4 h-4 bg-white rounded-full absolute top-1 transition-transform ${
+                                paymentGatewayForm.phonepe_enabled ? 'right-1' : 'left-1'
+                              }`}
+                            />
+                          </button>
+                        </div>
+                        <p className="text-[11px] text-slate-600 leading-relaxed">
+                          When enabled, citizens can pay service fees online via UPI, Credit/Debit cards, Net Banking & PhonePe Wallet. When disabled, checkout will prompt that online payment is temporarily paused.
+                        </p>
+                      </div>
+
+                      {/* Environment Selector */}
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold text-slate-800 block">
+                          PhonePe API Environment (இயக்க சூழல்)
+                        </label>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <button
+                            type="button"
+                            onClick={() => setPaymentGatewayForm(prev => ({
+                              ...prev,
+                              phonepe_env: 'PROD',
+                              phonepe_host_url: 'https://api.phonepe.com/apis/hermes'
+                            }))}
+                            className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex items-center space-x-3 ${
+                              paymentGatewayForm.phonepe_env === 'PROD'
+                                ? 'border-purple-600 bg-purple-50/60 text-purple-950 ring-2 ring-purple-600/20'
+                                : 'border-slate-200 bg-slate-50/50 hover:bg-slate-50 text-slate-700'
+                            }`}
+                          >
+                            <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
+                              paymentGatewayForm.phonepe_env === 'PROD' ? 'border-purple-600' : 'border-slate-400'
+                            }`}>
+                              {paymentGatewayForm.phonepe_env === 'PROD' && <div className="w-2 h-2 rounded-full bg-purple-600" />}
+                            </div>
+                            <div>
+                              <p className="text-xs font-bold">Production (PROD) - Live</p>
+                              <p className="text-[10px] text-slate-500">Live Hermes API for real financial transactions</p>
+                            </div>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => setPaymentGatewayForm(prev => ({
+                              ...prev,
+                              phonepe_env: 'UAT',
+                              phonepe_host_url: 'https://api-preprod.phonepe.com/apis/pg-sandbox'
+                            }))}
+                            className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex items-center space-x-3 ${
+                              paymentGatewayForm.phonepe_env === 'UAT'
+                                ? 'border-purple-600 bg-purple-50/60 text-purple-950 ring-2 ring-purple-600/20'
+                                : 'border-slate-200 bg-slate-50/50 hover:bg-slate-50 text-slate-700'
+                            }`}
+                          >
+                            <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
+                              paymentGatewayForm.phonepe_env === 'UAT' ? 'border-purple-600' : 'border-slate-400'
+                            }`}>
+                              {paymentGatewayForm.phonepe_env === 'UAT' && <div className="w-2 h-2 rounded-full bg-purple-600" />}
+                            </div>
+                            <div>
+                              <p className="text-xs font-bold">Sandbox / UAT (Test)</p>
+                              <p className="text-[10px] text-slate-500">PhonePe PG Sandbox test environment</p>
+                            </div>
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* PhonePe Merchant ID */}
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-slate-800 flex items-center justify-between">
+                          <span>PhonePe Merchant ID (வணிகர் அடையாள எண்)</span>
+                          <span className="text-[10px] text-slate-400 font-normal">Provided by PhonePe Business Console</span>
+                        </label>
+                        <input
+                          type="text"
+                          value={paymentGatewayForm.phonepe_merchant_id}
+                          onChange={(e) => setPaymentGatewayForm({ ...paymentGatewayForm, phonepe_merchant_id: e.target.value })}
+                          placeholder="e.g. M22KWW43XGUAZ"
+                          required
+                          className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-xs rounded-2xl px-4 py-3 focus:border-purple-600 focus:bg-white outline-none font-mono font-bold"
+                        />
+                        <p className="text-[10px] text-slate-500">
+                          Your unique merchant code assigned by PhonePe PG team.
+                        </p>
+                      </div>
+
+                      {/* PhonePe Salt Key (Secret) */}
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-slate-800 flex items-center justify-between">
+                          <span>PhonePe Salt Key / Secret (ரகசிய சாவி)</span>
+                          <button
+                            type="button"
+                            onClick={() => setShowSaltKey(!showSaltKey)}
+                            className="text-[11px] text-purple-600 hover:text-purple-800 font-bold flex items-center space-x-1 cursor-pointer"
+                          >
+                            {showSaltKey ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                            <span>{showSaltKey ? 'Hide Secret' : 'Show Secret'}</span>
+                          </button>
+                        </label>
+                        <div className="relative">
+                          <input
+                            type={showSaltKey ? 'text' : 'password'}
+                            value={paymentGatewayForm.phonepe_salt_key}
+                            onChange={(e) => setPaymentGatewayForm({ ...paymentGatewayForm, phonepe_salt_key: e.target.value })}
+                            placeholder="e.g. 4ddeb847-17fb-4712-9851-2f72e9a2db6d"
+                            required
+                            className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-xs rounded-2xl px-4 py-3 focus:border-purple-600 focus:bg-white outline-none font-mono font-medium pr-10"
+                          />
+                        </div>
+                        <p className="text-[10px] text-slate-500">
+                          Used to compute SHA256 signatures for checkout orders and webhook callbacks. Kept securely on server.
+                        </p>
+                      </div>
+
+                      {/* Salt Index & Host URL */}
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div className="space-y-1.5">
+                          <label className="text-xs font-bold text-slate-800 block">
+                            Salt Index (குறியீட்டு எண்)
+                          </label>
+                          <input
+                            type="text"
+                            value={paymentGatewayForm.phonepe_salt_index}
+                            onChange={(e) => setPaymentGatewayForm({ ...paymentGatewayForm, phonepe_salt_index: e.target.value })}
+                            placeholder="1"
+                            className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-xs rounded-2xl px-4 py-3 focus:border-purple-600 focus:bg-white outline-none font-mono font-bold"
+                          />
+                          <p className="text-[10px] text-slate-400">Usually 1 by default.</p>
+                        </div>
+
+                        <div className="sm:col-span-2 space-y-1.5">
+                          <label className="text-xs font-bold text-slate-800 block">
+                            PhonePe API Host URL (தானியங்கி முகவரி)
+                          </label>
+                          <input
+                            type="text"
+                            value={paymentGatewayForm.phonepe_host_url}
+                            onChange={(e) => setPaymentGatewayForm({ ...paymentGatewayForm, phonepe_host_url: e.target.value })}
+                            placeholder={paymentGatewayForm.phonepe_env === 'UAT' ? 'https://api-preprod.phonepe.com/apis/pg-sandbox' : 'https://api.phonepe.com/apis/hermes'}
+                            className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-xs rounded-2xl px-4 py-3 focus:border-purple-600 focus:bg-white outline-none font-mono text-slate-600"
+                          />
+                          <p className="text-[10px] text-slate-400">Auto-configured based on environment.</p>
+                        </div>
+                      </div>
+
+                      {/* Merchant Webhook & Callback Reference Box */}
+                      <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
+                        <h5 className="text-xs font-extrabold text-slate-800 flex items-center space-x-1.5">
+                          <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                          <span>PhonePe Console Integration Webhook Details</span>
+                        </h5>
+                        <p className="text-[11px] text-slate-600 leading-relaxed">
+                          Provide these URLs in your PhonePe Merchant Dashboard under Webhook / Callback settings:
+                        </p>
+                        <div className="space-y-1.5 text-[11px] font-mono">
+                          <div className="bg-white p-2.5 rounded-xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                            <span className="text-slate-500 font-sans font-bold">Callback / Webhook URL:</span>
+                            <span className="text-purple-700 font-bold break-all">{typeof window !== 'undefined' ? window.location.origin : ''}/api/payments/phonepe/callback</span>
+                          </div>
+                          <div className="bg-white p-2.5 rounded-xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                            <span className="text-slate-500 font-sans font-bold">Redirect Return URL:</span>
+                            <span className="text-purple-700 font-bold break-all">{typeof window !== 'undefined' ? window.location.origin : ''}/payment/callback</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Submit Button */}
+                      <div className="pt-2">
+                        <button
+                          type="submit"
+                          disabled={savingPaymentGateway}
+                          className="px-7 py-3 bg-purple-600 hover:bg-purple-700 text-white font-extrabold text-xs rounded-xl shadow-md transition-all flex items-center space-x-2 disabled:opacity-50 cursor-pointer"
+                        >
+                          {savingPaymentGateway ? (
+                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          ) : (
+                            <Save className="w-4 h-4" />
+                          )}
+                          <span>{savingPaymentGateway ? 'Saving Gateway Settings...' : 'Save PhonePe Gateway Settings'}</span>
+                        </button>
+                      </div>
+                    </form>
+                  )}
                 </div>
               )}
 

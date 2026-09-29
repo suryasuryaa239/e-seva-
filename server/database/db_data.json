@@ -16424,7 +16424,13 @@
       "contact_email": "econnectindia@gmail.com",
       "contact_address": "45, New Bus stand complex, Sathyamangalam-638402.",
       "working_hours": "Mon - Sat: 08:00 AM - 08:00 PM",
-      "updated_at": "2026-09-25T17:54:43.597Z"
+      "phonepe_merchant_id": "M22KWW43XGUAZ",
+      "phonepe_salt_key": "4ddeb847-17fb-4712-9851-2f72e9a2db6d",
+      "phonepe_salt_index": "1",
+      "phonepe_env": "PROD",
+      "phonepe_host_url": "https://api.phonepe.com/apis/hermes",
+      "phonepe_enabled": true,
+      "updated_at": "2026-09-29T17:30:00.000Z"
     }
   ],
   "notification_delivery_logs": [
