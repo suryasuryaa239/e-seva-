@@ -295,12 +295,18 @@ export default function ServiceDetails() {
               </h2>
               <div className="space-y-3 text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
                 <p>
-                  {service.description || (lang === 'ta' ? 'இந்த சேவை தகுதியான விண்ணப்பதாரர்களுக்கு அரசு ஆவணங்கள் மற்றும் சான்றிதழ்களை ஆன்லைனில் விண்ணப்பிக்க உதவுகிறது.' : 'This service allows eligible applicants to apply for official digital updates, certificates, and government document facilitation online.')}
+                  {typeof service.description === 'string'
+                    ? service.description
+                    : Array.isArray(service.description)
+                      ? service.description.join(' ')
+                      : (service.description || (lang === 'ta' ? 'இந்த சேவை தகுதியான விண்ணப்பதாரர்களுக்கு அரசு ஆவணங்கள் மற்றும் சான்றிதழ்களை ஆன்லைனில் விண்ணப்பிக்க உதவுகிறது.' : 'This service allows eligible applicants to apply for official digital updates, certificates, and government document facilitation online.'))}
                 </p>
                 <div className="pt-2">
                   <h4 className="font-bold text-slate-900 text-xs uppercase tracking-wider mb-1">{t.eligibilityTitle || (lang === 'ta' ? 'தகுதி' : 'Eligibility')}:</h4>
                   <p className="text-xs text-slate-500">
-                    {service.eligibility || (lang === 'ta' ? 'சட்டப்பூர்வ விதிகளின்படி செல்லுபடியாகும் அடையாள மற்றும் முகவரிச் சான்றுகளைக் கொண்ட இந்திய குடிமக்களுக்குத் தகுதியானது.' : 'Eligible for resident Indian citizens holding valid identification and address proof documents as prescribed by statutory regulations.')}
+                    {Array.isArray(service.eligibility)
+                      ? service.eligibility.join(' • ')
+                      : (service.eligibility || (lang === 'ta' ? 'சட்டப்பூர்வ விதிகளின்படி செல்லுபடியாகும் அடையாள மற்றும் முகவரிச் சான்றுகளைக் கொண்ட இந்திய குடிமக்களுக்குத் தகுதியானது.' : 'Eligible for resident Indian citizens holding valid identification and address proof documents as prescribed by statutory regulations.'))}
                   </p>
                 </div>
               </div>

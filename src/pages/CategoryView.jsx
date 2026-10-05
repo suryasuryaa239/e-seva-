@@ -114,21 +114,42 @@ export default function CategoryView() {
     }
   };
 
+  // Safe text converter for search and comparisons
+  const toSearchText = (val) => {
+    if (!val) return '';
+    if (typeof val === 'string') return val.toLowerCase();
+    if (Array.isArray(val)) {
+      return val
+        .map((item) => (typeof item === 'object' && item !== null ? JSON.stringify(item) : String(item)))
+        .join(' ')
+        .toLowerCase();
+    }
+    if (typeof val === 'object') {
+      try {
+        return JSON.stringify(val).toLowerCase();
+      } catch {
+        return '';
+      }
+    }
+    return String(val).toLowerCase();
+  };
+
   // Filter & Sort Services
   const filteredServices = services
     .filter(srv => {
       if (!searchTerm.trim()) return true;
-      const q = searchTerm.toLowerCase();
-      return (
-        srv.name.toLowerCase().includes(q) ||
-        srv.description.toLowerCase().includes(q) ||
-        (srv.slug && srv.slug.toLowerCase().includes(q))
-      );
+      const q = searchTerm.toLowerCase().trim();
+      const nameStr = toSearchText(srv.name);
+      const descStr = toSearchText(srv.description);
+      const slugStr = toSearchText(srv.slug);
+      const eligStr = toSearchText(srv.eligibility);
+
+      return nameStr.includes(q) || descStr.includes(q) || slugStr.includes(q) || eligStr.includes(q);
     })
     .sort((a, b) => {
-      if (sortBy === 'fee_asc') return a.fee - b.fee;
-      if (sortBy === 'fee_desc') return b.fee - a.fee;
-      if (sortBy === 'name') return a.name.localeCompare(b.name);
+      if (sortBy === 'fee_asc') return (a.fee || 0) - (b.fee || 0);
+      if (sortBy === 'fee_desc') return (b.fee || 0) - (a.fee || 0);
+      if (sortBy === 'name') return String(a.name || '').localeCompare(String(b.name || ''));
       return 0;
     });
 
@@ -288,7 +309,11 @@ export default function CategoryView() {
                             {srv.name}
                           </h3>
                           <p className="text-xs text-slate-600 line-clamp-3 leading-relaxed">
-                            {srv.description}
+                            {typeof srv.description === 'string'
+                              ? srv.description
+                              : Array.isArray(srv.description)
+                                ? srv.description.join(' ')
+                                : (srv.description ? String(srv.description) : '')}
                           </p>
                         </div>
                       </div>

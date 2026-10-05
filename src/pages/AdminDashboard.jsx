@@ -1668,10 +1668,26 @@ export default function AdminDashboard() {
   const serviceCategories = ['All', ...Array.from(new Set(services.map(s => s.category_name || s.category || 'General')))];
   
   const filteredServices = services.filter(s => {
-    const matchesSearch = !serviceSearchQuery ||
-      (s.name && s.name.toLowerCase().includes(serviceSearchQuery.toLowerCase())) ||
-      (s.category_name && s.category_name.toLowerCase().includes(serviceSearchQuery.toLowerCase())) ||
-      (s.description && s.description.toLowerCase().includes(serviceSearchQuery.toLowerCase()));
+    const q = (serviceSearchQuery || '').toLowerCase().trim();
+    const sName = String(s.name || '').toLowerCase();
+    const sCat = String(s.category_name || s.category || '').toLowerCase();
+    const sDesc = typeof s.description === 'string'
+      ? s.description.toLowerCase()
+      : Array.isArray(s.description)
+        ? s.description.join(' ').toLowerCase()
+        : String(s.description || '').toLowerCase();
+    const sElig = typeof s.eligibility === 'string'
+      ? s.eligibility.toLowerCase()
+      : Array.isArray(s.eligibility)
+        ? s.eligibility.join(' ').toLowerCase()
+        : String(s.eligibility || '').toLowerCase();
+
+    const matchesSearch = !q ||
+      sName.includes(q) ||
+      sCat.includes(q) ||
+      sDesc.includes(q) ||
+      sElig.includes(q);
+
     const matchesCategory = selectedServiceCategory === 'All' || 
       s.category_name === selectedServiceCategory || 
       s.category === selectedServiceCategory;

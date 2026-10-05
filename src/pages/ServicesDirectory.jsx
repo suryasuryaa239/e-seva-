@@ -35,6 +35,25 @@ const CATEGORY_TA_NAMES = {
   'Ration Card Services': 'ரேஷன் கார்டு சேவைகள்'
 };
 
+const toSearchText = (val) => {
+  if (!val) return '';
+  if (typeof val === 'string') return val.toLowerCase();
+  if (Array.isArray(val)) {
+    return val
+      .map((item) => (typeof item === 'object' && item !== null ? JSON.stringify(item) : String(item)))
+      .join(' ')
+      .toLowerCase();
+  }
+  if (typeof val === 'object') {
+    try {
+      return JSON.stringify(val).toLowerCase();
+    } catch {
+      return '';
+    }
+  }
+  return String(val).toLowerCase();
+};
+
 export default function ServicesDirectory() {
   const { lang, t } = useLanguage();
   const [searchParams] = useSearchParams();
@@ -68,19 +87,28 @@ export default function ServicesDirectory() {
 
   const filteredServices = localizedServices.filter((srv) => {
     const q = searchQuery.toLowerCase().trim();
-    const catNameStr = (srv.category_name || '').toLowerCase();
+    const catNameStr = toSearchText(srv.category_name);
+    const catSlugStr = toSearchText(srv.category_slug);
+    const selectedCatLower = selectedCategory.toLowerCase();
+
     const matchesCategory =
       selectedCategory === 'All' ||
       srv.category_slug === selectedCategory ||
-      catNameStr === selectedCategory.toLowerCase();
+      catSlugStr === selectedCatLower ||
+      catNameStr === selectedCatLower;
 
     if (!q) return matchesCategory;
 
+    const nameStr = toSearchText(srv.name);
+    const descStr = toSearchText(srv.description);
+    const eligStr = toSearchText(srv.eligibility);
+
     const matchesSearch =
-      (srv.name || '').toLowerCase().includes(q) ||
+      nameStr.includes(q) ||
       catNameStr.includes(q) ||
-      (srv.description && srv.description.toLowerCase().includes(q)) ||
-      (srv.eligibility && srv.eligibility.toLowerCase().includes(q));
+      catSlugStr.includes(q) ||
+      descStr.includes(q) ||
+      eligStr.includes(q);
 
     return matchesCategory && matchesSearch;
   });
@@ -288,7 +316,11 @@ export default function ServicesDirectory() {
                       {srv.name}
                     </h3>
                     <p className="text-xs text-slate-500 mt-1 font-normal line-clamp-2 leading-relaxed">
-                      {srv.description}
+                      {typeof srv.description === 'string'
+                        ? srv.description
+                        : Array.isArray(srv.description)
+                          ? srv.description.join(' ')
+                          : (srv.description ? String(srv.description) : '')}
                     </p>
                   </div>
 

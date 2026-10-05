@@ -442,7 +442,11 @@ export default function Home() {
                     {srv.name}
                   </h3>
                   <p className="text-xs text-slate-500 mt-1 font-normal line-clamp-2 leading-relaxed">
-                    {srv.description}
+                    {typeof srv.description === 'string'
+                      ? srv.description
+                      : Array.isArray(srv.description)
+                        ? srv.description.join(' ')
+                        : (srv.description ? String(srv.description) : '')}
                   </p>
                 </div>
               </div>
