@@ -270,6 +270,22 @@ export async function initializeDatabaseSchema() {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
 
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS popup_updates (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        content TEXT NOT NULL,
+        image_url TEXT,
+        button_text VARCHAR(100) DEFAULT 'Check Now',
+        button_url VARCHAR(255) DEFAULT '/services',
+        badge_text VARCHAR(100) DEFAULT 'NEW UPDATE',
+        status VARCHAR(50) DEFAULT 'Active',
+        display_order INT DEFAULT 1,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `);
+
     // Automated Column Migrations for any pre-existing tables
     const migrations = [
       "ALTER TABLE applications ADD COLUMN IF NOT EXISTS user_name VARCHAR(255)",
@@ -318,7 +334,11 @@ export async function initializeDatabaseSchema() {
       "ALTER TABLE site_settings ADD COLUMN IF NOT EXISTS phonepe_salt_index VARCHAR(50) DEFAULT '1'",
       "ALTER TABLE site_settings ADD COLUMN IF NOT EXISTS phonepe_env VARCHAR(50) DEFAULT 'PROD'",
       "ALTER TABLE site_settings ADD COLUMN IF NOT EXISTS phonepe_host_url TEXT",
-      "ALTER TABLE site_settings ADD COLUMN IF NOT EXISTS phonepe_enabled TINYINT(1) DEFAULT 1"
+      "ALTER TABLE site_settings ADD COLUMN IF NOT EXISTS phonepe_enabled TINYINT(1) DEFAULT 1",
+      "ALTER TABLE popup_updates ADD COLUMN IF NOT EXISTS badge_text VARCHAR(100) DEFAULT 'NEW UPDATE'",
+      "ALTER TABLE popup_updates ADD COLUMN IF NOT EXISTS button_text VARCHAR(100) DEFAULT 'Check Now'",
+      "ALTER TABLE popup_updates ADD COLUMN IF NOT EXISTS button_url VARCHAR(255) DEFAULT '/services'",
+      "ALTER TABLE popup_updates ADD COLUMN IF NOT EXISTS status VARCHAR(50) DEFAULT 'Active'"
     ];
 
     for (const sql of migrations) {

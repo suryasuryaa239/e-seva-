@@ -10,12 +10,13 @@ import {
   Settings, Key, Lock, EyeOff, Save, CheckCheck, Bell, CreditCard, Paperclip,
   Sliders, Image as ImageIcon, Upload, Download,
   Share2, Send, Linkedin, Twitter, Globe, Facebook, Instagram, Youtube, MessageCircle,
-  GripVertical, MoveUp, MoveDown, Sparkles
+  GripVertical, MoveUp, MoveDown, Sparkles, Megaphone
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import StatusBadge from '../components/StatusBadge';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
+import AnnouncementPopup from '../components/AnnouncementPopup';
 import { invalidateServicesCache } from '../utils/useLiveServices';
 
 const SERVICE_IMAGE_PRESETS = [
@@ -172,6 +173,42 @@ export default function AdminDashboard() {
       }
     } catch (e) {
       console.error(e);
+    }
+  };
+
+  // Announcement Popups State
+  const [popups, setPopups] = useState([]);
+  const [loadingPopups, setLoadingPopups] = useState(false);
+  const [showPopupModal, setShowPopupModal] = useState(false);
+  const [editingPopup, setEditingPopup] = useState(null);
+  const [savingPopup, setSavingPopup] = useState(false);
+  const [previewPopup, setPreviewPopup] = useState(null);
+  const [popupForm, setPopupForm] = useState({
+    title: '',
+    content: '',
+    badge_text: 'NEW UPDATE',
+    button_text: 'Check Now',
+    button_url: '/services',
+    status: 'Active',
+    image_url_input: '',
+    image_file: null
+  });
+
+  const fetchPopups = async () => {
+    if (!adminToken) return;
+    try {
+      setLoadingPopups(true);
+      const res = await fetch('/api/admin/popup-updates', {
+        headers: { Authorization: `Bearer ${adminToken}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setPopups(data || []);
+      }
+    } catch (e) {
+      console.error('Failed to fetch popups:', e);
+    } finally {
+      setLoadingPopups(false);
     }
   };
 
@@ -417,6 +454,121 @@ export default function AdminDashboard() {
       }
     } catch (e) {
       addToast('Failed to delete banner', 'error');
+    }
+  };
+
+  const openAddPopupModal = () => {
+    setEditingPopup(null);
+    setPopupForm({
+      title: '',
+      content: '',
+      badge_text: 'NEW UPDATE',
+      button_text: 'Check Now',
+      button_url: '/services',
+      status: 'Active',
+      image_url_input: 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?q=80&w=1200&auto=format&fit=crop',
+      image_file: null
+    });
+    setShowPopupModal(true);
+  };
+
+  const openEditPopupModal = (p) => {
+    setEditingPopup(p);
+    setPopupForm({
+      title: p.title || '',
+      content: p.content || '',
+      badge_text: p.badge_text || 'NEW UPDATE',
+      button_text: p.button_text || 'Check Now',
+      button_url: p.button_url || '/services',
+      status: p.status || 'Active',
+      image_url_input: p.image_url || '',
+      image_file: null
+    });
+    setShowPopupModal(true);
+  };
+
+  const handleSavePopupSubmit = async (e) => {
+    e.preventDefault();
+    if (!popupForm.title.trim()) {
+      addToast('Please enter a popup heading/title', 'error');
+      return;
+    }
+    if (!popupForm.content.trim()) {
+      addToast('Please enter announcement content', 'error');
+      return;
+    }
+
+    setSavingPopup(true);
+    try {
+      const formData = new FormData();
+      formData.append('title', popupForm.title);
+      formData.append('content', popupForm.content);
+      formData.append('badge_text', popupForm.badge_text);
+      formData.append('button_text', popupForm.button_text);
+      formData.append('button_url', popupForm.button_url);
+      formData.append('status', popupForm.status);
+      formData.append('image_url_input', popupForm.image_url_input);
+      if (popupForm.image_file) {
+        formData.append('image', popupForm.image_file);
+      }
+
+      const url = editingPopup ? `/api/admin/popup-updates/${editingPopup.id}` : '/api/admin/popup-updates';
+      const method = editingPopup ? 'PUT' : 'POST';
+
+      const res = await fetch(url, {
+        method,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        body: formData
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        addToast(editingPopup ? 'Announcement popup updated!' : 'Announcement popup published successfully!', 'success');
+        setShowPopupModal(false);
+        fetchPopups();
+      } else {
+        addToast(data.error || 'Failed to save announcement popup', 'error');
+      }
+    } catch (err) {
+      addToast('Error saving announcement popup', 'error');
+    } finally {
+      setSavingPopup(false);
+    }
+  };
+
+  const handleTogglePopupStatus = async (popupItem) => {
+    try {
+      const res = await fetch(`/api/admin/popup-updates/${popupItem.id}/toggle`, {
+        method: 'PATCH',
+        headers: { Authorization: `Bearer ${adminToken}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        addToast(data.message || 'Status updated', 'success');
+        fetchPopups();
+      } else {
+        addToast('Failed to toggle status', 'error');
+      }
+    } catch (e) {
+      addToast('Error toggling popup status', 'error');
+    }
+  };
+
+  const handleDeletePopup = async (popupId) => {
+    if (!window.confirm('Are you sure you want to delete this announcement popup?')) return;
+    try {
+      const res = await fetch(`/api/admin/popup-updates/${popupId}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${adminToken}` }
+      });
+      if (res.ok) {
+        addToast('Announcement popup deleted successfully', 'success');
+        fetchPopups();
+      } else {
+        addToast('Failed to delete popup', 'error');
+      }
+    } catch (e) {
+      addToast('Error deleting popup', 'error');
     }
   };
 
@@ -1479,7 +1631,8 @@ export default function AdminDashboard() {
       fetchPayments(),
       fetchAdminNotifs(),
       fetchAdminDocuments(),
-      fetchBanners()
+      fetchBanners(),
+      fetchPopups()
     ]).then(() => setLoading(false));
   }, [admin, adminToken, navigate]);
 
@@ -1628,6 +1781,7 @@ export default function AdminDashboard() {
     { id: 'dashboard', label: 'Dashboard Overview', icon: LayoutDashboard },
     { id: 'applications', label: 'Applications Manager', icon: FileText, count: stats?.total_applications },
     { id: 'documents', label: 'Uploaded Documents Explorer', icon: Paperclip, count: adminDocs.length },
+    { id: 'popups', label: 'Popup Notices', icon: Megaphone, count: popups.filter(p => p.status === 'Active').length },
     { id: 'banners', label: 'Banner Manager', icon: Sliders, count: banners.length },
     { id: 'services', label: 'Services Directory', icon: Grid },
     { id: 'customers', label: 'Users Directory', icon: Users, count: stats?.total_users || customers.length },
@@ -2405,6 +2559,240 @@ export default function AdminDashboard() {
                               <Trash2 className="w-3.5 h-3.5" />
                             </button>
                           </div>
+                        </div>
+                      </div>
+
+                    </div>
+                  ))}
+                </div>
+              )}
+
+            </div>
+          )}
+
+          {/* TAB: POPUP ANNOUNCEMENTS & UPDATE NOTICES WORKSPACE */}
+          {activeTab === 'popups' && (
+            <div className="space-y-6">
+              
+              {/* Header Banner */}
+              <div className="bg-white p-5 sm:p-6 rounded-3xl border border-slate-200/90 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-[11px] font-black uppercase text-orange-600 tracking-wider bg-orange-50 px-2.5 py-0.5 rounded border border-orange-200">
+                      CITIZEN PORTAL LOGIN POPUP
+                    </span>
+                    <span className="text-xs font-mono text-slate-500">• Announcement Alerts</span>
+                  </div>
+                  <h3 className="text-lg font-black text-slate-900 mt-1">
+                    Announcement Popups & Update Notices Manager
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    When citizens log in or visit the portal, greet them with new scheme alerts, service updates, banner artwork, and direct action redirect buttons.
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2.5 shrink-0">
+                  <button
+                    type="button"
+                    onClick={fetchPopups}
+                    className="p-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-2xl transition-all cursor-pointer"
+                    title="Refresh Announcements"
+                  >
+                    <RefreshCw className={`w-4 h-4 ${loadingPopups ? 'animate-spin text-orange-600' : ''}`} />
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={openAddPopupModal}
+                    className="px-5 py-3 bg-[#0b192c] hover:bg-orange-600 text-white font-extrabold text-xs rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <Plus className="w-4 h-4 text-orange-400" />
+                    <span>Create Announcement Popup</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Status Overview Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                  <div>
+                    <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Total Notices</p>
+                    <h4 className="text-2xl font-black text-slate-900 mt-0.5">{popups.length}</h4>
+                  </div>
+                  <div className="w-10 h-10 rounded-xl bg-orange-50 border border-orange-200 text-orange-600 flex items-center justify-center">
+                    <Megaphone className="w-5 h-5" />
+                  </div>
+                </div>
+
+                <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                  <div>
+                    <p className="text-[11px] font-bold text-emerald-600 uppercase tracking-wider">Live Active Popups</p>
+                    <h4 className="text-2xl font-black text-emerald-700 mt-0.5">
+                      {popups.filter(p => p.status === 'Active').length}
+                    </h4>
+                  </div>
+                  <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center">
+                    <CheckCircle2 className="w-5 h-5" />
+                  </div>
+                </div>
+
+                <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                  <div>
+                    <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Drafts / Inactive</p>
+                    <h4 className="text-2xl font-black text-slate-700 mt-0.5">
+                      {popups.filter(p => p.status !== 'Active').length}
+                    </h4>
+                  </div>
+                  <div className="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200 text-slate-600 flex items-center justify-center">
+                    <Sliders className="w-5 h-5" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Popups Grid */}
+              {popups.length === 0 ? (
+                <div className="bg-white rounded-3xl p-12 text-center border border-slate-200 shadow-sm space-y-3">
+                  <div className="w-14 h-14 rounded-2xl bg-orange-50 text-orange-500 border border-orange-200 flex items-center justify-center mx-auto shadow-inner">
+                    <Megaphone className="w-7 h-7" />
+                  </div>
+                  <h4 className="font-extrabold text-slate-900 text-base">No Announcement Popups Created Yet</h4>
+                  <p className="text-xs text-slate-500 max-w-md mx-auto leading-relaxed">
+                    Set up an announcement popup with a custom heading, update description, image, and action redirect button. It will automatically pop up when citizens log in.
+                  </p>
+                  <button
+                    onClick={openAddPopupModal}
+                    className="px-5 py-2.5 bg-orange-500 hover:bg-orange-600 text-white text-xs font-black rounded-xl shadow-md transition-all cursor-pointer"
+                  >
+                    + Create First Announcement
+                  </button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {popups.map((p) => (
+                    <div
+                      key={p.id}
+                      className={`bg-white rounded-3xl border ${
+                        p.status === 'Active' ? 'border-orange-200/80 shadow-md ring-1 ring-orange-500/10' : 'border-slate-200/80 opacity-75'
+                      } overflow-hidden flex flex-col justify-between group hover:shadow-lg transition-all`}
+                    >
+                      <div>
+                        {/* Popup Card Image Header */}
+                        <div className="relative h-44 bg-slate-900 overflow-hidden">
+                          {p.image_url ? (
+                            <img
+                              src={p.image_url}
+                              alt={p.title}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                              onError={(e) => {
+                                e.target.src = 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?q=80&w=1200&auto=format&fit=crop';
+                              }}
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-gradient-to-br from-[#0b192c] via-slate-800 to-orange-950 flex items-center justify-center p-6 text-center">
+                              <Sparkles className="w-10 h-10 text-orange-400 opacity-60" />
+                            </div>
+                          )}
+                          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-transparent" />
+
+                          {/* Live Status Badge */}
+                          <div className="absolute top-3 left-3 flex items-center space-x-2">
+                            <span
+                              className={`text-[10px] font-black uppercase px-2.5 py-1 rounded-full border shadow-sm flex items-center gap-1.5 ${
+                                p.status === 'Active'
+                                  ? 'bg-emerald-500 text-white border-emerald-400 shadow-emerald-500/20'
+                                  : 'bg-slate-800 text-slate-300 border-slate-700'
+                              }`}
+                            >
+                              <span className={`w-1.5 h-1.5 rounded-full ${p.status === 'Active' ? 'bg-white animate-pulse' : 'bg-slate-400'}`} />
+                              {p.status === 'Active' ? 'Live to Citizens' : 'Inactive Draft'}
+                            </span>
+                          </div>
+
+                          {/* Custom Badge Tag */}
+                          <div className="absolute top-3 right-3">
+                            <span className="text-[10px] font-bold bg-orange-600/90 text-white border border-orange-400/40 px-2.5 py-1 rounded-full backdrop-blur-sm">
+                              {p.badge_text || 'NEW UPDATE'}
+                            </span>
+                          </div>
+
+                          {/* Title Overlay */}
+                          <div className="absolute bottom-3 left-3 right-3 text-white">
+                            <h4 className="font-heading font-black text-sm text-white line-clamp-1 leading-snug">
+                              {p.title}
+                            </h4>
+                          </div>
+                        </div>
+
+                        {/* Content Body */}
+                        <div className="p-4 space-y-3">
+                          <p className="text-xs text-slate-600 line-clamp-3 leading-relaxed whitespace-pre-line">
+                            {p.content}
+                          </p>
+
+                          {/* Target Redirect Button Info */}
+                          <div className="p-2.5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
+                            <div className="flex items-center justify-between text-[11px]">
+                              <span className="font-bold text-slate-500">CTA Button:</span>
+                              <span className="font-black text-orange-600 bg-white px-2 py-0.5 rounded border border-orange-200">
+                                {p.button_text || 'Check Now'}
+                              </span>
+                            </div>
+                            <div className="flex items-center justify-between text-[11px] font-mono">
+                              <span className="font-bold text-slate-500">Redirect Route:</span>
+                              <span className="text-slate-700 truncate max-w-[150px] font-semibold" title={p.button_url}>
+                                {p.button_url || '/services'}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Card Footer Actions */}
+                      <div className="p-4 pt-2 border-t border-slate-100 flex items-center justify-between gap-1.5 bg-slate-50/50">
+                        {/* Toggle Status */}
+                        <button
+                          type="button"
+                          onClick={() => handleTogglePopupStatus(p)}
+                          className={`px-2.5 py-1.5 text-[11px] font-extrabold rounded-xl border transition-all cursor-pointer ${
+                            p.status === 'Active'
+                              ? 'bg-white text-slate-700 hover:bg-slate-100 border-slate-300'
+                              : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border-emerald-300'
+                          }`}
+                        >
+                          {p.status === 'Active' ? 'Deactivate' : 'Activate'}
+                        </button>
+
+                        <div className="flex items-center space-x-1 shrink-0">
+                          {/* Live Preview Button */}
+                          <button
+                            type="button"
+                            onClick={() => setPreviewPopup(p)}
+                            className="px-2.5 py-1.5 bg-white hover:bg-orange-50 text-slate-700 hover:text-orange-600 font-bold text-[11px] rounded-xl border border-slate-200 hover:border-orange-300 transition-colors cursor-pointer flex items-center gap-1"
+                            title="Preview Citizen View"
+                          >
+                            <Eye className="w-3.5 h-3.5 text-orange-500" />
+                            <span>Preview</span>
+                          </button>
+
+                          {/* Edit Button */}
+                          <button
+                            type="button"
+                            onClick={() => openEditPopupModal(p)}
+                            className="p-1.5 bg-white hover:bg-slate-100 text-slate-700 rounded-xl border border-slate-200 transition-colors cursor-pointer"
+                            title="Edit Announcement"
+                          >
+                            <Edit3 className="w-3.5 h-3.5" />
+                          </button>
+
+                          {/* Delete Button */}
+                          <button
+                            type="button"
+                            onClick={() => handleDeletePopup(p.id)}
+                            className="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl border border-rose-200 transition-colors cursor-pointer"
+                            title="Delete Announcement"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
                         </div>
                       </div>
 
@@ -9474,6 +9862,271 @@ export default function AdminDashboard() {
           </div>
         </div>
       )}
+
+      {/* POPUP ANNOUNCEMENT ADD / EDIT MODAL */}
+      {showPopupModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-2xl max-h-[92vh] overflow-y-auto p-6 sm:p-7 space-y-5 animate-in zoom-in-95 duration-200">
+            
+            {/* Modal Header */}
+            <div className="flex items-start justify-between pb-4 border-b border-slate-100">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-2xl bg-orange-50 border border-orange-200 flex items-center justify-center text-orange-600 shrink-0">
+                  <Megaphone className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base sm:text-lg font-black text-slate-900">
+                    {editingPopup ? 'Edit Announcement Popup' : 'Create New Announcement Popup'}
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Shown to citizens when they log into the portal. Configure title, description, image, and action button.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowPopupModal(false)}
+                className="p-1.5 rounded-xl text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSavePopupSubmit} className="space-y-4 text-xs">
+              
+              {/* Heading / Title */}
+              <div className="space-y-1">
+                <label className="font-extrabold text-slate-800 block">
+                  Announcement Heading / Title *
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. New Government Welfare Services Online"
+                  value={popupForm.title}
+                  onChange={(e) => setPopupForm({ ...popupForm, title: e.target.value })}
+                  className="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-slate-900 font-semibold outline-none focus:border-orange-500"
+                />
+              </div>
+
+              {/* Badge Text */}
+              <div className="space-y-1">
+                <label className="font-extrabold text-slate-800 block">
+                  Badge Tag (Top Pill)
+                </label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    placeholder="e.g. NEW UPDATE, IMPORTANT NOTICE, SCHEME ALERT"
+                    value={popupForm.badge_text}
+                    onChange={(e) => setPopupForm({ ...popupForm, badge_text: e.target.value })}
+                    className="flex-1 bg-slate-50 border border-slate-300 rounded-xl p-3 text-slate-900 font-medium outline-none focus:border-orange-500"
+                  />
+                  <div className="flex items-center gap-1">
+                    {['NEW UPDATE', 'PORTAL NOTICE', 'SCHEME LAUNCH'].map((preset) => (
+                      <button
+                        key={preset}
+                        type="button"
+                        onClick={() => setPopupForm({ ...popupForm, badge_text: preset })}
+                        className="px-2 py-1.5 bg-slate-100 hover:bg-orange-50 text-[10px] font-bold text-slate-700 hover:text-orange-600 rounded-lg border border-slate-200 transition-colors cursor-pointer shrink-0"
+                      >
+                        {preset}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Content / Description */}
+              <div className="space-y-1">
+                <label className="font-extrabold text-slate-800 block">
+                  Announcement Details / Content *
+                </label>
+                <textarea
+                  rows={3}
+                  required
+                  placeholder="e.g. Apply for newly launched digital certificates and track application status live on the dashboard."
+                  value={popupForm.content}
+                  onChange={(e) => setPopupForm({ ...popupForm, content: e.target.value })}
+                  className="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-slate-900 font-medium outline-none focus:border-orange-500 leading-relaxed"
+                />
+              </div>
+
+              {/* Action Button Label & Destination Route */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="font-extrabold text-slate-800 block">
+                    Action Button Label *
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Check Now, Apply Online, View Details"
+                    value={popupForm.button_text}
+                    onChange={(e) => setPopupForm({ ...popupForm, button_text: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-slate-900 font-semibold outline-none focus:border-orange-500"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="font-extrabold text-slate-800 block">
+                    Target Route / URL * (Where button navigates)
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. /services, /track, /apply/1, or https://..."
+                    value={popupForm.button_url}
+                    onChange={(e) => setPopupForm({ ...popupForm, button_url: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-slate-900 font-mono text-xs font-semibold outline-none focus:border-orange-500"
+                  />
+                </div>
+              </div>
+
+              {/* Quick Route Shortcut Chips */}
+              <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                <span className="text-[10px] font-bold text-slate-500">Quick Destination Chips:</span>
+                {[
+                  { label: 'All Services', url: '/services' },
+                  { label: 'Track Application', url: '/track' },
+                  { label: 'Aadhaar Portal', url: '/category/aadhaar' },
+                  { label: 'Certificates', url: '/category/certificates' },
+                  { label: 'My Applications', url: '/my-applications' },
+                  { label: 'Contact Us', url: '/contact' }
+                ].map((chip) => (
+                  <button
+                    key={chip.url}
+                    type="button"
+                    onClick={() => setPopupForm({ ...popupForm, button_url: chip.url })}
+                    className={`px-2.5 py-1 text-[10px] font-bold rounded-lg border transition-all cursor-pointer ${
+                      popupForm.button_url === chip.url
+                        ? 'bg-orange-500 text-white border-orange-500 shadow-sm'
+                        : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200'
+                    }`}
+                  >
+                    {chip.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Banner Artwork Image */}
+              <div className="space-y-2 pt-1 border-t border-slate-100">
+                <label className="font-extrabold text-slate-800 block">
+                  Banner Artwork Image (Optional)
+                </label>
+
+                {/* Upload File */}
+                <div className="flex flex-col sm:flex-row items-center gap-3">
+                  <label className="flex-1 w-full border-2 border-dashed border-slate-300 hover:border-orange-500 rounded-2xl p-3 flex items-center justify-center gap-2 cursor-pointer bg-slate-50 hover:bg-orange-50/50 transition-colors">
+                    <Upload className="w-4 h-4 text-orange-600" />
+                    <span className="font-extrabold text-slate-700 text-xs">
+                      {popupForm.image_file ? popupForm.image_file.name : 'Choose File from Device'}
+                    </span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          setPopupForm({ ...popupForm, image_file: file });
+                        }
+                      }}
+                      className="hidden"
+                    />
+                  </label>
+
+                  <span className="text-slate-400 font-bold text-[11px]">OR</span>
+
+                  {/* Image URL */}
+                  <input
+                    type="text"
+                    placeholder="Paste Image URL (https://...)"
+                    value={popupForm.image_url_input}
+                    onChange={(e) => setPopupForm({ ...popupForm, image_url_input: e.target.value })}
+                    className="flex-1 w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-slate-900 font-medium outline-none focus:border-orange-500 text-xs"
+                  />
+                </div>
+
+                {/* Presets */}
+                <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                  <span className="text-[10px] font-bold text-slate-500">Image Presets:</span>
+                  {[
+                    { label: '🏛️ E-Seva Portal', url: 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?q=80&w=1200&auto=format&fit=crop' },
+                    { label: '📜 Digital Docs', url: 'https://images.unsplash.com/photo-1450133064473-71024230f91b?q=80&w=1200&auto=format&fit=crop' },
+                    { label: '💳 Identity Services', url: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=1200&auto=format&fit=crop' }
+                  ].map((preset) => (
+                    <button
+                      key={preset.label}
+                      type="button"
+                      onClick={() => setPopupForm({ ...popupForm, image_url_input: preset.url, image_file: null })}
+                      className="px-2 py-1 bg-slate-100 hover:bg-orange-50 text-[10px] font-bold text-slate-700 hover:text-orange-600 rounded-lg border border-slate-200 transition-colors cursor-pointer"
+                    >
+                      {preset.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Status Toggle */}
+              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+                <div>
+                  <label className="font-extrabold text-slate-900 block text-xs">
+                    Announcement Status
+                  </label>
+                  <p className="text-[11px] text-slate-500">
+                    Active announcements are displayed to users upon login. Inactive are kept as drafts.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setPopupForm({ ...popupForm, status: popupForm.status === 'Active' ? 'Inactive' : 'Active' })}
+                  className={`px-4 py-2 rounded-xl text-xs font-black transition-all cursor-pointer ${
+                    popupForm.status === 'Active'
+                      ? 'bg-emerald-600 text-white shadow-sm'
+                      : 'bg-slate-200 text-slate-700'
+                  }`}
+                >
+                  {popupForm.status === 'Active' ? '● Live Active' : '○ Inactive Draft'}
+                </button>
+              </div>
+
+              {/* Form Buttons */}
+              <div className="pt-2 flex items-center justify-end gap-3 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setShowPopupModal(false)}
+                  className="px-5 py-2.5 rounded-xl border border-slate-300 hover:bg-slate-100 font-bold text-slate-700 transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="submit"
+                  disabled={savingPopup}
+                  className="px-6 py-2.5 bg-[#0b192c] hover:bg-orange-600 text-white font-black rounded-xl shadow-md transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                >
+                  {savingPopup ? (
+                    <RefreshCw className="w-4 h-4 animate-spin text-orange-400" />
+                  ) : (
+                    <Save className="w-4 h-4 text-orange-400" />
+                  )}
+                  <span>{editingPopup ? 'Save Changes' : 'Publish Announcement'}</span>
+                </button>
+              </div>
+
+            </form>
+
+          </div>
+        </div>
+      )}
+
+      {/* ANNOUNCEMENT POPUP LIVE PREVIEW MODAL */}
+      {previewPopup && (
+        <AnnouncementPopup
+          previewMode={true}
+          previewData={previewPopup}
+          onClosePreview={() => setPreviewPopup(null)}
+        />
+      )}
+
       {/* Custom Delete Confirmation Modal (Compact, Bottom-Right on Desktop, Centered on Mobile) */}
       <ConfirmDeleteModal
         isOpen={deleteModalState.isOpen}

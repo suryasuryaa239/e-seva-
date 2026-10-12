@@ -10,6 +10,7 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import WhatsAppSupport from './components/WhatsAppSupport';
 import FloatingBackButton from './components/FloatingBackButton';
+import AnnouncementPopup from './components/AnnouncementPopup';
 import ErrorBoundary from './components/ErrorBoundary';
 
 // Pages
@@ -164,6 +165,7 @@ function AppContent() {
       {!hideFooter && <Footer />}
       {!hideFooter && <FloatingBackButton />}
       {!hideFooter && <WhatsAppSupport />}
+      {!isAdminDashboard && <AnnouncementPopup />}
 
     </div>
   );

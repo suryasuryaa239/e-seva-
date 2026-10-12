@@ -25,7 +25,8 @@ const initialTables = {
   banners: [],
   notifications: [],
   document_audit_history: [],
-  site_settings: []
+  site_settings: [],
+  popup_updates: []
 };
 
 class TiDBSupportedDatabase {
@@ -85,7 +86,7 @@ class TiDBSupportedDatabase {
     try {
       const conn = await pool.getConnection();
       try {
-        const tables = ['users', 'admins', 'categories', 'services', 'applications', 'payments', 'contact_messages', 'career_applications', 'banners', 'notifications', 'application_documents', 'application_field_values', 'site_settings'];
+        const tables = ['users', 'admins', 'categories', 'services', 'applications', 'payments', 'contact_messages', 'career_applications', 'banners', 'notifications', 'application_documents', 'application_field_values', 'site_settings', 'popup_updates'];
         for (const tbl of tables) {
           try {
             const [rows] = await conn.query(`SELECT * FROM ${tbl}`);
@@ -190,6 +191,23 @@ class TiDBSupportedDatabase {
               for (const b of defaultBanners) {
                 this.insert('banners', b);
               }
+            } else if (tbl === 'popup_updates' && parsedRows.length === 0) {
+              const defaultPopups = (this.data['popup_updates'] && this.data['popup_updates'].length > 0) ? [...this.data['popup_updates']] : [
+                {
+                  title: 'New Welfare Schemes & Fast-Track Digital E-Seva',
+                  content: 'Apply for updated government community certificates, revenue services, and track application lifecycle with instant live updates.',
+                  image_url: 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?q=80&w=1200&auto=format&fit=crop',
+                  button_text: 'Explore Services',
+                  button_url: '/services',
+                  badge_text: 'NEW UPDATE',
+                  status: 'Active',
+                  display_order: 1
+                }
+              ];
+              this.data['popup_updates'] = [];
+              for (const p of defaultPopups) {
+                this.insert('popup_updates', p);
+              }
             }
           } catch (e) {
             console.warn(`[SYNC WARNING] Table ${tbl}:`, e.message);
@@ -262,7 +280,7 @@ class TiDBSupportedDatabase {
 
   async persistInsertToTiDB(tableName, row) {
     try {
-      const allowedTables = ['users', 'admins', 'categories', 'services', 'applications', 'payments', 'contact_messages', 'career_applications', 'banners', 'notifications', 'application_documents', 'application_field_values', 'site_settings'];
+      const allowedTables = ['users', 'admins', 'categories', 'services', 'applications', 'payments', 'contact_messages', 'career_applications', 'banners', 'notifications', 'application_documents', 'application_field_values', 'site_settings', 'popup_updates'];
       if (!allowedTables.includes(tableName)) return;
 
       const validCols = await this.getTableColumns(tableName);
@@ -329,7 +347,7 @@ class TiDBSupportedDatabase {
 
   async persistUpdateToTiDB(tableName, id, updates) {
     try {
-      const allowedTables = ['users', 'admins', 'categories', 'services', 'applications', 'payments', 'contact_messages', 'career_applications', 'banners', 'notifications', 'application_documents', 'application_field_values', 'site_settings'];
+      const allowedTables = ['users', 'admins', 'categories', 'services', 'applications', 'payments', 'contact_messages', 'career_applications', 'banners', 'notifications', 'application_documents', 'application_field_values', 'site_settings', 'popup_updates'];
       if (!allowedTables.includes(tableName) || !id) return;
 
       const validCols = await this.getTableColumns(tableName);

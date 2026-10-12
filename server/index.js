@@ -2892,6 +2892,165 @@ app.delete('/api/admin/banners/:id', authenticateAdmin, (req, res) => {
   }
 });
 
+// ==========================================
+// ANNOUNCEMENT POPUP UPDATES & NOTICES ENDPOINTS
+// ==========================================
+
+// Public Active Popup Update Endpoint (Latest Active Announcement)
+app.get('/api/popup-updates/active', (req, res) => {
+  try {
+    const activePopups = db.all('popup_updates', p => (p.status || 'Active').toLowerCase() === 'active')
+                           .sort((a, b) => new Date(b.updated_at || b.created_at || 0) - new Date(a.updated_at || a.created_at || 0));
+    const activePopup = activePopups.length > 0 ? activePopups[0] : null;
+    res.json(activePopup);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Admin All Popup Updates Endpoint
+app.get('/api/admin/popup-updates', authenticateAdmin, (req, res) => {
+  try {
+    const allPopups = db.all('popup_updates')
+                        .sort((a, b) => new Date(b.updated_at || b.created_at || 0) - new Date(a.updated_at || a.created_at || 0));
+    res.json(allPopups);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Admin Create Popup Update
+app.post('/api/admin/popup-updates', authenticateAdmin, upload.single('image'), async (req, res) => {
+  try {
+    const { title, content, button_text, button_url, badge_text, status, image_url_input } = req.body || {};
+
+    if (!title || !title.trim()) {
+      return res.status(400).json({ error: 'Popup heading/title is required' });
+    }
+    if (!content || !content.trim()) {
+      return res.status(400).json({ error: 'Popup announcement content is required' });
+    }
+
+    let image_url = (image_url_input || '').trim();
+    if (req.file) {
+      try {
+        const fileBuffer = req.file.buffer || (req.file.path && fs.existsSync(req.file.path) ? fs.readFileSync(req.file.path) : null);
+        if (fileBuffer) {
+          image_url = await storeUploadedFile({
+            buffer: fileBuffer,
+            originalname: req.file.originalname,
+            mimetype: req.file.mimetype,
+            filename: req.file.filename,
+            subDir: 'popups'
+          });
+        }
+      } catch (uploadErr) {
+        console.warn('[Popup Upload Error]:', uploadErr.message);
+      }
+      if (!image_url) {
+        image_url = `/api/documents/preview-file/${req.file.filename}`;
+      }
+    }
+
+    const currentPopups = db.all('popup_updates');
+    const newPopup = db.insert('popup_updates', {
+      title: title.trim(),
+      content: content.trim(),
+      image_url: image_url || '',
+      button_text: button_text && button_text.trim() ? button_text.trim() : 'Check Now',
+      button_url: button_url && button_url.trim() ? button_url.trim() : '/services',
+      badge_text: badge_text && badge_text.trim() ? badge_text.trim() : 'NEW UPDATE',
+      status: status || 'Active',
+      display_order: currentPopups.length + 1,
+      updated_at: new Date().toISOString()
+    });
+
+    res.json({ message: 'Popup announcement created successfully', popup: newPopup });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Admin Update Popup Update
+app.put('/api/admin/popup-updates/:id', authenticateAdmin, upload.single('image'), async (req, res) => {
+  try {
+    const popupId = Number(req.params.id);
+    const existing = db.get('popup_updates', p => p.id === popupId);
+    if (!existing) return res.status(404).json({ error: 'Popup announcement not found' });
+
+    const { title, content, button_text, button_url, badge_text, status, image_url_input } = req.body || {};
+
+    let image_url = existing.image_url;
+    if (req.file) {
+      try {
+        const fileBuffer = req.file.buffer || (req.file.path && fs.existsSync(req.file.path) ? fs.readFileSync(req.file.path) : null);
+        if (fileBuffer) {
+          image_url = await storeUploadedFile({
+            buffer: fileBuffer,
+            originalname: req.file.originalname,
+            mimetype: req.file.mimetype,
+            filename: req.file.filename,
+            subDir: 'popups'
+          });
+        }
+      } catch (uploadErr) {
+        console.warn('[Popup Update Upload Error]:', uploadErr.message);
+      }
+      if (!image_url) {
+        image_url = `/api/documents/preview-file/${req.file.filename}`;
+      }
+    } else if (image_url_input !== undefined) {
+      image_url = image_url_input.trim();
+    }
+
+    db.update('popup_updates', p => p.id === popupId, {
+      title: title !== undefined ? title.trim() : existing.title,
+      content: content !== undefined ? content.trim() : existing.content,
+      image_url: image_url !== undefined ? image_url : existing.image_url,
+      button_text: button_text !== undefined ? button_text.trim() : existing.button_text,
+      button_url: button_url !== undefined ? button_url.trim() : existing.button_url,
+      badge_text: badge_text !== undefined ? badge_text.trim() : existing.badge_text,
+      status: status !== undefined ? status : existing.status,
+      updated_at: new Date().toISOString()
+    });
+
+    res.json({ message: 'Popup announcement updated successfully', popup: db.get('popup_updates', p => p.id === popupId) });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Admin Toggle Popup Status (Active/Inactive)
+app.patch('/api/admin/popup-updates/:id/toggle', authenticateAdmin, (req, res) => {
+  try {
+    const popupId = Number(req.params.id);
+    const existing = db.get('popup_updates', p => p.id === popupId);
+    if (!existing) return res.status(404).json({ error: 'Popup announcement not found' });
+
+    const newStatus = existing.status === 'Active' ? 'Inactive' : 'Active';
+    db.update('popup_updates', p => p.id === popupId, {
+      status: newStatus,
+      updated_at: new Date().toISOString()
+    });
+
+    res.json({ message: `Popup marked as ${newStatus}`, popup: db.get('popup_updates', p => p.id === popupId) });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Admin Delete Popup Update
+app.delete('/api/admin/popup-updates/:id', authenticateAdmin, (req, res) => {
+  try {
+    const popupId = Number(req.params.id);
+    const removed = db.delete('popup_updates', p => p.id === popupId);
+    if (!removed) return res.status(404).json({ error: 'Popup announcement not found' });
+    res.json({ message: 'Popup announcement deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Document Audit History Endpoint
 app.get('/api/documents/audit/:appId', (req, res) => {
   const appId = Number(req.params.appId);
