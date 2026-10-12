@@ -2,6 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { X, Sparkles, ArrowRight, ExternalLink, BellRing, CheckCircle2 } from 'lucide-react';
 
+const DEFAULT_ANNOUNCEMENT = {
+  id: 1,
+  title: 'Welcome to E-Seva Portal Services',
+  content: 'Explore our newly updated digital portal. Apply for Certificates, Aadhaar services, and Welfare schemes with instant status tracking and direct updates.',
+  image_url: 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?q=80&w=1200&auto=format&fit=crop',
+  button_text: 'Explore Services',
+  button_url: '/services',
+  badge_text: 'PORTAL UPDATE',
+  status: 'Active'
+};
+
 export default function AnnouncementPopup({ 
   previewMode = false, 
   previewData = null, 
@@ -30,29 +41,24 @@ export default function AnnouncementPopup({
     try {
       setLoading(true);
       const res = await fetch('/api/popup-updates/active');
-      if (!res.ok) return;
-
-      const data = await res.json();
-      if (!data || !data.id || (data.status && data.status.toLowerCase() !== 'active')) {
-        setIsOpen(false);
-        return;
+      const contentType = res.headers.get('content-type') || '';
+      
+      if (res.ok && contentType.includes('application/json')) {
+        const data = await res.json();
+        if (data && data.title && (data.status || 'Active').toLowerCase() === 'active') {
+          setPopup(data);
+          setTimeout(() => setIsOpen(true), 400);
+          return;
+        }
       }
-
-      setPopup(data);
-
-      // Unique key based on ID and update timestamp so any admin update triggers a fresh popup
-      const popupKey = `eseva_popup_seen_${data.id}_${data.updated_at || data.created_at || 'v1'}`;
-      const alreadySeen = sessionStorage.getItem(popupKey);
-
-      if (!alreadySeen) {
-        // Small delay for smooth entry after page load/login transition
-        const timer = setTimeout(() => {
-          setIsOpen(true);
-        }, 600);
-        return () => clearTimeout(timer);
-      }
+      
+      // Fallback announcement if offline, backend down, or static host
+      setPopup(DEFAULT_ANNOUNCEMENT);
+      setTimeout(() => setIsOpen(true), 400);
     } catch (err) {
-      console.warn('Could not fetch announcement popup:', err);
+      console.warn('Announcement popup API notice:', err);
+      setPopup(DEFAULT_ANNOUNCEMENT);
+      setTimeout(() => setIsOpen(true), 400);
     } finally {
       setLoading(false);
     }
@@ -62,11 +68,6 @@ export default function AnnouncementPopup({
     setIsOpen(false);
     if (previewMode && onClosePreview) {
       onClosePreview();
-      return;
-    }
-    if (popup) {
-      const popupKey = `eseva_popup_seen_${popup.id}_${popup.updated_at || popup.created_at || 'v1'}`;
-      sessionStorage.setItem(popupKey, 'true');
     }
   };
 
