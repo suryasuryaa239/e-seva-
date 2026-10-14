@@ -120,7 +120,7 @@ export default function AnnouncementPopup({
               alt={popup.title || 'Announcement'}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
               onError={(e) => {
-                e.target.style.display = 'none';
+                e.target.src = 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?q=80&w=1200&auto=format&fit=crop';
               }}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-white via-white/10 to-transparent pointer-events-none" />

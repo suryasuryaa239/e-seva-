@@ -338,7 +338,10 @@ export async function initializeDatabaseSchema() {
       "ALTER TABLE popup_updates ADD COLUMN IF NOT EXISTS badge_text VARCHAR(100) DEFAULT 'NEW UPDATE'",
       "ALTER TABLE popup_updates ADD COLUMN IF NOT EXISTS button_text VARCHAR(100) DEFAULT 'Check Now'",
       "ALTER TABLE popup_updates ADD COLUMN IF NOT EXISTS button_url VARCHAR(255) DEFAULT '/services'",
-      "ALTER TABLE popup_updates ADD COLUMN IF NOT EXISTS status VARCHAR(50) DEFAULT 'Active'"
+      "ALTER TABLE popup_updates ADD COLUMN IF NOT EXISTS status VARCHAR(50) DEFAULT 'Active'",
+      "ALTER TABLE popup_updates ADD COLUMN IF NOT EXISTS image_url LONGTEXT",
+      "ALTER TABLE popup_updates MODIFY COLUMN image_url LONGTEXT",
+      "ALTER TABLE banners MODIFY COLUMN image_url LONGTEXT"
     ];
 
     for (const sql of migrations) {

@@ -2393,17 +2393,46 @@ app.get('/api/documents/preview-file/:filename', optionalAuthenticateToken, asyn
     }
   }
 
+  // Check popup_updates table for matching image URL or data URI
+  const popup = db.get('popup_updates', p => (p.image_url && p.image_url.includes(filename)));
+  if (popup && popup.image_url) {
+    if (popup.image_url.startsWith('http://') || popup.image_url.startsWith('https://')) {
+      return res.redirect(popup.image_url);
+    }
+    if (popup.image_url.startsWith('data:')) {
+      const parts = popup.image_url.split(',');
+      const mimeMatch = parts[0].match(/:(.*?);/);
+      const mime = mimeMatch ? mimeMatch[1] : 'image/jpeg';
+      const buffer = Buffer.from(parts[1], 'base64');
+      res.setHeader('Content-Type', mime);
+      return res.send(buffer);
+    }
+  }
+
   const absolutePath = path.join(uploadsDir, filename);
+  const popupPath = path.join(uploadsDir, 'popups', filename);
   const certPath = path.join(uploadsDir, 'certificates', filename);
   const bannerPath = path.join(uploadsDir, 'banners', filename);
   const servicePath = path.join(uploadsDir, 'services', filename);
+  const cwdUploadPath = path.join(process.cwd(), 'uploads', filename);
+  const cwdPopupPath = path.join(process.cwd(), 'uploads', 'popups', filename);
   const tmpPath = path.join('/tmp', 'uploads', filename);
+  const tmpPopupPath = path.join('/tmp', 'uploads', 'popups', filename);
   const tmpCertPath = path.join('/tmp', 'uploads', 'certificates', filename);
   const tmpBannerPath = path.join('/tmp', 'uploads', 'banners', filename);
   const tmpServicePath = path.join('/tmp', 'uploads', 'services', filename);
 
   if (fs.existsSync(absolutePath)) {
     return res.sendFile(absolutePath);
+  }
+  if (fs.existsSync(popupPath)) {
+    return res.sendFile(popupPath);
+  }
+  if (fs.existsSync(cwdUploadPath)) {
+    return res.sendFile(cwdUploadPath);
+  }
+  if (fs.existsSync(cwdPopupPath)) {
+    return res.sendFile(cwdPopupPath);
   }
   if (fs.existsSync(certPath)) {
     return res.sendFile(certPath);
@@ -2416,6 +2445,9 @@ app.get('/api/documents/preview-file/:filename', optionalAuthenticateToken, asyn
   }
   if (fs.existsSync(tmpPath)) {
     return res.sendFile(tmpPath);
+  }
+  if (fs.existsSync(tmpPopupPath)) {
+    return res.sendFile(tmpPopupPath);
   }
   if (fs.existsSync(tmpCertPath)) {
     return res.sendFile(tmpCertPath);
@@ -2430,7 +2462,10 @@ app.get('/api/documents/preview-file/:filename', optionalAuthenticateToken, asyn
   // Stream from FTP if configured
   if (isFtpConfigured()) {
     try {
-      let ftpBuffer = await downloadFromFTP(filename, 'certificates');
+      let ftpBuffer = await downloadFromFTP(filename, 'popups');
+      if (!ftpBuffer) {
+        ftpBuffer = await downloadFromFTP(filename, 'certificates');
+      }
       if (!ftpBuffer) {
         ftpBuffer = await downloadFromFTP(filename, 'documents');
       }
@@ -2936,19 +2971,47 @@ app.post('/api/admin/popup-updates', authenticateAdmin, upload.single('image'), 
       try {
         const fileBuffer = req.file.buffer || (req.file.path && fs.existsSync(req.file.path) ? fs.readFileSync(req.file.path) : null);
         if (fileBuffer) {
-          image_url = await storeUploadedFile({
-            buffer: fileBuffer,
-            originalname: req.file.originalname,
-            mimetype: req.file.mimetype,
-            filename: req.file.filename,
-            subDir: 'popups'
-          });
+          try {
+            image_url = await storeUploadedFile({
+              buffer: fileBuffer,
+              originalname: req.file.originalname,
+              mimetype: req.file.mimetype,
+              filename: req.file.filename,
+              subDir: 'popups'
+            });
+          } catch (uploadErr) {
+            console.warn('[Popup Upload Error]:', uploadErr.message);
+          }
+
+          try {
+            const popupDir = path.join(uploadsDir, 'popups');
+            if (!fs.existsSync(popupDir)) fs.mkdirSync(popupDir, { recursive: true });
+            const localDest = path.join(popupDir, req.file.filename);
+            if (!fs.existsSync(localDest)) fs.writeFileSync(localDest, fileBuffer);
+
+            const cwdPopupDir = path.join(process.cwd(), 'uploads', 'popups');
+            if (!fs.existsSync(cwdPopupDir)) fs.mkdirSync(cwdPopupDir, { recursive: true });
+            const cwdDest = path.join(cwdPopupDir, req.file.filename);
+            if (!fs.existsSync(cwdDest)) fs.writeFileSync(cwdDest, fileBuffer);
+          } catch (fsErr) {
+            console.warn('[Popup Local Write Notice]:', fsErr.message);
+          }
+
+          if (!image_url || (!image_url.startsWith('http://') && !image_url.startsWith('https://'))) {
+            const mime = req.file.mimetype || 'image/jpeg';
+            image_url = `data:${mime};base64,${fileBuffer.toString('base64')}`;
+          }
         }
       } catch (uploadErr) {
         console.warn('[Popup Upload Error]:', uploadErr.message);
-      }
-      if (!image_url) {
-        image_url = `/api/documents/preview-file/${req.file.filename}`;
+        if (req.file) {
+          try {
+            const buf = req.file.buffer || (req.file.path && fs.existsSync(req.file.path) ? fs.readFileSync(req.file.path) : null);
+            if (buf) {
+              image_url = `data:${req.file.mimetype || 'image/jpeg'};base64,${buf.toString('base64')}`;
+            }
+          } catch (e) {}
+        }
       }
     }
 
@@ -2985,19 +3048,47 @@ app.put('/api/admin/popup-updates/:id', authenticateAdmin, upload.single('image'
       try {
         const fileBuffer = req.file.buffer || (req.file.path && fs.existsSync(req.file.path) ? fs.readFileSync(req.file.path) : null);
         if (fileBuffer) {
-          image_url = await storeUploadedFile({
-            buffer: fileBuffer,
-            originalname: req.file.originalname,
-            mimetype: req.file.mimetype,
-            filename: req.file.filename,
-            subDir: 'popups'
-          });
+          try {
+            image_url = await storeUploadedFile({
+              buffer: fileBuffer,
+              originalname: req.file.originalname,
+              mimetype: req.file.mimetype,
+              filename: req.file.filename,
+              subDir: 'popups'
+            });
+          } catch (uploadErr) {
+            console.warn('[Popup Update Upload Error]:', uploadErr.message);
+          }
+
+          try {
+            const popupDir = path.join(uploadsDir, 'popups');
+            if (!fs.existsSync(popupDir)) fs.mkdirSync(popupDir, { recursive: true });
+            const localDest = path.join(popupDir, req.file.filename);
+            if (!fs.existsSync(localDest)) fs.writeFileSync(localDest, fileBuffer);
+
+            const cwdPopupDir = path.join(process.cwd(), 'uploads', 'popups');
+            if (!fs.existsSync(cwdPopupDir)) fs.mkdirSync(cwdPopupDir, { recursive: true });
+            const cwdDest = path.join(cwdPopupDir, req.file.filename);
+            if (!fs.existsSync(cwdDest)) fs.writeFileSync(cwdDest, fileBuffer);
+          } catch (fsErr) {
+            console.warn('[Popup Update Local Write Notice]:', fsErr.message);
+          }
+
+          if (!image_url || (!image_url.startsWith('http://') && !image_url.startsWith('https://'))) {
+            const mime = req.file.mimetype || 'image/jpeg';
+            image_url = `data:${mime};base64,${fileBuffer.toString('base64')}`;
+          }
         }
       } catch (uploadErr) {
         console.warn('[Popup Update Upload Error]:', uploadErr.message);
-      }
-      if (!image_url) {
-        image_url = `/api/documents/preview-file/${req.file.filename}`;
+        if (req.file) {
+          try {
+            const buf = req.file.buffer || (req.file.path && fs.existsSync(req.file.path) ? fs.readFileSync(req.file.path) : null);
+            if (buf) {
+              image_url = `data:${req.file.mimetype || 'image/jpeg'};base64,${buf.toString('base64')}`;
+            }
+          } catch (e) {}
+        }
       }
     } else if (image_url_input !== undefined) {
       image_url = image_url_input.trim();

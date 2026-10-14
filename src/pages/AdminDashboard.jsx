@@ -193,6 +193,7 @@ export default function AdminDashboard() {
     image_url_input: '',
     image_file: null
   });
+  const [popupImagePreview, setPopupImagePreview] = useState('');
 
   const fetchPopups = async () => {
     if (!adminToken) return;
@@ -466,9 +467,10 @@ export default function AdminDashboard() {
       button_text: 'Check Now',
       button_url: '/services',
       status: 'Active',
-      image_url_input: 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?q=80&w=1200&auto=format&fit=crop',
+      image_url_input: '',
       image_file: null
     });
+    setPopupImagePreview('');
     setShowPopupModal(true);
   };
 
@@ -484,6 +486,7 @@ export default function AdminDashboard() {
       image_url_input: p.image_url || '',
       image_file: null
     });
+    setPopupImagePreview(p.image_url || '');
     setShowPopupModal(true);
   };
 
@@ -10008,17 +10011,58 @@ export default function AdminDashboard() {
               </div>
 
               {/* Banner Artwork Image */}
-              <div className="space-y-2 pt-1 border-t border-slate-100">
-                <label className="font-extrabold text-slate-800 block">
-                  Banner Artwork Image (Optional)
-                </label>
+              <div className="space-y-3 pt-2 border-t border-slate-100">
+                <div className="flex items-center justify-between">
+                  <label className="font-extrabold text-slate-800 block text-xs">
+                    Popup Banner Artwork (Optional)
+                  </label>
+                  {(popupImagePreview || popupForm.image_file || popupForm.image_url_input) && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPopupForm({ ...popupForm, image_file: null, image_url_input: '' });
+                        setPopupImagePreview('');
+                      }}
+                      className="text-[11px] font-bold text-red-600 hover:text-red-700 hover:underline cursor-pointer"
+                    >
+                      ✕ Remove Image
+                    </button>
+                  )}
+                </div>
 
-                {/* Upload File */}
+                {/* Live Image Preview Card */}
+                {popupImagePreview && (
+                  <div className="relative rounded-2xl overflow-hidden border border-slate-200 bg-slate-900 h-36 sm:h-44 group shadow-sm">
+                    <img
+                      src={popupImagePreview}
+                      alt="Popup preview"
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.target.src = 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?q=80&w=1200&auto=format&fit=crop';
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-black/30 pointer-events-none" />
+                    <div className="absolute top-2 left-2 flex items-center gap-1.5 bg-emerald-600/90 text-white text-[10px] font-black px-2.5 py-1 rounded-full backdrop-blur-sm">
+                      <CheckCircle2 className="w-3 h-3" />
+                      <span>{popupForm.image_file ? 'Uploaded File Preview' : 'Image URL Preview'}</span>
+                    </div>
+                    {popupForm.image_file && (
+                      <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between text-white text-[11px] font-medium px-2.5 py-1 rounded-lg bg-black/50 backdrop-blur-sm truncate">
+                        <span className="truncate">{popupForm.image_file.name}</span>
+                        <span className="shrink-0 text-[10px] opacity-75">
+                          ({(popupForm.image_file.size / 1024).toFixed(0)} KB)
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Upload File OR Paste URL */}
                 <div className="flex flex-col sm:flex-row items-center gap-3">
-                  <label className="flex-1 w-full border-2 border-dashed border-slate-300 hover:border-orange-500 rounded-2xl p-3 flex items-center justify-center gap-2 cursor-pointer bg-slate-50 hover:bg-orange-50/50 transition-colors">
+                  <label className="flex-1 w-full border-2 border-dashed border-orange-300 hover:border-orange-500 rounded-2xl p-3 flex items-center justify-center gap-2 cursor-pointer bg-orange-50/40 hover:bg-orange-50 transition-colors">
                     <Upload className="w-4 h-4 text-orange-600" />
-                    <span className="font-extrabold text-slate-700 text-xs">
-                      {popupForm.image_file ? popupForm.image_file.name : 'Choose File from Device'}
+                    <span className="font-extrabold text-slate-700 text-xs truncate">
+                      {popupForm.image_file ? popupForm.image_file.name : 'Choose Image from Device'}
                     </span>
                     <input
                       type="file"
@@ -10026,7 +10070,12 @@ export default function AdminDashboard() {
                       onChange={(e) => {
                         const file = e.target.files?.[0];
                         if (file) {
-                          setPopupForm({ ...popupForm, image_file: file });
+                          setPopupForm({ ...popupForm, image_file: file, image_url_input: '' });
+                          const reader = new FileReader();
+                          reader.onload = (re) => {
+                            setPopupImagePreview(re.target?.result || '');
+                          };
+                          reader.readAsDataURL(file);
                         }
                       }}
                       className="hidden"
@@ -10038,9 +10087,13 @@ export default function AdminDashboard() {
                   {/* Image URL */}
                   <input
                     type="text"
-                    placeholder="Paste Image URL (https://...)"
+                    placeholder="Paste direct Image URL (https://...)"
                     value={popupForm.image_url_input}
-                    onChange={(e) => setPopupForm({ ...popupForm, image_url_input: e.target.value })}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setPopupForm({ ...popupForm, image_url_input: val, image_file: null });
+                      setPopupImagePreview(val);
+                    }}
                     className="flex-1 w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-slate-900 font-medium outline-none focus:border-orange-500 text-xs"
                   />
                 </div>
@@ -10056,7 +10109,10 @@ export default function AdminDashboard() {
                     <button
                       key={preset.label}
                       type="button"
-                      onClick={() => setPopupForm({ ...popupForm, image_url_input: preset.url, image_file: null })}
+                      onClick={() => {
+                        setPopupForm({ ...popupForm, image_url_input: preset.url, image_file: null });
+                        setPopupImagePreview(preset.url);
+                      }}
                       className="px-2 py-1 bg-slate-100 hover:bg-orange-50 text-[10px] font-bold text-slate-700 hover:text-orange-600 rounded-lg border border-slate-200 transition-colors cursor-pointer"
                     >
                       {preset.label}
