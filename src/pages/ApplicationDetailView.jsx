@@ -636,7 +636,7 @@ export default function ApplicationDetailView() {
                 </div>
                 <div className="flex justify-between items-center bg-slate-50 p-3 rounded-2xl border border-slate-200">
                   <span className="text-slate-500 font-semibold">Gateway</span>
-                  <span className="font-bold text-slate-800">Razorpay</span>
+                  <span className="font-bold text-slate-800">{details.payment_gateway || details.payment_method || 'PhonePe PG'}</span>
                 </div>
               </div>
             </div>

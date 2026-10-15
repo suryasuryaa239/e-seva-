@@ -4043,7 +4043,7 @@ export default function AdminDashboard() {
                         user_email: a.user_email,
                         service_name: a.service_name,
                         amount: a.total_fee || 50,
-                        payment_method: 'Razorpay Direct',
+                        payment_method: 'PhonePe PG',
                         created_at: a.created_at,
                         status: 'PAID'
                       }))).map((pmt) => {
@@ -4071,7 +4071,7 @@ export default function AdminDashboard() {
                             </td>
                             <td className="py-4 px-4 font-semibold text-slate-700">
                               <span className="bg-slate-100 text-slate-800 text-[11px] font-bold px-2.5 py-1 rounded-lg border border-slate-200">
-                                {pmt.payment_method || 'Razorpay / UPI'}
+                                {pmt.payment_method || 'PhonePe / UPI'}
                               </span>
                             </td>
                             <td className="py-4 px-4">
@@ -4122,7 +4122,7 @@ export default function AdminDashboard() {
                   user_name: a.user_name,
                   service_name: a.service_name,
                   amount: a.total_fee || 50,
-                  payment_method: 'Razorpay Direct',
+                  payment_method: 'PhonePe PG',
                   created_at: a.created_at,
                   status: 'PAID'
                 }))).map((pmt) => (
@@ -5308,7 +5308,7 @@ export default function AdminDashboard() {
                       {
                         key: 'paymentAlerts',
                         title: 'Payment Ledger Audit Receipts',
-                        desc: 'Alert when online Razorpay or manual fee payments are received into the system.'
+                        desc: 'Alert when online PhonePe or manual fee payments are received into the system.'
                       },
                       {
                         key: 'emailReceipts',
@@ -6711,7 +6711,7 @@ export default function AdminDashboard() {
                     </div>
                     <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
                       <span className="text-slate-500 block font-medium">Gateway</span>
-                      <span className="font-bold text-slate-800">Razorpay Direct</span>
+                      <span className="font-bold text-slate-800">{appDetails.payment_gateway || appDetails.payment_method || 'PhonePe PG'}</span>
                     </div>
                     <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
                       <span className="text-slate-500 block font-medium">Audit Txn</span>
@@ -7172,7 +7172,7 @@ export default function AdminDashboard() {
                 </div>
                 <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
                   <span className="text-slate-500 block font-medium">Payment Gateway</span>
-                  <span className="font-bold text-slate-900">{selectedPayment.payment_method || 'Razorpay Direct'}</span>
+                  <span className="font-bold text-slate-900">{selectedPayment.payment_gateway || selectedPayment.payment_method || 'PhonePe PG'}</span>
                 </div>
                 <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 col-span-2 sm:col-span-1">
                   <span className="text-slate-500 block font-medium">Payment Status</span>
