@@ -139,6 +139,7 @@ app.use(cors({
 }));
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true, limit: '25mb' }));
 // Serve root static assets from public directory (images, logos, category icons)
 app.use(express.static(path.join(__dirname, '../public')));
 
@@ -2009,10 +2010,12 @@ app.get('/api/payments/phonepe/verify/:merchantTransactionId', async (req, res) 
       if (payment) {
         db.update('payments', p => p.id === payment.id, {
           payment_status: 'PAID',
+          status: 'SUCCESS',
           payment_transaction_id: gatewayTxnId,
           payment_method: `PhonePe (${paymentInstrument})`,
           receipt_number: receiptNumber,
           paid_at: new Date().toISOString(),
+          completed_at: new Date().toISOString(),
           metadata: { ...(payment.metadata || {}), verified_response: phonePeStatus }
         });
         payment = db.get('payments', p => p.id === payment.id);
@@ -2102,6 +2105,13 @@ app.get('/api/payments/phonepe/verify/:merchantTransactionId', async (req, res) 
   }
 });
 
+// PhonePe Browser Redirect Fallback (Handles POST redirects from PhonePe checkout)
+app.post('/payment/callback', (req, res) => {
+  const merchantTransactionId = req.body?.merchantTransactionId || req.body?.transactionId || req.query?.merchantTransactionId || '';
+  const appId = req.query?.appId || req.body?.appId || '';
+  res.redirect(`/payment/callback?merchantTransactionId=${encodeURIComponent(merchantTransactionId)}&appId=${encodeURIComponent(appId)}`);
+});
+
 // PhonePe Server-to-Server Webhook Endpoint
 app.post('/api/payments/phonepe/callback', async (req, res) => {
   try {
@@ -2134,9 +2144,11 @@ app.post('/api/payments/phonepe/callback', async (req, res) => {
       if (payment && payment.payment_status !== 'PAID') {
         db.update('payments', p => p.id === payment.id, {
           payment_status: 'PAID',
+          status: 'SUCCESS',
           payment_transaction_id: gatewayTxnId,
           payment_method: `PhonePe (${txnData.paymentInstrument?.type || 'UPI'})`,
-          paid_at: new Date().toISOString()
+          paid_at: new Date().toISOString(),
+          completed_at: new Date().toISOString()
         });
 
         if (payment.application_id) {
