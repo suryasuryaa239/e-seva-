@@ -31,6 +31,23 @@ export default function ReceiptModal({ application, service, applicantInfo, fiel
   const serviceName = service?.name || application.service_name || (lang === 'ta' ? 'இ-சேவை சான்றிதழ் சேவை' : 'Aadhaar Address Update');
   const amountPaid = Number(application.total_fee || application.amount || service?.fee || 50);
   const payMode = (application.payment_method || application.payment_mode || 'UPI / ONLINE').toUpperCase();
+  const appStatusUpper = (application.status || '').toUpperCase();
+  const rawPayStatus = (application.payment_status || application.payment?.payment_status || application.payment?.status || '').toUpperCase();
+  const isFeeApplicable = amountPaid > 0;
+
+  const isExplicitPending =
+    appStatusUpper === 'PAYMENT_PENDING' ||
+    rawPayStatus === 'PENDING' ||
+    rawPayStatus === 'UNPAID' ||
+    rawPayStatus === 'FAILED' ||
+    rawPayStatus === 'INITIATED';
+
+  const isExplicitPaid =
+    ['PAID', 'COMPLETED', 'SUCCESS', 'VERIFIED'].includes(rawPayStatus) ||
+    (application.payment && ['PAID', 'COMPLETED', 'SUCCESS'].includes((application.payment.status || application.payment.payment_status || '').toUpperCase()));
+
+  const isPaid = isExplicitPaid || (!isExplicitPending && !isFeeApplicable) || (!isExplicitPending && ['APPROVED', 'COMPLETED', 'DISPATCHED'].includes(appStatusUpper));
+
   const dateStr = new Date(application.submitted_at || application.created_at || Date.now()).toLocaleDateString('en-GB', {
     day: '2-digit',
     month: 'short',
@@ -117,8 +134,10 @@ export default function ReceiptModal({ application, service, applicantInfo, fiel
 
               {/* COMPACT PAYMENT RECEIPT BADGE */}
               <div className="text-right">
-                <span className="font-heading font-extrabold text-[9px] tracking-wider uppercase text-white bg-orange-500/20 px-2 py-0.5 rounded border border-orange-500/40 inline-block">
-                  PAYMENT RECEIPT
+                <span className={`font-heading font-extrabold text-[9px] tracking-wider uppercase px-2 py-0.5 rounded border inline-block ${
+                  isPaid ? 'text-white bg-emerald-500/20 border-emerald-500/40' : !isFeeApplicable ? 'text-white bg-blue-500/20 border-blue-500/40' : 'text-amber-300 bg-amber-500/20 border-amber-500/40'
+                }`}>
+                  {isPaid ? 'PAYMENT RECEIPT' : !isFeeApplicable ? 'SERVICE RECEIPT (FREE)' : 'ACKNOWLEDGMENT (UNPAID)'}
                 </span>
                 <p className="text-[9px] text-slate-400 font-mono mt-0.5">
                   {recNumber}
@@ -161,9 +180,19 @@ export default function ReceiptModal({ application, service, applicantInfo, fiel
                   <span className="text-slate-500 text-[10px] font-extrabold uppercase tracking-wider block">
                     Payment Status
                   </span>
-                  <span className="font-extrabold text-emerald-700 text-xs sm:text-sm block">
-                    PAID SUCCESSFUL
-                  </span>
+                  {isPaid ? (
+                    <span className="font-extrabold text-emerald-700 text-xs sm:text-sm block">
+                      PAID SUCCESSFUL
+                    </span>
+                  ) : !isFeeApplicable ? (
+                    <span className="font-extrabold text-blue-700 text-xs sm:text-sm block">
+                      FREE (NO FEE)
+                    </span>
+                  ) : (
+                    <span className="font-extrabold text-amber-700 text-xs sm:text-sm block">
+                      PENDING / UNPAID
+                    </span>
+                  )}
                 </div>
               </div>
 

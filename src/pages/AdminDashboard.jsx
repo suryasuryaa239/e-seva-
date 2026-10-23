@@ -10,13 +10,16 @@ import {
   Settings, Key, Lock, EyeOff, Save, CheckCheck, Bell, CreditCard, Paperclip,
   Sliders, Image as ImageIcon, Upload, Download,
   Share2, Send, Linkedin, Twitter, Globe, Facebook, Instagram, Youtube, MessageCircle,
-  GripVertical, MoveUp, MoveDown, Sparkles, Megaphone
+  GripVertical, MoveUp, MoveDown, Sparkles, Megaphone,
+  FileSpreadsheet, Database
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import StatusBadge from '../components/StatusBadge';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import AnnouncementPopup from '../components/AnnouncementPopup';
+import AdminReports from '../components/AdminReports';
+import ClearDatabaseModal from '../components/ClearDatabaseModal';
 import { invalidateServicesCache } from '../utils/useLiveServices';
 
 const SERVICE_IMAGE_PRESETS = [
@@ -74,6 +77,9 @@ export default function AdminDashboard() {
     loading: false
   });
 
+  // Clear Database Modal State
+  const [isClearDbOpen, setIsClearDbOpen] = useState(false);
+
   // Inspector & Status Update Modal State
   const [selectedApp, setSelectedApp] = useState(null);
   const [appDetails, setAppDetails] = useState(null);
@@ -82,6 +88,8 @@ export default function AdminDashboard() {
   const [savingStatus, setSavingStatus] = useState(false);
   const [certFile, setCertFile] = useState(null);
   const [certNumber, setCertNumber] = useState('');
+  const [markingPaid, setMarkingPaid] = useState(false);
+  const [sendingReminder, setSendingReminder] = useState(false);
 
   // User Inspector Modal State (STEP 27)
   const [selectedUser, setSelectedUser] = useState(null);
@@ -158,7 +166,9 @@ export default function AdminDashboard() {
     duration_seconds: 5,
     status: 'Active',
     image_url_input: '',
-    image_file: null
+    image_file: null,
+    image_position: 'center',
+    image_fit: 'cover'
   });
 
   const fetchBanners = async () => {
@@ -364,7 +374,9 @@ export default function AdminDashboard() {
       duration_seconds: 5,
       status: 'Active',
       image_url_input: '',
-      image_file: null
+      image_file: null,
+      image_position: 'center',
+      image_fit: 'cover'
     });
     setShowBannerModal(true);
   };
@@ -378,7 +390,9 @@ export default function AdminDashboard() {
       duration_seconds: b.duration_seconds || 5,
       status: b.status || 'Active',
       image_url_input: b.image_url || '',
-      image_file: null
+      image_file: null,
+      image_position: b.image_position || 'center',
+      image_fit: b.image_fit || 'cover'
     });
     setShowBannerModal(true);
   };
@@ -394,6 +408,8 @@ export default function AdminDashboard() {
       formData.append('duration_seconds', bannerForm.duration_seconds);
       formData.append('status', bannerForm.status);
       formData.append('image_url_input', bannerForm.image_url_input);
+      formData.append('image_position', bannerForm.image_position || 'center');
+      formData.append('image_fit', bannerForm.image_fit || 'cover');
       if (bannerForm.image_file) {
         formData.append('image', bannerForm.image_file);
       }
@@ -1702,6 +1718,60 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleMarkAppPaid = async (appId) => {
+    if (!window.confirm('Confirm marking this application fee as PAID (Desk / Counter Cash)?')) return;
+    try {
+      setMarkingPaid(true);
+      const res = await fetch(`/api/admin/applications/${appId}/mark-paid`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${getAuthToken()}`
+        },
+        body: JSON.stringify({
+          payment_method: 'Cash / Desk Counter',
+          remarks: 'Verified & received cash fee at service center'
+        })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        addToast('Payment marked as PAID successfully! Status updated.', 'success');
+        openAppInspector(appId);
+        fetchApplications();
+        fetchDashboardStats();
+      } else {
+        addToast(data.error || 'Failed to update payment status', 'error');
+      }
+    } catch (e) {
+      addToast('Error marking payment as paid: ' + e.message, 'error');
+    } finally {
+      setMarkingPaid(false);
+    }
+  };
+
+  const handleSendPaymentReminder = async (appId) => {
+    try {
+      setSendingReminder(true);
+      const res = await fetch(`/api/admin/applications/${appId}/send-payment-reminder`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${getAuthToken()}`
+        }
+      });
+      const data = await res.json();
+      if (res.ok) {
+        addToast('Payment reminder notification sent to applicant.', 'success');
+      } else {
+        addToast(data.error || 'Failed to send payment reminder', 'error');
+      }
+    } catch (e) {
+      addToast('Error sending reminder: ' + e.message, 'error');
+    } finally {
+      setSendingReminder(false);
+    }
+  };
+
   const handleUpdateStatusSubmit = async (e) => {
     e.preventDefault();
     if (!selectedApp) return;
@@ -1782,6 +1852,7 @@ export default function AdminDashboard() {
 
   const navItems = [
     { id: 'dashboard', label: 'Dashboard Overview', icon: LayoutDashboard },
+    { id: 'reports', label: 'Reports & Audits', icon: FileSpreadsheet, count: 5 },
     { id: 'applications', label: 'Applications Manager', icon: FileText, count: stats?.total_applications },
     { id: 'documents', label: 'Uploaded Documents Explorer', icon: Paperclip, count: adminDocs.length },
     { id: 'popups', label: 'Popup Notices', icon: Megaphone, count: popups.filter(p => p.status === 'Active').length },
@@ -2175,6 +2246,7 @@ export default function AdminDashboard() {
               </div>
               <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight mt-1">
                 {activeTab === 'dashboard' && 'Dashboard Overview'}
+                {activeTab === 'reports' && 'Reports & Analytics Audit Desk'}
                 {activeTab === 'applications' && 'Application Management Directory'}
                 {activeTab === 'documents' && 'Uploaded Proof Documents Explorer'}
                 {activeTab === 'services' && 'Services Catalog Manager'}
@@ -2192,6 +2264,23 @@ export default function AdminDashboard() {
               <span>Session: <strong className="text-slate-800">{new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</strong></span>
             </div>
           </div>
+
+          {/* TAB: COMPREHENSIVE REPORTS MODULE */}
+          {activeTab === 'reports' && (
+            <AdminReports
+              getAuthToken={getAuthToken}
+              onInspectApp={(app) => {
+                setSelectedApp(app);
+                setAppDetails(app);
+                setUpdateStatus(app.status || 'Processing');
+                setAdminRemarks(app.remarks || app.admin_remarks || '');
+              }}
+              onInspectUser={(user) => {
+                setSelectedUser(user);
+              }}
+              onOpenClearDb={() => setIsClearDbOpen(true)}
+            />
+          )}
 
           {/* TAB: UPLOADED PROOF DOCUMENTS EXPLORER */}
           {activeTab === 'documents' && (
@@ -2478,19 +2567,29 @@ export default function AdminDashboard() {
                       } overflow-hidden flex flex-col justify-between group hover:shadow-md transition-all`}
                     >
                       {/* Banner Image Preview */}
-                      <div className="relative h-44 bg-slate-900 overflow-hidden">
+                      <div className="relative h-44 bg-slate-900 overflow-hidden flex items-center justify-center">
+                        {b.image_fit === 'contain' && (
+                          <img
+                            src={b.image_url}
+                            alt=""
+                            aria-hidden="true"
+                            className="absolute inset-0 w-full h-full object-cover blur-lg opacity-35 scale-110 pointer-events-none"
+                          />
+                        )}
                         <img
                           src={b.image_url}
                           alt={b.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          className={`w-full h-full ${b.image_fit === 'contain' ? 'object-contain relative z-10' : 'object-cover'} ${
+                            b.image_position === 'bottom' ? 'object-bottom' : b.image_position === 'top' ? 'object-top' : 'object-center'
+                          } group-hover:scale-105 transition-transform duration-500`}
                           onError={(e) => {
-                            e.target.src = 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?q=80&w=1200&auto=format&fit=crop';
+                            e.target.style.display = 'none';
                           }}
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent z-10 pointer-events-none" />
                         
                         {/* Status Badge */}
-                        <div className="absolute top-3 left-3 flex items-center space-x-2">
+                        <div className="absolute top-3 left-3 flex items-center space-x-2 z-20">
                           <span
                             className={`text-[10px] font-black uppercase px-2.5 py-1 rounded-full border shadow-sm ${
                               b.status === 'Active'
@@ -2502,11 +2601,14 @@ export default function AdminDashboard() {
                           </span>
                         </div>
 
-                        {/* Display Timer Badge */}
-                        <div className="absolute top-3 right-3">
-                          <span className="text-[10px] font-mono font-bold bg-slate-950/80 text-orange-400 border border-orange-500/30 px-2.5 py-1 rounded-full backdrop-blur-sm flex items-center gap-1">
+                        {/* Display Timer & Focus Badge */}
+                        <div className="absolute top-3 right-3 flex flex-col items-end gap-1 z-20">
+                          <span className="text-[10px] font-mono font-bold bg-slate-950/80 text-orange-400 border border-orange-500/30 px-2 py-0.5 rounded-full backdrop-blur-sm flex items-center gap-1">
                             <Clock className="w-3 h-3" />
-                            <span>{b.duration_seconds || 5}s Timer</span>
+                            <span>{b.duration_seconds || 5}s</span>
+                          </span>
+                          <span className="text-[9px] font-bold bg-black/75 text-slate-200 border border-slate-700 px-2 py-0.5 rounded-full backdrop-blur-sm">
+                            {b.image_fit === 'contain' ? 'Full Fit' : `Focus: ${(b.image_position || 'center').toUpperCase()}`}
                           </span>
                         </div>
 
@@ -2687,7 +2789,7 @@ export default function AdminDashboard() {
                               alt={p.title}
                               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                               onError={(e) => {
-                                e.target.src = 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?q=80&w=1200&auto=format&fit=crop';
+                                e.target.style.display = 'none';
                               }}
                             />
                           ) : (
@@ -5067,7 +5169,8 @@ export default function AdminDashboard() {
                   { id: 'social_media', label: 'Social Media & Footer', icon: Share2 },
                   { id: 'payment_notice', label: 'Payment Notice & Terms', icon: ShieldAlert },
                   { id: 'notifications', label: 'Notification Preferences', icon: Bell },
-                  { id: 'audit', label: 'System Audit Logs', icon: History }
+                  { id: 'audit', label: 'System Audit Logs', icon: History },
+                  { id: 'database_management', label: 'Database Maintenance & Clear', icon: Trash2 }
                 ].map((tab) => {
                   const Icon = tab.icon;
                   const isActive = activeSettingsTab === tab.id;
@@ -6043,6 +6146,49 @@ export default function AdminDashboard() {
                 </div>
               )}
 
+              {/* SUB-TAB: DATABASE MAINTENANCE & CLEAR */}
+              {activeSettingsTab === 'database_management' && (
+                <div className="bg-white p-6 sm:p-8 rounded-3xl border border-rose-200/90 shadow-sm space-y-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-12 h-12 rounded-2xl bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-600 shadow-xs">
+                        <Trash2 className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-[10px] font-black uppercase text-rose-600 bg-rose-50 px-2.5 py-0.5 rounded border border-rose-200">
+                            DATABASE GOVERNANCE
+                          </span>
+                          <span className="text-xs font-mono text-slate-400">• Purge & Maintenance</span>
+                        </div>
+                        <h4 className="text-lg font-black text-slate-900 mt-0.5">Database Maintenance & Reset Tool</h4>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-slate-900 text-white rounded-2xl p-6 border border-slate-800 space-y-4">
+                    <div className="flex items-center space-x-2 text-orange-400 text-sm font-bold">
+                      <Database className="w-5 h-5" />
+                      <span>Administrative Operational Purge Control</span>
+                    </div>
+                    <p className="text-xs text-slate-300 leading-relaxed">
+                      Use this workspace tool to clear test applications, demo payment logs, citizen registrations, or execute a clean state reset.
+                      All deletions are permanently synchronized across TiDB Cloud MySQL and local storage.
+                    </p>
+                    <div className="pt-2">
+                      <button
+                        type="button"
+                        onClick={() => setIsClearDbOpen(true)}
+                        className="px-6 py-3 bg-rose-600 hover:bg-rose-700 text-white font-black text-xs rounded-2xl shadow-lg shadow-rose-600/30 flex items-center space-x-2 transition-all cursor-pointer"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                        <span>Launch Clear Database Console</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* DANGER ZONE: ACCOUNT & SESSION ACTIONS */}
               <div className="bg-rose-50/60 border border-rose-200 p-6 rounded-3xl space-y-4">
                 <div className="flex items-center space-x-3">
@@ -6051,27 +6197,37 @@ export default function AdminDashboard() {
                   </div>
                   <div>
                     <h4 className="font-extrabold text-sm text-rose-900">Admin Session Control & Danger Zone</h4>
-                    <p className="text-xs text-rose-700">Terminate active administrator session and log out of governance panel.</p>
+                    <p className="text-xs text-rose-700">Manage administrator sessions and launch system database maintenance tools.</p>
                   </div>
                 </div>
 
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
                   <span className="text-xs text-rose-800">
-                    Signing out will clear local access tokens and require re-authentication.
+                    Database reset actions require explicit safety confirmation before proceeding.
                   </span>
-                  <button
-                    onClick={() => {
-                      if (window.confirm('Are you sure you want to sign out of the Admin Governance Cockpit?')) {
-                        logoutAdmin();
-                        addToast('Logged out of Admin Portal successfully', 'info');
-                        navigate('/admin/login');
-                      }
-                    }}
-                    className="w-full sm:w-auto px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-extrabold text-xs rounded-xl shadow transition-colors flex items-center justify-center space-x-1.5"
-                  >
-                    <LogOut className="w-4 h-4" />
-                    <span>Sign Out of Admin Cockpit</span>
-                  </button>
+                  <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+                    <button
+                      type="button"
+                      onClick={() => setIsClearDbOpen(true)}
+                      className="w-full sm:w-auto px-4 py-2.5 bg-rose-100 hover:bg-rose-200 text-rose-800 font-extrabold text-xs rounded-xl transition-colors flex items-center justify-center space-x-1.5 cursor-pointer border border-rose-300"
+                    >
+                      <Trash2 className="w-4 h-4 text-rose-600" />
+                      <span>Clear Database...</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        if (window.confirm('Are you sure you want to sign out of the Admin Governance Cockpit?')) {
+                          logoutAdmin();
+                          addToast('Logged out of Admin Portal successfully', 'info');
+                          navigate('/admin/login');
+                        }
+                      }}
+                      className="w-full sm:w-auto px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-extrabold text-xs rounded-xl shadow transition-colors flex items-center justify-center space-x-1.5 cursor-pointer"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      <span>Sign Out</span>
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -6695,30 +6851,131 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* 4. Payment Information Card */}
-                <div className="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-sm space-y-3">
-                  <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center space-x-2 border-b border-slate-100 pb-2.5">
-                    <DollarSign className="w-4 h-4 text-emerald-600" />
-                    <span>Payment Information</span>
-                  </h4>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                    <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
-                      <span className="text-slate-500 block font-medium">Service Fee</span>
-                      <span className="font-extrabold text-emerald-600 text-sm">₹{appDetails.total_fee || 50}</span>
+                {(() => {
+                  const feeAmount = Number(appDetails.total_fee !== undefined && appDetails.total_fee !== null ? appDetails.total_fee : (appDetails.fee_amount || 0));
+                  const isFreeService = feeAmount === 0;
+                  const appStatusUpper = (appDetails.status || '').toUpperCase();
+                  const rawPayStatus = (appDetails.payment_status || appDetails.payment?.payment_status || appDetails.payment?.status || '').toUpperCase();
+
+                  // Explicit unpaid check
+                  const isExplicitPending =
+                    appStatusUpper === 'PAYMENT_PENDING' ||
+                    rawPayStatus === 'PENDING' ||
+                    rawPayStatus === 'UNPAID' ||
+                    rawPayStatus === 'FAILED' ||
+                    rawPayStatus === 'INITIATED';
+
+                  const isExplicitPaid =
+                    ['PAID', 'COMPLETED', 'SUCCESS', 'VERIFIED'].includes(rawPayStatus) ||
+                    (appDetails.payment && ['PAID', 'COMPLETED', 'SUCCESS'].includes((appDetails.payment.status || appDetails.payment.payment_status || '').toUpperCase()));
+
+                  const isPaid = isExplicitPaid || (!isExplicitPending && isFreeService) || (!isExplicitPending && ['APPROVED', 'COMPLETED', 'DISPATCHED'].includes(appStatusUpper));
+
+                  const isDeskPaid = isPaid && (
+                    (appDetails.payment?.payment_method && appDetails.payment.payment_method.toLowerCase().includes('desk')) ||
+                    (appDetails.payment_method && appDetails.payment_method.toLowerCase().includes('desk')) ||
+                    (appDetails.payment?.payment_gateway && appDetails.payment.payment_gateway.toLowerCase().includes('desk'))
+                  );
+
+                  const paymentTxnDisplay = isPaid
+                    ? (appDetails.payment?.payment_transaction_id || appDetails.payment?.transaction_id || appDetails.payment_transaction_id || (appDetails.payment?.id ? `#TXN-${appDetails.payment.id}` : `#PAY-${(appDetails.application_number || 'OK').replace(/^ESV-/, '')}`))
+                    : 'Awaiting Payment';
+
+                  const gatewayDisplay = isPaid
+                    ? (appDetails.payment?.payment_gateway || appDetails.payment_gateway || appDetails.payment?.payment_method || appDetails.payment_method || 'PhonePe PG')
+                    : (appDetails.payment_gateway || appDetails.payment_method || 'PhonePe PG (Pending)');
+
+                  return (
+                    <div className="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-sm space-y-3">
+                      <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
+                        <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center space-x-2">
+                          <DollarSign className={`w-4 h-4 ${isPaid ? 'text-emerald-600' : isFreeService ? 'text-blue-600' : 'text-amber-500'}`} />
+                          <span>Payment Information</span>
+                        </h4>
+                        <span className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full ${
+                          isPaid ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : isFreeService ? 'bg-blue-100 text-blue-800 border border-blue-200' : 'bg-amber-100 text-amber-800 border border-amber-200'
+                        }`}>
+                          {isPaid ? (isDeskPaid ? 'Desk Paid' : 'Online Paid') : isFreeService ? 'Free Service' : 'Payment Pending'}
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                        <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                          <span className="text-slate-500 block font-medium">Service Fee</span>
+                          <span className="font-extrabold text-slate-900 text-sm">
+                            {isFreeService ? 'FREE (₹0)' : `₹${feeAmount}`}
+                          </span>
+                        </div>
+
+                        <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                          <span className="text-slate-500 block font-medium">Payment Status</span>
+                          {isPaid ? (
+                            <span className="font-bold text-emerald-700 uppercase flex items-center space-x-1 mt-0.5">
+                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 inline shrink-0" />
+                              <span>PAID {isDeskPaid ? '(Desk Cash)' : '(Online)'}</span>
+                            </span>
+                          ) : isFreeService ? (
+                            <span className="font-bold text-blue-700 uppercase flex items-center space-x-1 mt-0.5">
+                              <CheckCircle2 className="w-3.5 h-3.5 text-blue-600 inline shrink-0" />
+                              <span>FREE (No Fee)</span>
+                            </span>
+                          ) : (
+                            <span className="font-bold text-amber-700 uppercase flex items-center space-x-1 mt-0.5">
+                              <Clock className="w-3.5 h-3.5 text-amber-600 inline shrink-0 animate-pulse" />
+                              <span>PENDING</span>
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                          <span className="text-slate-500 block font-medium">Gateway</span>
+                          <span className="font-bold text-slate-800 truncate block mt-0.5" title={gatewayDisplay}>
+                            {gatewayDisplay}
+                          </span>
+                        </div>
+
+                        <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                          <span className="text-slate-500 block font-medium">Audit Txn</span>
+                          <span className={`font-mono text-[11px] truncate block mt-0.5 ${isPaid ? 'font-bold text-slate-700' : 'font-semibold text-amber-600'}`} title={paymentTxnDisplay}>
+                            {paymentTxnDisplay}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Desk Action Controls if Payment Pending */}
+                      {!isPaid && !isFreeService && (
+                        <div className="pt-2.5 border-t border-slate-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-amber-50/70 p-3 rounded-xl border border-amber-200/80">
+                          <div className="text-[11px] text-amber-900 font-medium flex items-center space-x-2">
+                            <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
+                            <span>Online fee payment pending from applicant. If citizen paid cash at the counter, mark as paid.</span>
+                          </div>
+                          <div className="flex items-center space-x-2 shrink-0">
+                            <button
+                              type="button"
+                              onClick={() => handleSendPaymentReminder(appDetails.id)}
+                              disabled={sendingReminder}
+                              className="px-3 py-1.5 bg-white hover:bg-slate-100 text-slate-700 font-bold text-xs rounded-lg border border-slate-300 transition-all flex items-center space-x-1.5 cursor-pointer disabled:opacity-50 shadow-2xs"
+                              title="Send SMS/In-app payment reminder to applicant"
+                            >
+                              <Bell className="w-3.5 h-3.5 text-slate-600" />
+                              <span>{sendingReminder ? 'Sending...' : 'Remind'}</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleMarkAppPaid(appDetails.id)}
+                              disabled={markingPaid}
+                              className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-lg shadow transition-all flex items-center space-x-1.5 cursor-pointer disabled:opacity-50"
+                              title="Mark application fee as collected at counter"
+                            >
+                              <CheckCircle2 className="w-3.5 h-3.5 text-white" />
+                              <span>{markingPaid ? 'Saving...' : 'Mark Paid (Desk Cash)'}</span>
+                            </button>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                    <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
-                      <span className="text-slate-500 block font-medium">Payment Status</span>
-                      <span className="font-bold text-emerald-700 uppercase">PAID (Online)</span>
-                    </div>
-                    <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
-                      <span className="text-slate-500 block font-medium">Gateway</span>
-                      <span className="font-bold text-slate-800">{appDetails.payment_gateway || appDetails.payment_method || 'PhonePe PG'}</span>
-                    </div>
-                    <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
-                      <span className="text-slate-500 block font-medium">Audit Txn</span>
-                      <span className="font-mono text-slate-600 text-[11px]">#PAY-2026-OK</span>
-                    </div>
-                  </div>
-                </div>
+                  );
+                })()}
 
                 {/* 5. Status History Timeline */}
                 <div className="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-sm space-y-3">
@@ -9739,18 +9996,37 @@ export default function AdminDashboard() {
                   if (!previewSrc) return null;
 
                   return (
-                    <div className="relative h-32 rounded-2xl overflow-hidden border border-slate-200 bg-slate-900 group">
+                    <div className="relative h-36 rounded-2xl overflow-hidden border border-slate-200 bg-slate-950 group flex items-center justify-center">
+                      {bannerForm.image_fit === 'contain' && (
+                        <img
+                          src={previewSrc}
+                          alt=""
+                          aria-hidden="true"
+                          className="absolute inset-0 w-full h-full object-cover blur-xl opacity-35 scale-110 pointer-events-none"
+                        />
+                      )}
                       <img
                         src={previewSrc}
                         alt="Preview"
-                        className="w-full h-full object-cover"
+                        className={`w-full h-full ${
+                          bannerForm.image_fit === 'contain' ? 'object-contain relative z-10' : 'object-cover'
+                        } ${
+                          bannerForm.image_position === 'bottom'
+                            ? 'object-bottom'
+                            : bannerForm.image_position === 'top'
+                            ? 'object-top'
+                            : 'object-center'
+                        } transition-all duration-300`}
                         onError={(e) => {
                           e.target.style.display = 'none';
                         }}
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent flex items-end p-2.5">
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent flex items-end justify-between p-2.5 z-20 pointer-events-none">
                         <span className="text-[10px] font-bold text-white bg-black/60 px-2 py-0.5 rounded backdrop-blur-sm">
                           {bannerForm.image_file ? `File: ${bannerForm.image_file.name}` : 'Live Preview'}
+                        </span>
+                        <span className="text-[10px] font-black uppercase tracking-wider text-orange-400 bg-black/60 px-2 py-0.5 rounded backdrop-blur-sm">
+                          {bannerForm.image_fit === 'contain' ? 'Fit: Full (Contain)' : `Focus: ${bannerForm.image_position || 'center'}`}
                         </span>
                       </div>
                     </div>
@@ -9789,7 +10065,7 @@ export default function AdminDashboard() {
                   <span className="text-[10px] font-bold text-slate-400 block mb-1">Quick Presets:</span>
                   <div className="flex flex-wrap gap-1.5">
                     {[
-                      { name: '🏛️ Digital Governance', url: 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?q=80&w=1200&auto=format&fit=crop' },
+                      { name: '🏛️ Digital Governance', url: 'https://images.unsplash.com/photo-1577495508048-b635879837f1?q=80&w=1200&auto=format&fit=crop' },
                       { name: '📑 Aadhaar Portal', url: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=1200&auto=format&fit=crop' },
                       { name: '📜 Official Certificates', url: 'https://images.unsplash.com/photo-1450133064473-71024230f91b?q=80&w=1200&auto=format&fit=crop' },
                       { name: '🏢 Tamil Nadu Seva', url: 'https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?q=80&w=1200&auto=format&fit=crop' }
@@ -9803,6 +10079,76 @@ export default function AdminDashboard() {
                         {p.name}
                       </button>
                     ))}
+                  </div>
+                </div>
+
+                {/* Option 3: Focus Alignment & Fit Controls */}
+                <div className="p-3 bg-slate-50 border border-slate-200/90 rounded-2xl space-y-3">
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="font-extrabold text-slate-800 text-[11px] flex items-center gap-1.5">
+                        <span>Image Focus Alignment (Position)</span>
+                      </label>
+                      <span className="text-[10px] text-orange-600 font-bold bg-orange-50 px-2 py-0.5 rounded border border-orange-200">
+                        Selected: {bannerForm.image_position === 'bottom' ? 'Bottom Focus' : bannerForm.image_position === 'top' ? 'Top Focus' : 'Center Focus'}
+                      </span>
+                    </div>
+                    <p className="text-[10px] text-slate-500 mb-2">
+                      Choose which part stays visible if cropped. Select <b>Bottom</b> for banners with text/offer at the bottom!
+                    </p>
+
+                    <div className="grid grid-cols-3 gap-2">
+                      {[
+                        { id: 'top', label: 'Top Focus', desc: 'Header/Logos', icon: '⬆️' },
+                        { id: 'center', label: 'Center Focus', desc: 'Standard/Balanced', icon: '⏺️' },
+                        { id: 'bottom', label: 'Bottom Focus', desc: 'Bottom Text / Offer', icon: '⬇️' }
+                      ].map((pos) => (
+                        <button
+                          key={pos.id}
+                          type="button"
+                          onClick={() => setBannerForm({ ...bannerForm, image_position: pos.id })}
+                          className={`p-2 rounded-xl border text-center transition-all cursor-pointer ${
+                            bannerForm.image_position === pos.id
+                              ? 'bg-[#0b192c] text-white border-[#0b192c] shadow-sm ring-2 ring-orange-500/30'
+                              : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200'
+                          }`}
+                        >
+                          <div className="text-sm">{pos.icon}</div>
+                          <div className="text-[11px] font-extrabold leading-tight mt-0.5">{pos.label}</div>
+                          <div className={`text-[9px] ${bannerForm.image_position === pos.id ? 'text-slate-300' : 'text-slate-400'}`}>
+                            {pos.desc}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Display Fit Toggle */}
+                  <div className="pt-2 border-t border-slate-200/70 flex items-center justify-between">
+                    <div>
+                      <span className="font-extrabold text-slate-800 text-[11px] block">Display Fit Mode</span>
+                      <span className="text-[10px] text-slate-500">Cover fills container; Contain shows 100% full image without crop</span>
+                    </div>
+                    <div className="flex items-center gap-1 bg-slate-200/80 p-0.5 rounded-xl">
+                      <button
+                        type="button"
+                        onClick={() => setBannerForm({ ...bannerForm, image_fit: 'cover' })}
+                        className={`px-2.5 py-1 text-[10px] font-bold rounded-lg transition-all cursor-pointer ${
+                          bannerForm.image_fit === 'cover' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                        }`}
+                      >
+                        Cover (Fill)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setBannerForm({ ...bannerForm, image_fit: 'contain' })}
+                        className={`px-2.5 py-1 text-[10px] font-bold rounded-lg transition-all cursor-pointer ${
+                          bannerForm.image_fit === 'contain' ? 'bg-orange-500 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                        }`}
+                      >
+                        Contain (Full Image)
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -10038,7 +10384,7 @@ export default function AdminDashboard() {
                       alt="Popup preview"
                       className="w-full h-full object-cover"
                       onError={(e) => {
-                        e.target.src = 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?q=80&w=1200&auto=format&fit=crop';
+                        e.target.style.display = 'none';
                       }}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-black/30 pointer-events-none" />
@@ -10102,7 +10448,7 @@ export default function AdminDashboard() {
                 <div className="flex flex-wrap items-center gap-1.5 pt-1">
                   <span className="text-[10px] font-bold text-slate-500">Image Presets:</span>
                   {[
-                    { label: '🏛️ E-Seva Portal', url: 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?q=80&w=1200&auto=format&fit=crop' },
+                    { label: '🏛️ E-Seva Portal', url: 'https://images.unsplash.com/photo-1577495508048-b635879837f1?q=80&w=1200&auto=format&fit=crop' },
                     { label: '📜 Digital Docs', url: 'https://images.unsplash.com/photo-1450133064473-71024230f91b?q=80&w=1200&auto=format&fit=crop' },
                     { label: '💳 Identity Services', url: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=1200&auto=format&fit=crop' }
                   ].map((preset) => (
@@ -10192,6 +10538,19 @@ export default function AdminDashboard() {
         description={deleteModalState.description}
         confirmText={deleteModalState.confirmText}
         loading={deleteModalState.loading}
+      />
+
+      {/* Clear Database Modal */}
+      <ClearDatabaseModal
+        isOpen={isClearDbOpen}
+        onClose={() => setIsClearDbOpen(false)}
+        onSuccess={() => {
+          fetchDashboardStats();
+          fetchApplications();
+          fetchCustomers();
+          fetchPayments();
+        }}
+        getAuthToken={getAuthToken}
       />
 
     </div>

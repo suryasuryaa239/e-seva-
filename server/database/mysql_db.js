@@ -265,6 +265,8 @@ export async function initializeDatabaseSchema() {
         duration_seconds INT DEFAULT 5,
         status VARCHAR(50) DEFAULT 'Active',
         display_order INT DEFAULT 1,
+        image_position VARCHAR(50) DEFAULT 'center',
+        image_fit VARCHAR(50) DEFAULT 'cover',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -329,6 +331,8 @@ export async function initializeDatabaseSchema() {
       "ALTER TABLE banners ADD COLUMN IF NOT EXISTS duration_seconds INT DEFAULT 5",
       "ALTER TABLE banners ADD COLUMN IF NOT EXISTS display_order INT DEFAULT 1",
       "ALTER TABLE banners ADD COLUMN IF NOT EXISTS status VARCHAR(50) DEFAULT 'Active'",
+      "ALTER TABLE banners ADD COLUMN IF NOT EXISTS image_position VARCHAR(50) DEFAULT 'center'",
+      "ALTER TABLE banners ADD COLUMN IF NOT EXISTS image_fit VARCHAR(50) DEFAULT 'cover'",
       "ALTER TABLE site_settings ADD COLUMN IF NOT EXISTS phonepe_merchant_id VARCHAR(255)",
       "ALTER TABLE site_settings ADD COLUMN IF NOT EXISTS phonepe_salt_key VARCHAR(255)",
       "ALTER TABLE site_settings ADD COLUMN IF NOT EXISTS phonepe_salt_index VARCHAR(50) DEFAULT '1'",

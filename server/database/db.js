@@ -162,7 +162,7 @@ class TiDBSupportedDatabase {
                 {
                   title: 'Government Services at Your Doorstep',
                   description: 'Apply for Community, Birth, Income & Residence Certificates online with instant tracking.',
-                  image_url: 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?q=80&w=1200&auto=format&fit=crop',
+                  image_url: 'https://images.unsplash.com/photo-1577495508048-b635879837f1?q=80&w=1200&auto=format&fit=crop',
                   link_url: '/services',
                   duration_seconds: 5,
                   status: 'Active',
@@ -196,7 +196,7 @@ class TiDBSupportedDatabase {
                 {
                   title: 'New Welfare Schemes & Fast-Track Digital E-Seva',
                   content: 'Apply for updated government community certificates, revenue services, and track application lifecycle with instant live updates.',
-                  image_url: 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?q=80&w=1200&auto=format&fit=crop',
+                  image_url: 'https://images.unsplash.com/photo-1577495508048-b635879837f1?q=80&w=1200&auto=format&fit=crop',
                   button_text: 'Explore Services',
                   button_url: '/services',
                   badge_text: 'NEW UPDATE',

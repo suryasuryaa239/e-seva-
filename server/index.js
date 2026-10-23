@@ -38,6 +38,14 @@ if (!fs.existsSync(uploadsDir)) {
     console.warn('Uploads dir creation warning:', err);
   }
 }
+['popups', 'banners', 'certificates', 'services', 'documents'].forEach(sub => {
+  try {
+    const p1 = path.join(uploadsDir, sub);
+    if (!fs.existsSync(p1)) fs.mkdirSync(p1, { recursive: true });
+    const p2 = path.join(process.cwd(), 'uploads', sub);
+    if (!fs.existsSync(p2)) fs.mkdirSync(p2, { recursive: true });
+  } catch (e) {}
+});
 
 // Multer Storage Configuration
 const storage = multer.diskStorage({
@@ -143,6 +151,15 @@ app.use(express.urlencoded({ extended: true, limit: '25mb' }));
 // Serve root static assets from public directory (images, logos, category icons)
 app.use(express.static(path.join(__dirname, '../public')));
 
+// Serve all uploaded static assets (documents, popups, banners, certificates)
+app.use('/uploads', express.static(uploadsDir));
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads/popups', express.static(path.join(uploadsDir, 'popups')));
+app.use('/uploads/popups', express.static(path.join(process.cwd(), 'uploads', 'popups')));
+app.use('/uploads/banners', express.static(path.join(uploadsDir, 'banners')));
+app.use('/uploads/banners', express.static(path.join(process.cwd(), 'uploads', 'banners')));
+
 // Uploaded Documents Redirect & Stream Handler
 app.get('/uploads/:filename', (req, res) => {
   const filename = path.basename(req.params.filename);
@@ -163,6 +180,14 @@ app.get('/uploads/:filename', (req, res) => {
   const localFile = path.join(uploadsDir, filename);
   if (fs.existsSync(localFile)) {
     return res.sendFile(localFile);
+  }
+  const cwdFile = path.join(process.cwd(), 'uploads', filename);
+  if (fs.existsSync(cwdFile)) {
+    return res.sendFile(cwdFile);
+  }
+  const popupFile = path.join(uploadsDir, 'popups', filename);
+  if (fs.existsSync(popupFile)) {
+    return res.sendFile(popupFile);
   }
   res.status(404).json({ error: 'File not found' });
 });
@@ -1681,6 +1706,7 @@ app.get('/api/applications/track/:appNumber', (req, res) => {
       user_email: phone ? application.user_email : `${application.user_email.substring(0, 2)}***@***.com`,
       user_phone: phone ? application.user_phone : `${application.user_phone.substring(0, 2)}******${application.user_phone.substring(8)}`,
       status: application.status,
+      payment_status: application.payment_status || (application.status === 'PAYMENT_PENDING' ? 'PENDING' : 'PAID'),
       admin_remarks: application.admin_remarks,
       total_fee: application.total_fee,
       created_at: application.created_at,
@@ -2507,7 +2533,7 @@ app.get('/api/documents/preview-file/:filename', optionalAuthenticateToken, asyn
   const fileExt = path.extname(filename).toLowerCase();
   const isImageFile = ['.jpg', '.jpeg', '.png', '.webp', '.jfif', '.bmp'].includes(fileExt);
   if (isImageFile) {
-    return res.redirect('https://images.unsplash.com/photo-1541872703-74c5e44368f9?q=80&w=1200&auto=format&fit=crop');
+    return res.redirect('https://images.unsplash.com/photo-1577495508048-b635879837f1?q=80&w=1200&auto=format&fit=crop');
   }
 
   // Fallback SVG Proof Renderer for applicant documents
@@ -2789,7 +2815,7 @@ try {
     db.insert('banners', {
       title: 'Government Services at Your Doorstep',
       description: 'Apply for Community, Birth, Income & Residence Certificates online with instant tracking.',
-      image_url: 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?q=80&w=1200&auto=format&fit=crop',
+      image_url: 'https://images.unsplash.com/photo-1577495508048-b635879837f1?q=80&w=1200&auto=format&fit=crop',
       link_url: '/services',
       duration_seconds: 5,
       status: 'Active',
@@ -2835,7 +2861,7 @@ app.get('/api/admin/banners', authenticateAdmin, (req, res) => {
 // Admin Create Banner
 app.post('/api/admin/banners', authenticateAdmin, upload.single('image'), async (req, res) => {
   try {
-    const { title, description, link_url, duration_seconds, status, display_order, image_url_input } = req.body || {};
+    const { title, description, link_url, duration_seconds, status, display_order, image_url_input, image_position, image_fit } = req.body || {};
 
     let image_url = (image_url_input || '').trim();
     if (req.file) {
@@ -2859,7 +2885,7 @@ app.post('/api/admin/banners', authenticateAdmin, upload.single('image'), async 
     }
 
     if (!image_url) {
-      image_url = 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?q=80&w=1200&auto=format&fit=crop';
+      image_url = 'https://images.unsplash.com/photo-1577495508048-b635879837f1?q=80&w=1200&auto=format&fit=crop';
     }
 
     const currentBanners = db.all('banners');
@@ -2870,7 +2896,9 @@ app.post('/api/admin/banners', authenticateAdmin, upload.single('image'), async 
       link_url: link_url ? link_url.trim() : '/services',
       duration_seconds: duration_seconds ? Math.max(2, Math.min(60, Number(duration_seconds))) : 5,
       status: status || 'Active',
-      display_order: display_order ? Number(display_order) : (currentBanners.length + 1)
+      display_order: display_order ? Number(display_order) : (currentBanners.length + 1),
+      image_position: ['top', 'center', 'bottom'].includes(image_position) ? image_position : 'center',
+      image_fit: ['cover', 'contain'].includes(image_fit) ? image_fit : 'cover'
     });
 
     res.json({ message: 'Banner created successfully', banner: newBanner });
@@ -2886,7 +2914,7 @@ app.put('/api/admin/banners/:id', authenticateAdmin, upload.single('image'), asy
     const banner = db.get('banners', b => b.id === bannerId);
     if (!banner) return res.status(404).json({ error: 'Banner not found' });
 
-    const { title, description, link_url, duration_seconds, status, display_order, image_url_input } = req.body || {};
+    const { title, description, link_url, duration_seconds, status, display_order, image_url_input, image_position, image_fit } = req.body || {};
 
     let image_url = banner.image_url;
     if (req.file) {
@@ -2918,7 +2946,9 @@ app.put('/api/admin/banners/:id', authenticateAdmin, upload.single('image'), asy
       link_url: link_url !== undefined ? link_url.trim() : banner.link_url,
       duration_seconds: duration_seconds ? Math.max(2, Math.min(60, Number(duration_seconds))) : banner.duration_seconds,
       status: status !== undefined ? status : banner.status,
-      display_order: display_order !== undefined ? Number(display_order) : banner.display_order
+      display_order: display_order !== undefined ? Number(display_order) : banner.display_order,
+      image_position: image_position !== undefined ? image_position : (banner.image_position || 'center'),
+      image_fit: image_fit !== undefined ? image_fit : (banner.image_fit || 'cover')
     });
 
     res.json({ message: 'Banner updated successfully', banner: db.get('banners', b => b.id === bannerId) });
@@ -3206,7 +3236,7 @@ app.get('/api/applications/:id', (req, res) => {
   const category = service ? db.get('categories', c => c.id === service.category_id) : null;
   const fieldValues = db.all('application_field_values', f => f.application_id === application.id);
   const docs = db.all('application_documents', d => d.application_id === application.id);
-  const payment = db.get('payments', p => p.application_id === application.id);
+  const payment = db.get('payments', p => (p.application_id && p.application_id === application.id) || (application.application_number && p.application_number === application.application_number));
   const history = db.all('application_status_history', h => h.application_id === application.id)
                     .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
@@ -3537,6 +3567,583 @@ app.delete(['/api/admin/users/:id', '/api/admin/customers/:id'], authenticateAdm
     } catch (e) {}
 
     res.json({ message: 'Citizen user account deleted successfully', user_id: userId });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ==========================================
+// ADMIN COMPREHENSIVE REPORTS ENDPOINTS
+// 1. User Profile List
+// 2. Pending List
+// 3. Payment Pending List
+// 4. Payment Paid List
+// 5. Abandoned List
+// + Database Maintenance & Clear Endpoints
+// ==========================================
+
+// 1. User Profile List Report
+app.get('/api/admin/reports/user-profiles', authenticateAdmin, (req, res) => {
+  try {
+    const users = db.all('users').filter(u => !u.is_admin && u.role !== 'admin' && !(u.email && u.email.toLowerCase().includes('admin')));
+    const applications = db.all('applications');
+
+    const result = users.map(u => {
+      const uEmail = (u.email || '').trim().toLowerCase();
+      const uPhone = (u.phone || '').replace(/\D/g, '');
+      const uIdStr = String(u.id);
+
+      const userApps = applications.filter(a => {
+        const aUserId = a.user_id ? String(a.user_id) : '';
+        const aEmail = (a.user_email || a.applicant_email || a.email || '').trim().toLowerCase();
+        const aPhone = (a.user_phone || a.applicant_phone || a.phone || '').replace(/\D/g, '');
+        return (aUserId && aUserId === uIdStr) || (uEmail && aEmail === uEmail) || (uPhone && aPhone.length >= 10 && aPhone.endsWith(uPhone.slice(-10)));
+      });
+
+      const pendingApps = userApps.filter(a => {
+        const s = (a.status || '').toLowerCase();
+        return s === 'pending' || s === 'submitted' || s === 'under review' || s === 'under_review' || s === 'processing' || s === 'in process';
+      });
+
+      const completedApps = userApps.filter(a => {
+        const s = (a.status || '').toLowerCase();
+        return s === 'completed' || s === 'approved';
+      });
+
+      const paymentPendingApps = userApps.filter(a => {
+        const ps = (a.payment_status || '').toLowerCase();
+        return ps === 'pending' || ps === 'payment_pending' || ps === 'unpaid';
+      });
+
+      const totalSpent = userApps.reduce((sum, a) => {
+        const ps = (a.payment_status || '').toLowerCase();
+        if (ps === 'paid' || ps === 'completed' || ps === 'success') {
+          return sum + (Number(a.total_fee !== undefined ? a.total_fee : a.fee_amount) || 0);
+        }
+        return sum;
+      }, 0);
+
+      const sortedApps = [...userApps].sort((a, b) => new Date(b.created_at || b.submitted_at || 0) - new Date(a.created_at || a.submitted_at || 0));
+
+      return {
+        id: u.id,
+        name: u.name || 'Citizen User',
+        email: u.email || '',
+        phone: u.phone || '',
+        aadhaar_no: u.aadhaar_no ? (u.aadhaar_no.length > 4 ? `XXXX-XXXX-${u.aadhaar_no.slice(-4)}` : u.aadhaar_no) : 'Not Provided',
+        raw_aadhaar: u.aadhaar_no || '',
+        address: u.address || 'Address not registered',
+        district: u.district || 'Tamil Nadu',
+        pincode: u.pincode || '',
+        status: u.status || 'Active',
+        created_at: u.created_at || new Date().toISOString(),
+        total_applications: userApps.length,
+        pending_count: pendingApps.length,
+        completed_count: completedApps.length,
+        payment_pending_count: paymentPendingApps.length,
+        total_spent: totalSpent,
+        last_application_date: sortedApps[0] ? (sortedApps[0].created_at || sortedApps[0].submitted_at) : null
+      };
+    }).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 2. Pending Applications Report
+app.get('/api/admin/reports/pending', authenticateAdmin, (req, res) => {
+  try {
+    const applications = db.all('applications');
+    const services = db.all('services');
+    const categories = db.all('categories');
+    const serviceMap = Object.fromEntries(services.map(s => [s.id, s]));
+    const catMap = Object.fromEntries(categories.map(c => [c.id, c.name]));
+
+    const pendingList = applications.filter(a => {
+      const s = (a.status || '').toLowerCase().trim();
+      const num = (a.application_number || '').toUpperCase();
+      const isPendingStatus = (
+        s === 'pending' ||
+        s === 'submitted' ||
+        s === 'under review' ||
+        s === 'under_review' ||
+        s === 'processing' ||
+        s === 'in process'
+      );
+      return isPendingStatus && !num.includes('DRAFT');
+    }).map(a => {
+      const srv = serviceMap[a.service_id];
+      const createdDate = new Date(a.submitted_at || a.created_at || Date.now());
+      const now = new Date();
+      const daysPending = Math.max(0, Math.floor((now - createdDate) / (1000 * 60 * 60 * 24)));
+
+      return {
+        id: a.id,
+        application_number: a.application_number,
+        applicant_name: a.user_name || a.applicant_name || 'Citizen',
+        applicant_email: a.user_email || a.applicant_email || '',
+        applicant_phone: a.user_phone || a.applicant_phone || '',
+        service_id: a.service_id,
+        service_name: srv ? srv.name : (a.service_name || 'Digital Service'),
+        category_name: srv ? (catMap[srv.category_id] || '') : (a.category_name || ''),
+        status: a.status || 'Pending',
+        current_step: a.current_step || 5,
+        fee_amount: Number(a.total_fee !== undefined ? a.total_fee : (a.fee_amount || (srv ? srv.fee : 0))) || 0,
+        payment_status: a.payment_status || 'PENDING',
+        created_at: a.created_at,
+        submitted_at: a.submitted_at || a.created_at,
+        days_pending: daysPending,
+        remarks: a.admin_remarks || a.remarks || ''
+      };
+    }).sort((a, b) => new Date(b.submitted_at || b.created_at) - new Date(a.submitted_at || a.created_at));
+
+    res.json(pendingList);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 3. Payment Pending List Report
+app.get('/api/admin/reports/payment-pending', authenticateAdmin, (req, res) => {
+  try {
+    const applications = db.all('applications');
+    const services = db.all('services');
+    const serviceMap = Object.fromEntries(services.map(s => [s.id, s]));
+
+    const unpaidApps = applications.filter(a => {
+      const ps = (a.payment_status || '').toLowerCase().trim();
+      const s = (a.status || '').toLowerCase().trim();
+      const isUnpaid = ps === 'pending' || ps === 'payment_pending' || ps === 'unpaid' || s === 'payment_pending';
+      const isNotDraft = !((a.application_number || '').includes('DRAFT'));
+      return isUnpaid && isNotDraft;
+    }).map(a => {
+      const srv = serviceMap[a.service_id];
+      const fee = Number(a.total_fee !== undefined ? a.total_fee : (a.fee_amount || (srv ? srv.fee : 0))) || 0;
+      const createdDate = new Date(a.created_at || Date.now());
+      const now = new Date();
+      const daysOverdue = Math.max(0, Math.floor((now - createdDate) / (1000 * 60 * 60 * 24)));
+
+      return {
+        id: a.id,
+        application_number: a.application_number,
+        applicant_name: a.user_name || a.applicant_name || 'Citizen',
+        applicant_email: a.user_email || a.applicant_email || '',
+        applicant_phone: a.user_phone || a.applicant_phone || '',
+        service_id: a.service_id,
+        service_name: srv ? srv.name : (a.service_name || 'Digital Service'),
+        fee_amount: fee,
+        payment_status: 'PENDING',
+        created_at: a.created_at,
+        days_overdue: daysOverdue,
+        current_step: a.current_step || 4,
+        payment_gateway: 'PhonePe PG',
+        remarks: a.admin_remarks || a.remarks || 'Payment settlement awaited'
+      };
+    }).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+    res.json(unpaidApps);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 4. Payment Paid List Report
+app.get('/api/admin/reports/payment-paid', authenticateAdmin, (req, res) => {
+  try {
+    const payments = db.all('payments');
+    const applications = db.all('applications');
+    const services = db.all('services');
+    const users = db.all('users');
+
+    const appMap = Object.fromEntries(applications.map(a => [a.id, a]));
+    const appNumMap = Object.fromEntries(applications.map(a => [a.application_number, a]));
+    const srvMap = Object.fromEntries(services.map(s => [s.id, s]));
+    const userMap = Object.fromEntries(users.map(u => [u.id, u]));
+
+    const paidList = [];
+    const seenAppIds = new Set();
+
+    // 1. Collect from payments table
+    payments.forEach(p => {
+      const status = (p.payment_status || p.status || '').toLowerCase();
+      if (status === 'success' || status === 'paid' || status === 'completed') {
+        const app = appMap[p.application_id] || (p.application_number ? appNumMap[p.application_number] : null);
+        if (app) seenAppIds.add(app.id);
+
+        const srv = app ? srvMap[app.service_id] : null;
+        const user = (app && userMap[app.user_id]) || (p.user_id && userMap[p.user_id]);
+
+        paidList.push({
+          id: p.id,
+          receipt_number: `REC-2026-${String(p.id).padStart(6, '0')}`,
+          transaction_id: p.payment_transaction_id || p.payment_id || `TXN-${p.id}`,
+          order_id: p.payment_order_id || p.order_id || 'ORDER-ONLINE',
+          application_id: app ? app.id : p.application_id,
+          application_number: app ? app.application_number : (p.application_number || 'ESV-2026-N/A'),
+          applicant_name: (user && user.name) || (app && (app.user_name || app.applicant_name)) || 'Citizen',
+          applicant_email: (user && user.email) || (app && (app.user_email || app.applicant_email)) || '',
+          applicant_phone: (user && user.phone) || (app && (app.user_phone || app.applicant_phone)) || '',
+          service_name: srv ? srv.name : (app && app.service_name ? app.service_name : 'E-Seva Service'),
+          amount: Number(p.amount) || (app ? Number(app.total_fee || app.fee_amount) : 0),
+          payment_method: p.payment_method || p.payment_gateway || 'PhonePe / UPI',
+          paid_at: p.completed_at || p.transaction_date || p.created_at || new Date().toISOString(),
+          status: 'PAID'
+        });
+      }
+    });
+
+    // 2. Add applications marked as paid if not already in payments
+    applications.forEach(app => {
+      const ps = (app.payment_status || '').toLowerCase();
+      if ((ps === 'paid' || ps === 'completed') && !seenAppIds.has(app.id)) {
+        const srv = srvMap[app.service_id];
+        const user = userMap[app.user_id];
+        paidList.push({
+          id: 900000 + app.id,
+          receipt_number: `REC-2026-${String(app.id).padStart(6, '0')}`,
+          transaction_id: app.payment_transaction_id || `TXN-APP-${app.id}`,
+          order_id: 'VERIFIED-ORDER',
+          application_id: app.id,
+          application_number: app.application_number,
+          applicant_name: (user && user.name) || app.user_name || app.applicant_name || 'Citizen',
+          applicant_email: (user && user.email) || app.user_email || app.applicant_email || '',
+          applicant_phone: (user && user.phone) || app.user_phone || app.applicant_phone || '',
+          service_name: srv ? srv.name : (app.service_name || 'E-Seva Service'),
+          amount: Number(app.total_fee !== undefined ? app.total_fee : app.fee_amount) || (srv ? srv.fee : 0),
+          payment_method: 'PhonePe PG',
+          paid_at: app.updated_at || app.created_at,
+          status: 'PAID'
+        });
+      }
+    });
+
+    paidList.sort((a, b) => new Date(b.paid_at) - new Date(a.paid_at));
+    res.json(paidList);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 5. Abandoned List Report
+app.get('/api/admin/reports/abandoned', authenticateAdmin, (req, res) => {
+  try {
+    const applications = db.all('applications');
+    const services = db.all('services');
+    const serviceMap = Object.fromEntries(services.map(s => [s.id, s]));
+
+    const abandonedList = applications.filter(a => {
+      const s = (a.status || '').toLowerCase().trim();
+      const ps = (a.payment_status || '').toLowerCase().trim();
+      const num = (a.application_number || '').toUpperCase();
+      const isDraft = s === 'draft' || num.includes('DRAFT');
+      const isUnfinishedForm = (a.current_step && Number(a.current_step) < 5 && s !== 'completed' && s !== 'approved');
+      
+      const createdTime = new Date(a.created_at || 0).getTime();
+      const hoursAgo = (Date.now() - createdTime) / (1000 * 60 * 60);
+      const isStalePayment = (ps === 'pending' || ps === 'payment_pending' || ps === 'failed') && hoursAgo > 2;
+
+      return isDraft || isUnfinishedForm || isStalePayment;
+    }).map(a => {
+      const srv = serviceMap[a.service_id];
+      const step = Number(a.current_step) || 1;
+      let stageName = 'Step 1: Citizen Basic Details';
+      if (step === 2) stageName = 'Step 2: Document Proof Uploads';
+      if (step === 3) stageName = 'Step 3: Verification & Review';
+      if (step >= 4) stageName = 'Step 4/5: Payment Checkout';
+
+      const s = (a.status || '').toLowerCase().trim();
+      const ps = (a.payment_status || '').toLowerCase().trim();
+      let dropReason = 'Draft Application Incomplete';
+      if (ps === 'pending' || ps === 'failed' || step >= 4) {
+        dropReason = 'Payment Abandoned / Incomplete Checkout';
+      } else if (step === 2) {
+        dropReason = 'Document Upload Incomplete';
+      }
+
+      return {
+        id: a.id,
+        application_number: a.application_number,
+        applicant_name: a.user_name || a.applicant_name || 'Citizen User',
+        applicant_email: a.user_email || a.applicant_email || '',
+        applicant_phone: a.user_phone || a.applicant_phone || '',
+        service_id: a.service_id,
+        service_name: srv ? srv.name : (a.service_name || 'Digital Service'),
+        current_step: step,
+        stage_name: stageName,
+        drop_reason: dropReason,
+        fee_amount: Number(a.total_fee !== undefined ? a.total_fee : a.fee_amount) || (srv ? srv.fee : 0),
+        status: a.status || 'DRAFT',
+        payment_status: a.payment_status || 'UNPAID',
+        created_at: a.created_at,
+        last_updated: a.updated_at || a.created_at
+      };
+    }).sort((a, b) => new Date(b.last_updated) - new Date(a.last_updated));
+
+    res.json(abandonedList);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Database Maintenance Stats (Live counts)
+app.get('/api/admin/database/stats', authenticateAdmin, async (req, res) => {
+  try {
+    const users = db.all('users');
+    const citizenUsers = users.filter(u => !u.is_admin && u.role !== 'admin' && !(u.email && u.email.toLowerCase().includes('admin')));
+    const adminUsers = users.filter(u => u.is_admin || u.role === 'admin' || (u.email && u.email.toLowerCase().includes('admin')));
+
+    const stats = {
+      applications: (db.all('applications') || []).length,
+      application_documents: (db.all('application_documents') || []).length,
+      application_field_values: (db.all('application_field_values') || []).length,
+      payments: (db.all('payments') || []).length,
+      users: citizenUsers.length,
+      admins: adminUsers.length,
+      contact_messages: (db.all('contact_messages') || []).length,
+      career_applications: (db.all('career_applications') || []).length,
+      notifications: (db.all('notifications') || []).length,
+      services: (db.all('services') || []).length,
+      categories: (db.all('categories') || []).length,
+      banners: (db.all('banners') || []).length,
+      popups: (db.all('popup_updates') || []).length
+    };
+    res.json(stats);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Database Clear / Reset Tool
+app.post('/api/admin/database/clear', authenticateAdmin, async (req, res) => {
+  try {
+    const { scope, confirmation } = req.body;
+    if (confirmation !== 'CLEAR DATABASE') {
+      return res.status(400).json({ error: 'Safety confirmation failed. You must type "CLEAR DATABASE" exactly.' });
+    }
+
+    const validScopes = ['all', 'applications', 'payments', 'users', 'messages', 'notifications'];
+    if (!scope || !validScopes.includes(scope)) {
+      return res.status(400).json({ error: `Scope must be one of: ${validScopes.join(', ')}` });
+    }
+
+    let pool = null;
+    try {
+      const mysqlModule = await import('./database/mysql_db.js');
+      pool = mysqlModule.default || mysqlModule.pool;
+    } catch (e) {
+      console.warn('Could not import TiDB MySQL pool:', e.message);
+    }
+
+    const cleared = {
+      applications: 0,
+      documents: 0,
+      payments: 0,
+      users: 0,
+      messages: 0,
+      notifications: 0
+    };
+
+    // 1. Applications & Documents
+    if (scope === 'all' || scope === 'applications') {
+      cleared.applications = (db.data.applications || []).length;
+      cleared.documents = (db.data.application_documents || []).length;
+
+      db.data.applications = [];
+      db.data.application_field_values = [];
+      db.data.application_documents = [];
+      db.data.document_audit_history = [];
+
+      if (pool) {
+        try {
+          const conn = await pool.getConnection();
+          await conn.query('DELETE FROM applications;').catch(() => {});
+          await conn.query('DELETE FROM application_field_values;').catch(() => {});
+          await conn.query('DELETE FROM application_documents;').catch(() => {});
+          await conn.query('DELETE FROM document_audit_history;').catch(() => {});
+          conn.release();
+        } catch (e) {
+          console.warn('[TiDB Clear Applications]', e.message);
+        }
+      }
+    }
+
+    // 2. Payments
+    if (scope === 'all' || scope === 'payments') {
+      cleared.payments = (db.data.payments || []).length;
+      db.data.payments = [];
+
+      if (pool) {
+        try {
+          const conn = await pool.getConnection();
+          await conn.query('DELETE FROM payments;').catch(() => {});
+          conn.release();
+        } catch (e) {
+          console.warn('[TiDB Clear Payments]', e.message);
+        }
+      }
+    }
+
+    // 3. Citizen Users (Preserves Admin accounts)
+    if (scope === 'all' || scope === 'users') {
+      const beforeCount = (db.data.users || []).length;
+      db.data.users = (db.data.users || []).filter(u => 
+        u.is_admin === 1 || 
+        u.is_admin === true || 
+        u.role === 'admin' || 
+        (u.email && u.email.toLowerCase().includes('admin'))
+      );
+      cleared.users = beforeCount - db.data.users.length;
+
+      if (pool) {
+        try {
+          const conn = await pool.getConnection();
+          await conn.query("DELETE FROM users WHERE role != 'admin' AND email NOT LIKE '%admin%';").catch(() => {});
+          conn.release();
+        } catch (e) {
+          console.warn('[TiDB Clear Users]', e.message);
+        }
+      }
+    }
+
+    // 4. Contact Messages & Careers
+    if (scope === 'all' || scope === 'messages') {
+      cleared.messages = (db.data.contact_messages || []).length + (db.data.career_applications || []).length;
+      db.data.contact_messages = [];
+      db.data.career_applications = [];
+
+      if (pool) {
+        try {
+          const conn = await pool.getConnection();
+          await conn.query('DELETE FROM contact_messages;').catch(() => {});
+          await conn.query('DELETE FROM career_applications;').catch(() => {});
+          conn.release();
+        } catch (e) {
+          console.warn('[TiDB Clear Messages]', e.message);
+        }
+      }
+    }
+
+    // 5. Notifications
+    if (scope === 'all' || scope === 'notifications') {
+      cleared.notifications = (db.data.notifications || []).length;
+      db.data.notifications = [];
+      if (db.data.notification_delivery_logs) {
+        db.data.notification_delivery_logs = [];
+      }
+
+      if (pool) {
+        try {
+          const conn = await pool.getConnection();
+          await conn.query('DELETE FROM notifications;').catch(() => {});
+          conn.release();
+        } catch (e) {
+          console.warn('[TiDB Clear Notifications]', e.message);
+        }
+      }
+    }
+
+    // Save local JSON backup
+    db.saveLocal();
+
+    res.json({
+      success: true,
+      scope,
+      message: scope === 'all' 
+        ? 'All operational data cleared successfully. System master catalogs and Admin accounts have been preserved.' 
+        : `Database cleared for scope: ${scope}`,
+      cleared
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Admin Mark Application Fee as Paid (Manual desk/cash/challan)
+app.post('/api/admin/applications/:id/mark-paid', authenticateAdmin, async (req, res) => {
+  try {
+    const appId = Number(req.params.id);
+    const { payment_method = 'Cash / Desk Counter', remarks = 'Manually verified by admin' } = req.body;
+
+    const app = db.get('applications', a => a.id === appId);
+    if (!app) return res.status(404).json({ error: 'Application not found' });
+
+    const srv = db.get('services', s => s.id === app.service_id);
+    const fee = Number(app.total_fee !== undefined ? app.total_fee : (app.fee_amount || (srv ? srv.fee : 0)));
+
+    const paymentTxnId = `TXN-DESK-${Date.now()}`;
+    const newPayment = db.insert('payments', {
+      application_id: app.id,
+      application_number: app.application_number,
+      user_id: app.user_id,
+      amount: fee,
+      payment_method,
+      status: 'Success',
+      payment_status: 'PAID',
+      payment_gateway: 'Manual Desk / Counter',
+      payment_transaction_id: paymentTxnId,
+      transaction_date: new Date().toISOString(),
+      completed_at: new Date().toISOString()
+    });
+
+    db.update('applications', a => a.id === appId, {
+      payment_status: 'PAID',
+      status: app.status === 'PAYMENT_PENDING' || app.status === 'DRAFT' ? 'Processing' : app.status,
+      payment_transaction_id: paymentTxnId,
+      admin_remarks: `${app.admin_remarks || ''} [Payment marked PAID on ${new Date().toLocaleDateString('en-IN')}: ${remarks}]`.trim()
+    });
+
+    // Send notification to user
+    try {
+      if (app.user_id) {
+        await NotificationService.sendNotification(db, {
+          userId: app.user_id,
+          applicationId: app.id,
+          type: 'PAYMENT_SUCCESS',
+          title: 'Fee Payment Verified',
+          message: `Your payment of ₹${fee} for application ${app.application_number} has been verified successfully.`,
+          data: {
+            application_number: app.application_number,
+            receipt_number: `REC-2026-${String(newPayment.id).padStart(6, '0')}`,
+            amount: fee
+          }
+        });
+      }
+    } catch (e) {}
+
+    res.json({ success: true, message: 'Application fee marked as PAID', payment: newPayment });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Admin Send Payment Reminder to Citizen
+app.post('/api/admin/applications/:id/send-payment-reminder', authenticateAdmin, async (req, res) => {
+  try {
+    const appId = Number(req.params.id);
+    const app = db.get('applications', a => a.id === appId);
+    if (!app) return res.status(404).json({ error: 'Application not found' });
+
+    const srv = db.get('services', s => s.id === app.service_id);
+    const fee = app.total_fee !== undefined ? app.total_fee : (app.fee_amount || (srv ? srv.fee : 0));
+
+    if (app.user_id) {
+      await NotificationService.sendNotification(db, {
+        userId: app.user_id,
+        applicationId: app.id,
+        type: 'PAYMENT_REMINDER',
+        title: 'Payment Pending Reminder',
+        message: `Your application ${app.application_number} (${srv ? srv.name : 'E-Seva'}) is pending payment of ₹${fee}. Please complete payment to avoid cancellation.`,
+        data: {
+          application_number: app.application_number,
+          amount: fee,
+          pay_url: `/track?app=${app.application_number}`
+        }
+      });
+    }
+
+    res.json({ success: true, message: `Payment reminder sent successfully to ${app.user_name || app.applicant_name || 'applicant'}` });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

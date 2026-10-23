@@ -160,23 +160,40 @@ export default function Home() {
           
           {heroBanners.length > 0 ? (() => {
             const activeBanner = heroBanners[currentSlide] || heroBanners[0] || {};
+            const imagePosClass = activeBanner.image_position === 'bottom'
+              ? 'object-bottom'
+              : activeBanner.image_position === 'top'
+              ? 'object-top'
+              : 'object-center';
+            const isContain = activeBanner.image_fit === 'contain' || (!activeBanner.title && activeBanner.image_fit !== 'cover');
+
             return (
-              <div className="relative bg-[#0b192c] rounded-3xl overflow-hidden shadow-2xl border border-slate-800 text-white min-h-[380px] sm:min-h-[420px] flex items-center">
+              <div className="relative bg-[#0b192c] rounded-3xl overflow-hidden shadow-2xl border border-slate-800 text-white min-h-[440px] sm:min-h-[500px] lg:min-h-[560px] flex items-center justify-center">
                 
                 {/* Active Banner Background Image */}
-                <div className="absolute inset-0 z-0">
+                <div className="absolute inset-0 z-0 overflow-hidden flex items-center justify-center">
+                  {isContain && (
+                    <img
+                      src={activeBanner.image_url}
+                      alt=""
+                      aria-hidden="true"
+                      className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-40 scale-110 pointer-events-none"
+                    />
+                  )}
                   <img
                     src={activeBanner.image_url}
                     alt={activeBanner.title || 'Hero Banner'}
-                    className={`w-full h-full object-cover transition-all duration-700 ${
+                    className={`w-full h-full transition-all duration-700 ${
+                      isContain ? 'object-contain relative z-10 max-h-[560px]' : `object-cover ${imagePosClass}`
+                    } ${
                       activeBanner.title ? 'opacity-35 scale-105' : 'opacity-100'
                     }`}
                     onError={(e) => {
-                      e.target.src = 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?q=80&w=1200&auto=format&fit=crop';
+                      e.target.style.display = 'none';
                     }}
                   />
                   {activeBanner.title && (
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#0b192c] via-[#0b192c]/90 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#0b192c] via-[#0b192c]/90 to-transparent z-10" />
                   )}
                 </div>
 

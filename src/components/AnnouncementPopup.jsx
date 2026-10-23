@@ -2,16 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { X, Sparkles, ArrowRight, ExternalLink, BellRing, CheckCircle2 } from 'lucide-react';
 
-const DEFAULT_ANNOUNCEMENT = {
-  id: 1,
-  title: 'Welcome to E-Seva Portal Services',
-  content: 'Explore our newly updated digital portal. Apply for Certificates, Aadhaar services, and Welfare schemes with instant status tracking and direct updates.',
-  image_url: 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?q=80&w=1200&auto=format&fit=crop',
-  button_text: 'Explore Services',
-  button_url: '/services',
-  badge_text: 'PORTAL UPDATE',
-  status: 'Active'
-};
 
 export default function AnnouncementPopup({ 
   previewMode = false, 
@@ -22,11 +12,13 @@ export default function AnnouncementPopup({
   const [popup, setPopup] = useState(previewData || null);
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(!previewMode);
+  const [imgError, setImgError] = useState(false);
 
   // If in preview mode, react to previewData changes
   useEffect(() => {
     if (previewMode && previewData) {
       setPopup(previewData);
+      setImgError(false);
       setIsOpen(true);
       setLoading(false);
       return;
@@ -47,18 +39,23 @@ export default function AnnouncementPopup({
         const data = await res.json();
         if (data && data.title && (data.status || 'Active').toLowerCase() === 'active') {
           setPopup(data);
+          setImgError(false);
           setTimeout(() => setIsOpen(true), 400);
+          return;
+        } else {
+          // Admin has deactivated announcements or no active popup exists
+          setPopup(null);
+          setIsOpen(false);
           return;
         }
       }
       
-      // Fallback announcement if offline, backend down, or static host
-      setPopup(DEFAULT_ANNOUNCEMENT);
-      setTimeout(() => setIsOpen(true), 400);
+      setPopup(null);
+      setIsOpen(false);
     } catch (err) {
       console.warn('Announcement popup API notice:', err);
-      setPopup(DEFAULT_ANNOUNCEMENT);
-      setTimeout(() => setIsOpen(true), 400);
+      setPopup(null);
+      setIsOpen(false);
     } finally {
       setLoading(false);
     }
@@ -87,6 +84,8 @@ export default function AnnouncementPopup({
 
   if (!isOpen || !popup) return null;
 
+  const hasValidImage = Boolean(popup.image_url && !imgError);
+
   return (
     <div 
       className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-md animate-in fade-in duration-300"
@@ -113,20 +112,29 @@ export default function AnnouncementPopup({
         </button>
 
         {/* Optional Hero Image */}
-        {popup.image_url ? (
-          <div className="relative w-full h-52 sm:h-60 bg-slate-950 overflow-hidden group">
+        {hasValidImage ? (
+          <div className="relative w-full h-72 sm:h-84 md:h-96 bg-slate-950 overflow-hidden flex items-center justify-center group">
+            {/* Blurred background for aesthetic framing */}
+            <img
+              src={popup.image_url}
+              alt=""
+              aria-hidden="true"
+              className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-40 scale-110 pointer-events-none"
+            />
+            {/* Main crisp image without cropping any text */}
             <img
               src={popup.image_url}
               alt={popup.title || 'Announcement'}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-              onError={(e) => {
-                e.target.src = 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?q=80&w=1200&auto=format&fit=crop';
+              className="relative z-10 w-full h-full object-contain mx-auto group-hover:scale-102 transition-transform duration-500 ease-out p-1.5"
+              onError={() => {
+                setImgError(true);
               }}
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-white via-white/10 to-transparent pointer-events-none" />
+            {/* Subtle top shade for badge and close button visibility */}
+            <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-black/60 to-transparent pointer-events-none z-10" />
 
             {/* Badge on top of image */}
-            <div className="absolute top-3.5 left-4 z-10">
+            <div className="absolute top-3.5 left-4 z-20">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black tracking-wide uppercase bg-orange-600/90 text-white shadow-lg backdrop-blur-md border border-orange-400/40">
                 <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
                 {popup.badge_text || 'NEW UPDATE'}
@@ -134,7 +142,7 @@ export default function AnnouncementPopup({
             </div>
           </div>
         ) : (
-          /* Header Banner when no image */
+          /* Header Banner when no image or image failed to load */
           <div className="pt-6 px-6 pb-2">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black tracking-wide uppercase bg-orange-50 text-orange-600 border border-orange-200">
               <Sparkles className="w-3.5 h-3.5 text-orange-500" />
@@ -144,7 +152,7 @@ export default function AnnouncementPopup({
         )}
 
         {/* Modal Body */}
-        <div className={`p-6 sm:p-7 space-y-4 ${popup.image_url ? '-mt-4 relative z-10' : ''}`}>
+        <div className="p-6 sm:p-7 space-y-4 relative z-10 bg-white">
           <div>
             <h3 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-snug">
               {popup.title || 'Official Announcement'}

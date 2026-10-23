@@ -619,27 +619,83 @@ export default function ApplicationDetailView() {
           <div className="space-y-6">
             
             {/* Payment Summary */}
-            <div className="bg-white rounded-3xl p-6 border border-slate-200/90 shadow-sm space-y-4">
-              <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider border-b pb-3 border-slate-100 flex items-center space-x-2">
-                <DollarSign className="w-4 h-4 text-emerald-600" />
-                <span>Payment Summary</span>
-              </h3>
+            {(() => {
+              const feeAmount = Number(details.total_fee !== undefined && details.total_fee !== null ? details.total_fee : 50);
+              const isFreeService = feeAmount === 0;
+              const appStatusUpper = (details.status || '').toUpperCase();
+              const rawPayStatus = (details.payment_status || details.payment?.payment_status || details.payment?.status || '').toUpperCase();
 
-              <div className="space-y-3 text-xs">
-                <div className="flex justify-between items-center bg-slate-50 p-3 rounded-2xl border border-slate-200">
-                  <span className="text-slate-500 font-semibold">Service Fee</span>
-                  <span className="font-extrabold text-emerald-600 text-sm">₹{details.total_fee || 50}</span>
+              const isExplicitPending =
+                appStatusUpper === 'PAYMENT_PENDING' ||
+                rawPayStatus === 'PENDING' ||
+                rawPayStatus === 'UNPAID' ||
+                rawPayStatus === 'FAILED' ||
+                rawPayStatus === 'INITIATED';
+
+              const isExplicitPaid =
+                ['PAID', 'COMPLETED', 'SUCCESS', 'VERIFIED'].includes(rawPayStatus) ||
+                (details.payment && ['PAID', 'COMPLETED', 'SUCCESS'].includes((details.payment.status || details.payment.payment_status || '').toUpperCase()));
+
+              const isPaid = isExplicitPaid || (!isExplicitPending && isFreeService) || (!isExplicitPending && ['APPROVED', 'COMPLETED', 'DISPATCHED'].includes(appStatusUpper));
+
+              const isDeskPaid = isPaid && (
+                (details.payment?.payment_method && details.payment.payment_method.toLowerCase().includes('desk')) ||
+                (details.payment_method && details.payment_method.toLowerCase().includes('desk')) ||
+                (details.payment?.payment_gateway && details.payment.payment_gateway.toLowerCase().includes('desk'))
+              );
+
+              return (
+                <div className="bg-white rounded-3xl p-6 border border-slate-200/90 shadow-sm space-y-4">
+                  <div className="flex items-center justify-between border-b pb-3 border-slate-100">
+                    <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider flex items-center space-x-2">
+                      <DollarSign className={`w-4 h-4 ${isPaid ? 'text-emerald-600' : isFreeService ? 'text-blue-600' : 'text-amber-500'}`} />
+                      <span>Payment Summary</span>
+                    </h3>
+                    <span className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full ${
+                      isPaid ? 'bg-emerald-100 text-emerald-800' : isFreeService ? 'bg-blue-100 text-blue-800' : 'bg-amber-100 text-amber-800'
+                    }`}>
+                      {isPaid ? (isDeskPaid ? 'Desk Paid' : 'Online Paid') : isFreeService ? 'Free' : 'Pending'}
+                    </span>
+                  </div>
+
+                  <div className="space-y-3 text-xs">
+                    <div className="flex justify-between items-center bg-slate-50 p-3 rounded-2xl border border-slate-200">
+                      <span className="text-slate-500 font-semibold">Service Fee</span>
+                      <span className="font-extrabold text-slate-900 text-sm">
+                        {isFreeService ? 'FREE (₹0)' : `₹${feeAmount}`}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center bg-slate-50 p-3 rounded-2xl border border-slate-200">
+                      <span className="text-slate-500 font-semibold">Payment Status</span>
+                      {isPaid ? (
+                        <span className="font-bold text-emerald-700 uppercase flex items-center space-x-1">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 inline shrink-0" />
+                          <span>PAID {isDeskPaid ? '(Desk / Cash)' : '(Online)'}</span>
+                        </span>
+                      ) : isFreeService ? (
+                        <span className="font-bold text-blue-700 uppercase flex items-center space-x-1">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-blue-600 inline shrink-0" />
+                          <span>FREE (No Fee)</span>
+                        </span>
+                      ) : (
+                        <span className="font-bold text-amber-600 uppercase flex items-center space-x-1">
+                          <Clock className="w-3.5 h-3.5 text-amber-500 inline shrink-0 animate-pulse" />
+                          <span>PENDING (Unpaid)</span>
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex justify-between items-center bg-slate-50 p-3 rounded-2xl border border-slate-200">
+                      <span className="text-slate-500 font-semibold">Gateway</span>
+                      <span className="font-bold text-slate-800">
+                        {isPaid
+                          ? (details.payment?.payment_gateway || details.payment_gateway || details.payment?.payment_method || details.payment_method || 'PhonePe PG')
+                          : (details.payment_gateway || details.payment_method || 'PhonePe PG (Pending Payment)')}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex justify-between items-center bg-slate-50 p-3 rounded-2xl border border-slate-200">
-                  <span className="text-slate-500 font-semibold">Payment Status</span>
-                  <span className="font-bold text-emerald-700 uppercase">PAID (Online)</span>
-                </div>
-                <div className="flex justify-between items-center bg-slate-50 p-3 rounded-2xl border border-slate-200">
-                  <span className="text-slate-500 font-semibold">Gateway</span>
-                  <span className="font-bold text-slate-800">{details.payment_gateway || details.payment_method || 'PhonePe PG'}</span>
-                </div>
-              </div>
-            </div>
+              );
+            })()}
 
             {/* Officer Chat Support */}
             <div className="bg-white rounded-3xl p-6 border border-slate-200/90 shadow-sm space-y-4">
