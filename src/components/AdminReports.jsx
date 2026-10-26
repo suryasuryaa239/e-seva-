@@ -11,12 +11,15 @@ import StatusBadge from './StatusBadge';
 
 export default function AdminReports({
   getAuthToken,
+  refreshKey,
   onInspectApp,
   onInspectUser,
   onOpenClearDb
 }) {
   const { addToast } = useToast();
-  const token = getAuthToken ? getAuthToken() : (localStorage.getItem('eseva_admin_token') || localStorage.getItem('token'));
+  const getActiveToken = () => {
+    return (getAuthToken ? getAuthToken() : null) || localStorage.getItem('eseva_admin_token') || localStorage.getItem('adminToken') || localStorage.getItem('token');
+  };
 
   // Active Report Tab: 'user_profiles' | 'pending' | 'payment_pending' | 'payment_paid' | 'abandoned'
   const [activeReport, setActiveReport] = useState('user_profiles');
@@ -42,12 +45,12 @@ export default function AdminReports({
     loading: false
   });
 
-  // Fetch report data on active report change
+  // Fetch report data on active report change or external refreshKey
   useEffect(() => {
     fetchActiveReportData();
     setSearchQuery('');
     setSubStatusFilter('All');
-  }, [activeReport]);
+  }, [activeReport, refreshKey]);
 
   const fetchActiveReportData = async () => {
     try {
@@ -58,9 +61,11 @@ export default function AdminReports({
       if (activeReport === 'payment_paid') endpoint = '/api/admin/reports/payment-paid';
       if (activeReport === 'abandoned') endpoint = '/api/admin/reports/abandoned';
 
+      const activeToken = getActiveToken();
       const res = await fetch(endpoint, {
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${activeToken}`,
+          'Cache-Control': 'no-cache'
         }
       });
 

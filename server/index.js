@@ -811,6 +811,7 @@ app.post('/api/auth/reset-password', async (req, res) => {
       if (!admin) return res.status(400).json({ error: 'Admin account not found or token expired' });
 
       db.update('admins', a => a.id === admin.id, {
+        password: password_hash,
         password_hash,
         reset_token: null,
         reset_expires: null
@@ -821,6 +822,7 @@ app.post('/api/auth/reset-password', async (req, res) => {
       if (!user) return res.status(400).json({ error: 'User account not found or token expired' });
 
       db.update('users', u => u.id === user.id, {
+        password: password_hash,
         password_hash,
         reset_token: null,
         reset_expires: null
@@ -3954,14 +3956,15 @@ app.post('/api/admin/database/clear', authenticateAdmin, async (req, res) => {
       db.data.application_field_values = [];
       db.data.application_documents = [];
       db.data.document_audit_history = [];
+      db.data.application_status_history = [];
 
       if (pool) {
         try {
           const conn = await pool.getConnection();
-          await conn.query('DELETE FROM applications;').catch(() => {});
           await conn.query('DELETE FROM application_field_values;').catch(() => {});
           await conn.query('DELETE FROM application_documents;').catch(() => {});
           await conn.query('DELETE FROM document_audit_history;').catch(() => {});
+          await conn.query('DELETE FROM applications;').catch(() => {});
           conn.release();
         } catch (e) {
           console.warn('[TiDB Clear Applications]', e.message);
@@ -3999,7 +4002,7 @@ app.post('/api/admin/database/clear', authenticateAdmin, async (req, res) => {
       if (pool) {
         try {
           const conn = await pool.getConnection();
-          await conn.query("DELETE FROM users WHERE role != 'admin' AND email NOT LIKE '%admin%';").catch(() => {});
+          await conn.query("DELETE FROM users WHERE (role IS NULL OR role != 'admin') AND (is_admin IS NULL OR is_admin = 0) AND (email IS NULL OR email NOT LIKE '%admin%');").catch(() => {});
           conn.release();
         } catch (e) {
           console.warn('[TiDB Clear Users]', e.message);

@@ -79,6 +79,7 @@ export default function AdminDashboard() {
 
   // Clear Database Modal State
   const [isClearDbOpen, setIsClearDbOpen] = useState(false);
+  const [reportsRefreshKey, setReportsRefreshKey] = useState(0);
 
   // Inspector & Status Update Modal State
   const [selectedApp, setSelectedApp] = useState(null);
@@ -2269,6 +2270,7 @@ export default function AdminDashboard() {
           {activeTab === 'reports' && (
             <AdminReports
               getAuthToken={getAuthToken}
+              refreshKey={reportsRefreshKey}
               onInspectApp={(app) => {
                 setSelectedApp(app);
                 setAppDetails(app);
@@ -10549,6 +10551,11 @@ export default function AdminDashboard() {
           fetchApplications();
           fetchCustomers();
           fetchPayments();
+          fetchAdminDocuments();
+          fetchAdminNotifs();
+          fetchEnquiries();
+          fetchCareers();
+          setReportsRefreshKey(k => k + 1);
         }}
         getAuthToken={getAuthToken}
       />

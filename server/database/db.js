@@ -103,111 +103,87 @@ class TiDBSupportedDatabase {
             });
 
             if (tbl === 'applications') {
-              // Intelligent non-destructive merge: preserve local records and incorporate TiDB records
-              const localApps = this.data['applications'] || [];
-              const appMap = new Map();
-
-              // 1. Load local applications first
-              for (const a of localApps) {
-                const key = a.application_number ? String(a.application_number).trim() : `id_${a.id}`;
-                appMap.set(key, { ...a });
-              }
-
-              // 2. Merge TiDB applications
-              const tidbAppNumbers = new Set();
-              for (const r of parsedRows) {
-                const key = r.application_number ? String(r.application_number).trim() : `id_${r.id}`;
-                if (r.application_number) tidbAppNumbers.add(String(r.application_number).trim());
-
-                const existing = appMap.get(key) || {};
-                const merged = {
-                  ...existing,
-                  ...r,
-                  user_name: r.user_name || r.applicant_name || existing.user_name || 'Citizen',
-                  applicant_name: r.user_name || r.applicant_name || existing.applicant_name || 'Citizen',
-                  user_email: r.user_email || r.applicant_email || existing.user_email || '',
-                  applicant_email: r.user_email || r.applicant_email || existing.applicant_email || '',
-                  user_phone: r.user_phone || r.applicant_phone || existing.user_phone || '',
-                  applicant_phone: r.user_phone || r.applicant_phone || existing.applicant_phone || '',
-                  total_fee: r.total_fee !== undefined && r.total_fee !== null ? r.total_fee : (r.fee_amount !== undefined ? r.fee_amount : (existing.total_fee || 0)),
-                  fee_amount: r.total_fee !== undefined && r.total_fee !== null ? r.total_fee : (r.fee_amount !== undefined ? r.fee_amount : (existing.total_fee || 0)),
-                  admin_remarks: r.admin_remarks || r.remarks || existing.admin_remarks || '',
-                  remarks: r.admin_remarks || r.remarks || existing.admin_remarks || '',
-                  status: r.status || existing.status || 'SUBMITTED',
-                  current_step: r.current_step || existing.current_step || 5
-                };
-                appMap.set(key, merged);
-              }
-
-              this.data['applications'] = Array.from(appMap.values()).sort((a, b) => (b.id || 0) - (a.id || 0));
-
-              // 3. Push any local applications that are missing from TiDB into TiDB
-              for (const app of localApps) {
-                if (app.application_number && !tidbAppNumbers.has(String(app.application_number).trim())) {
-                  this.persistInsertToTiDB('applications', app).catch(() => {});
-                }
-              }
-            } else if (parsedRows.length > 0) {
-              if (tbl === 'services') {
+              this.data['applications'] = parsedRows.sort((a, b) => (b.id || 0) - (a.id || 0));
+            } else if (tbl === 'services') {
+              if (parsedRows.length > 0) {
                 parsedRows.forEach((s, idx) => {
                   if (s.display_order === undefined || s.display_order === null) {
                     s.display_order = idx + 1;
                   }
                 });
                 parsedRows.sort((a, b) => (Number(a.category_id) || 99) - (Number(b.category_id) || 99) || (Number(a.display_order) || 999999) - (Number(b.display_order) || 999999) || (a.id - b.id));
+                this.data['services'] = parsedRows;
               }
+            } else if (tbl === 'categories') {
+              if (parsedRows.length > 0) {
+                this.data['categories'] = parsedRows;
+              }
+            } else if (tbl === 'admins') {
+              if (parsedRows.length > 0) {
+                this.data['admins'] = parsedRows;
+              }
+            } else if (tbl === 'banners') {
+              if (parsedRows.length > 0) {
+                this.data['banners'] = parsedRows;
+              } else {
+                const defaultBanners = (this.data['banners'] && this.data['banners'].length > 0) ? [...this.data['banners']] : [
+                  {
+                    title: 'Government Services at Your Doorstep',
+                    description: 'Apply for Community, Birth, Income & Residence Certificates online with instant tracking.',
+                    image_url: 'https://images.unsplash.com/photo-1577495508048-b635879837f1?q=80&w=1200&auto=format&fit=crop',
+                    link_url: '/services',
+                    duration_seconds: 5,
+                    status: 'Active',
+                    display_order: 1
+                  },
+                  {
+                    title: 'Fast-Track Aadhaar & Ration Card Portals',
+                    description: 'Update your biometric details, mobile number, and address seamlessly.',
+                    image_url: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=1200&auto=format&fit=crop',
+                    link_url: '/category/aadhaar',
+                    duration_seconds: 6,
+                    status: 'Active',
+                    display_order: 2
+                  },
+                  {
+                    title: 'TNeGA Verified Digital Documentation',
+                    description: 'Upload, inspect, and download official certificate records with automated SMS notifications.',
+                    image_url: 'https://images.unsplash.com/photo-1450133064473-71024230f91b?q=80&w=1200&auto=format&fit=crop',
+                    link_url: '/track',
+                    duration_seconds: 5,
+                    status: 'Active',
+                    display_order: 3
+                  }
+                ];
+                this.data['banners'] = [];
+                for (const b of defaultBanners) {
+                  this.insert('banners', b);
+                }
+              }
+            } else if (tbl === 'popup_updates') {
+              if (parsedRows.length > 0) {
+                this.data['popup_updates'] = parsedRows;
+              } else {
+                const defaultPopups = (this.data['popup_updates'] && this.data['popup_updates'].length > 0) ? [...this.data['popup_updates']] : [
+                  {
+                    title: 'New Welfare Schemes & Fast-Track Digital E-Seva',
+                    content: 'Apply for updated government community certificates, revenue services, and track application lifecycle with instant live updates.',
+                    image_url: 'https://images.unsplash.com/photo-1577495508048-b635879837f1?q=80&w=1200&auto=format&fit=crop',
+                    button_text: 'Explore Services',
+                    button_url: '/services',
+                    badge_text: 'NEW UPDATE',
+                    status: 'Active',
+                    display_order: 1
+                  }
+                ];
+                this.data['popup_updates'] = [];
+                for (const p of defaultPopups) {
+                  this.insert('popup_updates', p);
+                }
+              }
+            } else {
+              // Operational tables (users, payments, contact_messages, career_applications, notifications, application_documents, application_field_values, etc.)
               this.data[tbl] = parsedRows;
-            } else if (tbl === 'banners' && parsedRows.length === 0) {
-              const defaultBanners = (this.data['banners'] && this.data['banners'].length > 0) ? [...this.data['banners']] : [
-                {
-                  title: 'Government Services at Your Doorstep',
-                  description: 'Apply for Community, Birth, Income & Residence Certificates online with instant tracking.',
-                  image_url: 'https://images.unsplash.com/photo-1577495508048-b635879837f1?q=80&w=1200&auto=format&fit=crop',
-                  link_url: '/services',
-                  duration_seconds: 5,
-                  status: 'Active',
-                  display_order: 1
-                },
-                {
-                  title: 'Fast-Track Aadhaar & Ration Card Portals',
-                  description: 'Update your biometric details, mobile number, and address seamlessly.',
-                  image_url: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=1200&auto=format&fit=crop',
-                  link_url: '/category/aadhaar',
-                  duration_seconds: 6,
-                  status: 'Active',
-                  display_order: 2
-                },
-                {
-                  title: 'TNeGA Verified Digital Documentation',
-                  description: 'Upload, inspect, and download official certificate records with automated SMS notifications.',
-                  image_url: 'https://images.unsplash.com/photo-1450133064473-71024230f91b?q=80&w=1200&auto=format&fit=crop',
-                  link_url: '/track',
-                  duration_seconds: 5,
-                  status: 'Active',
-                  display_order: 3
-                }
-              ];
-              this.data['banners'] = [];
-              for (const b of defaultBanners) {
-                this.insert('banners', b);
-              }
-            } else if (tbl === 'popup_updates' && parsedRows.length === 0) {
-              const defaultPopups = (this.data['popup_updates'] && this.data['popup_updates'].length > 0) ? [...this.data['popup_updates']] : [
-                {
-                  title: 'New Welfare Schemes & Fast-Track Digital E-Seva',
-                  content: 'Apply for updated government community certificates, revenue services, and track application lifecycle with instant live updates.',
-                  image_url: 'https://images.unsplash.com/photo-1577495508048-b635879837f1?q=80&w=1200&auto=format&fit=crop',
-                  button_text: 'Explore Services',
-                  button_url: '/services',
-                  badge_text: 'NEW UPDATE',
-                  status: 'Active',
-                  display_order: 1
-                }
-              ];
-              this.data['popup_updates'] = [];
-              for (const p of defaultPopups) {
-                this.insert('popup_updates', p);
-              }
             }
           } catch (e) {
             console.warn(`[SYNC WARNING] Table ${tbl}:`, e.message);

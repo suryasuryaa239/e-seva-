@@ -18,7 +18,9 @@ export default function ClearDatabaseModal({
   const [statsLoading, setStatsLoading] = useState(false);
   const [stats, setStats] = useState(null);
 
-  const token = getAuthToken ? getAuthToken() : (localStorage.getItem('eseva_admin_token') || localStorage.getItem('token'));
+  const getActiveToken = () => {
+    return (getAuthToken ? getAuthToken() : null) || localStorage.getItem('eseva_admin_token') || localStorage.getItem('adminToken') || localStorage.getItem('token');
+  };
 
   // Fetch live stats when modal opens
   useEffect(() => {
@@ -31,9 +33,10 @@ export default function ClearDatabaseModal({
   const fetchStats = async () => {
     try {
       setStatsLoading(true);
+      const authToken = getActiveToken();
       const res = await fetch('/api/admin/database/stats', {
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${authToken}`
         }
       });
       if (res.ok) {
@@ -59,11 +62,12 @@ export default function ClearDatabaseModal({
 
     try {
       setLoading(true);
+      const authToken = getActiveToken();
       const res = await fetch('/api/admin/database/clear', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${authToken}`
         },
         body: JSON.stringify({
           scope,
@@ -283,9 +287,18 @@ export default function ClearDatabaseModal({
 
         {/* Safety Confirmation Input Barrier */}
         <div className="space-y-2 pt-2 border-t border-slate-100">
-          <label className="text-xs font-black text-slate-900 block">
-            Type <span className="text-rose-600 font-mono font-black uppercase bg-rose-50 px-1.5 py-0.5 rounded border border-rose-200">CLEAR DATABASE</span> to confirm:
-          </label>
+          <div className="flex items-center justify-between flex-wrap gap-1">
+            <label className="text-xs font-black text-slate-900 block">
+              Type <span className="text-rose-600 font-mono font-black uppercase bg-rose-50 px-1.5 py-0.5 rounded border border-rose-200">CLEAR DATABASE</span> to confirm:
+            </label>
+            <button
+              type="button"
+              onClick={() => setConfirmationInput('CLEAR DATABASE')}
+              className="text-[11px] font-bold text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 px-2.5 py-1 rounded-lg border border-rose-200 transition-colors cursor-pointer shadow-2xs"
+            >
+              ⚡ Fill "CLEAR DATABASE"
+            </button>
+          </div>
           <input
             type="text"
             value={confirmationInput}
