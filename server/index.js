@@ -2860,32 +2860,71 @@ app.get('/api/admin/banners', authenticateAdmin, (req, res) => {
   res.json(allBanners);
 });
 
-// Admin Create Banner
-app.post('/api/admin/banners', authenticateAdmin, upload.single('image'), async (req, res) => {
-  try {
-    const { title, description, link_url, duration_seconds, status, display_order, image_url_input, image_position, image_fit } = req.body || {};
+const bannerUploadFields = upload.fields([
+  { name: 'desktop_image', maxCount: 1 },
+  { name: 'mobile_image', maxCount: 1 },
+  { name: 'tablet_image', maxCount: 1 },
+  { name: 'image', maxCount: 1 }
+]);
 
-    let image_url = (image_url_input || '').trim();
-    if (req.file) {
-      try {
-        const fileBuffer = req.file.buffer || (req.file.path && fs.existsSync(req.file.path) ? fs.readFileSync(req.file.path) : null);
-        if (fileBuffer) {
-          image_url = await storeUploadedFile({
-            buffer: fileBuffer,
-            originalname: req.file.originalname,
-            mimetype: req.file.mimetype,
-            filename: req.file.filename,
-            subDir: 'banners'
-          });
-        }
-      } catch (uploadErr) {
-        console.warn('[Banner Create Upload Error]:', uploadErr.message);
-      }
-      if (!image_url) {
-        image_url = `/api/documents/preview-file/${req.file.filename}`;
-      }
+const uploadBannerImageFile = async (file) => {
+  if (!file) return '';
+  let uploadedUrl = '';
+  try {
+    const fileBuffer = file.buffer || (file.path && fs.existsSync(file.path) ? fs.readFileSync(file.path) : null);
+    if (fileBuffer) {
+      uploadedUrl = await storeUploadedFile({
+        buffer: fileBuffer,
+        originalname: file.originalname,
+        mimetype: file.mimetype,
+        filename: file.filename,
+        subDir: 'banners'
+      });
+    }
+  } catch (uploadErr) {
+    console.warn('[Banner Upload Error]:', uploadErr.message);
+  }
+  return uploadedUrl || `/api/documents/preview-file/${file.filename}`;
+};
+
+// Admin Create Banner
+app.post('/api/admin/banners', authenticateAdmin, bannerUploadFields, async (req, res) => {
+  try {
+    const {
+      title,
+      description,
+      link_url,
+      duration_seconds,
+      status,
+      display_order,
+      image_url_input,
+      desktop_image_url: bodyDesktopUrl,
+      mobile_image_url: bodyMobileUrl,
+      tablet_image_url: bodyTabletUrl,
+      image_position,
+      image_fit
+    } = req.body || {};
+
+    const desktopFile = req.files?.desktop_image?.[0] || req.files?.image?.[0];
+    const mobileFile = req.files?.mobile_image?.[0];
+    const tabletFile = req.files?.tablet_image?.[0];
+
+    let desktop_image_url = (bodyDesktopUrl || image_url_input || '').trim();
+    if (desktopFile) {
+      desktop_image_url = await uploadBannerImageFile(desktopFile);
     }
 
+    let mobile_image_url = (bodyMobileUrl || '').trim();
+    if (mobileFile) {
+      mobile_image_url = await uploadBannerImageFile(mobileFile);
+    }
+
+    let tablet_image_url = (bodyTabletUrl || '').trim();
+    if (tabletFile) {
+      tablet_image_url = await uploadBannerImageFile(tabletFile);
+    }
+
+    let image_url = desktop_image_url || tablet_image_url || mobile_image_url;
     if (!image_url) {
       image_url = 'https://images.unsplash.com/photo-1577495508048-b635879837f1?q=80&w=1200&auto=format&fit=crop';
     }
@@ -2895,6 +2934,9 @@ app.post('/api/admin/banners', authenticateAdmin, upload.single('image'), async 
       title: title ? title.trim() : '',
       description: description ? description.trim() : '',
       image_url,
+      desktop_image_url,
+      mobile_image_url,
+      tablet_image_url,
       link_url: link_url ? link_url.trim() : '/services',
       duration_seconds: duration_seconds ? Math.max(2, Math.min(60, Number(duration_seconds))) : 5,
       status: status || 'Active',
@@ -2910,41 +2952,63 @@ app.post('/api/admin/banners', authenticateAdmin, upload.single('image'), async 
 });
 
 // Admin Update Banner
-app.put('/api/admin/banners/:id', authenticateAdmin, upload.single('image'), async (req, res) => {
+app.put('/api/admin/banners/:id', authenticateAdmin, bannerUploadFields, async (req, res) => {
   try {
     const bannerId = Number(req.params.id);
     const banner = db.get('banners', b => b.id === bannerId);
     if (!banner) return res.status(404).json({ error: 'Banner not found' });
 
-    const { title, description, link_url, duration_seconds, status, display_order, image_url_input, image_position, image_fit } = req.body || {};
+    const {
+      title,
+      description,
+      link_url,
+      duration_seconds,
+      status,
+      display_order,
+      image_url_input,
+      desktop_image_url: bodyDesktopUrl,
+      mobile_image_url: bodyMobileUrl,
+      tablet_image_url: bodyTabletUrl,
+      image_position,
+      image_fit
+    } = req.body || {};
 
-    let image_url = banner.image_url;
-    if (req.file) {
-      try {
-        const fileBuffer = req.file.buffer || (req.file.path && fs.existsSync(req.file.path) ? fs.readFileSync(req.file.path) : null);
-        if (fileBuffer) {
-          image_url = await storeUploadedFile({
-            buffer: fileBuffer,
-            originalname: req.file.originalname,
-            mimetype: req.file.mimetype,
-            filename: req.file.filename,
-            subDir: 'banners'
-          });
-        }
-      } catch (uploadErr) {
-        console.warn('[Banner Update Upload Error]:', uploadErr.message);
-      }
-      if (!image_url) {
-        image_url = `/api/documents/preview-file/${req.file.filename}`;
-      }
-    } else if (image_url_input && image_url_input.trim()) {
-      image_url = image_url_input.trim();
+    const desktopFile = req.files?.desktop_image?.[0] || req.files?.image?.[0];
+    const mobileFile = req.files?.mobile_image?.[0];
+    const tabletFile = req.files?.tablet_image?.[0];
+
+    let desktop_image_url = banner.desktop_image_url !== undefined ? banner.desktop_image_url : (banner.image_url || '');
+    if (desktopFile) {
+      desktop_image_url = await uploadBannerImageFile(desktopFile);
+    } else if (bodyDesktopUrl !== undefined) {
+      desktop_image_url = String(bodyDesktopUrl).trim();
+    } else if (image_url_input !== undefined && String(image_url_input).trim()) {
+      desktop_image_url = String(image_url_input).trim();
     }
+
+    let mobile_image_url = banner.mobile_image_url || '';
+    if (mobileFile) {
+      mobile_image_url = await uploadBannerImageFile(mobileFile);
+    } else if (bodyMobileUrl !== undefined) {
+      mobile_image_url = String(bodyMobileUrl).trim();
+    }
+
+    let tablet_image_url = banner.tablet_image_url || '';
+    if (tabletFile) {
+      tablet_image_url = await uploadBannerImageFile(tabletFile);
+    } else if (bodyTabletUrl !== undefined) {
+      tablet_image_url = String(bodyTabletUrl).trim();
+    }
+
+    const image_url = desktop_image_url || tablet_image_url || mobile_image_url || banner.image_url;
 
     db.update('banners', b => b.id === bannerId, {
       title: title !== undefined ? title.trim() : banner.title,
       description: description !== undefined ? description.trim() : banner.description,
       image_url,
+      desktop_image_url,
+      mobile_image_url,
+      tablet_image_url,
       link_url: link_url !== undefined ? link_url.trim() : banner.link_url,
       duration_seconds: duration_seconds ? Math.max(2, Math.min(60, Number(duration_seconds))) : banner.duration_seconds,
       status: status !== undefined ? status : banner.status,

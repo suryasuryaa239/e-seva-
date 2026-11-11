@@ -42,6 +42,27 @@ export default function Home() {
 
   const [heroBanners, setHeroBanners] = useState([]);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [bannerViewport, setBannerViewport] = useState(() => {
+    if (typeof window === 'undefined') return 'desktop';
+    if (window.innerWidth < 768) return 'mobile';
+    if (window.innerWidth < 1024) return 'tablet';
+    return 'desktop';
+  });
+
+  useEffect(() => {
+    const updateBannerViewport = () => {
+      if (window.innerWidth < 768) {
+        setBannerViewport('mobile');
+      } else if (window.innerWidth < 1024) {
+        setBannerViewport('tablet');
+      } else {
+        setBannerViewport('desktop');
+      }
+    };
+    updateBannerViewport();
+    window.addEventListener('resize', updateBannerViewport);
+    return () => window.removeEventListener('resize', updateBannerViewport);
+  }, []);
 
   useEffect(() => {
     fetch('/api/banners')
@@ -160,6 +181,12 @@ export default function Home() {
           
           {heroBanners.length > 0 ? (() => {
             const activeBanner = heroBanners[currentSlide] || heroBanners[0] || {};
+            const activeBannerImage =
+              bannerViewport === 'mobile'
+                ? (activeBanner.mobile_image_url || activeBanner.tablet_image_url || activeBanner.desktop_image_url || activeBanner.image_url)
+                : bannerViewport === 'tablet'
+                ? (activeBanner.tablet_image_url || activeBanner.desktop_image_url || activeBanner.image_url || activeBanner.mobile_image_url)
+                : (activeBanner.desktop_image_url || activeBanner.image_url || activeBanner.tablet_image_url || activeBanner.mobile_image_url);
             const imagePosClass = activeBanner.image_position === 'bottom'
               ? 'object-bottom'
               : activeBanner.image_position === 'top'
@@ -174,20 +201,26 @@ export default function Home() {
                 <div className="absolute inset-0 z-0 overflow-hidden flex items-center justify-center">
                   {isContain && (
                     <img
-                      src={activeBanner.image_url}
+                      src={activeBannerImage}
                       alt=""
                       aria-hidden="true"
                       className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-40 scale-110 pointer-events-none"
+                      onLoad={(e) => {
+                        e.target.style.display = '';
+                      }}
                     />
                   )}
                   <img
-                    src={activeBanner.image_url}
+                    src={activeBannerImage}
                     alt={activeBanner.title || 'Hero Banner'}
                     className={`w-full h-full transition-all duration-700 ${
                       isContain ? 'object-contain relative z-10 max-h-[560px]' : `object-cover ${imagePosClass}`
                     } ${
                       activeBanner.title ? 'opacity-35 scale-105' : 'opacity-100'
                     }`}
+                    onLoad={(e) => {
+                      e.target.style.display = '';
+                    }}
                     onError={(e) => {
                       e.target.style.display = 'none';
                     }}

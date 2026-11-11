@@ -261,6 +261,9 @@ export async function initializeDatabaseSchema() {
         title VARCHAR(255),
         description TEXT,
         image_url TEXT NOT NULL,
+        desktop_image_url LONGTEXT,
+        mobile_image_url LONGTEXT,
+        tablet_image_url LONGTEXT,
         link_url VARCHAR(255) DEFAULT '/services',
         duration_seconds INT DEFAULT 5,
         status VARCHAR(50) DEFAULT 'Active',
@@ -345,7 +348,10 @@ export async function initializeDatabaseSchema() {
       "ALTER TABLE popup_updates ADD COLUMN IF NOT EXISTS status VARCHAR(50) DEFAULT 'Active'",
       "ALTER TABLE popup_updates ADD COLUMN IF NOT EXISTS image_url LONGTEXT",
       "ALTER TABLE popup_updates MODIFY COLUMN image_url LONGTEXT",
-      "ALTER TABLE banners MODIFY COLUMN image_url LONGTEXT"
+      "ALTER TABLE banners MODIFY COLUMN image_url LONGTEXT",
+      "ALTER TABLE banners ADD COLUMN IF NOT EXISTS desktop_image_url LONGTEXT",
+      "ALTER TABLE banners ADD COLUMN IF NOT EXISTS mobile_image_url LONGTEXT",
+      "ALTER TABLE banners ADD COLUMN IF NOT EXISTS tablet_image_url LONGTEXT"
     ];
 
     for (const sql of migrations) {

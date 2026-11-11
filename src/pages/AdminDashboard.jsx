@@ -11,7 +11,7 @@ import {
   Sliders, Image as ImageIcon, Upload, Download,
   Share2, Send, Linkedin, Twitter, Globe, Facebook, Instagram, Youtube, MessageCircle,
   GripVertical, MoveUp, MoveDown, Sparkles, Megaphone,
-  FileSpreadsheet, Database
+  FileSpreadsheet, Database, Monitor, Smartphone, Tablet
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -166,11 +166,55 @@ export default function AdminDashboard() {
     link_url: '/services',
     duration_seconds: 5,
     status: 'Active',
-    image_url_input: '',
-    image_file: null,
+    desktop_image_url_input: '',
+    desktop_image_file: null,
+    mobile_image_url_input: '',
+    mobile_image_file: null,
+    tablet_image_url_input: '',
+    tablet_image_file: null,
     image_position: 'center',
     image_fit: 'cover'
   });
+  const [bannerPreviews, setBannerPreviews] = useState({
+    desktop: '',
+    mobile: '',
+    tablet: ''
+  });
+
+  useEffect(() => {
+    const urlsToRevoke = [];
+    const resolvePreview = (file, urlInput) => {
+      if (file) {
+        try {
+          const objUrl = URL.createObjectURL(file);
+          urlsToRevoke.push(objUrl);
+          return objUrl;
+        } catch (e) {}
+      }
+      return urlInput || '';
+    };
+
+    setBannerPreviews({
+      desktop: resolvePreview(bannerForm.desktop_image_file, bannerForm.desktop_image_url_input),
+      mobile: resolvePreview(bannerForm.mobile_image_file, bannerForm.mobile_image_url_input),
+      tablet: resolvePreview(bannerForm.tablet_image_file, bannerForm.tablet_image_url_input)
+    });
+
+    return () => {
+      urlsToRevoke.forEach((u) => {
+        try {
+          URL.revokeObjectURL(u);
+        } catch (e) {}
+      });
+    };
+  }, [
+    bannerForm.desktop_image_file,
+    bannerForm.desktop_image_url_input,
+    bannerForm.mobile_image_file,
+    bannerForm.mobile_image_url_input,
+    bannerForm.tablet_image_file,
+    bannerForm.tablet_image_url_input
+  ]);
 
   const fetchBanners = async () => {
     if (!adminToken) return;
@@ -374,8 +418,12 @@ export default function AdminDashboard() {
       link_url: '/services',
       duration_seconds: 5,
       status: 'Active',
-      image_url_input: '',
-      image_file: null,
+      desktop_image_url_input: '',
+      desktop_image_file: null,
+      mobile_image_url_input: '',
+      mobile_image_file: null,
+      tablet_image_url_input: '',
+      tablet_image_file: null,
       image_position: 'center',
       image_fit: 'cover'
     });
@@ -390,8 +438,12 @@ export default function AdminDashboard() {
       link_url: b.link_url || '/services',
       duration_seconds: b.duration_seconds || 5,
       status: b.status || 'Active',
-      image_url_input: b.image_url || '',
-      image_file: null,
+      desktop_image_url_input: b.desktop_image_url !== undefined ? b.desktop_image_url : (b.image_url || ''),
+      desktop_image_file: null,
+      mobile_image_url_input: b.mobile_image_url || '',
+      mobile_image_file: null,
+      tablet_image_url_input: b.tablet_image_url || '',
+      tablet_image_file: null,
       image_position: b.image_position || 'center',
       image_fit: b.image_fit || 'cover'
     });
@@ -408,11 +460,23 @@ export default function AdminDashboard() {
       formData.append('link_url', bannerForm.link_url);
       formData.append('duration_seconds', bannerForm.duration_seconds);
       formData.append('status', bannerForm.status);
-      formData.append('image_url_input', bannerForm.image_url_input);
+      formData.append('desktop_image_url', bannerForm.desktop_image_url_input);
+      formData.append('mobile_image_url', bannerForm.mobile_image_url_input);
+      formData.append('tablet_image_url', bannerForm.tablet_image_url_input);
+      formData.append(
+        'image_url_input',
+        bannerForm.desktop_image_url_input || bannerForm.tablet_image_url_input || bannerForm.mobile_image_url_input || ''
+      );
       formData.append('image_position', bannerForm.image_position || 'center');
       formData.append('image_fit', bannerForm.image_fit || 'cover');
-      if (bannerForm.image_file) {
-        formData.append('image', bannerForm.image_file);
+      if (bannerForm.desktop_image_file) {
+        formData.append('desktop_image', bannerForm.desktop_image_file);
+      }
+      if (bannerForm.mobile_image_file) {
+        formData.append('mobile_image', bannerForm.mobile_image_file);
+      }
+      if (bannerForm.tablet_image_file) {
+        formData.append('tablet_image', bannerForm.tablet_image_file);
       }
 
       const url = editingBanner ? `/api/admin/banners/${editingBanner.id}` : '/api/admin/banners';
@@ -2569,64 +2633,85 @@ export default function AdminDashboard() {
                       } overflow-hidden flex flex-col justify-between group hover:shadow-md transition-all`}
                     >
                       {/* Banner Image Preview */}
-                      <div className="relative h-44 bg-slate-900 overflow-hidden flex items-center justify-center">
-                        {b.image_fit === 'contain' && (
-                          <img
-                            src={b.image_url}
-                            alt=""
-                            aria-hidden="true"
-                            className="absolute inset-0 w-full h-full object-cover blur-lg opacity-35 scale-110 pointer-events-none"
-                          />
-                        )}
-                        <img
-                          src={b.image_url}
-                          alt={b.title}
-                          className={`w-full h-full ${b.image_fit === 'contain' ? 'object-contain relative z-10' : 'object-cover'} ${
-                            b.image_position === 'bottom' ? 'object-bottom' : b.image_position === 'top' ? 'object-top' : 'object-center'
-                          } group-hover:scale-105 transition-transform duration-500`}
-                          onError={(e) => {
-                            e.target.style.display = 'none';
-                          }}
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent z-10 pointer-events-none" />
-                        
-                        {/* Status Badge */}
-                        <div className="absolute top-3 left-3 flex items-center space-x-2 z-20">
-                          <span
-                            className={`text-[10px] font-black uppercase px-2.5 py-1 rounded-full border shadow-sm ${
-                              b.status === 'Active'
-                                ? 'bg-emerald-500 text-white border-emerald-400'
-                                : 'bg-slate-800 text-slate-300 border-slate-700'
-                            }`}
-                          >
-                            {b.status === 'Active' ? '● Live Active' : 'Hidden / Inactive'}
-                          </span>
-                        </div>
+                      {(() => {
+                        const cardImg = b.desktop_image_url || b.image_url || b.tablet_image_url || b.mobile_image_url;
+                        return (
+                          <div className="relative h-44 bg-slate-900 overflow-hidden flex items-center justify-center">
+                            {b.image_fit === 'contain' && (
+                              <img
+                                src={cardImg}
+                                alt=""
+                                aria-hidden="true"
+                                className="absolute inset-0 w-full h-full object-cover blur-lg opacity-35 scale-110 pointer-events-none"
+                              />
+                            )}
+                            <img
+                              src={cardImg}
+                              alt={b.title}
+                              className={`w-full h-full ${b.image_fit === 'contain' ? 'object-contain relative z-10' : 'object-cover'} ${
+                                b.image_position === 'bottom' ? 'object-bottom' : b.image_position === 'top' ? 'object-top' : 'object-center'
+                              } group-hover:scale-105 transition-transform duration-500`}
+                              onError={(e) => {
+                                e.target.style.display = 'none';
+                              }}
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent z-10 pointer-events-none" />
+                            
+                            {/* Status Badge */}
+                            <div className="absolute top-3 left-3 flex items-center space-x-2 z-20">
+                              <span
+                                className={`text-[10px] font-black uppercase px-2.5 py-1 rounded-full border shadow-sm ${
+                                  b.status === 'Active'
+                                    ? 'bg-emerald-500 text-white border-emerald-400'
+                                    : 'bg-slate-800 text-slate-300 border-slate-700'
+                                }`}
+                              >
+                                {b.status === 'Active' ? '● Live Active' : 'Hidden / Inactive'}
+                              </span>
+                            </div>
 
-                        {/* Display Timer & Focus Badge */}
-                        <div className="absolute top-3 right-3 flex flex-col items-end gap-1 z-20">
-                          <span className="text-[10px] font-mono font-bold bg-slate-950/80 text-orange-400 border border-orange-500/30 px-2 py-0.5 rounded-full backdrop-blur-sm flex items-center gap-1">
-                            <Clock className="w-3 h-3" />
-                            <span>{b.duration_seconds || 5}s</span>
-                          </span>
-                          <span className="text-[9px] font-bold bg-black/75 text-slate-200 border border-slate-700 px-2 py-0.5 rounded-full backdrop-blur-sm">
-                            {b.image_fit === 'contain' ? 'Full Fit' : `Focus: ${(b.image_position || 'center').toUpperCase()}`}
-                          </span>
-                        </div>
+                            {/* Display Timer & Focus Badge */}
+                            <div className="absolute top-3 right-3 flex flex-col items-end gap-1 z-20">
+                              <span className="text-[10px] font-mono font-bold bg-slate-950/80 text-orange-400 border border-orange-500/30 px-2 py-0.5 rounded-full backdrop-blur-sm flex items-center gap-1">
+                                <Clock className="w-3 h-3" />
+                                <span>{b.duration_seconds || 5}s</span>
+                              </span>
+                              <span className="text-[9px] font-bold bg-black/75 text-slate-200 border border-slate-700 px-2 py-0.5 rounded-full backdrop-blur-sm">
+                                {b.image_fit === 'contain' ? 'Full Fit' : `Focus: ${(b.image_position || 'center').toUpperCase()}`}
+                              </span>
+                            </div>
 
-                        {/* Banner Title overlay */}
-                        <div className="absolute bottom-3 left-3 right-3 text-white">
-                          <h4 className="font-heading font-black text-sm text-white line-clamp-1">
-                            {b.title ? b.title : <span className="italic font-mono text-xs text-orange-300">🖼 Image Banner (No Text Overlay)</span>}
-                          </h4>
-                        </div>
-                      </div>
+                            {/* Banner Title overlay */}
+                            <div className="absolute bottom-3 left-3 right-3 text-white z-20">
+                              <h4 className="font-heading font-black text-sm text-white line-clamp-1">
+                                {b.title ? b.title : <span className="italic font-mono text-xs text-orange-300">🖼 Image Banner (No Text Overlay)</span>}
+                              </h4>
+                            </div>
+                          </div>
+                        );
+                      })()}
 
                       {/* Details & Actions */}
                       <div className="p-4 space-y-3 flex-1 flex flex-col justify-between">
-                        <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
-                          {b.description ? b.description : <span className="text-slate-400 italic">No text description set (Clean Image Slide)</span>}
-                        </p>
+                        <div className="space-y-2">
+                          <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
+                            {b.description ? b.description : <span className="text-slate-400 italic">No text description set (Clean Image Slide)</span>}
+                          </p>
+                          <div className="flex flex-wrap items-center gap-1.5">
+                            <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md border ${(b.desktop_image_url || b.image_url) ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-slate-50 text-slate-400 border-slate-200'}`}>
+                              <Monitor className="w-3 h-3" />
+                              Desktop
+                            </span>
+                            <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md border ${b.mobile_image_url ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-slate-50 text-slate-400 border-slate-200'}`}>
+                              <Smartphone className="w-3 h-3" />
+                              Mobile
+                            </span>
+                            <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md border ${b.tablet_image_url ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-slate-50 text-slate-400 border-slate-200'}`}>
+                              <Tablet className="w-3 h-3" />
+                              Tablet
+                            </span>
+                          </div>
+                        </div>
 
                         <div className="pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
                           <div className="text-[11px] font-mono text-slate-500 truncate max-w-[140px]" title={b.link_url}>
@@ -9872,8 +9957,8 @@ export default function AdminDashboard() {
 
       {/* ADD / EDIT BANNER MODAL */}
       {showBannerModal && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto font-sans">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-200 relative space-y-5 my-8">
+        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 font-sans">
+          <div className="bg-white rounded-3xl max-w-2xl w-full max-h-[92vh] overflow-y-auto p-6 sm:p-8 shadow-2xl border border-slate-200 relative space-y-5">
             
             <div className="flex items-start justify-between border-b border-slate-100 pb-4">
               <div className="flex items-center space-x-3">
@@ -9885,7 +9970,7 @@ export default function AdminDashboard() {
                     {editingBanner ? 'Edit Hero Banner' : 'Create New Hero Banner'}
                   </h3>
                   <p className="text-xs text-slate-500">
-                    Configure portal home slide image, caption, link, and rotation timer
+                    Configure portal home slide image (Desktop, Mobile &amp; Tablet sizes), caption, link, and rotation timer
                   </p>
                 </div>
               </div>
@@ -9975,96 +10060,140 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* Banner Artwork Image */}
-              <div className="space-y-2">
+              {/* Banner Artwork Images (3 Responsive Sizes: Desktop, Mobile, Tablet) */}
+              <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <label className="font-extrabold text-slate-800 block">
-                    Banner Artwork Image *
+                    Banner Artwork Images (3 Device Sizes) *
                   </label>
-                  <span className="text-[10px] text-orange-600 font-bold">Recommended: 1200x500px</span>
+                  <span className="text-[10px] text-orange-600 font-bold">Desktop • Mobile • Tablet</span>
                 </div>
 
-                {/* Live Image Preview Box */}
-                {(() => {
-                  let previewSrc = '';
-                  if (bannerForm.image_file) {
-                    try {
-                      previewSrc = URL.createObjectURL(bannerForm.image_file);
-                    } catch (e) {}
-                  } else if (bannerForm.image_url_input) {
-                    previewSrc = bannerForm.image_url_input;
+                {[
+                  {
+                    key: 'desktop',
+                    title: '1. Desktop Banner Image',
+                    hint: 'Shown on Computers / Laptops (>= 1024px) • Recommended: 1200×500px',
+                    icon: Monitor,
+                    fileKey: 'desktop_image_file',
+                    urlKey: 'desktop_image_url_input',
+                    previewSrc: bannerPreviews.desktop
+                  },
+                  {
+                    key: 'mobile',
+                    title: '2. Mobile Banner Image',
+                    hint: 'Shown on Smartphones (< 768px) • Recommended: 600×750px',
+                    icon: Smartphone,
+                    fileKey: 'mobile_image_file',
+                    urlKey: 'mobile_image_url_input',
+                    previewSrc: bannerPreviews.mobile
+                  },
+                  {
+                    key: 'tablet',
+                    title: '3. Tablet Banner Image',
+                    hint: 'Shown on Tablets / iPads (768px – 1023px) • Recommended: 900×550px',
+                    icon: Tablet,
+                    fileKey: 'tablet_image_file',
+                    urlKey: 'tablet_image_url_input',
+                    previewSrc: bannerPreviews.tablet
                   }
-
-                  if (!previewSrc) return null;
-
+                ].map((slot) => {
+                  const IconComp = slot.icon;
+                  const fileObj = bannerForm[slot.fileKey];
+                  const urlVal = bannerForm[slot.urlKey];
                   return (
-                    <div className="relative h-36 rounded-2xl overflow-hidden border border-slate-200 bg-slate-950 group flex items-center justify-center">
-                      {bannerForm.image_fit === 'contain' && (
-                        <img
-                          src={previewSrc}
-                          alt=""
-                          aria-hidden="true"
-                          className="absolute inset-0 w-full h-full object-cover blur-xl opacity-35 scale-110 pointer-events-none"
-                        />
+                    <div key={slot.key} className="p-3.5 bg-slate-50/80 border border-slate-200 rounded-2xl space-y-2.5">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          <div className="w-7 h-7 rounded-lg bg-[#0b192c] text-orange-400 flex items-center justify-center shrink-0">
+                            <IconComp className="w-4 h-4" />
+                          </div>
+                          <div>
+                            <div className="font-extrabold text-slate-900 text-[11px]">{slot.title}</div>
+                            <div className="text-[10px] text-slate-500">{slot.hint}</div>
+                          </div>
+                        </div>
+                        {(fileObj || urlVal) && (
+                          <button
+                            type="button"
+                            onClick={() => setBannerForm({ ...bannerForm, [slot.fileKey]: null, [slot.urlKey]: '' })}
+                            className="text-[10px] font-bold text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 px-2 py-1 rounded-lg border border-rose-200 transition-colors cursor-pointer shrink-0"
+                          >
+                            Clear
+                          </button>
+                        )}
+                      </div>
+
+                      {slot.previewSrc && (
+                        <div className="relative h-28 rounded-xl overflow-hidden border border-slate-200 bg-slate-950 flex items-center justify-center">
+                          {bannerForm.image_fit === 'contain' && (
+                            <img
+                              src={slot.previewSrc}
+                              alt=""
+                              aria-hidden="true"
+                              className="absolute inset-0 w-full h-full object-cover blur-xl opacity-35 scale-110 pointer-events-none"
+                            />
+                          )}
+                          <img
+                            src={slot.previewSrc}
+                            alt={`${slot.title} Preview`}
+                            className={`w-full h-full ${
+                              bannerForm.image_fit === 'contain' ? 'object-contain relative z-10' : 'object-cover'
+                            } ${
+                              bannerForm.image_position === 'bottom'
+                                ? 'object-bottom'
+                                : bannerForm.image_position === 'top'
+                                ? 'object-top'
+                                : 'object-center'
+                            } transition-all duration-300`}
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                            }}
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent flex items-end justify-between p-2 z-20 pointer-events-none">
+                            <span className="text-[10px] font-bold text-white bg-black/60 px-2 py-0.5 rounded backdrop-blur-sm truncate max-w-[70%]">
+                              {fileObj ? `File: ${fileObj.name}` : `${slot.key.toUpperCase()} Preview`}
+                            </span>
+                            <span className="text-[9px] font-black uppercase tracking-wider text-orange-400 bg-black/60 px-2 py-0.5 rounded backdrop-blur-sm">
+                              {bannerForm.image_fit === 'contain' ? 'Contain' : `Focus: ${bannerForm.image_position || 'center'}`}
+                            </span>
+                          </div>
+                        </div>
                       )}
-                      <img
-                        src={previewSrc}
-                        alt="Preview"
-                        className={`w-full h-full ${
-                          bannerForm.image_fit === 'contain' ? 'object-contain relative z-10' : 'object-cover'
-                        } ${
-                          bannerForm.image_position === 'bottom'
-                            ? 'object-bottom'
-                            : bannerForm.image_position === 'top'
-                            ? 'object-top'
-                            : 'object-center'
-                        } transition-all duration-300`}
-                        onError={(e) => {
-                          e.target.style.display = 'none';
-                        }}
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent flex items-end justify-between p-2.5 z-20 pointer-events-none">
-                        <span className="text-[10px] font-bold text-white bg-black/60 px-2 py-0.5 rounded backdrop-blur-sm">
-                          {bannerForm.image_file ? `File: ${bannerForm.image_file.name}` : 'Live Preview'}
-                        </span>
-                        <span className="text-[10px] font-black uppercase tracking-wider text-orange-400 bg-black/60 px-2 py-0.5 rounded backdrop-blur-sm">
-                          {bannerForm.image_fit === 'contain' ? 'Fit: Full (Contain)' : `Focus: ${bannerForm.image_position || 'center'}`}
-                        </span>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <div className="space-y-1">
+                          <span className="text-[10px] text-slate-500 block font-semibold">Upload {slot.key} image (JPG/PNG/WEBP):</span>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => {
+                              if (e.target.files && e.target.files[0]) {
+                                setBannerForm({ ...bannerForm, [slot.fileKey]: e.target.files[0] });
+                              }
+                            }}
+                            className="w-full text-[11px] text-slate-600 bg-white border border-slate-300 rounded-xl p-2 cursor-pointer file:mr-2.5 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-extrabold file:bg-[#0b192c] file:text-white"
+                          />
+                        </div>
+
+                        <div className="space-y-1">
+                          <span className="text-[10px] text-slate-500 block font-semibold">OR {slot.key} Image Web URL:</span>
+                          <input
+                            type="url"
+                            placeholder="https://images.unsplash.com/..."
+                            value={urlVal}
+                            onChange={(e) => setBannerForm({ ...bannerForm, [slot.urlKey]: e.target.value })}
+                            className="w-full bg-white border border-slate-300 rounded-xl p-2 text-slate-900 font-mono text-[11px] outline-none focus:border-orange-500"
+                          />
+                        </div>
                       </div>
                     </div>
                   );
-                })()}
-
-                {/* File Upload Input */}
-                <div className="space-y-1">
-                  <span className="text-[10px] text-slate-500 block font-semibold">Upload Image File (JPG/PNG/WEBP):</span>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => {
-                      if (e.target.files && e.target.files[0]) {
-                        setBannerForm({ ...bannerForm, image_file: e.target.files[0] });
-                      }
-                    }}
-                    className="w-full text-xs text-slate-600 bg-slate-50 border border-slate-300 rounded-xl p-2.5 cursor-pointer file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-extrabold file:bg-[#0b192c] file:text-white"
-                  />
-                </div>
-
-                {/* Image URL Input */}
-                <div className="space-y-1">
-                  <span className="text-[10px] text-slate-500 block font-semibold">OR Image Web URL:</span>
-                  <input
-                    type="url"
-                    placeholder="https://images.unsplash.com/..."
-                    value={bannerForm.image_url_input}
-                    onChange={(e) => setBannerForm({ ...bannerForm, image_url_input: e.target.value })}
-                    className="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-slate-900 font-mono text-[11px] outline-none focus:border-orange-500"
-                  />
-                </div>
+                })}
 
                 {/* Quick High-Quality Presets */}
                 <div className="pt-1">
-                  <span className="text-[10px] font-bold text-slate-400 block mb-1">Quick Presets:</span>
+                  <span className="text-[10px] font-bold text-slate-400 block mb-1">Quick Presets (Desktop):</span>
                   <div className="flex flex-wrap gap-1.5">
                     {[
                       { name: '🏛️ Digital Governance', url: 'https://images.unsplash.com/photo-1577495508048-b635879837f1?q=80&w=1200&auto=format&fit=crop' },
@@ -10075,7 +10204,7 @@ export default function AdminDashboard() {
                       <button
                         key={idx}
                         type="button"
-                        onClick={() => setBannerForm({ ...bannerForm, image_url_input: p.url, image_file: null })}
+                        onClick={() => setBannerForm({ ...bannerForm, desktop_image_url_input: p.url, desktop_image_file: null })}
                         className="px-2 py-1 text-[10px] font-bold bg-slate-100 hover:bg-orange-50 hover:text-orange-700 text-slate-700 rounded-lg border border-slate-200 transition-colors"
                       >
                         {p.name}
@@ -10196,7 +10325,19 @@ export default function AdminDashboard() {
                 </button>
                 <button
                   type="submit"
-                  disabled={savingBanner || (!bannerForm.image_file && !bannerForm.image_url_input.trim() && !bannerForm.title.trim() && !editingBanner)}
+                  disabled={
+                    savingBanner ||
+                    (
+                      !bannerForm.desktop_image_file &&
+                      !bannerForm.desktop_image_url_input.trim() &&
+                      !bannerForm.mobile_image_file &&
+                      !bannerForm.mobile_image_url_input.trim() &&
+                      !bannerForm.tablet_image_file &&
+                      !bannerForm.tablet_image_url_input.trim() &&
+                      !bannerForm.title.trim() &&
+                      !editingBanner
+                    )
+                  }
                   className="px-5 py-2.5 bg-[#0b192c] hover:bg-orange-600 text-white font-extrabold rounded-xl shadow-md transition-all flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
                 >
                   {savingBanner ? (
