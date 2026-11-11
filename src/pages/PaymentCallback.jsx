@@ -14,13 +14,17 @@ import {
   ExternalLink
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import { hasCitizenSession } from '../utils/guestApplyAccess';
 
 export default function PaymentCallback() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { lang } = useLanguage();
+  const { user, userToken } = useAuth();
   const { addToast } = useToast();
+  const isCitizenAuthenticated = hasCitizenSession(user, userToken);
 
   const merchantTransactionId = searchParams.get('merchantTransactionId') || searchParams.get('txnId');
   const appId = searchParams.get('appId');
@@ -71,7 +75,7 @@ export default function PaymentCallback() {
   const handleRetryPayment = async () => {
     const targetAppId = appId || paymentData?.application_id;
     if (!targetAppId) {
-      navigate('/my-applications');
+      navigate(isCitizenAuthenticated ? '/my-applications' : '/');
       return;
     }
 
@@ -224,23 +228,38 @@ export default function PaymentCallback() {
                     <span>{lang === 'ta' ? 'ரசீதை அச்சிடுக' : 'Print Fee Receipt'}</span>
                   </button>
 
-                  <Link
-                    to={`/my-applications/${paymentData.application_id || appId}`}
-                    className="w-full py-3.5 px-4 bg-[#0b192c] hover:bg-slate-800 text-white text-xs font-bold rounded-xl transition-all shadow-md flex items-center justify-center gap-2"
-                  >
-                    <FileText className="w-4 h-4 text-orange-400" />
-                    <span>{lang === 'ta' ? 'விண்ணப்பத்தைப் பார்க்கவும்' : 'View Application'}</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
+                  {isCitizenAuthenticated ? (
+                    <Link
+                      to={`/my-applications/${paymentData.application_id || appId}`}
+                      className="w-full py-3.5 px-4 bg-[#0b192c] hover:bg-slate-800 text-white text-xs font-bold rounded-xl transition-all shadow-md flex items-center justify-center gap-2"
+                    >
+                      <FileText className="w-4 h-4 text-orange-400" />
+                      <span>{lang === 'ta' ? 'விண்ணப்பத்தைப் பார்க்கவும்' : 'View Application'}</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </Link>
+                  ) : (
+                    <Link
+                      to={paymentData.application_number ? `/track?appId=${encodeURIComponent(paymentData.application_number)}` : '/track'}
+                      className="w-full py-3.5 px-4 bg-[#0b192c] hover:bg-slate-800 text-white text-xs font-bold rounded-xl transition-all shadow-md flex items-center justify-center gap-2"
+                    >
+                      <FileText className="w-4 h-4 text-orange-400" />
+                      <span>{lang === 'ta' ? 'விண்ணப்பத்தைக் கண்காணிக்கவும்' : 'Track Application'}</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </Link>
+                  )}
                 </div>
 
                 <div className="text-center pt-2">
                   <Link
-                    to="/dashboard"
+                    to={isCitizenAuthenticated ? '/dashboard' : '/'}
                     className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-900 transition-colors"
                   >
                     <Home className="w-3.5 h-3.5" />
-                    <span>{lang === 'ta' ? 'முகப்பு டாஷ்போர்டுக்கு செல்க' : 'Return to Citizen Dashboard'}</span>
+                    <span>
+                      {isCitizenAuthenticated
+                        ? (lang === 'ta' ? 'முகப்பு டாஷ்போர்டுக்கு செல்க' : 'Return to Citizen Dashboard')
+                        : (lang === 'ta' ? 'முகப்புப் பக்கத்திற்கு செல்க' : 'Return to Home')}
+                    </span>
                   </Link>
                 </div>
               </div>
@@ -277,10 +296,14 @@ export default function PaymentCallback() {
                 <span>{lang === 'ta' ? 'மீண்டும் சரிபார்க்கவும்' : 'Check Status Again'}</span>
               </button>
               <Link
-                to="/my-applications"
+                to={isCitizenAuthenticated ? '/my-applications' : '/'}
                 className="w-full sm:w-auto px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl flex items-center justify-center gap-2 transition-colors"
               >
-                <span>{lang === 'ta' ? 'என் விண்ணப்பங்கள்' : 'Go to My Applications'}</span>
+                <span>
+                  {isCitizenAuthenticated
+                    ? (lang === 'ta' ? 'என் விண்ணப்பங்கள்' : 'Go to My Applications')
+                    : (lang === 'ta' ? 'முகப்புப் பக்கத்திற்கு செல்க' : 'Return to Home')}
+                </span>
               </Link>
             </div>
           </div>
@@ -326,10 +349,14 @@ export default function PaymentCallback() {
               </button>
 
               <Link
-                to="/my-applications"
+                to={isCitizenAuthenticated ? '/my-applications' : '/'}
                 className="w-full sm:w-auto px-6 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl flex items-center justify-center gap-2 transition-colors"
               >
-                <span>{lang === 'ta' ? 'என் விண்ணப்பங்கள்' : 'View My Applications'}</span>
+                <span>
+                  {isCitizenAuthenticated
+                    ? (lang === 'ta' ? 'என் விண்ணப்பங்கள்' : 'View My Applications')
+                    : (lang === 'ta' ? 'முகப்புப் பக்கத்திற்கு செல்க' : 'Return to Home')}
+                </span>
               </Link>
             </div>
           </div>

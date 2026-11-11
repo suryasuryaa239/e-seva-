@@ -19,6 +19,7 @@ import { getLocalizedSectionTitle, getLocalizedFieldLabel, getLocalizedOption, g
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import { isGuestApplyAllowedParam, hasCitizenSession, isValidStoredAuthValue } from '../utils/guestApplyAccess';
 
 export function isDocMandatory(doc) {
   if (!doc) return false;
@@ -111,6 +112,7 @@ export default function ApplyService() {
 
   // Application Draft Reference
   const [draftId, setDraftId] = useState(draftIdParam || null);
+  const [draftAppNumber, setDraftAppNumber] = useState(null);
   const [submittedApp, setSubmittedApp] = useState(null);
   const [copiedAppId, setCopiedAppId] = useState(false);
 
@@ -181,7 +183,10 @@ export default function ApplyService() {
     return [];
   };
 
-  const { user, admin } = useAuth();
+  const { user, admin, userToken, loading: authLoading } = useAuth();
+  const { addToast } = useToast();
+  const isCitizenAuthenticated = hasCitizenSession(user, userToken);
+  const isGuestAllowed = isGuestApplyAllowedParam(serviceParam, service);
 
   useEffect(() => {
     fetchService();
@@ -213,9 +218,9 @@ export default function ApplyService() {
 
     const loadDraftData = async () => {
       try {
-        const token = localStorage.getItem('token') || localStorage.getItem('eseva_user_token');
+        const rawToken = userToken || localStorage.getItem('token') || localStorage.getItem('eseva_user_token');
         const headers = {};
-        if (token) headers.Authorization = `Bearer ${token}`;
+        if (isValidStoredAuthValue(rawToken)) headers.Authorization = `Bearer ${rawToken}`;
 
         const res = await fetch(`/api/applications/${activeDraftId}`, { headers });
         if (!res.ok) return;
@@ -365,16 +370,17 @@ export default function ApplyService() {
         const data = await res.json();
 
         // Fallback to catalog definition if API fields or documents are empty
+        const fallbackLookupKey = data.slug || serviceParam;
         let rawFields = Array.isArray(data.fields) ? data.fields : [];
         if (rawFields.length === 0) {
-          const fallbackDef = getServiceDefinition(serviceParam, lang);
+          const fallbackDef = getServiceDefinition(fallbackLookupKey, lang);
           if (fallbackDef && fallbackDef.fields && fallbackDef.fields.length > 0) {
             rawFields = fallbackDef.fields;
           }
         }
         let rawDocs = Array.isArray(data.documents) ? data.documents : [];
         if (rawDocs.length === 0) {
-          const fallbackDef = getServiceDefinition(serviceParam, lang);
+          const fallbackDef = getServiceDefinition(fallbackLookupKey, lang);
           if (fallbackDef && fallbackDef.documents && fallbackDef.documents.length > 0) {
             rawDocs = fallbackDef.documents;
           }
@@ -454,7 +460,7 @@ export default function ApplyService() {
       }
 
       const userTok = localStorage.getItem('eseva_user_token') || localStorage.getItem('token') || localStorage.getItem('eseva_admin_token');
-      if (userTok) {
+      if (isValidStoredAuthValue(userTok)) {
         try {
           const meRes = await fetch('/api/auth/me', {
             headers: { Authorization: `Bearer ${userTok}` }
@@ -785,10 +791,10 @@ export default function ApplyService() {
       });
       formData.append('doc_metadata', JSON.stringify(docMetadataMap));
 
-      const token = localStorage.getItem('token') || localStorage.getItem('eseva_user_token');
+      const rawToken = userToken || localStorage.getItem('token') || localStorage.getItem('eseva_user_token');
       const headers = {};
-      if (token && token !== 'null' && token !== 'undefined') {
-        headers.Authorization = `Bearer ${token}`;
+      if (isValidStoredAuthValue(rawToken)) {
+        headers.Authorization = `Bearer ${rawToken}`;
       }
 
       const res = await fetch('/api/applications/draft', {
@@ -801,16 +807,33 @@ export default function ApplyService() {
       if (!res.ok) throw new Error(data.error || 'Failed to save draft');
 
       setDraftId(data.application_id);
+      if (data.application_number) {
+        setDraftAppNumber(data.application_number);
+      }
 
-      // Trigger automatic toast popup ("Your application saved in draft")
-      addToast(
-        lang === 'ta' ? 'உங்கள் விண்ணப்பம் வரைவாகச் சேமிக்கப்பட்டது' : 'Your application saved in draft',
-        'success',
-        3000
-      );
+      if (isCitizenAuthenticated) {
+        // Trigger automatic toast popup ("Your application saved in draft")
+        addToast(
+          lang === 'ta' ? 'உங்கள் விண்ணப்பம் வரைவாகச் சேமிக்கப்பட்டது' : 'Your application saved in draft',
+          'success',
+          3000
+        );
 
-      // Immediately navigate from current form page to My Applications portfolio page
-      navigate('/my-applications');
+        // Immediately navigate from current form page to My Applications portfolio page
+        navigate('/my-applications');
+      } else {
+        const draftMsg = lang === 'ta'
+          ? `உங்கள் விண்ணப்பம் வரைவாகச் சேமிக்கப்பட்டது (${data.application_number}).`
+          : `Application saved as draft (Ref: ${data.application_number}).`;
+        setDraftSavedMessage(draftMsg);
+        setSearchParams(prev => {
+          const nextParams = new URLSearchParams(prev);
+          nextParams.set('draftId', String(data.application_id));
+          nextParams.set('step', String(currentStep || 1));
+          return nextParams;
+        }, { replace: true });
+        addToast(draftMsg, 'success', 4000);
+      }
     } catch (err) {
       console.error('Save draft error:', err);
       addToast(err.message || (lang === 'ta' ? 'வரைவாக சேமிப்பதில் தோல்வி' : 'Failed to save draft'), 'error', 3000);
@@ -863,7 +886,8 @@ export default function ApplyService() {
       });
       formData.append('doc_metadata', JSON.stringify(docMetadataMap));
 
-      const token = localStorage.getItem('token');
+      const rawToken = userToken || localStorage.getItem('token') || localStorage.getItem('eseva_user_token');
+      const token = (rawToken && rawToken !== 'null' && rawToken !== 'undefined') ? rawToken : null;
       const headers = {};
       if (token) headers.Authorization = `Bearer ${token}`;
 
@@ -920,13 +944,9 @@ export default function ApplyService() {
     }
   };
 
-  const { userToken, loading: authLoading } = useAuth();
-  const { addToast } = useToast();
-
   useEffect(() => {
-    const token = userToken || localStorage.getItem('token') || localStorage.getItem('eseva_user_token');
-    const savedUser = localStorage.getItem('eseva_saved_user');
-    if (!authLoading && !user && !token && !savedUser) {
+    if (loading || authLoading || isGuestAllowed) return;
+    if (!isCitizenAuthenticated) {
       addToast(
         lang === 'ta'
           ? 'சேவைகளுக்கு விண்ணப்பிக்க தயவுசெய்து முதலில் உள்நுழையவும்!'
@@ -935,7 +955,7 @@ export default function ApplyService() {
       );
       navigate(`/login?redirect=${encodeURIComponent(`/apply/${serviceParam}`)}`, { replace: true });
     }
-  }, [user, userToken, authLoading, serviceParam, lang, navigate, addToast]);
+  }, [loading, authLoading, isGuestAllowed, isCitizenAuthenticated, serviceParam, lang, navigate, addToast]);
 
   if (loading || authLoading) {
     return (
@@ -948,10 +968,8 @@ export default function ApplyService() {
     );
   }
 
-  // Authentication Guard: Redirecting if unauthenticated
-  const hasToken = userToken || localStorage.getItem('token') || localStorage.getItem('eseva_user_token');
-  const savedUser = localStorage.getItem('eseva_saved_user');
-  if (!user && !hasToken && !savedUser) {
+  // Authentication Guard: Redirecting if unauthenticated (exempts Patta Chitta direct apply)
+  if (!isCitizenAuthenticated && !isGuestAllowed) {
     return (
       <div className="min-h-screen bg-slate-50 py-16 px-4 flex items-center justify-center font-sans">
         <div className="bg-white rounded-3xl shadow-xl p-8 sm:p-10 text-center max-w-md w-full space-y-6 border border-slate-200">
@@ -1116,9 +1134,18 @@ export default function ApplyService() {
               <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
               <span>{draftSavedMessage}</span>
             </div>
-            <Link to="/my-applications" className="text-xs font-extrabold underline hover:text-emerald-900">
-              {lang === 'ta' ? 'வரைவுகளைப் பார்க்க' : 'View Drafts'}
-            </Link>
+            {isCitizenAuthenticated ? (
+              <Link to="/my-applications" className="text-xs font-extrabold underline hover:text-emerald-900">
+                {lang === 'ta' ? 'வரைவுகளைப் பார்க்க' : 'View Drafts'}
+              </Link>
+            ) : (
+              <Link
+                to={draftAppNumber ? `/track?appId=${encodeURIComponent(draftAppNumber)}` : '/track'}
+                className="text-xs font-extrabold underline hover:text-emerald-900"
+              >
+                {lang === 'ta' ? 'விண்ணப்பத்தைக் கண்காணிக்க' : 'Track Draft'}
+              </Link>
+            )}
           </div>
         )}
 
@@ -2631,13 +2658,15 @@ export default function ApplyService() {
                 <span>{t.trackApplication}</span>
               </Link>
 
-              <Link
-                to="/my-applications"
-                className="w-full sm:w-auto px-6 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-extrabold text-xs rounded-xl transition-colors flex items-center justify-center gap-2 border border-slate-200"
-              >
-                <FileText className="w-4 h-4 text-orange-500" />
-                <span>{lang === 'ta' ? 'எனது விண்ணப்பங்களைப் பார்க்க' : 'View My Applications'}</span>
-              </Link>
+              {isCitizenAuthenticated && (
+                <Link
+                  to="/my-applications"
+                  className="w-full sm:w-auto px-6 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-extrabold text-xs rounded-xl transition-colors flex items-center justify-center gap-2 border border-slate-200"
+                >
+                  <FileText className="w-4 h-4 text-orange-500" />
+                  <span>{lang === 'ta' ? 'எனது விண்ணப்பங்களைப் பார்க்க' : 'View My Applications'}</span>
+                </Link>
+              )}
 
               <button
                 type="button"

@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'r
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
 import { LanguageProvider } from './context/LanguageContext';
+import { isGuestApplyAllowedPath, hasCitizenSession } from './utils/guestApplyAccess';
 
 // Layout Components
 import TopBar from './components/TopBar';
@@ -42,14 +43,17 @@ import TermsOfService from './pages/TermsOfService';
 import RefundPolicy from './pages/RefundPolicy';
 import NotFound from './pages/NotFound';
 
-function RequireCitizenAuth({ children }) {
+function RequireCitizenAuth({ children, allowGuestPatta = false }) {
   const { user, userToken, loading } = useAuth();
   const location = useLocation();
 
-  const token = userToken || localStorage.getItem('token') || localStorage.getItem('eseva_user_token');
-  const savedUser = localStorage.getItem('eseva_saved_user');
+  if (allowGuestPatta && isGuestApplyAllowedPath(location.pathname)) {
+    return children;
+  }
 
-  if (loading && !token && !savedUser) {
+  const isAuthenticated = hasCitizenSession(user, userToken);
+
+  if (loading && !isAuthenticated) {
     return (
       <div className="min-h-screen bg-slate-50 py-16 px-4 flex items-center justify-center font-sans">
         <div className="bg-white rounded-3xl shadow-sm p-8 text-center max-w-sm w-full space-y-4 border border-slate-200">
@@ -60,7 +64,7 @@ function RequireCitizenAuth({ children }) {
     );
   }
 
-  if (!user && !token && !savedUser) {
+  if (!isAuthenticated) {
     return <Navigate to={`/login?redirect=${encodeURIComponent(location.pathname)}`} replace />;
   }
 
@@ -129,9 +133,9 @@ function AppContent() {
           <Route path="/enquiry/:serviceId" element={<ServiceDetails />} />
           <Route path="/service/:serviceId" element={<ServiceDetails />} />
           <Route path="/service/:slug" element={<ServiceDetails />} />
-          {/* Protected Application Routes */}
-          <Route path="/apply/:serviceId" element={<RequireCitizenAuth><ApplyService /></RequireCitizenAuth>} />
-          <Route path="/apply/slug/:slug" element={<RequireCitizenAuth><ApplyService /></RequireCitizenAuth>} />
+          {/* Protected Application Routes (Patta Chitta allows direct guest apply) */}
+          <Route path="/apply/:serviceId" element={<RequireCitizenAuth allowGuestPatta><ApplyService /></RequireCitizenAuth>} />
+          <Route path="/apply/slug/:slug" element={<RequireCitizenAuth allowGuestPatta><ApplyService /></RequireCitizenAuth>} />
           <Route path="/my-applications" element={<RequireCitizenAuth><MyApplications /></RequireCitizenAuth>} />
           <Route path="/my-applications/:id" element={<RequireCitizenAuth><ApplicationDetailView /></RequireCitizenAuth>} />
           <Route path="/track" element={<ApplicationTracker />} />
