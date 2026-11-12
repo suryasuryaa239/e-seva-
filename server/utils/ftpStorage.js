@@ -217,27 +217,55 @@ export async function uploadApplicationDataToFTP(applicationData) {
  * Downloads a file buffer from FTP if available
  */
 export async function downloadFromFTP(filename, subDir = 'documents') {
-  if (!isFtpConfigured()) return null;
+  return downloadFromFTPAnyDir(filename, [subDir]);
+}
+
+/**
+ * Checks multiple candidate directories on a single FTP connection
+ */
+export async function downloadFromFTPAnyDir(filename, candidateSubDirs = ['', 'banners', 'popups', 'documents', 'certificates']) {
+  if (!isFtpConfigured() || !filename) return null;
 
   let client;
   try {
     const conn = await getConnectedClient();
     client = conn.client;
     const config = conn.config;
+    const rootPwd = (await client.pwd()).replace(/\/+$/, '') || '/';
+    const cleanBase = (config.remoteBase || '').replace(/^\/+|\/+$/g, '');
 
-    const targetDir = config.remoteBase ? `${config.remoteBase}/${subDir}` : subDir;
-    await client.cd(`/${targetDir}`);
-
-    const chunks = [];
-    const writableStream = new (await import('stream')).Writable({
-      write(chunk, encoding, callback) {
-        chunks.push(chunk);
-        callback();
+    const dirsToTry = [];
+    for (const sub of candidateSubDirs) {
+      const cleanSub = String(sub || '').replace(/^\/+|\/+$/g, '');
+      const rel = [cleanBase, cleanSub].filter(Boolean).join('/');
+      if (rel) dirsToTry.push(rel);
+      if (cleanBase && rootPwd.endsWith(cleanBase)) {
+        dirsToTry.push(cleanSub || '.');
       }
-    });
+    }
+    const uniqueDirs = [...new Set(dirsToTry.length ? dirsToTry : ['.'])];
 
-    await client.downloadTo(writableStream, filename);
-    return Buffer.concat(chunks);
+    for (const dir of uniqueDirs) {
+      try {
+        await client.cd(rootPwd);
+        if (dir !== '.') {
+          await client.cd(dir);
+        }
+        const chunks = [];
+        const { Writable } = await import('stream');
+        const writableStream = new Writable({
+          write(chunk, encoding, callback) {
+            chunks.push(chunk);
+            callback();
+          }
+        });
+        await client.downloadTo(writableStream, filename);
+        return Buffer.concat(chunks);
+      } catch (dirErr) {
+        // Try next candidate directory
+      }
+    }
+    return null;
   } catch (err) {
     console.warn(`[FTP Download Warning]: Could not download ${filename} from FTP: ${err.message}`);
     return null;
@@ -254,5 +282,6 @@ export default {
   testFTPConnection,
   uploadToFTP,
   uploadApplicationDataToFTP,
-  downloadFromFTP
+  downloadFromFTP,
+  downloadFromFTPAnyDir
 };

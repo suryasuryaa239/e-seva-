@@ -21,6 +21,7 @@ import AnnouncementPopup from '../components/AnnouncementPopup';
 import AdminReports from '../components/AdminReports';
 import ClearDatabaseModal from '../components/ClearDatabaseModal';
 import { invalidateServicesCache } from '../utils/useLiveServices';
+import { resolveMediaUrl } from '../utils/mediaUrl';
 
 const SERVICE_IMAGE_PRESETS = [
   { name: '🆔 Aadhaar', url: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=800&auto=format&fit=crop' },
@@ -195,9 +196,9 @@ export default function AdminDashboard() {
     };
 
     setBannerPreviews({
-      desktop: resolvePreview(bannerForm.desktop_image_file, bannerForm.desktop_image_url_input),
-      mobile: resolvePreview(bannerForm.mobile_image_file, bannerForm.mobile_image_url_input),
-      tablet: resolvePreview(bannerForm.tablet_image_file, bannerForm.tablet_image_url_input)
+      desktop: resolvePreview(bannerForm.desktop_image_file, resolveMediaUrl(bannerForm.desktop_image_url_input)),
+      mobile: resolvePreview(bannerForm.mobile_image_file, resolveMediaUrl(bannerForm.mobile_image_url_input)),
+      tablet: resolvePreview(bannerForm.tablet_image_file, resolveMediaUrl(bannerForm.tablet_image_url_input))
     });
 
     return () => {
@@ -432,20 +433,21 @@ export default function AdminDashboard() {
 
   const openEditBannerModal = (b) => {
     setEditingBanner(b);
+    const hasDesktopUrl = b.desktop_image_url !== undefined && b.desktop_image_url !== null;
     setBannerForm({
-      title: b.title || '',
-      description: b.description || '',
-      link_url: b.link_url || '/services',
-      duration_seconds: b.duration_seconds || 5,
-      status: b.status || 'Active',
-      desktop_image_url_input: b.desktop_image_url !== undefined ? b.desktop_image_url : (b.image_url || ''),
+      title: String(b.title || ''),
+      description: String(b.description || ''),
+      link_url: String(b.link_url || '/services'),
+      duration_seconds: Number(b.duration_seconds) || 5,
+      status: String(b.status || 'Active'),
+      desktop_image_url_input: hasDesktopUrl ? String(b.desktop_image_url) : String(b.image_url || ''),
       desktop_image_file: null,
-      mobile_image_url_input: b.mobile_image_url || '',
+      mobile_image_url_input: String(b.mobile_image_url || ''),
       mobile_image_file: null,
-      tablet_image_url_input: b.tablet_image_url || '',
+      tablet_image_url_input: String(b.tablet_image_url || ''),
       tablet_image_file: null,
-      image_position: b.image_position || 'center',
-      image_fit: b.image_fit || 'cover'
+      image_position: String(b.image_position || 'center'),
+      image_fit: String(b.image_fit || 'cover')
     });
     setShowBannerModal(true);
   };
@@ -455,17 +457,24 @@ export default function AdminDashboard() {
     setSavingBanner(true);
     try {
       const formData = new FormData();
-      formData.append('title', bannerForm.title);
-      formData.append('description', bannerForm.description);
-      formData.append('link_url', bannerForm.link_url);
-      formData.append('duration_seconds', bannerForm.duration_seconds);
-      formData.append('status', bannerForm.status);
-      formData.append('desktop_image_url', bannerForm.desktop_image_url_input);
-      formData.append('mobile_image_url', bannerForm.mobile_image_url_input);
-      formData.append('tablet_image_url', bannerForm.tablet_image_url_input);
+      const safeTitle = String(bannerForm.title || '');
+      const safeDesc = String(bannerForm.description || '');
+      const safeLink = String(bannerForm.link_url || '/services');
+      const safeDesktopUrl = String(bannerForm.desktop_image_url_input || '');
+      const safeMobileUrl = String(bannerForm.mobile_image_url_input || '');
+      const safeTabletUrl = String(bannerForm.tablet_image_url_input || '');
+
+      formData.append('title', safeTitle);
+      formData.append('description', safeDesc);
+      formData.append('link_url', safeLink);
+      formData.append('duration_seconds', bannerForm.duration_seconds || 5);
+      formData.append('status', bannerForm.status || 'Active');
+      formData.append('desktop_image_url', safeDesktopUrl);
+      formData.append('mobile_image_url', safeMobileUrl);
+      formData.append('tablet_image_url', safeTabletUrl);
       formData.append(
         'image_url_input',
-        bannerForm.desktop_image_url_input || bannerForm.tablet_image_url_input || bannerForm.mobile_image_url_input || ''
+        safeDesktopUrl || safeTabletUrl || safeMobileUrl || ''
       );
       formData.append('image_position', bannerForm.image_position || 'center');
       formData.append('image_fit', bannerForm.image_fit || 'cover');
@@ -573,11 +582,11 @@ export default function AdminDashboard() {
 
   const handleSavePopupSubmit = async (e) => {
     e.preventDefault();
-    if (!popupForm.title.trim()) {
+    if (!String(popupForm.title || '').trim()) {
       addToast('Please enter a popup heading/title', 'error');
       return;
     }
-    if (!popupForm.content.trim()) {
+    if (!String(popupForm.content || '').trim()) {
       addToast('Please enter announcement content', 'error');
       return;
     }
@@ -2634,7 +2643,7 @@ export default function AdminDashboard() {
                     >
                       {/* Banner Image Preview */}
                       {(() => {
-                        const cardImg = b.desktop_image_url || b.image_url || b.tablet_image_url || b.mobile_image_url;
+                        const cardImg = resolveMediaUrl(b.desktop_image_url || b.image_url || b.tablet_image_url || b.mobile_image_url);
                         return (
                           <div className="relative h-44 bg-slate-900 overflow-hidden flex items-center justify-center">
                             {b.image_fit === 'contain' && (
@@ -2872,7 +2881,7 @@ export default function AdminDashboard() {
                         <div className="relative h-44 bg-slate-900 overflow-hidden">
                           {p.image_url ? (
                             <img
-                              src={p.image_url}
+                              src={resolveMediaUrl(p.image_url)}
                               alt={p.title}
                               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                               onError={(e) => {
@@ -9993,7 +10002,7 @@ export default function AdminDashboard() {
                 <input
                   type="text"
                   placeholder="e.g. Government Services at Your Doorstep (Optional)"
-                  value={bannerForm.title}
+                  value={bannerForm.title || ''}
                   onChange={(e) => setBannerForm({ ...bannerForm, title: e.target.value })}
                   className="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-slate-900 font-semibold outline-none focus:border-orange-500"
                 />
@@ -10007,7 +10016,7 @@ export default function AdminDashboard() {
                 <textarea
                   rows={2}
                   placeholder="e.g. Apply for Community, Birth & Income Certificates with instant SMS tracking. (Optional)"
-                  value={bannerForm.description}
+                  value={bannerForm.description || ''}
                   onChange={(e) => setBannerForm({ ...bannerForm, description: e.target.value })}
                   className="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-slate-900 font-medium outline-none focus:border-orange-500"
                 />
@@ -10181,7 +10190,7 @@ export default function AdminDashboard() {
                           <input
                             type="url"
                             placeholder="https://images.unsplash.com/..."
-                            value={urlVal}
+                            value={urlVal || ''}
                             onChange={(e) => setBannerForm({ ...bannerForm, [slot.urlKey]: e.target.value })}
                             className="w-full bg-white border border-slate-300 rounded-xl p-2 text-slate-900 font-mono text-[11px] outline-none focus:border-orange-500"
                           />
@@ -10329,12 +10338,12 @@ export default function AdminDashboard() {
                     savingBanner ||
                     (
                       !bannerForm.desktop_image_file &&
-                      !bannerForm.desktop_image_url_input.trim() &&
+                      !String(bannerForm.desktop_image_url_input || '').trim() &&
                       !bannerForm.mobile_image_file &&
-                      !bannerForm.mobile_image_url_input.trim() &&
+                      !String(bannerForm.mobile_image_url_input || '').trim() &&
                       !bannerForm.tablet_image_file &&
-                      !bannerForm.tablet_image_url_input.trim() &&
-                      !bannerForm.title.trim() &&
+                      !String(bannerForm.tablet_image_url_input || '').trim() &&
+                      !String(bannerForm.title || '').trim() &&
                       !editingBanner
                     )
                   }
@@ -10523,7 +10532,7 @@ export default function AdminDashboard() {
                 {popupImagePreview && (
                   <div className="relative rounded-2xl overflow-hidden border border-slate-200 bg-slate-900 h-36 sm:h-44 group shadow-sm">
                     <img
-                      src={popupImagePreview}
+                      src={resolveMediaUrl(popupImagePreview)}
                       alt="Popup preview"
                       className="w-full h-full object-cover"
                       onError={(e) => {

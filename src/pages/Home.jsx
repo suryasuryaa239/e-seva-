@@ -9,6 +9,7 @@ import {
 import { useToast } from '../context/ToastContext';
 import { useLanguage } from '../context/LanguageContext';
 import { getLocalizedService } from '../data/servicesCatalogData';
+import { resolveMediaUrl } from '../utils/mediaUrl';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -181,12 +182,13 @@ export default function Home() {
           
           {heroBanners.length > 0 ? (() => {
             const activeBanner = heroBanners[currentSlide] || heroBanners[0] || {};
-            const activeBannerImage =
+            const activeBannerImage = resolveMediaUrl(
               bannerViewport === 'mobile'
                 ? (activeBanner.mobile_image_url || activeBanner.tablet_image_url || activeBanner.desktop_image_url || activeBanner.image_url)
                 : bannerViewport === 'tablet'
                 ? (activeBanner.tablet_image_url || activeBanner.desktop_image_url || activeBanner.image_url || activeBanner.mobile_image_url)
-                : (activeBanner.desktop_image_url || activeBanner.image_url || activeBanner.tablet_image_url || activeBanner.mobile_image_url);
+                : (activeBanner.desktop_image_url || activeBanner.image_url || activeBanner.tablet_image_url || activeBanner.mobile_image_url)
+            );
             const imagePosClass = activeBanner.image_position === 'bottom'
               ? 'object-bottom'
               : activeBanner.image_position === 'top'

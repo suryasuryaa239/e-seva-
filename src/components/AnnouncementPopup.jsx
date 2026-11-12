@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { X, Sparkles, ArrowRight, ExternalLink, BellRing, CheckCircle2 } from 'lucide-react';
+import { resolveMediaUrl } from '../utils/mediaUrl';
 
 
 export default function AnnouncementPopup({ 
@@ -84,7 +85,8 @@ export default function AnnouncementPopup({
 
   if (!isOpen || !popup) return null;
 
-  const hasValidImage = Boolean(popup.image_url && !imgError);
+  const resolvedImageUrl = resolveMediaUrl(popup.image_url);
+  const hasValidImage = Boolean(resolvedImageUrl && !imgError);
 
   return (
     <div 
@@ -116,14 +118,14 @@ export default function AnnouncementPopup({
           <div className="relative w-full h-72 sm:h-84 md:h-96 bg-slate-950 overflow-hidden flex items-center justify-center group">
             {/* Blurred background for aesthetic framing */}
             <img
-              src={popup.image_url}
+              src={resolvedImageUrl}
               alt=""
               aria-hidden="true"
               className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-40 scale-110 pointer-events-none"
             />
             {/* Main crisp image without cropping any text */}
             <img
-              src={popup.image_url}
+              src={resolvedImageUrl}
               alt={popup.title || 'Announcement'}
               className="relative z-10 w-full h-full object-contain mx-auto group-hover:scale-102 transition-transform duration-500 ease-out p-1.5"
               onError={() => {

@@ -11,7 +11,7 @@ import PaymentService, { setPaymentDb } from './paymentService.js';
 import NotificationService from './notificationService.js';
 import { initCronJobs } from './cronJobs.js';
 import { uploadToBackblaze } from './utils/b2Storage.js';
-import { uploadToFTP, uploadApplicationDataToFTP, downloadFromFTP, isFtpConfigured } from './utils/ftpStorage.js';
+import { uploadToFTP, uploadApplicationDataToFTP, downloadFromFTP, downloadFromFTPAnyDir, isFtpConfigured } from './utils/ftpStorage.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -75,7 +75,10 @@ const fileFilter = (req, file, cb) => {
 
 const upload = multer({
   storage: storage,
-  limits: { fileSize: 25 * 1024 * 1024 }, // 25MB limit for documents & camera photos
+  limits: {
+    fileSize: 25 * 1024 * 1024, // 25MB limit for documents & camera photos
+    fieldSize: 25 * 1024 * 1024 // Allow base64 image data fields during edit updates
+  },
   fileFilter: fileFilter
 });
 
@@ -146,7 +149,7 @@ app.use(cors({
   credentials: true
 }));
 
-app.use(express.json());
+app.use(express.json({ limit: '25mb' }));
 app.use(express.urlencoded({ extended: true, limit: '25mb' }));
 // Serve root static assets from public directory (images, logos, category icons)
 app.use(express.static(path.join(__dirname, '../public')));
@@ -1434,6 +1437,7 @@ app.post('/api/applications', submitRateLimiter, upload.any(), async (req, res) 
         db.insert('application_field_values', {
           application_id: application.id,
           field_id: fieldDef ? fieldDef.id : null,
+          field_name: key,
           field_label: fieldDef ? fieldDef.field_label : key,
           value: typeof val === 'object' ? JSON.stringify(val) : String(val)
         });
@@ -1442,10 +1446,17 @@ app.post('/api/applications', submitRateLimiter, upload.any(), async (req, res) 
       // Save Uploaded Documents in Parallel for Maximum Upload Speed
       if (req.files && req.files.length > 0) {
         const serviceDocs = db.all('service_documents', d => d.service_id === service.id);
+        let docMetadata = {};
+        if (req.body.doc_metadata) {
+          try {
+            docMetadata = typeof req.body.doc_metadata === 'string' ? JSON.parse(req.body.doc_metadata) : req.body.doc_metadata;
+          } catch (e) {}
+        }
 
         const processedFiles = await Promise.all(
           req.files.map(async (file) => {
-            const docName = file.fieldname.replace('doc_', '').replace(/_/g, ' ');
+            const explicitDocName = docMetadata[file.fieldname];
+            const docName = explicitDocName || file.fieldname.replace('doc_', '').replace(/_/g, ' ');
             const matchedServiceDoc = serviceDocs.find(sd => {
               const dName = sd.document_name || sd.name || '';
               return dName.toLowerCase().includes(docName.toLowerCase()) || docName.toLowerCase().includes(dName.toLowerCase());
@@ -1531,6 +1542,14 @@ app.post('/api/applications', submitRateLimiter, upload.any(), async (req, res) 
       };
     });
 
+    const savedApp = db.get('applications', a => a.id === submissionResult.application_id) || {};
+    const savedFields = db.all('application_field_values', f => f.application_id === submissionResult.application_id);
+    const savedDocs = db.all('application_documents', d => d.application_id === submissionResult.application_id);
+    const serviceCategory = service.category_id
+      ? (db.get('categories', c => c.id === service.category_id)?.name || service.category_name || '')
+      : (service.category_name || '');
+    const finalSubmittedAt = submissionResult.submitted_at || savedApp.submitted_at || new Date().toISOString();
+
     // Dispatch Notification to Applicant (only when submitted immediately or free)
     if (!submissionResult.payment_pending) {
       try {
@@ -1538,21 +1557,55 @@ app.post('/api/applications', submitRateLimiter, upload.any(), async (req, res) 
           userId: userId,
           applicationId: submissionResult.application_id,
           type: 'APPLICATION_SUBMITTED',
-        title: `Application Submitted: ${submissionResult.application_number}`,
-        message: `Your application (${submissionResult.application_number}) for ${service.name} has been submitted successfully. Track status online anytime.`,
-        data: {
-          applicationId: submissionResult.application_id,
-          applicationNumber: submissionResult.application_number,
-          serviceName: service.name,
-          status: 'SUBMITTED',
-          link: `/track-application?appNumber=${submissionResult.application_number}`
-        },
-        userEmail: user_email,
-        userPhone: user_phone
-      });
+          title: `Application Submitted: ${submissionResult.application_number}`,
+          message: `Your application (${submissionResult.application_number}) for ${service.name} has been submitted successfully. Track status online anytime.`,
+          idempotencyKey: `user-app-submit-${submissionResult.application_id}-${finalSubmittedAt}`,
+          data: {
+            applicationId: submissionResult.application_id,
+            applicationNumber: submissionResult.application_number,
+            serviceName: service.name,
+            userName: user_name.trim(),
+            status: 'SUBMITTED',
+            link: `/track-application?appNumber=${submissionResult.application_number}`
+          },
+          userEmail: user_email,
+          userPhone: user_phone
+        });
       } catch (notifErr) {
         console.error('Submission notification error:', notifErr);
       }
+    }
+
+    // Dispatch In-App + Email Alert to Admin for EVERY service form submission (free & paid)
+    try {
+      const adminAlertPromise = NotificationService.sendAdminApplicationAlert(db, {
+        eventType: 'NEW_APPLICATION',
+        applicationId: submissionResult.application_id,
+        applicationNumber: submissionResult.application_number,
+        serviceName: service.name,
+        serviceCategory,
+        fee: service.fee || 0,
+        status: submissionResult.status,
+        paymentStatus: savedApp.payment_status || (submissionResult.payment_pending ? 'PENDING' : (Number(service.fee) > 0 ? 'PAID' : 'FREE')),
+        paymentMethod: payment_method || '',
+        userId: userId,
+        userName: user_name.trim(),
+        userEmail: user_email.trim().toLowerCase(),
+        userPhone: user_phone.trim(),
+        submittedAt: finalSubmittedAt,
+        submittedFields: savedFields,
+        uploadedDocuments: savedDocs,
+        idempotencyKey: `admin-app-submit-${submissionResult.application_id}-${finalSubmittedAt}`
+      });
+      if (process.env.VERCEL) {
+        await adminAlertPromise;
+      } else {
+        adminAlertPromise.catch(adminNotifErr => {
+          console.error('Admin submission email error:', adminNotifErr);
+        });
+      }
+    } catch (adminNotifErr) {
+      console.error('Admin submission notification error:', adminNotifErr);
     }
 
     // Archive application details snapshot to remote FTP if configured
@@ -1842,6 +1895,65 @@ app.post('/api/payments/verify-payment', async (req, res) => {
         admin_remarks: `Payment of ₹${payment.amount} verified successfully via ${payment.payment_method}. Transaction ID: ${txnId}`,
         updated_by: 'Payment Gateway Automator'
       });
+
+      // Idempotent notifications to Applicant & Admin
+      try {
+        const application = db.get('applications', a => a.id === payment.application_id);
+        if (application) {
+          const service = db.get('services', s => s.id === application.service_id);
+          const txnRef = payment.payment_order_id || payment.id || txnId;
+          const serviceCategory = service && service.category_id
+            ? (db.get('categories', c => c.id === service.category_id)?.name || service.category_name || '')
+            : (service?.category_name || '');
+
+          NotificationService.sendNotification(db, {
+            userId: application.user_id,
+            applicationId: application.id,
+            type: 'PAYMENT_SUCCESS',
+            title: `Payment Successful: ${application.application_number}`,
+            message: `Payment of ₹${payment.amount || 0} for ${service ? service.name : 'your application'} was verified successfully.`,
+            idempotencyKey: `user-payment-success-${application.id}-${txnRef}`,
+            data: {
+              applicationId: application.id,
+              applicationNumber: application.application_number,
+              serviceName: service ? service.name : 'Digital Service',
+              userName: application.user_name || 'Citizen',
+              transactionId: txnId,
+              amount: payment.amount || 0,
+              status: 'SUBMITTED'
+            },
+            userEmail: application.user_email,
+            userPhone: application.user_phone
+          });
+
+          const savedFields = db.all('application_field_values', f => f.application_id === application.id);
+          const savedDocs = db.all('application_documents', d => d.application_id === application.id);
+          const adminPayPromise = NotificationService.sendAdminApplicationAlert(db, {
+            eventType: 'PAYMENT_CONFIRMED',
+            applicationId: application.id,
+            applicationNumber: application.application_number,
+            serviceName: service ? service.name : 'Digital Service',
+            serviceCategory,
+            fee: payment.amount || application.total_fee || 0,
+            status: 'SUBMITTED',
+            paymentStatus: 'PAID',
+            paymentMethod: payment.payment_method || 'Online UPI / NetBanking',
+            transactionId: txnId,
+            userId: application.user_id,
+            userName: application.user_name || 'Citizen',
+            userEmail: application.user_email || '',
+            userPhone: application.user_phone || '',
+            submittedAt: new Date().toISOString(),
+            submittedFields: savedFields,
+            uploadedDocuments: savedDocs,
+            idempotencyKey: `admin-payment-success-${application.id}-${txnRef}`
+          });
+          if (process.env.VERCEL) await adminPayPromise;
+          else adminPayPromise.catch(e => console.error('Admin payment confirmation email error:', e.message));
+        }
+      } catch (notifErr) {
+        console.error('Payment confirmation notification error:', notifErr.message);
+      }
     }
 
     const receiptNumber = `REC-2026-${Math.floor(100000 + Math.random() * 900000)}`;
@@ -2069,18 +2181,26 @@ app.get('/api/payments/phonepe/verify/:merchantTransactionId', async (req, res) 
             updated_by: 'PhonePe Gateway Automator'
           });
 
-          // Dispatch Notification to Applicant
+          // Dispatch Idempotent Notifications to Applicant & Admin
           try {
             const service = db.get('services', s => s.id === application.service_id);
+            const txnRef = (payment && (payment.payment_order_id || payment.id)) || merchantTransactionId || gatewayTxnId;
+            const serviceCategory = service && service.category_id
+              ? (db.get('categories', c => c.id === service.category_id)?.name || service.category_name || '')
+              : (service?.category_name || '');
+
             NotificationService.sendNotification(db, {
               userId: application.user_id,
               applicationId: application.id,
               type: 'PAYMENT_SUCCESS',
               title: `Payment Successful: ${application.application_number}`,
               message: `Payment of ₹${payment ? payment.amount : 0} for ${service ? service.name : 'your application'} was verified via PhonePe.`,
+              idempotencyKey: `user-payment-success-${application.id}-${txnRef}`,
               data: {
                 applicationId: application.id,
                 applicationNumber: application.application_number,
+                serviceName: service ? service.name : 'Digital Service',
+                userName: application.user_name || 'Citizen',
                 transactionId: gatewayTxnId,
                 amount: payment ? payment.amount : 0,
                 status: 'SUBMITTED'
@@ -2088,6 +2208,31 @@ app.get('/api/payments/phonepe/verify/:merchantTransactionId', async (req, res) 
               userEmail: application.user_email,
               userPhone: application.user_phone
             });
+
+            const savedFields = db.all('application_field_values', f => f.application_id === application.id);
+            const savedDocs = db.all('application_documents', d => d.application_id === application.id);
+            const adminPayPromise = NotificationService.sendAdminApplicationAlert(db, {
+              eventType: 'PAYMENT_CONFIRMED',
+              applicationId: application.id,
+              applicationNumber: application.application_number,
+              serviceName: service ? service.name : 'Digital Service',
+              serviceCategory,
+              fee: payment ? payment.amount : (application.total_fee || 0),
+              status: 'SUBMITTED',
+              paymentStatus: 'PAID',
+              paymentMethod: `PhonePe (${paymentInstrument})`,
+              transactionId: gatewayTxnId,
+              userId: application.user_id,
+              userName: application.user_name || 'Citizen',
+              userEmail: application.user_email || '',
+              userPhone: application.user_phone || '',
+              submittedAt: new Date().toISOString(),
+              submittedFields: savedFields,
+              uploadedDocuments: savedDocs,
+              idempotencyKey: `admin-payment-success-${application.id}-${txnRef}`
+            });
+            if (process.env.VERCEL) await adminPayPromise;
+            else adminPayPromise.catch(e => console.error('Admin PhonePe confirmation email error:', e.message));
           } catch (notifErr) {
             console.error('Notification dispatch error:', notifErr.message);
           }
@@ -2192,6 +2337,66 @@ app.post('/api/payments/phonepe/callback', async (req, res) => {
             admin_remarks: `Payment verified via PhonePe Webhook callback. Transaction: ${gatewayTxnId}`,
             updated_by: 'PhonePe Webhook'
           });
+
+          // Dispatch Idempotent Notifications to Applicant & Admin from Webhook
+          try {
+            const application = db.get('applications', a => a.id === payment.application_id);
+            if (application) {
+              const service = db.get('services', s => s.id === application.service_id);
+              const txnRef = payment.payment_order_id || payment.id || merchantTxnId || gatewayTxnId;
+              const paymentInstrument = txnData.paymentInstrument?.type || 'UPI';
+              const serviceCategory = service && service.category_id
+                ? (db.get('categories', c => c.id === service.category_id)?.name || service.category_name || '')
+                : (service?.category_name || '');
+
+              NotificationService.sendNotification(db, {
+                userId: application.user_id,
+                applicationId: application.id,
+                type: 'PAYMENT_SUCCESS',
+                title: `Payment Successful: ${application.application_number}`,
+                message: `Payment of ₹${payment.amount || 0} for ${service ? service.name : 'your application'} was verified via PhonePe.`,
+                idempotencyKey: `user-payment-success-${application.id}-${txnRef}`,
+                data: {
+                  applicationId: application.id,
+                  applicationNumber: application.application_number,
+                  serviceName: service ? service.name : 'Digital Service',
+                  userName: application.user_name || 'Citizen',
+                  transactionId: gatewayTxnId,
+                  amount: payment.amount || 0,
+                  status: 'SUBMITTED'
+                },
+                userEmail: application.user_email,
+                userPhone: application.user_phone
+              });
+
+              const savedFields = db.all('application_field_values', f => f.application_id === application.id);
+              const savedDocs = db.all('application_documents', d => d.application_id === application.id);
+              const adminPayPromise = NotificationService.sendAdminApplicationAlert(db, {
+                eventType: 'PAYMENT_CONFIRMED',
+                applicationId: application.id,
+                applicationNumber: application.application_number,
+                serviceName: service ? service.name : 'Digital Service',
+                serviceCategory,
+                fee: payment.amount || application.total_fee || 0,
+                status: 'SUBMITTED',
+                paymentStatus: 'PAID',
+                paymentMethod: `PhonePe (${paymentInstrument})`,
+                transactionId: gatewayTxnId,
+                userId: application.user_id,
+                userName: application.user_name || 'Citizen',
+                userEmail: application.user_email || '',
+                userPhone: application.user_phone || '',
+                submittedAt: new Date().toISOString(),
+                submittedFields: savedFields,
+                uploadedDocuments: savedDocs,
+                idempotencyKey: `admin-payment-success-${application.id}-${txnRef}`
+              });
+              if (process.env.VERCEL) await adminPayPromise;
+              else adminPayPromise.catch(e => console.error('Admin PhonePe webhook email error:', e.message));
+            }
+          } catch (webhookNotifErr) {
+            console.error('PhonePe webhook notification error:', webhookNotifErr.message);
+          }
         }
       }
     }
@@ -2433,7 +2638,7 @@ app.get('/api/documents/preview-file/:filename', optionalAuthenticateToken, asyn
     }
   }
 
-  // Check popup_updates table for matching image URL or data URI
+  // Check popup_updates and banners tables for matching image URL or data URI
   const popup = db.get('popup_updates', p => (p.image_url && p.image_url.includes(filename)));
   if (popup && popup.image_url) {
     if (popup.image_url.startsWith('http://') || popup.image_url.startsWith('https://')) {
@@ -2441,6 +2646,28 @@ app.get('/api/documents/preview-file/:filename', optionalAuthenticateToken, asyn
     }
     if (popup.image_url.startsWith('data:')) {
       const parts = popup.image_url.split(',');
+      const mimeMatch = parts[0].match(/:(.*?);/);
+      const mime = mimeMatch ? mimeMatch[1] : 'image/jpeg';
+      const buffer = Buffer.from(parts[1], 'base64');
+      res.setHeader('Content-Type', mime);
+      return res.send(buffer);
+    }
+  }
+
+  const matchingBanner = db.get('banners', b =>
+    (b.desktop_image_url && b.desktop_image_url.includes(filename)) ||
+    (b.mobile_image_url && b.mobile_image_url.includes(filename)) ||
+    (b.tablet_image_url && b.tablet_image_url.includes(filename)) ||
+    (b.image_url && b.image_url.includes(filename))
+  );
+  if (matchingBanner) {
+    const matchedUrl = [matchingBanner.desktop_image_url, matchingBanner.mobile_image_url, matchingBanner.tablet_image_url, matchingBanner.image_url]
+      .find(u => typeof u === 'string' && u.includes(filename));
+    if (matchedUrl && (matchedUrl.startsWith('http://') || matchedUrl.startsWith('https://'))) {
+      return res.redirect(matchedUrl);
+    }
+    if (matchedUrl && matchedUrl.startsWith('data:')) {
+      const parts = matchedUrl.split(',');
       const mimeMatch = parts[0].match(/:(.*?);/);
       const mime = mimeMatch ? mimeMatch[1] : 'image/jpeg';
       const buffer = Buffer.from(parts[1], 'base64');
@@ -2499,22 +2726,10 @@ app.get('/api/documents/preview-file/:filename', optionalAuthenticateToken, asyn
     return res.sendFile(tmpServicePath);
   }
 
-  // Stream from FTP if configured
+  // Stream from FTP if configured (single connection across candidate dirs)
   if (isFtpConfigured()) {
     try {
-      let ftpBuffer = await downloadFromFTP(filename, 'popups');
-      if (!ftpBuffer) {
-        ftpBuffer = await downloadFromFTP(filename, 'certificates');
-      }
-      if (!ftpBuffer) {
-        ftpBuffer = await downloadFromFTP(filename, 'documents');
-      }
-      if (!ftpBuffer) {
-        ftpBuffer = await downloadFromFTP(filename, 'banners');
-      }
-      if (!ftpBuffer) {
-        ftpBuffer = await downloadFromFTP(filename, '');
-      }
+      const ftpBuffer = await downloadFromFTPAnyDir(filename, ['', 'banners', 'popups', 'documents', 'certificates']);
       if (ftpBuffer) {
         const ext = path.extname(filename).toLowerCase();
         const mimeMap = {
@@ -2860,12 +3075,25 @@ app.get('/api/admin/banners', authenticateAdmin, (req, res) => {
   res.json(allBanners);
 });
 
-const bannerUploadFields = upload.fields([
-  { name: 'desktop_image', maxCount: 1 },
-  { name: 'mobile_image', maxCount: 1 },
-  { name: 'tablet_image', maxCount: 1 },
-  { name: 'image', maxCount: 1 }
-]);
+const bannerUploadFields = upload.any();
+
+const extractBannerFiles = (files) => {
+  const pick = (names) => {
+    if (!files) return null;
+    if (Array.isArray(files)) {
+      return files.find(f => names.includes(f.fieldname)) || null;
+    }
+    for (const n of names) {
+      if (Array.isArray(files[n]) && files[n][0]) return files[n][0];
+    }
+    return null;
+  };
+  return {
+    desktopFile: pick(['desktop_image', 'desktop_image_file', 'image']),
+    mobileFile: pick(['mobile_image', 'mobile_image_file']),
+    tabletFile: pick(['tablet_image', 'tablet_image_file'])
+  };
+};
 
 const uploadBannerImageFile = async (file) => {
   if (!file) return '';
@@ -2873,16 +3101,48 @@ const uploadBannerImageFile = async (file) => {
   try {
     const fileBuffer = file.buffer || (file.path && fs.existsSync(file.path) ? fs.readFileSync(file.path) : null);
     if (fileBuffer) {
-      uploadedUrl = await storeUploadedFile({
-        buffer: fileBuffer,
-        originalname: file.originalname,
-        mimetype: file.mimetype,
-        filename: file.filename,
-        subDir: 'banners'
-      });
+      try {
+        uploadedUrl = await storeUploadedFile({
+          buffer: fileBuffer,
+          originalname: file.originalname,
+          mimetype: file.mimetype,
+          filename: file.filename,
+          subDir: 'banners'
+        });
+      } catch (storeErr) {
+        console.warn('[Banner Storage Warning]:', storeErr.message);
+      }
+
+      try {
+        const bannerDir = path.join(uploadsDir, 'banners');
+        if (!fs.existsSync(bannerDir)) fs.mkdirSync(bannerDir, { recursive: true });
+        const localDest = path.join(bannerDir, file.filename);
+        if (!fs.existsSync(localDest)) fs.writeFileSync(localDest, fileBuffer);
+
+        const cwdBannerDir = path.join(process.cwd(), 'uploads', 'banners');
+        if (!fs.existsSync(cwdBannerDir)) fs.mkdirSync(cwdBannerDir, { recursive: true });
+        const cwdDest = path.join(cwdBannerDir, file.filename);
+        if (!fs.existsSync(cwdDest)) fs.writeFileSync(cwdDest, fileBuffer);
+      } catch (fsErr) {
+        console.warn('[Banner Local Write Notice]:', fsErr.message);
+      }
+
+      if (
+        (!uploadedUrl || (!uploadedUrl.startsWith('http://') && !uploadedUrl.startsWith('https://'))) &&
+        fileBuffer.length <= 10 * 1024 * 1024
+      ) {
+        const mime = file.mimetype || 'image/jpeg';
+        uploadedUrl = `data:${mime};base64,${fileBuffer.toString('base64')}`;
+      }
     }
   } catch (uploadErr) {
     console.warn('[Banner Upload Error]:', uploadErr.message);
+    try {
+      const buf = file.buffer || (file.path && fs.existsSync(file.path) ? fs.readFileSync(file.path) : null);
+      if (buf && buf.length <= 10 * 1024 * 1024) {
+        uploadedUrl = `data:${file.mimetype || 'image/jpeg'};base64,${buf.toString('base64')}`;
+      }
+    } catch (e) {}
   }
   return uploadedUrl || `/api/documents/preview-file/${file.filename}`;
 };
@@ -2905,21 +3165,19 @@ app.post('/api/admin/banners', authenticateAdmin, bannerUploadFields, async (req
       image_fit
     } = req.body || {};
 
-    const desktopFile = req.files?.desktop_image?.[0] || req.files?.image?.[0];
-    const mobileFile = req.files?.mobile_image?.[0];
-    const tabletFile = req.files?.tablet_image?.[0];
+    const { desktopFile, mobileFile, tabletFile } = extractBannerFiles(req.files);
 
-    let desktop_image_url = (bodyDesktopUrl || image_url_input || '').trim();
+    let desktop_image_url = String(bodyDesktopUrl || image_url_input || '').trim();
     if (desktopFile) {
       desktop_image_url = await uploadBannerImageFile(desktopFile);
     }
 
-    let mobile_image_url = (bodyMobileUrl || '').trim();
+    let mobile_image_url = String(bodyMobileUrl || '').trim();
     if (mobileFile) {
       mobile_image_url = await uploadBannerImageFile(mobileFile);
     }
 
-    let tablet_image_url = (bodyTabletUrl || '').trim();
+    let tablet_image_url = String(bodyTabletUrl || '').trim();
     if (tabletFile) {
       tablet_image_url = await uploadBannerImageFile(tabletFile);
     }
@@ -2931,13 +3189,13 @@ app.post('/api/admin/banners', authenticateAdmin, bannerUploadFields, async (req
 
     const currentBanners = db.all('banners');
     const newBanner = db.insert('banners', {
-      title: title ? title.trim() : '',
-      description: description ? description.trim() : '',
+      title: title ? String(title).trim() : '',
+      description: description ? String(description).trim() : '',
       image_url,
       desktop_image_url,
       mobile_image_url,
       tablet_image_url,
-      link_url: link_url ? link_url.trim() : '/services',
+      link_url: link_url ? String(link_url).trim() : '/services',
       duration_seconds: duration_seconds ? Math.max(2, Math.min(60, Number(duration_seconds))) : 5,
       status: status || 'Active',
       display_order: display_order ? Number(display_order) : (currentBanners.length + 1),
@@ -2973,48 +3231,46 @@ app.put('/api/admin/banners/:id', authenticateAdmin, bannerUploadFields, async (
       image_fit
     } = req.body || {};
 
-    const desktopFile = req.files?.desktop_image?.[0] || req.files?.image?.[0];
-    const mobileFile = req.files?.mobile_image?.[0];
-    const tabletFile = req.files?.tablet_image?.[0];
+    const { desktopFile, mobileFile, tabletFile } = extractBannerFiles(req.files);
 
-    let desktop_image_url = banner.desktop_image_url !== undefined ? banner.desktop_image_url : (banner.image_url || '');
+    let desktop_image_url = (banner.desktop_image_url !== undefined && banner.desktop_image_url !== null) ? banner.desktop_image_url : (banner.image_url || '');
     if (desktopFile) {
       desktop_image_url = await uploadBannerImageFile(desktopFile);
-    } else if (bodyDesktopUrl !== undefined) {
+    } else if (bodyDesktopUrl !== undefined && bodyDesktopUrl !== null) {
       desktop_image_url = String(bodyDesktopUrl).trim();
-    } else if (image_url_input !== undefined && String(image_url_input).trim()) {
+    } else if (image_url_input !== undefined && image_url_input !== null && String(image_url_input).trim()) {
       desktop_image_url = String(image_url_input).trim();
     }
 
     let mobile_image_url = banner.mobile_image_url || '';
     if (mobileFile) {
       mobile_image_url = await uploadBannerImageFile(mobileFile);
-    } else if (bodyMobileUrl !== undefined) {
+    } else if (bodyMobileUrl !== undefined && bodyMobileUrl !== null) {
       mobile_image_url = String(bodyMobileUrl).trim();
     }
 
     let tablet_image_url = banner.tablet_image_url || '';
     if (tabletFile) {
       tablet_image_url = await uploadBannerImageFile(tabletFile);
-    } else if (bodyTabletUrl !== undefined) {
+    } else if (bodyTabletUrl !== undefined && bodyTabletUrl !== null) {
       tablet_image_url = String(bodyTabletUrl).trim();
     }
 
     const image_url = desktop_image_url || tablet_image_url || mobile_image_url || banner.image_url;
 
     db.update('banners', b => b.id === bannerId, {
-      title: title !== undefined ? title.trim() : banner.title,
-      description: description !== undefined ? description.trim() : banner.description,
+      title: title !== undefined && title !== null ? String(title).trim() : (banner.title || ''),
+      description: description !== undefined && description !== null ? String(description).trim() : (banner.description || ''),
       image_url,
       desktop_image_url,
       mobile_image_url,
       tablet_image_url,
-      link_url: link_url !== undefined ? link_url.trim() : banner.link_url,
+      link_url: link_url !== undefined && link_url !== null ? String(link_url).trim() : (banner.link_url || '/services'),
       duration_seconds: duration_seconds ? Math.max(2, Math.min(60, Number(duration_seconds))) : banner.duration_seconds,
-      status: status !== undefined ? status : banner.status,
-      display_order: display_order !== undefined ? Number(display_order) : banner.display_order,
-      image_position: image_position !== undefined ? image_position : (banner.image_position || 'center'),
-      image_fit: image_fit !== undefined ? image_fit : (banner.image_fit || 'cover')
+      status: status !== undefined && status !== null ? status : banner.status,
+      display_order: display_order !== undefined && display_order !== null ? Number(display_order) : banner.display_order,
+      image_position: image_position !== undefined && image_position !== null ? image_position : (banner.image_position || 'center'),
+      image_fit: image_fit !== undefined && image_fit !== null ? image_fit : (banner.image_fit || 'cover')
     });
 
     res.json({ message: 'Banner updated successfully', banner: db.get('banners', b => b.id === bannerId) });
@@ -4163,7 +4419,7 @@ app.post('/api/admin/applications/:id/mark-paid', authenticateAdmin, async (req,
 
     // Send notification to user
     try {
-      if (app.user_id) {
+      if (app.user_id || app.user_email) {
         await NotificationService.sendNotification(db, {
           userId: app.user_id,
           applicationId: app.id,
@@ -4171,10 +4427,16 @@ app.post('/api/admin/applications/:id/mark-paid', authenticateAdmin, async (req,
           title: 'Fee Payment Verified',
           message: `Your payment of ₹${fee} for application ${app.application_number} has been verified successfully.`,
           data: {
+            applicationNumber: app.application_number,
             application_number: app.application_number,
+            serviceName: srv ? srv.name : 'E-Seva Service',
+            userName: app.user_name || app.applicant_name || 'Citizen',
             receipt_number: `REC-2026-${String(newPayment.id).padStart(6, '0')}`,
-            amount: fee
-          }
+            amount: fee,
+            status: 'PAID'
+          },
+          userEmail: app.user_email,
+          userPhone: app.user_phone
         });
       }
     } catch (e) {}
@@ -4195,7 +4457,7 @@ app.post('/api/admin/applications/:id/send-payment-reminder', authenticateAdmin,
     const srv = db.get('services', s => s.id === app.service_id);
     const fee = app.total_fee !== undefined ? app.total_fee : (app.fee_amount || (srv ? srv.fee : 0));
 
-    if (app.user_id) {
+    if (app.user_id || app.user_email) {
       await NotificationService.sendNotification(db, {
         userId: app.user_id,
         applicationId: app.id,
@@ -4203,10 +4465,16 @@ app.post('/api/admin/applications/:id/send-payment-reminder', authenticateAdmin,
         title: 'Payment Pending Reminder',
         message: `Your application ${app.application_number} (${srv ? srv.name : 'E-Seva'}) is pending payment of ₹${fee}. Please complete payment to avoid cancellation.`,
         data: {
+          applicationNumber: app.application_number,
           application_number: app.application_number,
+          serviceName: srv ? srv.name : 'E-Seva Service',
+          userName: app.user_name || app.applicant_name || 'Citizen',
           amount: fee,
+          status: 'PAYMENT_PENDING',
           pay_url: `/track?app=${app.application_number}`
-        }
+        },
+        userEmail: app.user_email,
+        userPhone: app.user_phone
       });
     }
 
@@ -5002,13 +5270,23 @@ app.post('/api/admin/applications/:id/certificate', authenticateAdmin, upload.si
   });
 
   // Dispatch Notification to User
+  const issuedService = db.get('services', s => s.id === appRecord.service_id);
+  const issuedServiceName = (issuedService && issuedService.name) || appRecord.service_name || 'Digital Service';
   NotificationService.sendNotification(db, {
     userId: appRecord.user_id,
+    applicationId: appRecord.id,
     type: 'CERTIFICATE_ISSUED',
+    title: `Official Certificate Issued: ${appRecord.application_number}`,
+    message: `Your official digital certificate (${certNum}) for ${issuedServiceName} (${appRecord.application_number}) has been issued. You can download it from your EConnect portal.`,
     data: {
+      applicationId: appRecord.id,
       application_id: appRecord.id,
+      applicationNumber: appRecord.application_number,
       application_number: appRecord.application_number,
-      service_name: appRecord.service_name,
+      serviceName: issuedServiceName,
+      service_name: issuedServiceName,
+      userName: appRecord.user_name || 'Citizen',
+      status: 'COMPLETED',
       certificate_number: certNum
     },
     userEmail: appRecord.user_email,
@@ -5070,7 +5348,7 @@ app.delete('/api/notifications/:id', authenticateToken, (req, res) => {
 
 // Admin Get Notifications
 app.get('/api/admin/notifications', authenticateAdmin, (req, res) => {
-  const adminNotifs = db.all('notifications', n => n.adminId || !n.userId)
+  const adminNotifs = db.all('notifications', n => Boolean(n.adminId || n.admin_id) || (!n.userId && !n.user_id))
                         .sort((a, b) => new Date(b.createdAt || b.created_at) - new Date(a.createdAt || a.created_at));
   const unreadCount = adminNotifs.filter(n => !n.isRead && !n.is_read).length;
 
@@ -5082,7 +5360,7 @@ app.get('/api/admin/notifications', authenticateAdmin, (req, res) => {
 
 // Admin Mark All Notifications Read
 app.put('/api/admin/notifications/read-all', authenticateAdmin, (req, res) => {
-  const adminNotifs = db.all('notifications', n => (n.adminId || !n.userId) && (!n.isRead && !n.is_read));
+  const adminNotifs = db.all('notifications', n => (Boolean(n.adminId || n.admin_id) || (!n.userId && !n.user_id)) && (!n.isRead && !n.is_read));
   adminNotifs.forEach(n => {
     db.update('notifications', item => item.id === n.id, { isRead: 1, is_read: 1, readAt: new Date().toISOString() });
   });

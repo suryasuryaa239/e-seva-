@@ -3,8 +3,10 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import './index.css';
 
+import { API_BASE_URL } from './utils/mediaUrl';
+
 // Production Cloud API Base URL (Render.com Express Backend)
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || (import.meta.env.PROD ? 'https://e-seva-portal-iyau.onrender.com' : '');
+export { API_BASE_URL };
 
 if (API_BASE_URL) {
   const originalFetch = window.fetch;
