@@ -182,12 +182,13 @@ export default function Home() {
           
           {heroBanners.length > 0 ? (() => {
             const activeBanner = heroBanners[currentSlide] || heroBanners[0] || {};
+            const isValidImgStr = (u) => Boolean(u && typeof u === 'string' && u.trim().length > 60);
             const activeBannerImage = resolveMediaUrl(
               bannerViewport === 'mobile'
-                ? (activeBanner.mobile_image_url || activeBanner.tablet_image_url || activeBanner.desktop_image_url || activeBanner.image_url)
+                ? ((isValidImgStr(activeBanner.mobile_image_url) && activeBanner.mobile_image_url) || (isValidImgStr(activeBanner.desktop_image_url) && activeBanner.desktop_image_url) || activeBanner.image_url)
                 : bannerViewport === 'tablet'
-                ? (activeBanner.tablet_image_url || activeBanner.desktop_image_url || activeBanner.image_url || activeBanner.mobile_image_url)
-                : (activeBanner.desktop_image_url || activeBanner.image_url || activeBanner.tablet_image_url || activeBanner.mobile_image_url)
+                ? ((isValidImgStr(activeBanner.tablet_image_url) && activeBanner.tablet_image_url) || (isValidImgStr(activeBanner.desktop_image_url) && activeBanner.desktop_image_url) || activeBanner.image_url)
+                : ((isValidImgStr(activeBanner.desktop_image_url) && activeBanner.desktop_image_url) || activeBanner.image_url || activeBanner.tablet_image_url || activeBanner.mobile_image_url)
             );
             const imagePosClass = activeBanner.image_position === 'bottom'
               ? 'object-bottom'
@@ -225,8 +226,12 @@ export default function Home() {
                       // Fallback to desktop/general image if mobile URL failed
                       if (activeBanner.desktop_image_url && e.target.src !== resolveMediaUrl(activeBanner.desktop_image_url)) {
                         e.target.src = resolveMediaUrl(activeBanner.desktop_image_url);
+                        e.target.style.display = '';
                       } else if (activeBanner.image_url && e.target.src !== resolveMediaUrl(activeBanner.image_url)) {
                         e.target.src = resolveMediaUrl(activeBanner.image_url);
+                        e.target.style.display = '';
+                      } else {
+                        e.target.style.display = 'none';
                       }
                     }}
                   />
