@@ -197,7 +197,7 @@ export default function Home() {
             const isContain = activeBanner.image_fit === 'contain' || (!activeBanner.title && activeBanner.image_fit !== 'cover');
 
             return (
-              <div className="relative bg-[#0b192c] rounded-3xl overflow-hidden shadow-2xl border border-slate-800 text-white min-h-[440px] sm:min-h-[500px] lg:min-h-[560px] flex items-center justify-center">
+              <div className="relative bg-slate-950 rounded-3xl overflow-hidden shadow-2xl border border-slate-800 text-white min-h-[440px] sm:min-h-[500px] lg:min-h-[560px] flex items-center justify-center">
                 
                 {/* Active Banner Background Image */}
                 <div className="absolute inset-0 z-0 overflow-hidden flex items-center justify-center">
@@ -206,7 +206,7 @@ export default function Home() {
                       src={activeBannerImage}
                       alt=""
                       aria-hidden="true"
-                      className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-40 scale-110 pointer-events-none"
+                      className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-15 scale-110 pointer-events-none"
                       onLoad={(e) => {
                         e.target.style.display = '';
                       }}
@@ -217,9 +217,7 @@ export default function Home() {
                     alt={activeBanner.title || 'Hero Banner'}
                     className={`w-full h-full transition-all duration-700 ${
                       isContain ? 'object-contain relative z-10 max-h-[560px]' : `object-cover ${imagePosClass}`
-                    } ${
-                      activeBanner.title ? 'opacity-35 scale-105' : 'opacity-100'
-                    }`}
+                    } opacity-100`}
                     onLoad={(e) => {
                       e.target.style.display = '';
                     }}
@@ -227,46 +225,45 @@ export default function Home() {
                       e.target.style.display = 'none';
                     }}
                   />
-                  {activeBanner.title && (
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#0b192c] via-[#0b192c]/90 to-transparent z-10" />
-                  )}
                 </div>
 
                 {/* Content Overlay */}
                 {activeBanner.title ? (
-                  <div className="relative z-10 p-8 sm:p-12 lg:p-16 max-w-2xl space-y-5">
-                    <div className="flex items-center space-x-3">
-                      <span className="inline-block text-[11px] font-black uppercase text-orange-400 tracking-widest bg-orange-950/70 border border-orange-500/30 px-3 py-1 rounded-full">
-                        {t.portalName} • PROMOTION
-                      </span>
-                    </div>
+                  <div className="relative z-10 p-5 sm:p-10 lg:p-14 max-w-xl w-full">
+                    <div className="bg-slate-950/75 backdrop-blur-md p-6 sm:p-8 rounded-3xl border border-white/10 shadow-2xl space-y-4">
+                      <div className="flex items-center space-x-3">
+                        <span className="inline-block text-[11px] font-black uppercase text-orange-400 tracking-widest bg-orange-950/70 border border-orange-500/30 px-3 py-1 rounded-full">
+                          {t.portalName} • PROMOTION
+                        </span>
+                      </div>
 
-                    <h1 className="font-heading font-extrabold text-3xl sm:text-4xl lg:text-5xl tracking-tight leading-tight text-white animate-in fade-in duration-300">
-                      {activeBanner.title}
-                    </h1>
+                      <h1 className="font-heading font-extrabold text-2xl sm:text-3xl lg:text-4xl tracking-tight leading-tight text-white animate-in fade-in duration-300">
+                        {activeBanner.title}
+                      </h1>
 
-                    {activeBanner.description && (
-                      <p className="text-slate-300 text-sm sm:text-base font-normal leading-relaxed line-clamp-3">
-                        {activeBanner.description}
-                      </p>
-                    )}
+                      {activeBanner.description && (
+                        <p className="text-slate-300 text-xs sm:text-sm font-normal leading-relaxed line-clamp-3">
+                          {activeBanner.description}
+                        </p>
+                      )}
 
-                    {/* Actions */}
-                    <div className="pt-2 flex flex-wrap items-center gap-4">
-                      <Link
-                        to={activeBanner.link_url || '/services'}
-                        className="bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-xs sm:text-sm px-7 py-3.5 rounded-xl shadow-lg transition-all flex items-center gap-2 group"
-                      >
-                        <span>{t.exploreServices || (lang === 'ta' ? 'சேவைகளைப் பார்க்கவும்' : 'Explore Services')}</span>
-                        <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform" />
-                      </Link>
+                      {/* Actions */}
+                      <div className="pt-2 flex flex-wrap items-center gap-3">
+                        <Link
+                          to={activeBanner.link_url || '/services'}
+                          className="bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-xs sm:text-sm px-6 py-3 rounded-xl shadow-lg transition-all flex items-center gap-2 group"
+                        >
+                          <span>{t.exploreServices || (lang === 'ta' ? 'சேவைகளைப் பார்க்கவும்' : 'Explore Services')}</span>
+                          <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform" />
+                        </Link>
 
-                      <Link
-                        to="/track"
-                        className="bg-white/10 hover:bg-white/20 text-white font-bold text-xs sm:text-sm px-6 py-3.5 rounded-xl border border-white/20 transition-all"
-                      >
-                        {t.trackAppHero || t.trackApp || (lang === 'ta' ? 'விண்ணப்பத்தைக் கண்காணிக்கவும்' : 'Track Application')}
-                      </Link>
+                        <Link
+                          to="/track"
+                          className="bg-white/10 hover:bg-white/20 text-white font-bold text-xs sm:text-sm px-5 py-3 rounded-xl border border-white/20 transition-all"
+                        >
+                          {t.trackAppHero || t.trackApp || (lang === 'ta' ? 'விண்ணப்பத்தைக் கண்காணிக்கவும்' : 'Track Application')}
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 ) : (
@@ -276,7 +273,7 @@ export default function Home() {
                       <div className="pt-4 pointer-events-auto">
                         <Link
                           to={activeBanner.link_url}
-                          className="inline-flex items-center gap-2 bg-[#0b192c]/90 hover:bg-orange-600 text-white font-extrabold text-xs sm:text-sm px-6 py-3 rounded-xl shadow-xl border border-slate-700/80 backdrop-blur-md transition-all group"
+                          className="inline-flex items-center gap-2 bg-slate-900/90 hover:bg-orange-600 text-white font-extrabold text-xs sm:text-sm px-6 py-3 rounded-xl shadow-xl border border-slate-700/80 backdrop-blur-md transition-all group"
                         >
                           <span>{lang === 'ta' ? 'மேலும் விவரங்களுக்கு இங்கே கிளிக் செய்யவும்' : 'Click to View Details'}</span>
                           <ArrowRight className="w-4 h-4 text-orange-400 group-hover:translate-x-1 transition-transform" />
