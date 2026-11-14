@@ -2611,12 +2611,23 @@ app.get('/api/documents/:id/preview', optionalAuthenticateToken, (req, res) => {
     }
   }
 
-  if (doc && doc.stored_filename) {
-    const absolutePath = path.join(uploadsDir, doc.stored_filename);
-    if (fs.existsSync(absolutePath)) {
-      res.setHeader('Content-Type', doc.file_type || 'application/octet-stream');
-      res.setHeader('Content-Disposition', `inline; filename="${doc.original_filename || doc.document_name}"`);
-      return res.sendFile(absolutePath);
+  const filenameToCheck = doc?.stored_filename || (doc?.file_path && !doc.file_path.startsWith('http') && !doc.file_path.startsWith('data:') ? path.basename(doc.file_path) : null);
+  if (filenameToCheck) {
+    const candidateDirs = [
+      uploadsDir,
+      path.join(uploadsDir, 'documents'),
+      path.join(process.cwd(), 'uploads'),
+      path.join(process.cwd(), 'uploads', 'documents'),
+      path.join('/tmp', 'uploads'),
+      path.join('/tmp', 'uploads', 'documents')
+    ];
+    for (const dir of candidateDirs) {
+      const checkPath = path.join(dir, filenameToCheck);
+      if (fs.existsSync(checkPath)) {
+        res.setHeader('Content-Type', doc?.file_type || 'application/octet-stream');
+        res.setHeader('Content-Disposition', `inline; filename="${doc?.original_filename || doc?.document_name || 'document'}"`);
+        return res.sendFile(checkPath);
+      }
     }
   }
 
@@ -2780,23 +2791,49 @@ app.get('/api/documents/:id/download', optionalAuthenticateToken, async (req, re
     return res.redirect(doc.file_path);
   }
 
-  const absolutePath = path.join(uploadsDir, doc.stored_filename || path.basename(doc.file_path));
-  if (!fs.existsSync(absolutePath)) {
-    if (isFtpConfigured()) {
-      try {
-        const ftpBuffer = await downloadFromFTP(doc.stored_filename || path.basename(doc.file_path), 'documents');
-        if (ftpBuffer) {
-          res.setHeader('Content-Disposition', `attachment; filename="${doc.original_filename || doc.document_name || 'document'}"`);
-          return res.send(ftpBuffer);
-        }
-      } catch (ftpErr) {
-        console.warn('[FTP Download Warning]:', ftpErr.message);
-      }
-    }
-    return res.status(404).json({ error: 'Physical document file missing on server' });
+  if (doc.file_path && doc.file_path.startsWith('data:')) {
+    const parts = doc.file_path.split(',');
+    const mimeMatch = parts[0].match(/:(.*?);/);
+    const mime = mimeMatch ? mimeMatch[1] : (doc.file_type || 'application/octet-stream');
+    const buffer = Buffer.from(parts[1], 'base64');
+    const downloadName = doc.original_filename || doc.document_name || 'document';
+    res.setHeader('Content-Type', mime);
+    res.setHeader('Content-Disposition', `attachment; filename="${downloadName}"`);
+    return res.send(buffer);
   }
 
-  res.download(absolutePath, doc.original_filename || doc.document_name || 'document');
+  const filenameToCheck = doc.stored_filename || (doc.file_path ? path.basename(doc.file_path) : null);
+  if (filenameToCheck) {
+    const candidateDirs = [
+      uploadsDir,
+      path.join(uploadsDir, 'documents'),
+      path.join(process.cwd(), 'uploads'),
+      path.join(process.cwd(), 'uploads', 'documents'),
+      path.join('/tmp', 'uploads'),
+      path.join('/tmp', 'uploads', 'documents')
+    ];
+
+    for (const dir of candidateDirs) {
+      const checkPath = path.join(dir, filenameToCheck);
+      if (fs.existsSync(checkPath)) {
+        return res.download(checkPath, doc.original_filename || doc.document_name || 'document');
+      }
+    }
+  }
+
+  if (isFtpConfigured() && filenameToCheck) {
+    try {
+      const ftpBuffer = await downloadFromFTP(filenameToCheck, 'documents');
+      if (ftpBuffer) {
+        res.setHeader('Content-Disposition', `attachment; filename="${doc.original_filename || doc.document_name || 'document'}"`);
+        return res.send(ftpBuffer);
+      }
+    } catch (ftpErr) {
+      console.warn('[FTP Download Warning]:', ftpErr.message);
+    }
+  }
+
+  return res.status(404).json({ error: 'Physical document file missing on server' });
 });
 
 // Replace Document File (for DRAFT or REJECTED state)

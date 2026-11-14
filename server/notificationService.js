@@ -1,5 +1,11 @@
 import 'dotenv/config';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import nodemailer from 'nodemailer';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const DEFAULT_SMTP_USER = 'econnectshopping@gmail.com';
 const DEFAULT_GOOGLE_APP_PASSWORD = 'kvqpwazifoeucizf';
@@ -444,6 +450,95 @@ class NotificationService {
       ? `[E-Connect Payment Confirmed] ${serviceName} - ${applicationNumber} (${feeLabel} PAID)`
       : `[E-Connect New Application] ${serviceName} - ${applicationNumber} (${userName})`;
 
+    const backendBaseUrl = (
+      process.env.API_BASE_URL ||
+      process.env.BACKEND_URL ||
+      process.env.RENDER_EXTERNAL_URL ||
+      'https://e-seva-portal-iyau.onrender.com'
+    ).replace(/\/+$/, '');
+
+    // Prepare attachments and direct download links for uploaded proof documents
+    const emailAttachments = [];
+    const MAX_TOTAL_ATTACHMENT_BYTES = 18 * 1024 * 1024; // 18MB safe cumulative limit for Gmail
+    let cumulativeAttachmentBytes = 0;
+
+    const candidateUploadDirs = [
+      path.join(__dirname, 'uploads'),
+      path.join(__dirname, 'uploads', 'documents'),
+      path.join(process.cwd(), 'uploads'),
+      path.join(process.cwd(), 'uploads', 'documents'),
+      path.join('/tmp', 'uploads'),
+      path.join('/tmp', 'uploads', 'documents')
+    ];
+
+    const enrichedDocs = docsList.map((d, idx) => {
+      let downloadUrl = null;
+      if (d.file_path && (String(d.file_path).startsWith('http://') || String(d.file_path).startsWith('https://'))) {
+        downloadUrl = d.file_path;
+      } else if (d.stored_filename) {
+        downloadUrl = `${backendBaseUrl}/api/documents/preview-file/${encodeURIComponent(d.stored_filename)}`;
+      } else if (d.id) {
+        downloadUrl = `${backendBaseUrl}/api/documents/${d.id}/download`;
+      } else if (d.file_path && String(d.file_path).startsWith('/api/')) {
+        downloadUrl = `${backendBaseUrl}${d.file_path}`;
+      }
+
+      let isAttached = false;
+      try {
+        const fileName = d.stored_filename || (d.file_path && !String(d.file_path).startsWith('http') && !String(d.file_path).startsWith('data:') ? path.basename(d.file_path) : null);
+        const displayName = d.original_filename || d.document_name || fileName || `document_${idx + 1}`;
+
+        // 1. Check local file on disk
+        let localPath = null;
+        if (fileName) {
+          for (const dir of candidateUploadDirs) {
+            const checkPath = path.join(dir, fileName);
+            if (fs.existsSync(checkPath)) {
+              localPath = checkPath;
+              break;
+            }
+          }
+        }
+
+        if (localPath) {
+          const stat = fs.statSync(localPath);
+          if (stat.isFile() && (cumulativeAttachmentBytes + stat.size) <= MAX_TOTAL_ATTACHMENT_BYTES) {
+            emailAttachments.push({
+              filename: displayName,
+              path: localPath
+            });
+            cumulativeAttachmentBytes += stat.size;
+            isAttached = true;
+          }
+        } else if (d.file_path && typeof d.file_path === 'string' && d.file_path.startsWith('data:')) {
+          // 2. Base64 data URI
+          const parts = d.file_path.split(',');
+          if (parts.length === 2) {
+            const mimeMatch = parts[0].match(/:(.*?);/);
+            const contentType = mimeMatch ? mimeMatch[1] : (d.file_type || 'application/octet-stream');
+            const buffer = Buffer.from(parts[1], 'base64');
+            if ((cumulativeAttachmentBytes + buffer.length) <= MAX_TOTAL_ATTACHMENT_BYTES) {
+              emailAttachments.push({
+                filename: displayName,
+                content: buffer,
+                contentType
+              });
+              cumulativeAttachmentBytes += buffer.length;
+              isAttached = true;
+            }
+          }
+        }
+      } catch (attErr) {
+        console.warn('[ADMIN EMAIL ATTACHMENT ERROR]:', attErr.message);
+      }
+
+      return {
+        ...d,
+        download_url: downloadUrl,
+        is_attached: isAttached
+      };
+    });
+
     const emailData = {
       eventType,
       applicationId,
@@ -462,7 +557,9 @@ class NotificationService {
       userPhone,
       submittedAt,
       submittedFields: normalizedFields,
-      uploadedDocuments: docsList
+      uploadedDocuments: enrichedDocs,
+      attachmentsCount: emailAttachments.length,
+      totalAttachmentBytes: cumulativeAttachmentBytes
     };
 
     const htmlBody = this.generateAdminEmailHtml(emailData);
@@ -475,7 +572,8 @@ class NotificationService {
       subject: emailSubject,
       text: textBody,
       html: htmlBody,
-      template: isPaymentConfirmed ? 'ADMIN_PAYMENT_CONFIRMED' : 'ADMIN_NEW_APPLICATION'
+      template: isPaymentConfirmed ? 'ADMIN_PAYMENT_CONFIRMED' : 'ADMIN_NEW_APPLICATION',
+      attachments: emailAttachments
     }).catch(err => {
       console.error('[ADMIN EMAIL DISPATCH ERROR]', err.message);
       return null;
@@ -541,20 +639,33 @@ class NotificationService {
       ? docs.map((d, idx) => {
           const dName = this.escapeHtml(d.document_name || d.name || `Document ${idx + 1}`);
           const origName = this.escapeHtml(d.original_filename || d.stored_filename || 'Attached File');
-          const fileUrl = d.file_path && String(d.file_path).startsWith('http')
-            ? `<a href="${this.escapeHtml(d.file_path)}" target="_blank" style="color: #ea580c; font-weight: 700; text-decoration: none;">Open File</a>`
-            : `<span style="color: #64748b; font-size: 11px;">Available in Admin Workspace</span>`;
+          const downloadUrl = d.download_url;
+          const downloadBtn = downloadUrl
+            ? `<a href="${this.escapeHtml(downloadUrl)}" target="_blank" style="display: inline-block; background-color: #ea580c; color: #ffffff !important; text-decoration: none; padding: 6px 14px; border-radius: 6px; font-weight: 800; font-size: 11px; letter-spacing: 0.3px; box-shadow: 0 2px 4px rgba(234, 88, 12, 0.2);">📥 View / Download</a>`
+            : `<span style="color: #64748b; font-size: 11px; font-weight: 600;">Saved in Admin DB</span>`;
+          const attachedBadge = d.is_attached
+            ? `<div style="margin-top: 4px; font-size: 10px; color: #16a34a; font-weight: 800;">📎 Attached to this email</div>`
+            : '';
+          const sizeLabel = d.file_size ? `<div style="font-size: 10px; color: #94a3b8; font-family: monospace; margin-top: 2px;">(${Math.round(d.file_size / 1024)} KB)</div>` : '';
           return `
             <tr style="background-color: ${idx % 2 === 0 ? '#ffffff' : '#f8fafc'};">
-              <td style="padding: 8px 12px; border-bottom: 1px solid #e2e8f0; font-size: 12px; font-weight: 700; color: #334155;">${dName}</td>
-              <td style="padding: 8px 12px; border-bottom: 1px solid #e2e8f0; font-size: 12px; color: #475569;">${origName}</td>
-              <td style="padding: 8px 12px; border-bottom: 1px solid #e2e8f0; font-size: 12px; text-align: right;">${fileUrl}</td>
+              <td style="padding: 10px 12px; border-bottom: 1px solid #e2e8f0; font-size: 12px; font-weight: 700; color: #1e293b; vertical-align: middle;">
+                ${dName}
+              </td>
+              <td style="padding: 10px 12px; border-bottom: 1px solid #e2e8f0; font-size: 12px; color: #475569; vertical-align: middle;">
+                <div style="font-weight: 600; color: #334155;">${origName}</div>
+                ${sizeLabel}
+              </td>
+              <td style="padding: 10px 12px; border-bottom: 1px solid #e2e8f0; font-size: 12px; text-align: right; vertical-align: middle;">
+                ${downloadBtn}
+                ${attachedBadge}
+              </td>
             </tr>
           `;
         }).join('')
       : `
           <tr>
-            <td colspan="3" style="padding: 12px; font-size: 12px; color: #64748b; text-align: center;">
+            <td colspan="3" style="padding: 14px; font-size: 12px; color: #64748b; text-align: center;">
               No supporting documents attached in this submission.
             </td>
           </tr>
@@ -649,10 +760,27 @@ class NotificationService {
       </table>
 
       <!-- Uploaded Documents -->
-      <h3 style="margin: 0 0 10px 0; font-size: 13px; text-transform: uppercase; letter-spacing: 0.8px; color: #0b192c;">Uploaded Documents (${docs.length})</h3>
-      <table style="width: 100%; border-collapse: collapse; border: 1px solid #e2e8f0; margin-bottom: 24px;">
-        ${docRowsHtml}
+      <div style="display: flex; align-items: center; justify-content: space-between; margin: 0 0 10px 0;">
+        <h3 style="margin: 0; font-size: 13px; text-transform: uppercase; letter-spacing: 0.8px; color: #0b192c; font-weight: 800;">
+          Uploaded Documents (${docs.length})
+        </h3>
+        ${data.attachmentsCount > 0 ? `<span style="font-size: 11px; background-color: #dcfce7; color: #15803d; font-weight: 800; padding: 3px 8px; border-radius: 9999px;">${data.attachmentsCount} file(s) attached</span>` : ''}
+      </div>
+      <table style="width: 100%; border-collapse: collapse; border: 1px solid #e2e8f0; margin-bottom: 12px; border-radius: 8px; overflow: hidden;">
+        <thead>
+          <tr style="background-color: #f1f5f9; text-align: left;">
+            <th style="padding: 8px 12px; font-size: 11px; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #cbd5e1;">Document Type</th>
+            <th style="padding: 8px 12px; font-size: 11px; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #cbd5e1;">File Name</th>
+            <th style="padding: 8px 12px; font-size: 11px; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #cbd5e1; text-align: right;">Action / Attachment</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${docRowsHtml}
+        </tbody>
       </table>
+      <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 14px; margin-bottom: 24px; font-size: 11px; color: #64748b; line-height: 1.5;">
+        📁 <strong>Admin Workspace Note:</strong> All uploaded proof documents are permanently preserved and viewable under <a href="https://econnecthub.com/admin?tab=documents" target="_blank" style="color: #ea580c; font-weight: 700; text-decoration: underline;">Uploaded Documents Explorer</a> or by searching Application <strong>#${appNumber}</strong> in <a href="https://econnecthub.com/admin?tab=applications" target="_blank" style="color: #ea580c; font-weight: 700; text-decoration: underline;">Applications Manager</a>.
+      </div>
 
       <div style="text-align: center; margin: 22px 0 8px 0;">
         <a href="https://econnecthub.com/admin" target="_blank" style="display: inline-block; background-color: #f97316; color: #ffffff !important; text-decoration: none; padding: 12px 26px; border-radius: 10px; font-weight: 800; font-size: 14px;">
@@ -698,9 +826,10 @@ class NotificationService {
       '',
       `--- Uploaded Documents (${docs.length}) ---`,
       ...(docs.length > 0
-        ? docs.map((d, i) => `${i + 1}. ${d.document_name || 'Document'} (${d.original_filename || d.stored_filename || 'File'})`)
+        ? docs.map((d, i) => `${i + 1}. ${d.document_name || 'Document'} (${d.original_filename || d.stored_filename || 'File'})${d.is_attached ? ' [ATTACHED TO THIS EMAIL]' : ''}${d.download_url ? `\n   Direct Link: ${d.download_url}` : ''}`)
         : ['No documents attached.']),
       '',
+      'Admin Documents Explorer: https://econnecthub.com/admin?tab=documents',
       'Admin Dashboard: https://econnecthub.com/admin'
     ];
 
@@ -834,7 +963,7 @@ class NotificationService {
   /**
    * Low-level Nodemailer delivery & logging helper
    */
-  async dispatchRawEmail(db, { to, replyTo = undefined, subject, text, html, template }) {
+  async dispatchRawEmail(db, { to, replyTo = undefined, subject, text, html, template, attachments = [] }) {
     const recipientsList = Array.isArray(to) ? to : [to];
     const validRecipients = recipientsList
       .map(r => (typeof r === 'string' ? r.trim() : ''))
@@ -866,17 +995,20 @@ class NotificationService {
         if (replyTo && this.isValidEmail(replyTo)) {
           mailOptions.replyTo = replyTo;
         }
+        if (Array.isArray(attachments) && attachments.length > 0) {
+          mailOptions.attachments = attachments;
+        }
         const info = await transporter.sendMail(mailOptions);
         status = 'SENT';
         messageId = info.messageId || null;
-        console.log(`✅ [NODEMAILER EMAIL SENT] Template: ${template} | To: ${toHeader} | MessageID: ${info.messageId}`);
+        console.log(`✅ [NODEMAILER EMAIL SENT] Template: ${template} | To: ${toHeader} | Attachments: ${attachments.length} | MessageID: ${info.messageId}`);
       } catch (sendErr) {
         status = 'FAILED';
         failureReason = sendErr.message;
         console.error(`❌ [NODEMAILER EMAIL ERROR] Template: ${template} | To: ${toHeader} | Error:`, sendErr.message);
       }
     } else {
-      console.log(`[EMAIL DISPATCH (LOG ONLY - Set SMTP_USER & GOOGLE_APP_PASSWORD to send real emails)] To: ${toHeader} | Subject: "${subject}"`);
+      console.log(`[EMAIL DISPATCH (LOG ONLY - Set SMTP_USER & GOOGLE_APP_PASSWORD to send real emails)] To: ${toHeader} | Subject: "${subject}" | Attachments: ${attachments.length}`);
     }
 
     if (db) {

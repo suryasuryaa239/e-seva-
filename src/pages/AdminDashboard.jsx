@@ -2501,7 +2501,7 @@ export default function AdminDashboard() {
                                       title="Click to preview photo"
                                     >
                                       <img
-                                        src={doc.file_path.startsWith('http') || doc.file_path.startsWith('data:') ? doc.file_path : `/api/documents/${doc.id}/preview`}
+                                        src={resolveMediaUrl(doc.file_path && (doc.file_path.startsWith('http') || doc.file_path.startsWith('data:')) ? doc.file_path : `/api/documents/${doc.id}/preview`)}
                                         alt={doc.document_name}
                                         className="w-10 h-10 object-cover group-hover:scale-110 transition-transform"
                                         onError={(e) => { e.target.style.display = 'none'; }}
@@ -6903,7 +6903,7 @@ export default function AdminDashboard() {
 
                               <div className="flex items-center space-x-2">
                                 <a
-                                  href={doc.file_path && (doc.file_path.startsWith('http') || doc.file_path.startsWith('data:')) ? doc.file_path : `/api/documents/${doc.id}/preview`}
+                                  href={resolveMediaUrl(doc.file_path && (doc.file_path.startsWith('http') || doc.file_path.startsWith('data:')) ? doc.file_path : `/api/documents/${doc.id}/preview`)}
                                   target="_blank"
                                   rel="noreferrer"
                                   className="px-3 py-1.5 bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold rounded-lg border border-slate-300 flex items-center space-x-1"
@@ -6912,7 +6912,7 @@ export default function AdminDashboard() {
                                   <ExternalLink className="w-3.5 h-3.5" />
                                 </a>
                                 <a
-                                  href={`/api/documents/${doc.id}/download`}
+                                  href={resolveMediaUrl(`/api/documents/${doc.id}/download`)}
                                   className="px-3 py-1.5 bg-white text-orange-600 text-xs font-bold rounded-lg border border-slate-300"
                                 >
                                   Download
@@ -6923,13 +6923,13 @@ export default function AdminDashboard() {
                             {doc.file_path && (doc.file_type?.startsWith('image/') || /\.(jpg|jpeg|png|webp|jfif|bmp)$/i.test(doc.file_path || doc.original_filename || doc.file_name || '')) && (
                               <div className="pt-2 border-t border-slate-100 flex items-center gap-3">
                                 <a
-                                  href={doc.file_path.startsWith('http') || doc.file_path.startsWith('data:') ? doc.file_path : `/api/documents/${doc.id}/preview`}
+                                  href={resolveMediaUrl(doc.file_path && (doc.file_path.startsWith('http') || doc.file_path.startsWith('data:')) ? doc.file_path : `/api/documents/${doc.id}/preview`)}
                                   target="_blank"
                                   rel="noreferrer"
                                   className="group relative block rounded-lg overflow-hidden border border-slate-200 shadow-2xs shrink-0"
                                 >
                                   <img
-                                    src={doc.file_path.startsWith('http') || doc.file_path.startsWith('data:') ? doc.file_path : `/api/documents/${doc.id}/preview`}
+                                    src={resolveMediaUrl(doc.file_path && (doc.file_path.startsWith('http') || doc.file_path.startsWith('data:')) ? doc.file_path : `/api/documents/${doc.id}/preview`)}
                                     alt={doc.document_name}
                                     className="w-16 h-16 object-cover group-hover:scale-105 transition-transform"
                                     onError={(e) => { e.target.style.display = 'none'; }}
@@ -9893,7 +9893,7 @@ export default function AdminDashboard() {
 
               <div className="flex items-center space-x-2">
                 <a
-                  href={selectedDocForPreview.file_path && (selectedDocForPreview.file_path.startsWith('http') || selectedDocForPreview.file_path.startsWith('data:')) ? selectedDocForPreview.file_path : `/api/documents/${selectedDocForPreview.id}/preview`}
+                  href={resolveMediaUrl(selectedDocForPreview.file_path && (selectedDocForPreview.file_path.startsWith('http') || selectedDocForPreview.file_path.startsWith('data:')) ? selectedDocForPreview.file_path : `/api/documents/${selectedDocForPreview.id}/preview`)}
                   target="_blank"
                   rel="noreferrer"
                   className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl flex items-center gap-1 transition-colors"
@@ -9913,9 +9913,11 @@ export default function AdminDashboard() {
             {/* Document Preview Frame */}
             <div className="flex-1 bg-slate-950 rounded-2xl overflow-hidden border border-slate-800 min-h-[450px] relative flex items-center justify-center p-4">
               {(() => {
-                const previewUrl = selectedDocForPreview.file_path && (selectedDocForPreview.file_path.startsWith('http') || selectedDocForPreview.file_path.startsWith('data:'))
-                  ? selectedDocForPreview.file_path
-                  : `/api/documents/${selectedDocForPreview.id}/preview`;
+                const previewUrl = resolveMediaUrl(
+                  selectedDocForPreview.file_path && (selectedDocForPreview.file_path.startsWith('http') || selectedDocForPreview.file_path.startsWith('data:'))
+                    ? selectedDocForPreview.file_path
+                    : `/api/documents/${selectedDocForPreview.id}/preview`
+                );
 
                 const isImage = (
                   (selectedDocForPreview.file_type && selectedDocForPreview.file_type.startsWith('image/')) ||
@@ -9934,7 +9936,7 @@ export default function AdminDashboard() {
                         className="max-h-[460px] max-w-full object-contain rounded-xl shadow-2xl border border-slate-700 bg-black/40"
                         onError={(e) => {
                           e.target.onerror = null;
-                          e.target.src = `/api/documents/${selectedDocForPreview.id}/preview`;
+                          e.target.src = resolveMediaUrl(`/api/documents/${selectedDocForPreview.id}/preview`);
                         }}
                       />
                     </div>

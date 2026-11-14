@@ -9,6 +9,7 @@ import ReceiptModal from '../components/ReceiptModal';
 import StatusBadge from '../components/StatusBadge';
 import Breadcrumbs from '../components/Breadcrumbs';
 import { useLanguage } from '../context/LanguageContext';
+import { resolveMediaUrl } from '../utils/mediaUrl';
 
 export default function ApplicationDetailView() {
   const { id } = useParams();
@@ -546,7 +547,7 @@ export default function ApplicationDetailView() {
                         <div className="flex items-center justify-between pt-2 border-t border-slate-200">
                           <div className="flex items-center space-x-2">
                             <a
-                              href={`/api/documents/${doc.id}/preview`}
+                              href={resolveMediaUrl(`/api/documents/${doc.id}/preview`)}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="px-3 py-1.5 bg-[#0b192c] hover:bg-slate-800 text-white font-bold text-xs rounded-xl flex items-center space-x-1"
@@ -556,7 +557,7 @@ export default function ApplicationDetailView() {
                             </a>
 
                             <a
-                              href={`/api/documents/${doc.id}/download`}
+                              href={resolveMediaUrl(`/api/documents/${doc.id}/download`)}
                               className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl border border-slate-300 flex items-center space-x-1"
                             >
                               <Download className="w-3.5 h-3.5" />
