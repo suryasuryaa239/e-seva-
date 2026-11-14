@@ -2116,7 +2116,8 @@ const CATALOG_SLUG_ALIASES = {
   'passport-reissue-renewal': { base: 'passport-renewal-reissue', fee: 1500 },
   'msme-udyam-registration': { base: 'udyam-registration', fee: 100 },
   'fssai-food-license-registration': { base: 'fssai-food-license', fee: 750 },
-  'aadhaar-download-print': { base: 'aadhaar-download', fee: 30 }
+  'aadhaar-download-print': { base: 'aadhaar-download', fee: 30 },
+  'patta-chitta-copy': { base: 'patta-chitta' }
 };
 
 Object.entries(CATALOG_SLUG_ALIASES).forEach(([aliasSlug, config]) => {

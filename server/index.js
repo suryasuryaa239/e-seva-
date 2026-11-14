@@ -1035,6 +1035,7 @@ const SERVICE_SLUG_ALIASES = {
   'fssai-food-license-registration': 'fssai-food-license',
   'aadhaar-download-print': 'aadhaar-download',
   'patta-chitta': 'patta-chitta-copy',
+  'patta-transfer-application': 'patta-transfer',
   'encumbrance-certificate-ec': 'encumbrance-certificate'
 };
 
