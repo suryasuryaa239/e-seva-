@@ -3082,7 +3082,19 @@ app.get('/api/admin/banners', authenticateAdmin, (req, res) => {
   res.json(allBanners);
 });
 
-const bannerUploadFields = upload.any();
+// Resilient banner upload middleware: accepts any field and suppresses non-fatal multer errors
+const safeBannerUpload = (req, res, next) => {
+  upload.any()(req, res, (err) => {
+    if (err) {
+      console.warn('[Banner Multer Warning]:', err.message);
+      if (err.code === 'LIMIT_FILE_SIZE') {
+        return res.status(400).json({ error: 'File size too large. Maximum allowed size is 25MB.' });
+      }
+    }
+    next();
+  });
+};
+const bannerUploadFields = safeBannerUpload;
 
 const extractBannerFiles = (files) => {
   const pick = (names) => {

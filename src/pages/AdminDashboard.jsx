@@ -167,6 +167,7 @@ export default function AdminDashboard() {
     link_url: '/services',
     duration_seconds: 5,
     status: 'Active',
+    show_text_overlay: false,
     desktop_image_url_input: '',
     desktop_image_file: null,
     mobile_image_url_input: '',
@@ -419,6 +420,7 @@ export default function AdminDashboard() {
       link_url: '/services',
       duration_seconds: 5,
       status: 'Active',
+      show_text_overlay: false,
       desktop_image_url_input: '',
       desktop_image_file: null,
       mobile_image_url_input: '',
@@ -440,6 +442,7 @@ export default function AdminDashboard() {
       link_url: String(b.link_url || '/services'),
       duration_seconds: Number(b.duration_seconds) || 5,
       status: String(b.status || 'Active'),
+      show_text_overlay: Boolean(b.show_text_overlay),
       desktop_image_url_input: hasDesktopUrl ? String(b.desktop_image_url) : String(b.image_url || ''),
       desktop_image_file: null,
       mobile_image_url_input: String(b.mobile_image_url || ''),
@@ -469,6 +472,7 @@ export default function AdminDashboard() {
       formData.append('link_url', safeLink);
       formData.append('duration_seconds', bannerForm.duration_seconds || 5);
       formData.append('status', bannerForm.status || 'Active');
+      formData.append('show_text_overlay', bannerForm.show_text_overlay ? 'true' : 'false');
       formData.append('desktop_image_url', safeDesktopUrl);
       formData.append('mobile_image_url', safeMobileUrl);
       formData.append('tablet_image_url', safeTabletUrl);
@@ -747,7 +751,7 @@ export default function AdminDashboard() {
 
   const handleCreateCategorySubmit = async (e) => {
     e.preventDefault();
-    if (!newCategoryForm.name.trim()) {
+    if (!String(newCategoryForm.name || '').trim()) {
       addToast('Category name is required', 'error');
       return;
     }
@@ -761,8 +765,8 @@ export default function AdminDashboard() {
           Authorization: `Bearer ${adminToken}`
         },
         body: JSON.stringify({
-          name: newCategoryForm.name.trim(),
-          description: newCategoryForm.description.trim(),
+          name: String(newCategoryForm.name || '').trim(),
+          description: String(newCategoryForm.description || '').trim(),
           icon: newCategoryForm.icon
         })
       });
@@ -969,13 +973,13 @@ export default function AdminDashboard() {
 
   const handleCreateServiceSubmit = async (e) => {
     e.preventDefault();
-    if (!newServiceForm.name.trim()) {
+    if (!String(newServiceForm.name || '').trim()) {
       addToast('Service name is required', 'error');
       return;
     }
 
     const finalCategoryName = newServiceForm.is_custom_category
-      ? newServiceForm.custom_category_name.trim()
+      ? String(newServiceForm.custom_category_name || '').trim()
       : newServiceForm.category_name;
 
     if (newServiceForm.is_custom_category && !finalCategoryName) {
@@ -986,7 +990,7 @@ export default function AdminDashboard() {
     setCreatingService(true);
     try {
       const formData = new FormData();
-      formData.append('name', newServiceForm.name.trim());
+      formData.append('name', String(newServiceForm.name || '').trim());
       if (!newServiceForm.is_custom_category && newServiceForm.category_id) {
         formData.append('category_id', newServiceForm.category_id);
       }
@@ -1292,7 +1296,7 @@ export default function AdminDashboard() {
 
   const handleEditServiceSubmit = async (e) => {
     e.preventDefault();
-    if (!editingServiceForm || !editingServiceForm.name.trim()) {
+    if (!editingServiceForm || !String(editingServiceForm.name || '').trim()) {
       addToast('Service name is required', 'error');
       return;
     }
@@ -1309,7 +1313,7 @@ export default function AdminDashboard() {
       const safeFee = !isNaN(parsedFee) ? Math.max(0, parsedFee) : 0;
 
       const formData = new FormData();
-      formData.append('name', editingServiceForm.name.trim());
+      formData.append('name', String(editingServiceForm.name || '').trim());
       formData.append('category_name', editingServiceForm.category_name);
       formData.append('description', editingServiceForm.description);
       formData.append('fee', safeFee);
@@ -6802,9 +6806,9 @@ export default function AdminDashboard() {
                       'aadhaar_no': 'Aadhaar Number',
                       'address': 'Address'
                     };
-                    const lower = raw.trim().toLowerCase().replace(/:$/, '');
+                    const lower = String(raw || '').trim().toLowerCase().replace(/:$/, '');
                     if (labelMap[lower]) return labelMap[lower];
-                    let cleaned = raw.replace(/:$/, '').replace(/_/g, ' ').trim();
+                    let cleaned = String(raw || '').replace(/:$/, '').replace(/_/g, ' ').trim();
                     return cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
                   };
 
@@ -10289,6 +10293,36 @@ export default function AdminDashboard() {
                         Contain (Full Image)
                       </button>
                     </div>
+                  </div>
+
+                  {/* Text Overlay Box Toggle (Default OFF for Pure Artwork Posters) */}
+                  <div className="pt-2.5 border-t border-slate-200/70 flex items-center justify-between gap-3">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-extrabold text-slate-800 text-[11px]">Show Dark Floating Card with Title & Buttons</span>
+                        <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded ${
+                          bannerForm.show_text_overlay ? 'bg-orange-100 text-orange-700' : 'bg-slate-200 text-slate-600'
+                        }`}>
+                          {bannerForm.show_text_overlay ? 'ON' : 'OFF (Pure Artwork Only)'}
+                        </span>
+                      </div>
+                      <span className="text-[10px] text-slate-500 block mt-0.5">
+                        Leave <b>OFF</b> if your uploaded poster/graphic image already has headings, text or WhatsApp numbers.
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setBannerForm({ ...bannerForm, show_text_overlay: !bannerForm.show_text_overlay })}
+                      className={`w-12 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors duration-200 ease-in-out shrink-0 ${
+                        bannerForm.show_text_overlay ? 'bg-orange-500' : 'bg-slate-300'
+                      }`}
+                    >
+                      <div
+                        className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-200 ease-in-out ${
+                          bannerForm.show_text_overlay ? 'translate-x-6' : 'translate-x-0'
+                        }`}
+                      />
+                    </button>
                   </div>
                 </div>
               </div>

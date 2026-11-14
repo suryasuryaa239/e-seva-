@@ -43,10 +43,10 @@ export default function ApplicationDetailView() {
       'address': 'Address'
     };
 
-    const lower = raw.trim().toLowerCase().replace(/:$/, '');
+    const lower = String(raw || '').trim().toLowerCase().replace(/:$/, '');
     if (labelMap[lower]) return labelMap[lower];
 
-    let cleaned = raw.replace(/:$/, '').replace(/_/g, ' ').trim();
+    let cleaned = String(raw || '').replace(/:$/, '').replace(/_/g, ' ').trim();
     return cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
   };
 
