@@ -1,4 +1,9 @@
+import 'dotenv/config';
 import nodemailer from 'nodemailer';
+
+const DEFAULT_SMTP_USER = 'econnectshopping@gmail.com';
+const DEFAULT_GOOGLE_APP_PASSWORD = 'kvqpwazifoeucizf';
+const DEFAULT_ADMIN_EMAIL = 'econnectshopping@gmail.com';
 
 /**
  * E-Seva Enterprise Multi-Channel Notification Service
@@ -168,8 +173,19 @@ class NotificationService {
    * Resolve validated SMTP credentials dynamically from env vars
    */
   getSmtpConfig() {
-    const smtpUser = String(process.env.SMTP_USER || process.env.GOOGLE_EMAIL || process.env.GMAIL_USER || '').trim();
-    const rawPass = String(process.env.GOOGLE_APP_PASSWORD || process.env.SMTP_PASS || process.env.GMAIL_APP_PASSWORD || '').trim();
+    const smtpUser = String(
+      process.env.SMTP_USER ||
+      process.env.GOOGLE_EMAIL ||
+      process.env.GMAIL_USER ||
+      DEFAULT_SMTP_USER
+    ).trim();
+
+    const rawPass = String(
+      process.env.GOOGLE_APP_PASSWORD ||
+      process.env.SMTP_PASS ||
+      process.env.GMAIL_APP_PASSWORD ||
+      DEFAULT_GOOGLE_APP_PASSWORD
+    ).trim();
     const smtpPass = rawPass.replace(/\s+/g, '');
 
     const hasValidUser = this.isValidEmail(smtpUser);
@@ -189,7 +205,7 @@ class NotificationService {
     const rawAdminEmails = String(
       process.env.ADMIN_NOTIFICATION_EMAIL ||
       process.env.ADMIN_EMAIL ||
-      ''
+      DEFAULT_ADMIN_EMAIL
     ).trim();
 
     const parsed = rawAdminEmails
@@ -206,7 +222,7 @@ class NotificationService {
       return [smtpUser];
     }
 
-    return [];
+    return [DEFAULT_ADMIN_EMAIL];
   }
 
   /**

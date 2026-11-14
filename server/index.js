@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import path from 'path';
@@ -1598,13 +1599,12 @@ app.post('/api/applications', submitRateLimiter, upload.any(), async (req, res) 
         uploadedDocuments: savedDocs,
         idempotencyKey: `admin-app-submit-${submissionResult.application_id}-${finalSubmittedAt}`
       });
-      if (process.env.VERCEL) {
-        await adminAlertPromise;
-      } else {
-        adminAlertPromise.catch(adminNotifErr => {
-          console.error('Admin submission email error:', adminNotifErr);
-        });
-      }
+      await Promise.race([
+        adminAlertPromise,
+        new Promise(resolve => setTimeout(resolve, 3500))
+      ]).catch(adminNotifErr => {
+        console.error('Admin submission email error:', adminNotifErr?.message || adminNotifErr);
+      });
     } catch (adminNotifErr) {
       console.error('Admin submission notification error:', adminNotifErr);
     }
@@ -1949,8 +1949,10 @@ app.post('/api/payments/verify-payment', async (req, res) => {
             uploadedDocuments: savedDocs,
             idempotencyKey: `admin-payment-success-${application.id}-${txnRef}`
           });
-          if (process.env.VERCEL) await adminPayPromise;
-          else adminPayPromise.catch(e => console.error('Admin payment confirmation email error:', e.message));
+          await Promise.race([
+            adminPayPromise,
+            new Promise(resolve => setTimeout(resolve, 3500))
+          ]).catch(e => console.error('Admin payment confirmation email error:', e?.message || e));
         }
       } catch (notifErr) {
         console.error('Payment confirmation notification error:', notifErr.message);
@@ -2232,8 +2234,10 @@ app.get('/api/payments/phonepe/verify/:merchantTransactionId', async (req, res) 
               uploadedDocuments: savedDocs,
               idempotencyKey: `admin-payment-success-${application.id}-${txnRef}`
             });
-            if (process.env.VERCEL) await adminPayPromise;
-            else adminPayPromise.catch(e => console.error('Admin PhonePe confirmation email error:', e.message));
+            await Promise.race([
+              adminPayPromise,
+              new Promise(resolve => setTimeout(resolve, 3500))
+            ]).catch(e => console.error('Admin PhonePe confirmation email error:', e?.message || e));
           } catch (notifErr) {
             console.error('Notification dispatch error:', notifErr.message);
           }
@@ -2392,8 +2396,10 @@ app.post('/api/payments/phonepe/callback', async (req, res) => {
                 uploadedDocuments: savedDocs,
                 idempotencyKey: `admin-payment-success-${application.id}-${txnRef}`
               });
-              if (process.env.VERCEL) await adminPayPromise;
-              else adminPayPromise.catch(e => console.error('Admin PhonePe webhook email error:', e.message));
+              await Promise.race([
+                adminPayPromise,
+                new Promise(resolve => setTimeout(resolve, 3500))
+              ]).catch(e => console.error('Admin PhonePe webhook email error:', e?.message || e));
             }
           } catch (webhookNotifErr) {
             console.error('PhonePe webhook notification error:', webhookNotifErr.message);
