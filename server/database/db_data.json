@@ -11863,8 +11863,8 @@
   "banners": [
     {
       "id": 180001,
-      "title": "",
-      "show_text_overlay": false,
+      "title": "Patta Chitta",
+      "show_text_overlay": true,
       "description": "",
       "image_url": "/api/documents/preview-file/1794449826509-819530825_123.png",
       "link_url": "/services",

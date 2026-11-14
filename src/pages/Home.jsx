@@ -194,13 +194,12 @@ export default function Home() {
               : activeBanner.image_position === 'top'
               ? 'object-top'
               : 'object-center';
-            const hasTextOverlay = Boolean(activeBanner.show_text_overlay && activeBanner.title);
-            const isContain = activeBanner.image_fit === 'contain' || (!hasTextOverlay && activeBanner.image_fit !== 'cover');
+            const isContain = activeBanner.image_fit === 'contain';
 
             return (
-              <div className="relative bg-slate-950 rounded-3xl overflow-hidden shadow-2xl border border-slate-800 text-white min-h-[440px] sm:min-h-[500px] lg:min-h-[560px] flex items-center justify-center group">
+              <div className="relative bg-slate-950 rounded-3xl overflow-hidden shadow-2xl border border-slate-800 text-white min-h-[440px] sm:min-h-[500px] lg:min-h-[560px] flex items-center justify-start group">
                 
-                {/* Active Banner Background Image */}
+                {/* Active Banner Background Image - 100% vibrant, NO blue shade */}
                 <div className="absolute inset-0 z-0 overflow-hidden flex items-center justify-center">
                   {isContain && (
                     <img
@@ -228,31 +227,22 @@ export default function Home() {
                   />
                 </div>
 
-                {/* If pure image banner: Full clickable link across the entire banner */}
-                {!hasTextOverlay && activeBanner.link_url && (
-                  <Link
-                    to={activeBanner.link_url}
-                    className="absolute inset-0 z-10 cursor-pointer"
-                    aria-label={activeBanner.title || 'Banner Link'}
-                  />
-                )}
-
-                {/* Content Overlay — Only if explicitly enabled */}
-                {hasTextOverlay && (
-                  <div className="relative z-10 p-5 sm:p-10 lg:p-14 max-w-xl w-full">
-                    <div className="bg-slate-950/75 backdrop-blur-md p-6 sm:p-8 rounded-3xl border border-white/10 shadow-2xl space-y-4">
+                {/* Content Overlay - Title & Buttons directly on image (NO blue card, NO blue shade) */}
+                {Boolean(activeBanner.title) ? (
+                  <div className="relative z-10 p-6 sm:p-10 lg:p-14 max-w-xl w-full">
+                    <div className="space-y-4">
                       <div className="flex items-center space-x-3">
-                        <span className="inline-block text-[11px] font-black uppercase text-orange-400 tracking-widest bg-orange-950/70 border border-orange-500/30 px-3 py-1 rounded-full">
+                        <span className="inline-block text-[11px] font-black uppercase text-orange-400 tracking-widest bg-black/60 border border-orange-500/40 px-3 py-1 rounded-full shadow-lg backdrop-blur-sm">
                           {t.portalName} • PROMOTION
                         </span>
                       </div>
 
-                      <h1 className="font-heading font-extrabold text-2xl sm:text-3xl lg:text-4xl tracking-tight leading-tight text-white animate-in fade-in duration-300">
+                      <h1 className="font-heading font-extrabold text-2xl sm:text-3xl lg:text-4xl tracking-tight leading-tight text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)] animate-in fade-in duration-300">
                         {activeBanner.title}
                       </h1>
 
                       {activeBanner.description && (
-                        <p className="text-slate-300 text-xs sm:text-sm font-normal leading-relaxed line-clamp-3">
+                        <p className="text-white drop-shadow-[0_1px_6px_rgba(0,0,0,0.9)] text-xs sm:text-sm font-medium leading-relaxed line-clamp-3">
                           {activeBanner.description}
                         </p>
                       )}
@@ -261,7 +251,7 @@ export default function Home() {
                       <div className="pt-2 flex flex-wrap items-center gap-3">
                         <Link
                           to={activeBanner.link_url || '/services'}
-                          className="bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-xs sm:text-sm px-6 py-3 rounded-xl shadow-lg transition-all flex items-center gap-2 group"
+                          className="bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-xs sm:text-sm px-6 py-3 rounded-xl shadow-2xl transition-all flex items-center gap-2 group cursor-pointer"
                         >
                           <span>{t.exploreServices || (lang === 'ta' ? 'சேவைகளைப் பார்க்கவும்' : 'Explore Services')}</span>
                           <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform" />
@@ -269,13 +259,22 @@ export default function Home() {
 
                         <Link
                           to="/track"
-                          className="bg-white/10 hover:bg-white/20 text-white font-bold text-xs sm:text-sm px-5 py-3 rounded-xl border border-white/20 transition-all"
+                          className="bg-black/40 hover:bg-black/60 text-white font-bold text-xs sm:text-sm px-5 py-3 rounded-xl border border-white/30 backdrop-blur-md shadow-2xl transition-all cursor-pointer"
                         >
                           {t.trackAppHero || t.trackApp || (lang === 'ta' ? 'விண்ணப்பத்தைக் கண்காணிக்கவும்' : 'Track Application')}
                         </Link>
                       </div>
                     </div>
                   </div>
+                ) : (
+                  /* If pure image banner without title: Full clickable link */
+                  activeBanner.link_url && (
+                    <Link
+                      to={activeBanner.link_url}
+                      className="absolute inset-0 z-10 cursor-pointer"
+                      aria-label={activeBanner.title || 'Banner Link'}
+                    />
+                  )
                 )}
 
                 {/* Carousel Indicators / Controls */}
