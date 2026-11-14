@@ -197,7 +197,7 @@ export default function Home() {
             const isContain = activeBanner.image_fit === 'contain';
 
             return (
-              <div className="relative bg-slate-950 rounded-3xl overflow-hidden shadow-2xl border border-slate-800 text-white min-h-[440px] sm:min-h-[500px] lg:min-h-[560px] flex items-center justify-start group">
+              <div className="relative bg-slate-950 rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border border-slate-800 text-white min-h-[380px] sm:min-h-[480px] lg:min-h-[540px] flex items-end sm:items-center justify-start group">
                 
                 {/* Active Banner Background Image - 100% vibrant, NO blue shade */}
                 <div className="absolute inset-0 z-0 overflow-hidden flex items-center justify-center">
@@ -216,50 +216,55 @@ export default function Home() {
                     src={activeBannerImage}
                     alt={activeBanner.title || 'Hero Banner'}
                     className={`w-full h-full transition-all duration-700 ${
-                      isContain ? 'object-contain relative z-10 max-h-[560px]' : `object-cover ${imagePosClass}`
+                      isContain ? 'object-contain relative z-10 max-h-[540px]' : `object-cover ${imagePosClass}`
                     } opacity-100`}
                     onLoad={(e) => {
                       e.target.style.display = '';
                     }}
                     onError={(e) => {
-                      e.target.style.display = 'none';
+                      // Fallback to desktop/general image if mobile URL failed
+                      if (activeBanner.desktop_image_url && e.target.src !== resolveMediaUrl(activeBanner.desktop_image_url)) {
+                        e.target.src = resolveMediaUrl(activeBanner.desktop_image_url);
+                      } else if (activeBanner.image_url && e.target.src !== resolveMediaUrl(activeBanner.image_url)) {
+                        e.target.src = resolveMediaUrl(activeBanner.image_url);
+                      }
                     }}
                   />
                 </div>
 
                 {/* Content Overlay - Title & Buttons directly on image (NO blue card, NO blue shade) */}
                 {Boolean(activeBanner.title) ? (
-                  <div className="relative z-10 p-6 sm:p-10 lg:p-14 max-w-xl w-full">
-                    <div className="space-y-4">
-                      <div className="flex items-center space-x-3">
-                        <span className="inline-block text-[11px] font-black uppercase text-orange-400 tracking-widest bg-black/60 border border-orange-500/40 px-3 py-1 rounded-full shadow-lg backdrop-blur-sm">
+                  <div className="relative z-10 p-4 sm:p-10 lg:p-14 max-w-xl w-full flex flex-col justify-end sm:justify-center pointer-events-none">
+                    <div className="space-y-2.5 sm:space-y-4 pointer-events-auto bg-slate-950/40 sm:bg-transparent backdrop-blur-[2px] sm:backdrop-blur-none p-3.5 sm:p-0 rounded-2xl sm:rounded-none">
+                      <div className="flex items-center space-x-2">
+                        <span className="inline-block text-[10px] sm:text-[11px] font-black uppercase text-orange-400 tracking-widest bg-black/60 border border-orange-500/40 px-2.5 py-0.5 rounded-full shadow-lg backdrop-blur-sm">
                           {t.portalName} • PROMOTION
                         </span>
                       </div>
 
-                      <h1 className="font-heading font-extrabold text-2xl sm:text-3xl lg:text-4xl tracking-tight leading-tight text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)] animate-in fade-in duration-300">
+                      <h1 className="font-heading font-extrabold text-xl sm:text-3xl lg:text-4xl tracking-tight leading-tight text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] animate-in fade-in duration-300">
                         {activeBanner.title}
                       </h1>
 
                       {activeBanner.description && (
-                        <p className="text-white drop-shadow-[0_1px_6px_rgba(0,0,0,0.9)] text-xs sm:text-sm font-medium leading-relaxed line-clamp-3">
+                        <p className="text-white drop-shadow-[0_1px_5px_rgba(0,0,0,0.9)] text-xs sm:text-sm font-medium leading-relaxed line-clamp-2 sm:line-clamp-3">
                           {activeBanner.description}
                         </p>
                       )}
 
                       {/* Actions */}
-                      <div className="pt-2 flex flex-wrap items-center gap-3">
+                      <div className="pt-1 flex flex-wrap items-center gap-2.5 sm:gap-3">
                         <Link
                           to={activeBanner.link_url || '/services'}
-                          className="bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-xs sm:text-sm px-6 py-3 rounded-xl shadow-2xl transition-all flex items-center gap-2 group cursor-pointer"
+                          className="bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-xs sm:text-sm px-4.5 py-2.5 sm:px-6 sm:py-3 rounded-xl shadow-2xl transition-all flex items-center gap-2 group cursor-pointer"
                         >
                           <span>{t.exploreServices || (lang === 'ta' ? 'சேவைகளைப் பார்க்கவும்' : 'Explore Services')}</span>
-                          <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform" />
+                          <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white group-hover:translate-x-1 transition-transform" />
                         </Link>
 
                         <Link
                           to="/track"
-                          className="bg-black/40 hover:bg-black/60 text-white font-bold text-xs sm:text-sm px-5 py-3 rounded-xl border border-white/30 backdrop-blur-md shadow-2xl transition-all cursor-pointer"
+                          className="bg-black/50 hover:bg-black/70 text-white font-bold text-xs sm:text-sm px-4 py-2.5 sm:px-5 sm:py-3 rounded-xl border border-white/30 backdrop-blur-md shadow-2xl transition-all cursor-pointer"
                         >
                           {t.trackAppHero || t.trackApp || (lang === 'ta' ? 'விண்ணப்பத்தைக் கண்காணிக்கவும்' : 'Track Application')}
                         </Link>
