@@ -3206,6 +3206,7 @@ app.post('/api/admin/banners', authenticateAdmin, bannerUploadFields, async (req
       duration_seconds: duration_seconds ? Math.max(2, Math.min(60, Number(duration_seconds))) : 5,
       status: status || 'Active',
       display_order: display_order ? Number(display_order) : (currentBanners.length + 1),
+      show_text_overlay: req.body.show_text_overlay === 'true' || req.body.show_text_overlay === true,
       image_position: ['top', 'center', 'bottom'].includes(image_position) ? image_position : 'center',
       image_fit: ['cover', 'contain'].includes(image_fit) ? image_fit : 'cover'
     });
@@ -3276,6 +3277,7 @@ app.put('/api/admin/banners/:id', authenticateAdmin, bannerUploadFields, async (
       duration_seconds: duration_seconds ? Math.max(2, Math.min(60, Number(duration_seconds))) : banner.duration_seconds,
       status: status !== undefined && status !== null ? status : banner.status,
       display_order: display_order !== undefined && display_order !== null ? Number(display_order) : banner.display_order,
+      show_text_overlay: req.body.show_text_overlay !== undefined ? (req.body.show_text_overlay === 'true' || req.body.show_text_overlay === true) : Boolean(banner.show_text_overlay),
       image_position: image_position !== undefined && image_position !== null ? image_position : (banner.image_position || 'center'),
       image_fit: image_fit !== undefined && image_fit !== null ? image_fit : (banner.image_fit || 'cover')
     });

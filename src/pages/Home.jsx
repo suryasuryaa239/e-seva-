@@ -194,10 +194,11 @@ export default function Home() {
               : activeBanner.image_position === 'top'
               ? 'object-top'
               : 'object-center';
-            const isContain = activeBanner.image_fit === 'contain' || (!activeBanner.title && activeBanner.image_fit !== 'cover');
+            const hasTextOverlay = Boolean(activeBanner.show_text_overlay && activeBanner.title);
+            const isContain = activeBanner.image_fit === 'contain' || (!hasTextOverlay && activeBanner.image_fit !== 'cover');
 
             return (
-              <div className="relative bg-slate-950 rounded-3xl overflow-hidden shadow-2xl border border-slate-800 text-white min-h-[440px] sm:min-h-[500px] lg:min-h-[560px] flex items-center justify-center">
+              <div className="relative bg-slate-950 rounded-3xl overflow-hidden shadow-2xl border border-slate-800 text-white min-h-[440px] sm:min-h-[500px] lg:min-h-[560px] flex items-center justify-center group">
                 
                 {/* Active Banner Background Image */}
                 <div className="absolute inset-0 z-0 overflow-hidden flex items-center justify-center">
@@ -227,8 +228,17 @@ export default function Home() {
                   />
                 </div>
 
-                {/* Content Overlay */}
-                {activeBanner.title ? (
+                {/* If pure image banner: Full clickable link across the entire banner */}
+                {!hasTextOverlay && activeBanner.link_url && (
+                  <Link
+                    to={activeBanner.link_url}
+                    className="absolute inset-0 z-10 cursor-pointer"
+                    aria-label={activeBanner.title || 'Banner Link'}
+                  />
+                )}
+
+                {/* Content Overlay — Only if explicitly enabled */}
+                {hasTextOverlay && (
                   <div className="relative z-10 p-5 sm:p-10 lg:p-14 max-w-xl w-full">
                     <div className="bg-slate-950/75 backdrop-blur-md p-6 sm:p-8 rounded-3xl border border-white/10 shadow-2xl space-y-4">
                       <div className="flex items-center space-x-3">
@@ -265,21 +275,6 @@ export default function Home() {
                         </Link>
                       </div>
                     </div>
-                  </div>
-                ) : (
-                  /* Pure Image Banner Overlay */
-                  <div className="relative z-10 p-6 sm:p-8 flex flex-col justify-end h-full w-full pointer-events-none">
-                    {activeBanner.link_url && (
-                      <div className="pt-4 pointer-events-auto">
-                        <Link
-                          to={activeBanner.link_url}
-                          className="inline-flex items-center gap-2 bg-slate-900/90 hover:bg-orange-600 text-white font-extrabold text-xs sm:text-sm px-6 py-3 rounded-xl shadow-xl border border-slate-700/80 backdrop-blur-md transition-all group"
-                        >
-                          <span>{lang === 'ta' ? 'மேலும் விவரங்களுக்கு இங்கே கிளிக் செய்யவும்' : 'Click to View Details'}</span>
-                          <ArrowRight className="w-4 h-4 text-orange-400 group-hover:translate-x-1 transition-transform" />
-                        </Link>
-                      </div>
-                    )}
                   </div>
                 )}
 
