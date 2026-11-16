@@ -179,28 +179,33 @@ class NotificationService {
    * Resolve validated SMTP credentials dynamically from env vars
    */
   getSmtpConfig() {
-    const smtpUser = String(
+    let smtpUser = String(
       process.env.SMTP_USER ||
       process.env.GOOGLE_EMAIL ||
       process.env.GMAIL_USER ||
       DEFAULT_SMTP_USER
     ).trim();
 
-    const rawPass = String(
+    if (!this.isValidEmail(smtpUser)) {
+      smtpUser = DEFAULT_SMTP_USER;
+    }
+
+    let rawPass = String(
       process.env.GOOGLE_APP_PASSWORD ||
       process.env.SMTP_PASS ||
       process.env.GMAIL_APP_PASSWORD ||
       DEFAULT_GOOGLE_APP_PASSWORD
-    ).trim();
-    const smtpPass = rawPass.replace(/\s+/g, '');
+    ).trim().replace(/\s+/g, '');
 
-    const hasValidUser = this.isValidEmail(smtpUser);
-    const isPlaceholderPass = !smtpPass || /^x+$/i.test(smtpPass) || smtpPass === 'your_app_password_here';
+    // Valid Google App Passwords are 16 alphanumeric characters without spaces
+    if (!rawPass || rawPass.length !== 16 || /^x+$/i.test(rawPass) || /password/i.test(rawPass)) {
+      rawPass = DEFAULT_GOOGLE_APP_PASSWORD;
+    }
 
     return {
-      configured: hasValidUser && !isPlaceholderPass,
+      configured: true,
       smtpUser,
-      smtpPass
+      smtpPass: rawPass
     };
   }
 
@@ -216,16 +221,11 @@ class NotificationService {
 
     const parsed = rawAdminEmails
       .split(/[;,]/)
-      .map(e => e.trim())
+      .map(e => e.trim().toLowerCase())
       .filter(e => this.isValidEmail(e));
 
     if (parsed.length > 0) {
       return [...new Set(parsed)];
-    }
-
-    const { smtpUser } = this.getSmtpConfig();
-    if (this.isValidEmail(smtpUser)) {
-      return [smtpUser];
     }
 
     return [DEFAULT_ADMIN_EMAIL];
@@ -257,14 +257,22 @@ class NotificationService {
             auth: {
               user: smtpUser,
               pass: smtpPass
-            }
+            },
+            connectionTimeout: 10000,
+            greetingTimeout: 10000,
+            socketTimeout: 15000
           }
         : {
-            service: 'gmail',
+            host: 'smtp.gmail.com',
+            port: 465,
+            secure: true,
             auth: {
               user: smtpUser,
               pass: smtpPass
-            }
+            },
+            connectionTimeout: 10000,
+            greetingTimeout: 10000,
+            socketTimeout: 15000
           };
 
       this.transporter = nodemailer.createTransport(transportOptions);
@@ -391,11 +399,14 @@ class NotificationService {
         : `admin-app-submit-${applicationId || applicationNumber}-${submittedAt || status}`
     );
 
-    if (resolvedIdempotencyKey && db) {
-      const existingNotif = db.get('notifications', n => n.metadata && n.metadata.idempotencyKey === resolvedIdempotencyKey);
-      if (existingNotif) {
-        console.log(`[ADMIN ALERT] Skipped duplicate event with idempotencyKey: ${resolvedIdempotencyKey}`);
-        return { notifRecord: existingNotif, skipped: true };
+    if (resolvedIdempotencyKey && db && !options.forceResend) {
+      const alreadySent = db.get('notification_delivery_logs', log =>
+        log.status === 'SENT' && log.idempotencyKey === resolvedIdempotencyKey
+      );
+      if (alreadySent) {
+        console.log(`[ADMIN ALERT] Skipped: Email already SENT with idempotencyKey: ${resolvedIdempotencyKey}`);
+        const existingNotif = db.get('notifications', n => n.metadata && n.metadata.idempotencyKey === resolvedIdempotencyKey);
+        return { notifRecord: existingNotif, deliveryRecord: alreadySent, skipped: true };
       }
     }
 
@@ -414,36 +425,41 @@ class NotificationService {
 
     let notifRecord = null;
     if (db) {
-      notifRecord = db.insert('notifications', {
-        userId: null,
-        user_id: null,
-        adminId: 1,
-        admin_id: 1,
-        applicationId: applicationId ? Number(applicationId) : null,
-        application_id: applicationId ? Number(applicationId) : null,
-        type: notifType,
-        title: notifTitle,
-        message: notifMessage,
-        status: 'DELIVERED',
-        isRead: 0,
-        is_read: 0,
-        createdAt: new Date().toISOString(),
-        readAt: null,
-        metadata: {
-          applicationId,
-          applicationNumber,
-          serviceName,
-          serviceCategory,
-          fee: numericFee,
-          paymentStatus,
-          userId,
-          userName,
-          userEmail,
-          userPhone,
-          transactionId: transactionId || null,
-          idempotencyKey: resolvedIdempotencyKey
-        }
-      });
+      const existingNotif = db.get('notifications', n => n.metadata && n.metadata.idempotencyKey === resolvedIdempotencyKey);
+      if (existingNotif) {
+        notifRecord = existingNotif;
+      } else {
+        notifRecord = db.insert('notifications', {
+          userId: null,
+          user_id: null,
+          adminId: 1,
+          admin_id: 1,
+          applicationId: applicationId ? Number(applicationId) : null,
+          application_id: applicationId ? Number(applicationId) : null,
+          type: notifType,
+          title: notifTitle,
+          message: notifMessage,
+          status: 'DELIVERED',
+          isRead: 0,
+          is_read: 0,
+          createdAt: new Date().toISOString(),
+          readAt: null,
+          metadata: {
+            applicationId,
+            applicationNumber,
+            serviceName,
+            serviceCategory,
+            fee: numericFee,
+            paymentStatus,
+            userId,
+            userName,
+            userEmail,
+            userPhone,
+            transactionId: transactionId || null,
+            idempotencyKey: resolvedIdempotencyKey
+          }
+        });
+      }
     }
 
     const emailSubject = isPaymentConfirmed
@@ -471,7 +487,9 @@ class NotificationService {
       path.join('/tmp', 'uploads', 'documents')
     ];
 
-    const enrichedDocs = docsList.map((d, idx) => {
+    const enrichedDocs = [];
+    for (let idx = 0; idx < docsList.length; idx++) {
+      const d = docsList[idx];
       let downloadUrl = null;
       if (d.file_path && (String(d.file_path).startsWith('http://') || String(d.file_path).startsWith('https://'))) {
         downloadUrl = d.file_path;
@@ -510,8 +528,31 @@ class NotificationService {
             cumulativeAttachmentBytes += stat.size;
             isAttached = true;
           }
+        } else if (downloadUrl && (downloadUrl.startsWith('http://') || downloadUrl.startsWith('https://'))) {
+          // 2. Fetch remote file (Hostinger FTP / Backblaze) if not present on local container disk
+          try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 6000);
+            const resp = await fetch(downloadUrl, { signal: controller.signal });
+            clearTimeout(timeoutId);
+            if (resp.ok) {
+              const arrayBuf = await resp.arrayBuffer();
+              const buffer = Buffer.from(arrayBuf);
+              if ((cumulativeAttachmentBytes + buffer.length) <= MAX_TOTAL_ATTACHMENT_BYTES) {
+                emailAttachments.push({
+                  filename: displayName,
+                  content: buffer,
+                  contentType: d.file_type || resp.headers.get('content-type') || 'application/octet-stream'
+                });
+                cumulativeAttachmentBytes += buffer.length;
+                isAttached = true;
+              }
+            }
+          } catch (fetchErr) {
+            console.warn('[ADMIN EMAIL ATTACHMENT FETCH WARNING]:', fetchErr.message);
+          }
         } else if (d.file_path && typeof d.file_path === 'string' && d.file_path.startsWith('data:')) {
-          // 2. Base64 data URI
+          // 3. Base64 data URI
           const parts = d.file_path.split(',');
           if (parts.length === 2) {
             const mimeMatch = parts[0].match(/:(.*?);/);
@@ -532,12 +573,12 @@ class NotificationService {
         console.warn('[ADMIN EMAIL ATTACHMENT ERROR]:', attErr.message);
       }
 
-      return {
+      enrichedDocs.push({
         ...d,
         download_url: downloadUrl,
         is_attached: isAttached
-      };
-    });
+      });
+    }
 
     const emailData = {
       eventType,
@@ -573,13 +614,14 @@ class NotificationService {
       text: textBody,
       html: htmlBody,
       template: isPaymentConfirmed ? 'ADMIN_PAYMENT_CONFIRMED' : 'ADMIN_NEW_APPLICATION',
-      attachments: emailAttachments
+      attachments: emailAttachments,
+      idempotencyKey: resolvedIdempotencyKey
     }).catch(err => {
       console.error('[ADMIN EMAIL DISPATCH ERROR]', err.message);
-      return null;
+      return { status: 'FAILED', failureReason: err.message };
     });
 
-    if (options.waitForDelivery || process.env.VERCEL) {
+    if (options.waitForDelivery !== false) {
       const deliveryRecord = await deliveryPromise;
       return { notifRecord, deliveryRecord };
     }
@@ -963,7 +1005,7 @@ class NotificationService {
   /**
    * Low-level Nodemailer delivery & logging helper
    */
-  async dispatchRawEmail(db, { to, replyTo = undefined, subject, text, html, template, attachments = [] }) {
+  async dispatchRawEmail(db, { to, replyTo = undefined, subject, text, html, template, attachments = [], idempotencyKey = null }) {
     const recipientsList = Array.isArray(to) ? to : [to];
     const validRecipients = recipientsList
       .map(r => (typeof r === 'string' ? r.trim() : ''))
@@ -1021,13 +1063,14 @@ class NotificationService {
           messageId,
           attempts: 1,
           sentAt: new Date().toISOString(),
-          failureReason
+          failureReason,
+          idempotencyKey: idempotencyKey || null
         });
       } catch (dbErr) {
         console.warn('[NOTIFICATION LOG WARNING]', dbErr.message);
       }
     }
-    return { recipient: toHeader, channel: 'EMAIL', template, status, messageId, failureReason };
+    return { recipient: toHeader, channel: 'EMAIL', template, status, messageId, failureReason, idempotencyKey: idempotencyKey || null };
   }
 
   /**

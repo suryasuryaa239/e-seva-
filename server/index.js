@@ -1580,28 +1580,27 @@ app.post('/api/applications', submitRateLimiter, upload.any(), async (req, res) 
 
     // Dispatch In-App + Email Alert to Admin for EVERY service form submission (free & paid)
     try {
-      const adminAlertPromise = NotificationService.sendAdminApplicationAlert(db, {
-        eventType: 'NEW_APPLICATION',
-        applicationId: submissionResult.application_id,
-        applicationNumber: submissionResult.application_number,
-        serviceName: service.name,
-        serviceCategory,
-        fee: service.fee || 0,
-        status: submissionResult.status,
-        paymentStatus: savedApp.payment_status || (submissionResult.payment_pending ? 'PENDING' : (Number(service.fee) > 0 ? 'PAID' : 'FREE')),
-        paymentMethod: payment_method || '',
-        userId: userId,
-        userName: user_name.trim(),
-        userEmail: user_email.trim().toLowerCase(),
-        userPhone: user_phone.trim(),
-        submittedAt: finalSubmittedAt,
-        submittedFields: savedFields,
-        uploadedDocuments: savedDocs,
-        idempotencyKey: `admin-app-submit-${submissionResult.application_id}-${finalSubmittedAt}`
-      });
       await Promise.race([
-        adminAlertPromise,
-        new Promise(resolve => setTimeout(resolve, 3500))
+        NotificationService.sendAdminApplicationAlert(db, {
+          eventType: 'NEW_APPLICATION',
+          applicationId: submissionResult.application_id,
+          applicationNumber: submissionResult.application_number,
+          serviceName: service.name,
+          serviceCategory,
+          fee: service.fee || 0,
+          status: submissionResult.status,
+          paymentStatus: savedApp.payment_status || (submissionResult.payment_pending ? 'PENDING' : (Number(service.fee) > 0 ? 'PAID' : 'FREE')),
+          paymentMethod: payment_method || '',
+          userId: userId,
+          userName: user_name.trim(),
+          userEmail: user_email.trim().toLowerCase(),
+          userPhone: user_phone.trim(),
+          submittedAt: finalSubmittedAt,
+          submittedFields: savedFields,
+          uploadedDocuments: savedDocs,
+          idempotencyKey: `admin-app-submit-${submissionResult.application_id}-${finalSubmittedAt}`
+        }, { waitForDelivery: true }),
+        new Promise(resolve => setTimeout(resolve, 8000))
       ]).catch(adminNotifErr => {
         console.error('Admin submission email error:', adminNotifErr?.message || adminNotifErr);
       });
@@ -1929,29 +1928,28 @@ app.post('/api/payments/verify-payment', async (req, res) => {
 
           const savedFields = db.all('application_field_values', f => f.application_id === application.id);
           const savedDocs = db.all('application_documents', d => d.application_id === application.id);
-          const adminPayPromise = NotificationService.sendAdminApplicationAlert(db, {
-            eventType: 'PAYMENT_CONFIRMED',
-            applicationId: application.id,
-            applicationNumber: application.application_number,
-            serviceName: service ? service.name : 'Digital Service',
-            serviceCategory,
-            fee: payment.amount || application.total_fee || 0,
-            status: 'SUBMITTED',
-            paymentStatus: 'PAID',
-            paymentMethod: payment.payment_method || 'Online UPI / NetBanking',
-            transactionId: txnId,
-            userId: application.user_id,
-            userName: application.user_name || 'Citizen',
-            userEmail: application.user_email || '',
-            userPhone: application.user_phone || '',
-            submittedAt: new Date().toISOString(),
-            submittedFields: savedFields,
-            uploadedDocuments: savedDocs,
-            idempotencyKey: `admin-payment-success-${application.id}-${txnRef}`
-          });
           await Promise.race([
-            adminPayPromise,
-            new Promise(resolve => setTimeout(resolve, 3500))
+            NotificationService.sendAdminApplicationAlert(db, {
+              eventType: 'PAYMENT_CONFIRMED',
+              applicationId: application.id,
+              applicationNumber: application.application_number,
+              serviceName: service ? service.name : 'Digital Service',
+              serviceCategory,
+              fee: payment.amount || application.total_fee || 0,
+              status: 'SUBMITTED',
+              paymentStatus: 'PAID',
+              paymentMethod: payment.payment_method || 'Online UPI / NetBanking',
+              transactionId: txnId,
+              userId: application.user_id,
+              userName: application.user_name || 'Citizen',
+              userEmail: application.user_email || '',
+              userPhone: application.user_phone || '',
+              submittedAt: new Date().toISOString(),
+              submittedFields: savedFields,
+              uploadedDocuments: savedDocs,
+              idempotencyKey: `admin-payment-success-${application.id}-${txnRef}`
+            }, { waitForDelivery: true }),
+            new Promise(resolve => setTimeout(resolve, 8000))
           ]).catch(e => console.error('Admin payment confirmation email error:', e?.message || e));
         }
       } catch (notifErr) {
@@ -2214,29 +2212,28 @@ app.get('/api/payments/phonepe/verify/:merchantTransactionId', async (req, res) 
 
             const savedFields = db.all('application_field_values', f => f.application_id === application.id);
             const savedDocs = db.all('application_documents', d => d.application_id === application.id);
-            const adminPayPromise = NotificationService.sendAdminApplicationAlert(db, {
-              eventType: 'PAYMENT_CONFIRMED',
-              applicationId: application.id,
-              applicationNumber: application.application_number,
-              serviceName: service ? service.name : 'Digital Service',
-              serviceCategory,
-              fee: payment ? payment.amount : (application.total_fee || 0),
-              status: 'SUBMITTED',
-              paymentStatus: 'PAID',
-              paymentMethod: `PhonePe (${paymentInstrument})`,
-              transactionId: gatewayTxnId,
-              userId: application.user_id,
-              userName: application.user_name || 'Citizen',
-              userEmail: application.user_email || '',
-              userPhone: application.user_phone || '',
-              submittedAt: new Date().toISOString(),
-              submittedFields: savedFields,
-              uploadedDocuments: savedDocs,
-              idempotencyKey: `admin-payment-success-${application.id}-${txnRef}`
-            });
             await Promise.race([
-              adminPayPromise,
-              new Promise(resolve => setTimeout(resolve, 3500))
+              NotificationService.sendAdminApplicationAlert(db, {
+                eventType: 'PAYMENT_CONFIRMED',
+                applicationId: application.id,
+                applicationNumber: application.application_number,
+                serviceName: service ? service.name : 'Digital Service',
+                serviceCategory,
+                fee: payment ? payment.amount : (application.total_fee || 0),
+                status: 'SUBMITTED',
+                paymentStatus: 'PAID',
+                paymentMethod: `PhonePe (${paymentInstrument})`,
+                transactionId: gatewayTxnId,
+                userId: application.user_id,
+                userName: application.user_name || 'Citizen',
+                userEmail: application.user_email || '',
+                userPhone: application.user_phone || '',
+                submittedAt: new Date().toISOString(),
+                submittedFields: savedFields,
+                uploadedDocuments: savedDocs,
+                idempotencyKey: `admin-payment-success-${application.id}-${txnRef}`
+              }, { waitForDelivery: true }),
+              new Promise(resolve => setTimeout(resolve, 8000))
             ]).catch(e => console.error('Admin PhonePe confirmation email error:', e?.message || e));
           } catch (notifErr) {
             console.error('Notification dispatch error:', notifErr.message);
@@ -2376,29 +2373,28 @@ app.post('/api/payments/phonepe/callback', async (req, res) => {
 
               const savedFields = db.all('application_field_values', f => f.application_id === application.id);
               const savedDocs = db.all('application_documents', d => d.application_id === application.id);
-              const adminPayPromise = NotificationService.sendAdminApplicationAlert(db, {
-                eventType: 'PAYMENT_CONFIRMED',
-                applicationId: application.id,
-                applicationNumber: application.application_number,
-                serviceName: service ? service.name : 'Digital Service',
-                serviceCategory,
-                fee: payment.amount || application.total_fee || 0,
-                status: 'SUBMITTED',
-                paymentStatus: 'PAID',
-                paymentMethod: `PhonePe (${paymentInstrument})`,
-                transactionId: gatewayTxnId,
-                userId: application.user_id,
-                userName: application.user_name || 'Citizen',
-                userEmail: application.user_email || '',
-                userPhone: application.user_phone || '',
-                submittedAt: new Date().toISOString(),
-                submittedFields: savedFields,
-                uploadedDocuments: savedDocs,
-                idempotencyKey: `admin-payment-success-${application.id}-${txnRef}`
-              });
               await Promise.race([
-                adminPayPromise,
-                new Promise(resolve => setTimeout(resolve, 3500))
+                NotificationService.sendAdminApplicationAlert(db, {
+                  eventType: 'PAYMENT_CONFIRMED',
+                  applicationId: application.id,
+                  applicationNumber: application.application_number,
+                  serviceName: service ? service.name : 'Digital Service',
+                  serviceCategory,
+                  fee: payment.amount || application.total_fee || 0,
+                  status: 'SUBMITTED',
+                  paymentStatus: 'PAID',
+                  paymentMethod: `PhonePe (${paymentInstrument})`,
+                  transactionId: gatewayTxnId,
+                  userId: application.user_id,
+                  userName: application.user_name || 'Citizen',
+                  userEmail: application.user_email || '',
+                  userPhone: application.user_phone || '',
+                  submittedAt: new Date().toISOString(),
+                  submittedFields: savedFields,
+                  uploadedDocuments: savedDocs,
+                  idempotencyKey: `admin-payment-success-${application.id}-${txnRef}`
+                }, { waitForDelivery: true }),
+                new Promise(resolve => setTimeout(resolve, 8000))
               ]).catch(e => console.error('Admin PhonePe webhook email error:', e?.message || e));
             }
           } catch (webhookNotifErr) {
@@ -5423,6 +5419,80 @@ app.put('/api/admin/notifications/read-all', authenticateAdmin, (req, res) => {
     db.update('notifications', item => item.id === n.id, { isRead: 1, is_read: 1, readAt: new Date().toISOString() });
   });
   res.json({ message: 'All admin notifications marked as read' });
+});
+
+// Admin Send Test Email Alert
+app.post('/api/admin/notifications/test-email', authenticateAdmin, async (req, res) => {
+  try {
+    const targetEmail = req.body?.to || 'econnectshopping@gmail.com';
+    const delivery = await NotificationService.dispatchRawEmail(db, {
+      to: targetEmail,
+      subject: `[E-Connect Test] Admin Email Gateway Live Check (${new Date().toLocaleTimeString('en-IN')})`,
+      text: 'This is a live test email from EConnect Digital Services Portal to verify Google App Password SMTP connectivity.',
+      html: `
+        <div style="font-family: sans-serif; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
+          <h2 style="color: #0b192c; margin-top: 0;">EConnect SMTP Test Verification</h2>
+          <p>Gmail SMTP connection via Google App Password is <strong>WORKING PERFECTLY</strong>.</p>
+          <p>Time: <strong>${new Date().toISOString()}</strong></p>
+        </div>
+      `,
+      template: 'ADMIN_SMTP_TEST'
+    });
+    res.json({
+      success: delivery?.status === 'SENT',
+      delivery
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Admin Resend / Trigger Application Alert to Email
+app.post('/api/admin/applications/:id/resend-alert', authenticateAdmin, async (req, res) => {
+  try {
+    const appId = Number(req.params.id);
+    const application = db.get('applications', a => a.id === appId);
+    if (!application) {
+      return res.status(404).json({ error: 'Application not found' });
+    }
+    const service = db.get('services', s => s.id === application.service_id);
+    const serviceCategory = service && service.category_id
+      ? (db.get('categories', c => c.id === service.category_id)?.name || service.category_name || '')
+      : (service?.category_name || '');
+    const payment = db.get('payments', p => p.application_id === appId);
+    const savedFields = db.all('application_field_values', f => f.application_id === appId);
+    const savedDocs = db.all('application_documents', d => d.application_id === appId);
+
+    const isPaid = application.payment_status === 'PAID';
+    const result = await NotificationService.sendAdminApplicationAlert(db, {
+      eventType: isPaid ? 'PAYMENT_CONFIRMED' : 'NEW_APPLICATION',
+      applicationId: application.id,
+      applicationNumber: application.application_number,
+      serviceName: service ? service.name : 'Digital Service',
+      serviceCategory,
+      fee: payment ? payment.amount : (application.total_fee || 0),
+      status: application.status,
+      paymentStatus: application.payment_status || (isPaid ? 'PAID' : 'PENDING'),
+      paymentMethod: payment?.payment_method || 'PhonePe (UPI)',
+      transactionId: payment?.payment_transaction_id || '',
+      userId: application.user_id,
+      userName: application.user_name || 'Citizen',
+      userEmail: application.user_email || '',
+      userPhone: application.user_phone || '',
+      submittedAt: application.submitted_at || new Date().toISOString(),
+      submittedFields: savedFields,
+      uploadedDocuments: savedDocs,
+      idempotencyKey: `admin-resend-${application.id}-${Date.now()}`
+    }, { waitForDelivery: true, forceResend: true });
+
+    res.json({
+      success: true,
+      message: 'Admin alert dispatched',
+      result
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // ==========================================
