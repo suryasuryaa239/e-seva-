@@ -1053,33 +1053,105 @@ class NotificationService {
     let failureReason = null;
     let messageId = null;
 
-    const transporter = await this.getTransporter();
-    if (transporter) {
-      try {
-        const mailOptions = {
-          from: `"EConnect Digital Services" <${senderEmail}>`,
+    // Convert any attachments to base64 format for HTTP relay
+    const serializableAttachments = [];
+    if (Array.isArray(attachments) && attachments.length > 0) {
+      for (const att of attachments) {
+        try {
+          let base64Content = null;
+          if (att.content && Buffer.isBuffer(att.content)) {
+            base64Content = att.content.toString('base64');
+          } else if (att.content && typeof att.content === 'string') {
+            base64Content = att.content;
+          } else if (att.path && fs.existsSync(att.path)) {
+            base64Content = fs.readFileSync(att.path).toString('base64');
+          }
+          if (base64Content) {
+            serializableAttachments.push({
+              filename: att.filename || 'attachment',
+              content: base64Content,
+              contentType: att.contentType || 'application/octet-stream'
+            });
+          }
+        } catch (e) {
+          console.warn('[ATTACHMENT SERIALIZE WARNING]', e.message);
+        }
+      }
+    }
+
+    // Method 1: Hostinger HTTP Mail Gateway (Bypasses Render cloud SMTP firewall blocks on ports 25/465/587)
+    const relaySecret = process.env.JWT_SECRET || 'eseva_super_secret_jwt_key_2026';
+    const relayUrl = 'https://econnecthub.com/api/send-mail.php';
+    let relaySuccess = false;
+
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 12000);
+      const relayResp = await fetch(relayUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Mail-Key': relaySecret
+        },
+        body: JSON.stringify({
+          secret: relaySecret,
           to: toHeader,
+          replyTo: replyTo && this.isValidEmail(replyTo) ? replyTo : undefined,
           subject: subject || 'EConnect Digital Services Notification',
+          html,
           text: text || subject || '',
-          html
-        };
-        if (replyTo && this.isValidEmail(replyTo)) {
-          mailOptions.replyTo = replyTo;
-        }
-        if (Array.isArray(attachments) && attachments.length > 0) {
-          mailOptions.attachments = attachments;
-        }
-        const info = await transporter.sendMail(mailOptions);
+          attachments: serializableAttachments
+        }),
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+
+      const relayData = await relayResp.json();
+      if (relayResp.ok && relayData.success) {
         status = 'SENT';
-        messageId = info.messageId || null;
-        console.log(`✅ [NODEMAILER EMAIL SENT] Template: ${template} | To: ${toHeader} | Attachments: ${attachments.length} | MessageID: ${info.messageId}`);
+        messageId = relayData.messageId || null;
+        relaySuccess = true;
+        console.log(`✅ [HTTP MAIL RELAY SENT] Template: ${template} | To: ${toHeader} | Provider: ${relayData.provider} | MessageID: ${messageId} | Attachments: ${serializableAttachments.length}`);
+      } else {
+        failureReason = relayData.error || `HTTP ${relayResp.status}`;
+        console.warn(`⚠️ [HTTP MAIL RELAY FAILED]:`, failureReason);
+      }
+    } catch (relayErr) {
+      console.warn(`⚠️ [HTTP MAIL RELAY ERROR]:`, relayErr.message);
+      failureReason = relayErr.message;
+    }
+
+    // Method 2: Direct Nodemailer Fallback (if Relay fails or in local development)
+    if (!relaySuccess) {
+      try {
+        const transporter = await this.getTransporter();
+        if (transporter) {
+          const mailOptions = {
+            from: `"EConnect Digital Services" <${senderEmail}>`,
+            to: toHeader,
+            subject: subject || 'EConnect Digital Services Notification',
+            text: text || subject || '',
+            html
+          };
+          if (replyTo && this.isValidEmail(replyTo)) {
+            mailOptions.replyTo = replyTo;
+          }
+          if (Array.isArray(attachments) && attachments.length > 0) {
+            mailOptions.attachments = attachments;
+          }
+          const info = await transporter.sendMail(mailOptions);
+          status = 'SENT';
+          messageId = info.messageId || null;
+          failureReason = null;
+          console.log(`✅ [NODEMAILER EMAIL SENT] Template: ${template} | To: ${toHeader} | Attachments: ${attachments.length} | MessageID: ${info.messageId}`);
+        }
       } catch (sendErr) {
-        status = 'FAILED';
-        failureReason = sendErr.message;
+        if (!status || status === 'SIMULATED') {
+          status = 'FAILED';
+          failureReason = sendErr.message;
+        }
         console.error(`❌ [NODEMAILER EMAIL ERROR] Template: ${template} | To: ${toHeader} | Error:`, sendErr.message);
       }
-    } else {
-      console.log(`[EMAIL DISPATCH (LOG ONLY - Set SMTP_USER & GOOGLE_APP_PASSWORD to send real emails)] To: ${toHeader} | Subject: "${subject}" | Attachments: ${attachments.length}`);
     }
 
     if (db) {
