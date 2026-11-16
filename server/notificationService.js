@@ -2,7 +2,15 @@ import 'dotenv/config';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import dns from 'dns';
 import nodemailer from 'nodemailer';
+
+// Force Node.js to prioritize IPv4 over IPv6 to avoid ENETUNREACH on cloud containers (e.g. Render)
+if (typeof dns.setDefaultResultOrder === 'function') {
+  try {
+    dns.setDefaultResultOrder('ipv4first');
+  } catch (e) {}
+}
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -254,6 +262,7 @@ class NotificationService {
             host: smtpHost,
             port: smtpPort || 465,
             secure: process.env.SMTP_SECURE ? process.env.SMTP_SECURE === 'true' : (smtpPort || 465) === 465,
+            family: 4,
             auth: {
               user: smtpUser,
               pass: smtpPass
@@ -266,6 +275,7 @@ class NotificationService {
             host: 'smtp.gmail.com',
             port: 465,
             secure: true,
+            family: 4,
             auth: {
               user: smtpUser,
               pass: smtpPass

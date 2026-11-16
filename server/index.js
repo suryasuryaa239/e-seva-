@@ -3,7 +3,16 @@ import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import fs from 'fs';
+import dns from 'dns';
 import { fileURLToPath } from 'url';
+
+// Force Node.js to prioritize IPv4 to avoid ENETUNREACH on cloud containers
+if (typeof dns.setDefaultResultOrder === 'function') {
+  try {
+    dns.setDefaultResultOrder('ipv4first');
+  } catch (e) {}
+}
+
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import multer from 'multer';
@@ -5450,18 +5459,30 @@ app.post('/api/admin/notifications/test-email', authenticateAdmin, async (req, r
 // Admin Resend / Trigger Application Alert to Email
 app.post('/api/admin/applications/:id/resend-alert', authenticateAdmin, async (req, res) => {
   try {
-    const appId = Number(req.params.id);
-    const application = db.get('applications', a => a.id === appId);
+    const rawId = String(req.params.id || '').trim();
+    const numId = Number(rawId);
+    const application = db.get('applications', a => 
+      (numId && a.id === numId) ||
+      a.application_number === rawId ||
+      String(a.id) === rawId
+    );
     if (!application) {
-      return res.status(404).json({ error: 'Application not found' });
+      return res.status(404).json({ error: `Application not found for identifier: ${rawId}` });
     }
     const service = db.get('services', s => s.id === application.service_id);
     const serviceCategory = service && service.category_id
       ? (db.get('categories', c => c.id === service.category_id)?.name || service.category_name || '')
       : (service?.category_name || '');
-    const payment = db.get('payments', p => p.application_id === appId);
-    const savedFields = db.all('application_field_values', f => f.application_id === appId);
-    const savedDocs = db.all('application_documents', d => d.application_id === appId);
+    const payment = db.get('payments', p => 
+      p.application_id === application.id || 
+      (application.application_number && p.application_number === application.application_number)
+    );
+    const savedFields = db.all('application_field_values', f => 
+      f.application_id === application.id || (numId && f.application_id === numId)
+    );
+    const savedDocs = db.all('application_documents', d => 
+      d.application_id === application.id || (numId && d.application_id === numId)
+    );
 
     const isPaid = application.payment_status === 'PAID';
     const result = await NotificationService.sendAdminApplicationAlert(db, {
