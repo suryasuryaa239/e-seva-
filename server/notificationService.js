@@ -242,38 +242,45 @@ class NotificationService {
   /**
    * Get or initialize Nodemailer transporter dynamically based on env config
    */
-  getTransporter() {
+  async getTransporter() {
     const { configured, smtpUser, smtpPass } = this.getSmtpConfig();
     if (!configured) {
       return null;
     }
 
-    const smtpHost = (process.env.SMTP_HOST || '').trim();
+    const customHost = (process.env.SMTP_HOST || '').trim();
     const smtpPort = Number(process.env.SMTP_PORT || 0);
-    const cacheKey = `${smtpUser}|${smtpPass.length}|${smtpPass.slice(0, 3)}${smtpPass.slice(-3)}|${smtpHost}:${smtpPort}`;
+
+    // Resolve an explicit IPv4 address to prevent ENETUNREACH on cloud containers without IPv6 routing (e.g. Render)
+    let targetHost = customHost || 'smtp.gmail.com';
+    let servername = customHost || 'smtp.gmail.com';
+
+    if (!customHost || customHost === 'smtp.gmail.com') {
+      try {
+        const addresses = await dns.promises.resolve4('smtp.gmail.com');
+        if (Array.isArray(addresses) && addresses.length > 0) {
+          targetHost = addresses[0];
+          servername = 'smtp.gmail.com';
+        }
+      } catch (dnsErr) {
+        console.warn('[SMTP DNS RESOLVE4 WARNING]:', dnsErr.message);
+        targetHost = '142.250.193.109';
+        servername = 'smtp.gmail.com';
+      }
+    }
+
+    const cacheKey = `${smtpUser}|${smtpPass.length}|${smtpPass.slice(0, 3)}${smtpPass.slice(-3)}|${targetHost}:${smtpPort || 465}`;
 
     if (this.transporter && this._transporterCacheKey === cacheKey) {
       return this.transporter;
     }
 
     try {
-      const ipv4Lookup = (hostname, options, callback) => {
-        let cb = callback;
-        let opts = { family: 4, all: false };
-        if (typeof options === 'function') {
-          cb = options;
-        } else if (typeof options === 'object' && options !== null) {
-          opts = { ...options, family: 4, all: false };
-        }
-        return dns.lookup(hostname, opts, cb);
-      };
-
-      const transportOptions = smtpHost
+      const transportOptions = customHost && customHost !== 'smtp.gmail.com'
         ? {
-            host: smtpHost,
+            host: customHost,
             port: smtpPort || 465,
             secure: process.env.SMTP_SECURE ? process.env.SMTP_SECURE === 'true' : (smtpPort || 465) === 465,
-            lookup: ipv4Lookup,
             auth: {
               user: smtpUser,
               pass: smtpPass
@@ -283,10 +290,11 @@ class NotificationService {
             socketTimeout: 15000
           }
         : {
-            host: 'smtp.gmail.com',
+            host: targetHost,
             port: 465,
             secure: true,
-            lookup: ipv4Lookup,
+            servername: 'smtp.gmail.com',
+            tls: { servername: 'smtp.gmail.com' },
             auth: {
               user: smtpUser,
               pass: smtpPass
@@ -1045,7 +1053,7 @@ class NotificationService {
     let failureReason = null;
     let messageId = null;
 
-    const transporter = this.getTransporter();
+    const transporter = await this.getTransporter();
     if (transporter) {
       try {
         const mailOptions = {
