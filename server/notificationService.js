@@ -258,10 +258,14 @@ class NotificationService {
 
     try {
       const ipv4Lookup = (hostname, options, callback) => {
-        const opts = typeof options === 'object' && options !== null ? { ...options } : {};
-        opts.family = 4;
-        opts.all = false;
-        return dns.lookup(hostname, opts, callback);
+        let cb = callback;
+        let opts = { family: 4, all: false };
+        if (typeof options === 'function') {
+          cb = options;
+        } else if (typeof options === 'object' && options !== null) {
+          opts = { ...options, family: 4, all: false };
+        }
+        return dns.lookup(hostname, opts, cb);
       };
 
       const transportOptions = smtpHost
