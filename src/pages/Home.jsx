@@ -237,10 +237,10 @@ export default function Home() {
                   />
                 </div>
 
-                {/* Content Overlay - Title & Buttons directly on image (NO blue card, NO blue shade) */}
+                {/* Content Overlay - Title & Buttons directly on image (100% transparent, NO blue card, NO blue shade on mobile or desktop) */}
                 {Boolean(activeBanner.title) ? (
                   <div className="relative z-10 p-4 sm:p-10 lg:p-14 max-w-xl w-full flex flex-col justify-end sm:justify-center pointer-events-none">
-                    <div className="space-y-2.5 sm:space-y-4 pointer-events-auto bg-slate-950/40 sm:bg-transparent backdrop-blur-[2px] sm:backdrop-blur-none p-3.5 sm:p-0 rounded-2xl sm:rounded-none">
+                    <div className="space-y-2.5 sm:space-y-4 pointer-events-auto bg-transparent backdrop-blur-none p-0 rounded-none border-none shadow-none">
                       <div className="flex items-center space-x-2">
                         <span className="inline-block text-[10px] sm:text-[11px] font-black uppercase text-orange-400 tracking-widest bg-black/60 border border-orange-500/40 px-2.5 py-0.5 rounded-full shadow-lg backdrop-blur-sm">
                           {t.portalName} • PROMOTION
