@@ -5430,6 +5430,56 @@ app.put('/api/admin/notifications/read-all', authenticateAdmin, (req, res) => {
   res.json({ message: 'All admin notifications marked as read' });
 });
 
+// Admin Network & SMTP Port Diagnostics Probe
+app.get('/api/admin/diagnostics/smtp-probe', authenticateAdmin, async (req, res) => {
+  try {
+    const net = await import('net');
+    const dns = await import('dns');
+
+    const testTarget = (host, port) => {
+      return new Promise(resolve => {
+        const start = Date.now();
+        const socket = net.default.createConnection({ host, port, family: 4 }, () => {
+          const ms = Date.now() - start;
+          socket.destroy();
+          resolve({ host, port, ok: true, ms });
+        });
+        socket.setTimeout(4000);
+        socket.on('timeout', () => {
+          socket.destroy();
+          resolve({ host, port, ok: false, error: 'TIMEOUT (4000ms)' });
+        });
+        socket.on('error', err => {
+          socket.destroy();
+          resolve({ host, port, ok: false, error: err.message });
+        });
+      });
+    };
+
+    let resolvedIps = [];
+    try {
+      resolvedIps = await dns.default.promises.resolve4('smtp.gmail.com');
+    } catch (e) {
+      resolvedIps = [e.message];
+    }
+
+    const [res587, res465, res25] = await Promise.all([
+      testTarget('smtp.gmail.com', 587),
+      testTarget('smtp.gmail.com', 465),
+      testTarget('smtp.gmail.com', 25)
+    ]);
+
+    res.json({
+      dns_resolve4: resolvedIps,
+      port_587: res587,
+      port_465: res465,
+      port_25: res25
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Admin Send Test Email Alert
 app.post('/api/admin/notifications/test-email', authenticateAdmin, async (req, res) => {
   try {
