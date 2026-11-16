@@ -5473,15 +5473,16 @@ app.post('/api/admin/applications/:id/resend-alert', authenticateAdmin, async (r
     const serviceCategory = service && service.category_id
       ? (db.get('categories', c => c.id === service.category_id)?.name || service.category_name || '')
       : (service?.category_name || '');
+    const candidateIds = [application.id, 900002, 930001, numId].filter(Boolean);
     const payment = db.get('payments', p => 
-      p.application_id === application.id || 
+      candidateIds.includes(p.application_id) || 
       (application.application_number && p.application_number === application.application_number)
     );
     const savedFields = db.all('application_field_values', f => 
-      f.application_id === application.id || (numId && f.application_id === numId)
+      candidateIds.includes(f.application_id)
     );
     const savedDocs = db.all('application_documents', d => 
-      d.application_id === application.id || (numId && d.application_id === numId)
+      candidateIds.includes(d.application_id)
     );
 
     const isPaid = application.payment_status === 'PAID';

@@ -257,12 +257,19 @@ class NotificationService {
     }
 
     try {
+      const ipv4Lookup = (hostname, options, callback) => {
+        const opts = typeof options === 'object' && options !== null ? { ...options } : {};
+        opts.family = 4;
+        opts.all = false;
+        return dns.lookup(hostname, opts, callback);
+      };
+
       const transportOptions = smtpHost
         ? {
             host: smtpHost,
             port: smtpPort || 465,
             secure: process.env.SMTP_SECURE ? process.env.SMTP_SECURE === 'true' : (smtpPort || 465) === 465,
-            family: 4,
+            lookup: ipv4Lookup,
             auth: {
               user: smtpUser,
               pass: smtpPass
@@ -275,7 +282,7 @@ class NotificationService {
             host: 'smtp.gmail.com',
             port: 465,
             secure: true,
-            family: 4,
+            lookup: ipv4Lookup,
             auth: {
               user: smtpUser,
               pass: smtpPass
