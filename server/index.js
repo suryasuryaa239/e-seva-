@@ -981,25 +981,28 @@ app.get('/api/services', (req, res) => {
       serviceFields = Array.isArray(s.fields_json) ? s.fields_json : (typeof s.fields_json === 'string' ? JSON.parse(s.fields_json) : []);
     }
     let serviceDocs = db.all('service_documents', d => d.service_id === s.id);
-    if ((!serviceDocs || serviceDocs.length === 0) && (s.documents_json || s.documents_required)) {
-      const rawDocs = s.documents_json || s.documents_required;
-      let parsed = Array.isArray(rawDocs) ? rawDocs : [];
-      if (typeof rawDocs === 'string') {
-        try { parsed = JSON.parse(rawDocs); } catch (e) {
-          parsed = rawDocs.split(',').map(x => x.trim()).filter(Boolean);
+    if ((!serviceDocs || serviceDocs.length === 0)) {
+      const hasExplicitDocsJson = s.documents_json !== undefined && s.documents_json !== null;
+      const rawDocs = hasExplicitDocsJson ? s.documents_json : s.documents_required;
+      if (rawDocs) {
+        let parsed = Array.isArray(rawDocs) ? rawDocs : [];
+        if (typeof rawDocs === 'string') {
+          try { parsed = JSON.parse(rawDocs); } catch (e) {
+            parsed = rawDocs.split(',').map(x => x.trim()).filter(Boolean);
+          }
         }
+        serviceDocs = (Array.isArray(parsed) ? parsed : []).map((d, idx) => {
+          const docName = typeof d === 'string' ? d : (d.document_name || d.name);
+          const isReq = (typeof d === 'object' && (d.is_required === 0 || d.is_required === false || d.is_required === '0' || d.required === false || d.required === 0)) ? 0 : 1;
+          return {
+            id: idx + 1,
+            service_id: s.id,
+            document_name: docName,
+            description: typeof d === 'object' && d.description ? d.description : (isReq ? `Upload clear copy of ${docName}` : `Upload clear copy of ${docName} (Optional)`),
+            is_required: isReq
+          };
+        });
       }
-      serviceDocs = parsed.map((d, idx) => {
-        const docName = typeof d === 'string' ? d : (d.document_name || d.name);
-        const isReq = (typeof d === 'object' && (d.is_required === 0 || d.is_required === false || d.is_required === '0' || d.required === false || d.required === 0)) ? 0 : 1;
-        return {
-          id: idx + 1,
-          service_id: s.id,
-          document_name: docName,
-          description: typeof d === 'object' && d.description ? d.description : (isReq ? `Upload clear copy of ${docName}` : `Upload clear copy of ${docName} (Optional)`),
-          is_required: isReq
-        };
-      });
     }
     const fieldsCount = serviceFields.length;
     const docsCount = serviceDocs.length;
@@ -1110,25 +1113,28 @@ app.get('/api/services/:idOrSlug', (req, res) => {
     });
   }
   let documents = db.all('service_documents', d => d.service_id === service.id);
-  if ((!documents || documents.length === 0) && (service.documents_json || service.documents_required)) {
-    const rawDocs = service.documents_json || service.documents_required;
-    let parsed = Array.isArray(rawDocs) ? rawDocs : [];
-    if (typeof rawDocs === 'string') {
-      try { parsed = JSON.parse(rawDocs); } catch (e) {
-        parsed = rawDocs.split(',').map(x => x.trim()).filter(Boolean);
+  if (!documents || documents.length === 0) {
+    const hasExplicitDocsJson = service.documents_json !== undefined && service.documents_json !== null;
+    const rawDocs = hasExplicitDocsJson ? service.documents_json : service.documents_required;
+    if (rawDocs) {
+      let parsed = Array.isArray(rawDocs) ? rawDocs : [];
+      if (typeof rawDocs === 'string') {
+        try { parsed = JSON.parse(rawDocs); } catch (e) {
+          parsed = rawDocs.split(',').map(x => x.trim()).filter(Boolean);
+        }
       }
+      documents = (Array.isArray(parsed) ? parsed : []).map((d, idx) => {
+        const docName = typeof d === 'string' ? d : (d.document_name || d.name);
+        const isReq = (typeof d === 'object' && (d.is_required === 0 || d.is_required === false || d.is_required === '0' || d.required === false || d.required === 0)) ? 0 : 1;
+        return {
+          id: idx + 1,
+          service_id: service.id,
+          document_name: docName,
+          description: typeof d === 'object' && d.description ? d.description : (isReq ? `Upload clear copy of ${docName}` : `Upload clear copy of ${docName} (Optional)`),
+          is_required: isReq
+        };
+      });
     }
-    documents = parsed.map((d, idx) => {
-      const docName = typeof d === 'string' ? d : (d.document_name || d.name);
-      const isReq = (typeof d === 'object' && (d.is_required === 0 || d.is_required === false || d.is_required === '0' || d.required === false || d.required === 0)) ? 0 : 1;
-      return {
-        id: idx + 1,
-        service_id: service.id,
-        document_name: docName,
-        description: typeof d === 'object' && d.description ? d.description : (isReq ? `Upload clear copy of ${docName}` : `Upload clear copy of ${docName} (Optional)`),
-        is_required: isReq
-      };
-    });
   }
 
   const cleanName = (service.name || '').replace(/\s*\((Varumaana Saanrithazh|Jaathi Saanrithazh|AnyTamilLand|Saanrithazh|Thunglish|Tanglish)\)/gi, '').trim();
@@ -4650,8 +4656,8 @@ app.post('/api/admin/services', authenticateAdmin, upload.any(), async (req, res
         ...f,
         is_required: (f.is_required === 0 || f.is_required === false || f.is_required === '0' || f.is_required === 'false' || f.required === 0 || f.required === false || f.required === '0' || f.required === 'false') ? 0 : 1
       })) : null,
-      documents_json: parsedDocs || null,
-      documents_required: JSON.stringify((parsedDocs || []).map(d => typeof d === 'string' ? d : (d.document_name || d.name)))
+      documents_json: Array.isArray(parsedDocs) ? parsedDocs : [],
+      documents_required: JSON.stringify(Array.isArray(parsedDocs) ? parsedDocs.map(d => typeof d === 'string' ? d : (d.document_name || d.name)) : [])
     });
 
     if (parsedFields && Array.isArray(parsedFields) && parsedFields.length > 0) {
@@ -4697,17 +4703,6 @@ app.post('/api/admin/services', authenticateAdmin, upload.any(), async (req, res
           document_name: docName,
           description: d.description || (isReq ? `Upload clear copy of ${docName}` : `Upload clear copy of ${docName} (Optional)`),
           is_required: isReq
-        });
-      });
-    } else {
-      // Default standard documents
-      const defaultDocs = ['Aadhaar Card Copy', 'Passport Size Photograph', 'Address Proof'];
-      defaultDocs.forEach(docName => {
-        db.insert('service_documents', {
-          service_id: service.id,
-          document_name: docName,
-          description: `Upload clear scanned copy of ${docName}`,
-          is_required: 1
         });
       });
     }
@@ -4855,8 +4850,8 @@ app.put('/api/admin/services/:id', authenticateAdmin, upload.any(), async (req, 
         ...f,
         is_required: (f.is_required === 0 || f.is_required === false || f.is_required === '0' || f.is_required === 'false' || f.required === 0 || f.required === false || f.required === '0' || f.required === 'false') ? 0 : 1
       })) : (existing.fields_json || null),
-      documents_json: parsedDocs || existing.documents_json || null,
-      documents_required: parsedDocs ? JSON.stringify(parsedDocs.map(d => typeof d === 'string' ? d : (d.document_name || d.name))) : existing.documents_required
+      documents_json: Array.isArray(parsedDocs) ? parsedDocs : (existing.documents_json || []),
+      documents_required: Array.isArray(parsedDocs) ? JSON.stringify(parsedDocs.map(d => typeof d === 'string' ? d : (d.document_name || d.name))) : (existing.documents_required || '[]')
     });
 
     // Update dynamic fields if provided

@@ -113,6 +113,26 @@ class TiDBSupportedDatabase {
                 });
                 parsedRows.sort((a, b) => (Number(a.category_id) || 99) - (Number(b.category_id) || 99) || (Number(a.display_order) || 999999) - (Number(b.display_order) || 999999) || (a.id - b.id));
                 this.data['services'] = parsedRows;
+
+                // Rebuild service_documents strictly from TiDB services.documents_json so stale local seed docs never resurrect
+                const rebuiltDocs = [];
+                let docAutoId = 1;
+                parsedRows.forEach(s => {
+                  const rawDocs = Array.isArray(s.documents_json) ? s.documents_json : [];
+                  rawDocs.forEach(d => {
+                    const docName = typeof d === 'string' ? d : (d?.document_name || d?.name);
+                    if (!docName) return;
+                    const isReq = (typeof d === 'object' && (d.is_required === 0 || d.is_required === false || d.is_required === '0' || d.required === false || d.required === 0)) ? 0 : 1;
+                    rebuiltDocs.push({
+                      id: docAutoId++,
+                      service_id: s.id,
+                      document_name: docName,
+                      description: (typeof d === 'object' && d.description) ? d.description : (isReq ? `Upload clear copy of ${docName}` : `Upload clear copy of ${docName} (Optional)`),
+                      is_required: isReq
+                    });
+                  });
+                });
+                this.data['service_documents'] = rebuiltDocs;
               }
             } else if (tbl === 'categories') {
               if (parsedRows.length > 0) {

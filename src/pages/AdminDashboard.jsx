@@ -803,10 +803,7 @@ export default function AdminDashboard() {
     image_preview: '',
     position: 'top',
     custom_position: 1,
-    documents: [
-      { name: 'Aadhaar Card Copy', is_required: true },
-      { name: 'Passport Size Photo', is_required: true }
-    ],
+    documents: [],
     newDocInput: '',
     newDocIsRequired: true,
     fields: [
@@ -1055,10 +1052,7 @@ export default function AdminDashboard() {
           image_preview: '',
           position: 'top',
           custom_position: 1,
-          documents: [
-            { name: 'Aadhaar Card Copy', is_required: true },
-            { name: 'Passport Size Photo', is_required: true }
-          ],
+          documents: [],
           newDocInput: '',
           newDocIsRequired: true,
           fields: [
@@ -1250,12 +1244,6 @@ export default function AdminDashboard() {
       } catch (err) {}
     }
 
-    if (docs.length === 0) {
-      docs = [
-        { name: 'Aadhaar Card Copy', is_required: true },
-        { name: 'Passport Size Photo', is_required: true }
-      ];
-    }
     if (fields.length === 0) {
       fields = [
         { field_label: 'Applicant Full Name', field_type: 'text', is_required: true },

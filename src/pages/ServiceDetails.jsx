@@ -35,7 +35,8 @@ export default function ServiceDetails() {
       if (res.ok) {
         sData = await res.json();
       } else {
-        sData = getServiceDefinition(serviceParam);
+        const staticDef = getServiceDefinition(serviceParam);
+        sData = staticDef ? { ...staticDef, documents: [] } : null;
       }
 
       if (sData) {
@@ -47,7 +48,7 @@ export default function ServiceDetails() {
           category_name: localized.category_name || sData.category_name,
           processing_time: localized.processing_time || sData.processing_time,
           eligibility: localized.eligibility || sData.eligibility,
-          documents: localized.documents || sData.documents
+          documents: Array.isArray(sData.documents) ? sData.documents : []
         });
       } else {
         throw new Error('Service not found');
@@ -63,7 +64,7 @@ export default function ServiceDetails() {
           category_name: localized.category_name || fallback.category_name,
           processing_time: localized.processing_time || fallback.processing_time,
           eligibility: localized.eligibility || fallback.eligibility,
-          documents: localized.documents || fallback.documents
+          documents: []
         });
       } else {
         setError(err.message);
@@ -132,16 +133,7 @@ export default function ServiceDetails() {
     );
   }
 
-  const defaultDocumentsList = [
-    { name: lang === 'ta' ? 'அடையாளச் சான்று (PoI)' : 'Proof of Identity (PoI)', description: lang === 'ta' ? 'ஆதார் அட்டை, வாக்காளர் அடையாள அட்டை, பாஸ்போர்ட் அல்லது ஓட்டுநர் உரிமம்' : 'Aadhaar Card, Voter ID, Passport, or Driving Licence', required: true },
-    { name: lang === 'ta' ? 'முகவரிச் சான்று (PoA)' : 'Proof of Address (PoA)', description: lang === 'ta' ? 'மின்சாரக் கட்டணம், வங்கி கணக்கு புத்தகம், ரேஷன் கார்டு அல்லது வாடகை ஒப்பந்தம்' : 'Utility Bill, Bank Passbook, Ration Card, or Rent Agreement', required: true },
-    { name: lang === 'ta' ? 'துணைச் சான்றிதழ் / சுயசான்றொப்பம்' : 'Supporting Document / Declaration', description: lang === 'ta' ? 'சுய அறிவிப்பு படிவம் அல்லது சான்றளிக்கப்பட்ட சான்றிதழ்' : 'Self-declaration form or gazetted officer certificate', required: true },
-    { name: lang === 'ta' ? 'சமீபத்திய பாஸ்போர்ட் புகைப்படம்' : 'Recent Passport Photo', description: lang === 'ta' ? 'வெள்ளை பின்புலத்துடன் கூடிய வண்ணப் புகைப்படம் (JPEG/PNG அதிகபட்சம் 2MB)' : 'Color photograph with white background (JPEG/PNG max 2MB)', required: false }
-  ];
-
-  const documentsList = service.documents && service.documents.length > 0 
-    ? service.documents 
-    : defaultDocumentsList;
+  const documentsList = Array.isArray(service.documents) ? service.documents : [];
 
   const defaultFieldsList = [
     lang === 'ta' ? 'விண்ணப்பதாரரின் முழுப் பெயர் (அரசு அடையாளச் சான்றின்படி)' : 'Applicant Full Name (matching official identity proof)',
@@ -312,7 +304,8 @@ export default function ServiceDetails() {
               </div>
             </div>
 
-            {/* REQUIRED DOCUMENTS CHECKLIST */}
+            {/* REQUIRED DOCUMENTS CHECKLIST (Shown only when configured by Admin) */}
+            {documentsList.length > 0 && (
             <div className="bg-white rounded-3xl p-8 border border-slate-200/90 shadow-sm space-y-5">
               <div className="flex items-center justify-between border-b pb-4 border-slate-100">
                 <h2 className="font-heading font-extrabold text-xl text-slate-900 flex items-center gap-2">
@@ -354,6 +347,7 @@ export default function ServiceDetails() {
                 })}
               </div>
             </div>
+            )}
 
             {/* IMPORTANT INFORMATION / DISCLAIMER */}
             <div className="bg-white rounded-3xl p-8 border border-slate-200/90 shadow-sm space-y-4">

@@ -182,10 +182,7 @@
       "description": "Update your residential address in official UIDAI database with valid proof of address.",
       "fee": "50.00",
       "processing_time": "2-3 Business Days",
-      "documents_required": [
-        "Aadhaar Card Copy",
-        "Valid Address Proof"
-      ],
+      "documents_required": [],
       "eligibility": [
         "Aadhaar cardholders relocating or correcting door/street/pincode details."
       ],
@@ -287,10 +284,7 @@
           "sort_order": 10
         }
       ],
-      "documents_json": [
-        "Aadhaar Card Copy",
-        "Valid Address Proof"
-      ],
+      "documents_json": [],
       "display_order": 1
     },
     {
@@ -302,9 +296,7 @@
       "description": "Order durable, waterproof plastic PVC Aadhaar Card delivered to your doorstep.",
       "fee": "50.00",
       "processing_time": "7-10 Working Days",
-      "documents_required": [
-        "Aadhaar Card Copy"
-      ],
+      "documents_required": [],
       "eligibility": [
         "All registered Aadhaar cardholders."
       ],
@@ -379,9 +371,7 @@
           "sort_order": 7
         }
       ],
-      "documents_json": [
-        "Aadhaar Card Copy"
-      ],
+      "documents_json": [],
       "display_order": 2
     },
     {
@@ -393,10 +383,7 @@
       "description": "Mandatory re-validation of Identity and Address documents for 10+ year old Aadhaar cards.",
       "fee": "50.00",
       "processing_time": "3-5 Working Days",
-      "documents_required": [
-        "Identity Proof",
-        "Address Proof"
-      ],
+      "documents_required": [],
       "eligibility": [
         "Cardholders whose Aadhaar was issued over 10 years ago without recent updates."
       ],
@@ -435,10 +422,7 @@
           "sort_order": 3
         }
       ],
-      "documents_json": [
-        "Identity Proof",
-        "Address Proof"
-      ],
+      "documents_json": [],
       "display_order": 4
     },
     {
@@ -552,10 +536,7 @@
       "description": "Link your 10-digit PAN with 12-digit Aadhaar number as per Income Tax regulations.",
       "fee": "50.00",
       "processing_time": "24-48 Hours",
-      "documents_required": [
-        "PAN Copy",
-        "Aadhaar Copy"
-      ],
+      "documents_required": [],
       "eligibility": [
         "All PAN cardholders whose PAN is not yet linked to Aadhaar."
       ],
@@ -603,10 +584,7 @@
           "sort_order": 4
         }
       ],
-      "documents_json": [
-        "PAN Copy",
-        "Aadhaar Copy"
-      ],
+      "documents_json": [],
       "display_order": 2
     },
     {
@@ -618,10 +596,7 @@
       "description": "Correct name, father name, date of birth, or signature in existing PAN record.",
       "fee": "107.00",
       "processing_time": "7-10 Working Days",
-      "documents_required": [
-        "Existing PAN Card Copy",
-        "Supporting Correction Proof"
-      ],
+      "documents_required": [],
       "eligibility": [
         "Existing PAN cardholders requiring demographic or photo corrections."
       ],
@@ -714,10 +689,7 @@
           "sort_order": 9
         }
       ],
-      "documents_json": [
-        "Existing PAN Card Copy",
-        "Supporting Correction Proof"
-      ],
+      "documents_json": [],
       "display_order": 3
     },
     {
@@ -771,10 +743,7 @@
       "description": "New PAN allocation for non-citizens, NRIs, and foreign companies.",
       "fee": "1020.00",
       "processing_time": "10-20 Working Days",
-      "documents_required": [
-        "Foreign Passport Copy",
-        "Overseas Bank Statement"
-      ],
+      "documents_required": [],
       "eligibility": [
         "Foreign citizens or entities carrying out business in India."
       ],
@@ -813,10 +782,7 @@
           "sort_order": 3
         }
       ],
-      "documents_json": [
-        "Foreign Passport Copy",
-        "Overseas Bank Statement"
-      ],
+      "documents_json": [],
       "display_order": 6
     },
     {
@@ -828,11 +794,7 @@
       "description": "Update signature and photo on Minor PAN card upon turning 18 years old.",
       "fee": "110.00",
       "processing_time": "7-12 Working Days",
-      "documents_required": [
-        "Existing Minor PAN Copy",
-        "Aadhaar Card Copy",
-        "Passport Photograph"
-      ],
+      "documents_required": [],
       "eligibility": [
         "PAN holders who have recently attained 18 years of age."
       ],
@@ -871,11 +833,7 @@
           "sort_order": 3
         }
       ],
-      "documents_json": [
-        "Existing Minor PAN Copy",
-        "Aadhaar Card Copy",
-        "Passport Photograph"
-      ],
+      "documents_json": [],
       "display_order": 7
     },
     {
@@ -887,10 +845,7 @@
       "description": "Reissue physical PAN card copy without changing existing data.",
       "fee": "100.00",
       "processing_time": "5-10 Working Days",
-      "documents_required": [
-        "Aadhaar Card Copy",
-        "Copy of Lost PAN / FIR"
-      ],
+      "documents_required": [],
       "eligibility": [
         "PAN cardholders with lost or damaged physical card."
       ],
@@ -929,10 +884,7 @@
           "sort_order": 3
         }
       ],
-      "documents_json": [
-        "Aadhaar Card Copy",
-        "Copy of Lost PAN / FIR"
-      ],
+      "documents_json": [],
       "display_order": 10
     },
     {
@@ -944,11 +896,7 @@
       "description": "Apply for fresh Permanent Account Number (PAN) card for individuals and entities.",
       "fee": "107.00",
       "processing_time": "7-10 Working Days",
-      "documents_required": [
-        "Identity Proof",
-        "Address Proof",
-        "DOB Proof"
-      ],
+      "documents_required": [],
       "eligibility": [
         "Indian citizens and entities requiring PAN for financial & tax purposes."
       ],
@@ -1014,11 +962,7 @@
           "sort_order": 6
         }
       ],
-      "documents_json": [
-        "Identity Proof",
-        "Address Proof",
-        "DOB Proof"
-      ],
+      "documents_json": [],
       "display_order": 11
     },
     {
@@ -1030,11 +974,7 @@
       "description": "Apply for inclusion of name in Electoral Roll and issuance of new EPIC Voter ID Card.",
       "fee": "100.00",
       "processing_time": "15-25 Working Days",
-      "documents_required": [
-        "Age Proof",
-        "Residence Proof",
-        "Passport Photograph"
-      ],
+      "documents_required": [],
       "eligibility": [
         "Indian citizens aged 18 years or above."
       ],
@@ -1109,11 +1049,7 @@
           "sort_order": 7
         }
       ],
-      "documents_json": [
-        "Age Proof",
-        "Residence Proof",
-        "Passport Photograph"
-      ],
+      "documents_json": [],
       "display_order": 14
     },
     {
@@ -1125,10 +1061,7 @@
       "description": "Correction of name, DOB, address, or constituency transfer in Voter EPIC card.",
       "fee": "25.00",
       "processing_time": "10-20 Working Days",
-      "documents_required": [
-        "Voter EPIC Card Copy",
-        "Valid New Address Proof"
-      ],
+      "documents_required": [],
       "eligibility": [
         "Registered voters needing data updates."
       ],
@@ -1167,10 +1100,7 @@
           "sort_order": 3
         }
       ],
-      "documents_json": [
-        "Voter EPIC Card Copy",
-        "Valid New Address Proof"
-      ],
+      "documents_json": [],
       "display_order": 15
     },
     {
@@ -1182,10 +1112,7 @@
       "description": "Link 12-digit Aadhaar number with Voter EPIC card for authentication.",
       "fee": "100.00",
       "processing_time": "3-7 Working Days",
-      "documents_required": [
-        "Voter EPIC Card Copy",
-        "Aadhaar Card Copy"
-      ],
+      "documents_required": [],
       "eligibility": [
         "All registered voters holding Aadhaar."
       ],
@@ -1224,10 +1151,7 @@
           "sort_order": 3
         }
       ],
-      "documents_json": [
-        "Voter EPIC Card Copy",
-        "Aadhaar Card Copy"
-      ],
+      "documents_json": [],
       "display_order": 16
     },
     {
@@ -1281,10 +1205,7 @@
       "description": "Reissue physical plastic Voter ID card for lost or damaged EPIC card.",
       "fee": "50.00",
       "processing_time": "10-15 Working Days",
-      "documents_required": [
-        "Aadhaar Card Copy",
-        "FIR Copy / Damaged Card"
-      ],
+      "documents_required": [],
       "eligibility": [
         "Registered voters with lost or damaged Voter card."
       ],
@@ -1323,10 +1244,7 @@
           "sort_order": 3
         }
       ],
-      "documents_json": [
-        "Aadhaar Card Copy",
-        "FIR Copy / Damaged Card"
-      ],
+      "documents_json": [],
       "display_order": 18
     },
     {
@@ -1338,10 +1256,7 @@
       "description": "Voter registration for non-resident Indian citizens residing abroad.",
       "fee": "250.00",
       "processing_time": "15-30 Working Days",
-      "documents_required": [
-        "Indian Passport Copy",
-        "Native Indian Residence Proof"
-      ],
+      "documents_required": [],
       "eligibility": [
         "Indian passport holders living abroad."
       ],
@@ -1380,10 +1295,7 @@
           "sort_order": 3
         }
       ],
-      "documents_json": [
-        "Indian Passport Copy",
-        "Native Indian Residence Proof"
-      ],
+      "documents_json": [],
       "display_order": 19
     },
     {
@@ -1446,9 +1358,7 @@
       "description": "Application for deletion of deceased or shifted voter name from electoral roll.",
       "fee": "100.00",
       "processing_time": "15-25 Working Days",
-      "documents_required": [
-        "Death Certificate / Shifting Proof"
-      ],
+      "documents_required": [],
       "eligibility": [
         "Registered voters in the constituency."
       ],
@@ -1487,9 +1397,7 @@
           "sort_order": 3
         }
       ],
-      "documents_json": [
-        "Death Certificate / Shifting Proof"
-      ],
+      "documents_json": [],
       "display_order": 21
     },
     {
@@ -1501,11 +1409,7 @@
       "description": "Official revenue certificate certifying total annual family income for education & subsidies.",
       "fee": "60.00",
       "processing_time": "7 Working Days",
-      "documents_required": [
-        "Applicant Photograph",
-        "Address Proof",
-        "Income Proof"
-      ],
+      "documents_required": [],
       "eligibility": [
         "Permanent state residents seeking income verification for government schemes."
       ],
@@ -1571,11 +1475,7 @@
           "sort_order": 6
         }
       ],
-      "documents_json": [
-        "Applicant Photograph",
-        "Address Proof",
-        "Income Proof"
-      ],
+      "documents_json": [],
       "display_order": 22
     },
     {
@@ -1587,10 +1487,7 @@
       "description": "Official document proving continuous residence and state nativity for quota applications.",
       "fee": "60.00",
       "processing_time": "7 Working Days",
-      "documents_required": [
-        "Photo & Aadhaar Card",
-        "Proof of Continuous Residence"
-      ],
+      "documents_required": [],
       "eligibility": [
         "Residents living in the state for 5+ years."
       ],
@@ -1647,10 +1544,7 @@
           "sort_order": 5
         }
       ],
-      "documents_json": [
-        "Photo & Aadhaar Card",
-        "Proof of Continuous Residence"
-      ],
+      "documents_json": [],
       "display_order": 23
     },
     {
@@ -1662,11 +1556,7 @@
       "description": "Official revenue certificate confirming caste/community category (BC / MBC / SC / ST).",
       "fee": "60.00",
       "processing_time": "15 Working Days",
-      "documents_required": [
-        "Applicant Photograph",
-        "Address Proof",
-        "Parent Community Certificate"
-      ],
+      "documents_required": [],
       "eligibility": [
         "Citizens seeking quota or reservation benefits for education & government jobs."
       ],
@@ -1732,11 +1622,7 @@
           "sort_order": 6
         }
       ],
-      "documents_json": [
-        "Applicant Photograph",
-        "Address Proof",
-        "Parent Community Certificate"
-      ],
+      "documents_json": [],
       "display_order": 24
     },
     {
@@ -1748,11 +1634,7 @@
       "description": "Certificate for students who are the first in their family to pursue higher degree education.",
       "fee": "60.00",
       "processing_time": "10 Working Days",
-      "documents_required": [
-        "Family Smart Ration Card",
-        "Educational Certificates of Family",
-        "Joint Self Declaration"
-      ],
+      "documents_required": [],
       "eligibility": [
         "Degree admission applicants with no graduate degree holder in immediate family."
       ],
@@ -1809,11 +1691,7 @@
           "sort_order": 5
         }
       ],
-      "documents_json": [
-        "Family Smart Ration Card",
-        "Educational Certificates of Family",
-        "Joint Self Declaration"
-      ],
+      "documents_json": [],
       "display_order": 25
     },
     {
@@ -1825,11 +1703,7 @@
       "description": "Official revenue certificate proving residence address.",
       "fee": "60.00",
       "processing_time": "7 Working Days",
-      "documents_required": [
-        "Identity Proof",
-        "Address Proof",
-        "Residence Proof"
-      ],
+      "documents_required": [],
       "eligibility": [
         "State residents."
       ],
@@ -1886,11 +1760,7 @@
           "sort_order": 5
         }
       ],
-      "documents_json": [
-        "Identity Proof",
-        "Address Proof",
-        "Residence Proof"
-      ],
+      "documents_json": [],
       "display_order": 26
     },
     {
@@ -1902,11 +1772,7 @@
       "description": "Official proof verifying permanent domicile & native residence status in Tamil Nadu.",
       "fee": "60.00",
       "processing_time": "7-10 Working Days",
-      "documents_required": [
-        "5-Year School Study Proof or Birth Certificate",
-        "Smart Ration Card / Property Tax",
-        "Aadhaar Card Copy"
-      ],
+      "documents_required": [],
       "eligibility": [
         "Permanent residents of Tamil Nadu."
       ],
@@ -1945,11 +1811,7 @@
           "sort_order": 3
         }
       ],
-      "documents_json": [
-        "5-Year School Study Proof or Birth Certificate",
-        "Smart Ration Card / Property Tax",
-        "Aadhaar Card Copy"
-      ],
+      "documents_json": [],
       "display_order": 27
     },
     {
@@ -1961,11 +1823,7 @@
       "description": "Revenue certificate issued to families having only female children for welfare schemes.",
       "fee": "60.00",
       "processing_time": "7-10 Working Days",
-      "documents_required": [
-        "Birth Certificates of Female Children",
-        "Sterilization Certificate / Doctor Report",
-        "Parents Aadhaar & Ration Card"
-      ],
+      "documents_required": [],
       "eligibility": [
         "Parents with only female children and no male issue."
       ],
@@ -2004,11 +1862,7 @@
           "sort_order": 3
         }
       ],
-      "documents_json": [
-        "Birth Certificates of Female Children",
-        "Sterilization Certificate / Doctor Report",
-        "Parents Aadhaar & Ration Card"
-      ],
+      "documents_json": [],
       "display_order": 28
     },
     {
@@ -2020,12 +1874,7 @@
       "description": "Financial stability certificate issued by Revenue Dept for contractors, tenders & bank guarantees.",
       "fee": "150.00",
       "processing_time": "15-20 Working Days",
-      "documents_required": [
-        "Property Sale Deed / Title Deed",
-        "Encumbrance Certificate (EC)",
-        "Engineer Valuation Report",
-        "Aadhaar & PAN Card Copy"
-      ],
+      "documents_required": [],
       "eligibility": [
         "Property owners seeking solvency validation."
       ],
@@ -2064,12 +1913,7 @@
           "sort_order": 3
         }
       ],
-      "documents_json": [
-        "Property Sale Deed / Title Deed",
-        "Encumbrance Certificate (EC)",
-        "Engineer Valuation Report",
-        "Aadhaar & PAN Card Copy"
-      ],
+      "documents_json": [],
       "display_order": 29
     },
     {
@@ -2081,11 +1925,7 @@
       "description": "Revenue certificate certifying single status for visa, passport & employment requirements.",
       "fee": "60.00",
       "processing_time": "5-7 Working Days",
-      "documents_required": [
-        "Notarized Affidavit",
-        "Passport / Voter ID Copy",
-        "Aadhaar & Ration Card"
-      ],
+      "documents_required": [],
       "eligibility": [
         "Unmarried citizens requiring official single status proof."
       ],
@@ -2124,11 +1964,7 @@
           "sort_order": 3
         }
       ],
-      "documents_json": [
-        "Notarized Affidavit",
-        "Passport / Voter ID Copy",
-        "Aadhaar & Ration Card"
-      ],
+      "documents_json": [],
       "display_order": 30
     },
     {
@@ -2140,10 +1976,7 @@
       "description": "Get officially verified digital extract of A-Register & land ownership Chitta statement.",
       "fee": "50.00",
       "processing_time": "1–2 Working Days",
-      "documents_required": [
-        "District, Taluk, Village Name",
-        "Survey Number / Sub-division"
-      ],
+      "documents_required": [],
       "eligibility": [
         "Public record available to any citizen or property buyer"
       ],
@@ -2191,10 +2024,7 @@
           "sort_order": 4
         }
       ],
-      "documents_json": [
-        "District, Taluk, Village Name",
-        "Survey Number / Sub-division"
-      ],
+      "documents_json": [],
       "display_order": 2
     },
     {
@@ -2206,10 +2036,7 @@
       "description": "Download field sketch map showing exact boundary measurements for your survey land number.",
       "fee": "60.00",
       "processing_time": "2–3 Working Days",
-      "documents_required": [
-        "Taluk & Village Details",
-        "Survey Number & Sub-division"
-      ],
+      "documents_required": [],
       "eligibility": [
         "Land owner, boundary verification seeker, surveyor"
       ],
@@ -2257,10 +2084,7 @@
           "sort_order": 4
         }
       ],
-      "documents_json": [
-        "Taluk & Village Details",
-        "Survey Number & Sub-division"
-      ],
+      "documents_json": [],
       "display_order": 3
     },
     {
@@ -2272,11 +2096,7 @@
       "description": "Apply for official Patta transfer in revenue land records.",
       "fee": "100.00",
       "processing_time": "15-30 Working Days",
-      "documents_required": [
-        "Sale Deed / Ownership Proof",
-        "Identity Proof",
-        "Existing Patta Copy"
-      ],
+      "documents_required": [],
       "eligibility": [
         "Registered property buyers."
       ],
@@ -2369,11 +2189,7 @@
           "sort_order": 9
         }
       ],
-      "documents_json": [
-        "Sale Deed / Ownership Proof",
-        "Identity Proof",
-        "Existing Patta Copy"
-      ],
+      "documents_json": [],
       "display_order": 4
     },
     {
@@ -2385,11 +2201,7 @@
       "description": "Application for sub-division of survey land and separate Patta issue.",
       "fee": "150.00",
       "processing_time": "20-30 Working Days",
-      "documents_required": [
-        "Ownership Proof",
-        "Existing Patta Copy",
-        "Field Survey Map / Partition Deed"
-      ],
+      "documents_required": [],
       "eligibility": [
         "Landowners partitioning or sub-dividing survey plots."
       ],
@@ -2473,11 +2285,7 @@
           "sort_order": 8
         }
       ],
-      "documents_json": [
-        "Ownership Proof",
-        "Existing Patta Copy",
-        "Field Survey Map / Partition Deed"
-      ],
+      "documents_json": [],
       "display_order": 5
     },
     {
@@ -2489,10 +2297,7 @@
       "description": "Application for passport renewal due to expiry, exhaustion of pages, or damage.",
       "fee": "1500.00",
       "processing_time": "10-15 Working Days",
-      "documents_required": [
-        "Old Passport Original & Copy",
-        "Proof of Present Address"
-      ],
+      "documents_required": [],
       "eligibility": [
         "Existing passport holders nearing expiry or page exhaustion."
       ],
@@ -2540,10 +2345,7 @@
           "sort_order": 4
         }
       ],
-      "documents_json": [
-        "Old Passport Original & Copy",
-        "Proof of Present Address"
-      ],
+      "documents_json": [],
       "display_order": 35
     },
     {
@@ -2555,11 +2357,7 @@
       "description": "Online application filing for fresh Indian Passport.",
       "fee": "1500.00",
       "processing_time": "15-20 Working Days",
-      "documents_required": [
-        "Proof of Date of Birth",
-        "Proof of Present Address",
-        "Non-ECR Educational Proof"
-      ],
+      "documents_required": [],
       "eligibility": [
         "Indian citizens."
       ],
@@ -2688,11 +2486,7 @@
           "sort_order": 13
         }
       ],
-      "documents_json": [
-        "Proof of Date of Birth",
-        "Proof of Present Address",
-        "Non-ECR Educational Proof"
-      ],
+      "documents_json": [],
       "display_order": 36
     },
     {
@@ -2704,11 +2498,7 @@
       "description": "PCC application assistance for emigration, employment, and foreign residence visas.",
       "fee": "500.00",
       "processing_time": "7-14 Working Days",
-      "documents_required": [
-        "Indian Passport Original & Copy",
-        "Present Address Proof",
-        "Visa / Employment Offer Letter"
-      ],
+      "documents_required": [],
       "eligibility": [
         "Valid Indian Passport holders."
       ],
@@ -2747,11 +2537,7 @@
           "sort_order": 3
         }
       ],
-      "documents_json": [
-        "Indian Passport Original & Copy",
-        "Present Address Proof",
-        "Visa / Employment Offer Letter"
-      ],
+      "documents_json": [],
       "display_order": 37
     },
     {
@@ -2763,11 +2549,7 @@
       "description": "Filing application and RTO appointment booking for Learner Driving Licence (LLR).",
       "fee": "250.00",
       "processing_time": "3-5 Working Days",
-      "documents_required": [
-        "Age Proof",
-        "Address Proof",
-        "Medical Certificate (Form 1A)"
-      ],
+      "documents_required": [],
       "eligibility": [
         "Citizens aged 16+ for gearless 50cc or 18+ for motorcars & heavy transport."
       ],
@@ -2824,11 +2606,7 @@
           "sort_order": 5
         }
       ],
-      "documents_json": [
-        "Age Proof",
-        "Address Proof",
-        "Medical Certificate (Form 1A)"
-      ],
+      "documents_json": [],
       "display_order": 38
     },
     {
@@ -2840,10 +2618,7 @@
       "description": "Renewal application for expired Driving Licence with RTO desk facilitation.",
       "fee": "450.00",
       "processing_time": "7-10 Working Days",
-      "documents_required": [
-        "Original DL Copy",
-        "Address Proof"
-      ],
+      "documents_required": [],
       "eligibility": [
         "Driving licence holders nearing expiry or within 1 year post expiry."
       ],
@@ -2882,10 +2657,7 @@
           "sort_order": 3
         }
       ],
-      "documents_json": [
-        "Original DL Copy",
-        "Address Proof"
-      ],
+      "documents_json": [],
       "display_order": 39
     },
     {
@@ -2897,11 +2669,7 @@
       "description": "Book RTO driving test appointment for permanent driving licence.",
       "fee": "300.00",
       "processing_time": "7-15 Working Days",
-      "documents_required": [
-        "Valid LLR Copy",
-        "Aadhaar Card Copy",
-        "Medical Fitness Form 1A"
-      ],
+      "documents_required": [],
       "eligibility": [
         "Holders of valid LLR completed 30 days after issue."
       ],
@@ -2949,11 +2717,7 @@
           "sort_order": 4
         }
       ],
-      "documents_json": [
-        "Valid LLR Copy",
-        "Aadhaar Card Copy",
-        "Medical Fitness Form 1A"
-      ],
+      "documents_json": [],
       "display_order": 40
     },
     {
@@ -2965,12 +2729,7 @@
       "description": "Transfer vehicle registration certificate ownership to buyer upon sale.",
       "fee": "450.00",
       "processing_time": "15-20 Working Days",
-      "documents_required": [
-        "Original RC Smart Card",
-        "Form 29 & Form 30",
-        "Valid Insurance & PUC Certificate",
-        "Buyer Aadhaar Card Copy"
-      ],
+      "documents_required": [],
       "eligibility": [
         "Buyers or sellers of secondhand motorized vehicles."
       ],
@@ -3018,12 +2777,7 @@
           "sort_order": 4
         }
       ],
-      "documents_json": [
-        "Original RC Smart Card",
-        "Form 29 & Form 30",
-        "Valid Insurance & PUC Certificate",
-        "Buyer Aadhaar Card Copy"
-      ],
+      "documents_json": [],
       "display_order": 41
     },
     {
@@ -3035,10 +2789,7 @@
       "description": "Official Ministry of MSME registration certificate for Micro, Small, and Medium Enterprises.",
       "fee": "100.00",
       "processing_time": "1-2 Working Days",
-      "documents_required": [
-        "Aadhaar & PAN Copy",
-        "Bank Passbook / Cancelled Cheque"
-      ],
+      "documents_required": [],
       "eligibility": [
         "Sole proprietors, partnerships, LLPs, and companies starting business activities."
       ],
@@ -3113,10 +2864,7 @@
           "sort_order": 7
         }
       ],
-      "documents_json": [
-        "Aadhaar & PAN Copy",
-        "Bank Passbook / Cancelled Cheque"
-      ],
+      "documents_json": [],
       "display_order": 42
     },
     {
@@ -3128,11 +2876,7 @@
       "description": "Apply for 15-digit Goods and Services Tax Identification Number (GSTIN).",
       "fee": "500.00",
       "processing_time": "3-7 Working Days",
-      "documents_required": [
-        "PAN & Aadhaar of Proprietor/Partners",
-        "Business Address Proof",
-        "Bank Account Statement"
-      ],
+      "documents_required": [],
       "eligibility": [
         "Businesses with turnover exceeding threshold or engaging in inter-state e-commerce."
       ],
@@ -3189,11 +2933,7 @@
           "sort_order": 5
         }
       ],
-      "documents_json": [
-        "PAN & Aadhaar of Proprietor/Partners",
-        "Business Address Proof",
-        "Bank Account Statement"
-      ],
+      "documents_json": [],
       "display_order": 43
     },
     {
@@ -3205,11 +2945,7 @@
       "description": "Food Safety and Standards Authority of India (FSSAI) License application.",
       "fee": "300.00",
       "processing_time": "5-10 Working Days",
-      "documents_required": [
-        "Identity Proof",
-        "Business Premises Address Proof",
-        "FSSAI Self Declaration Form"
-      ],
+      "documents_required": [],
       "eligibility": [
         "All food business operators (restaurants, bakeries, caterers, food manufacturers)."
       ],
@@ -3311,11 +3047,7 @@
           "sort_order": 10
         }
       ],
-      "documents_json": [
-        "Identity Proof",
-        "Business Premises Address Proof",
-        "FSSAI Self Declaration Form"
-      ],
+      "documents_json": [],
       "display_order": 44
     },
     {
@@ -3327,11 +3059,7 @@
       "description": "Local corporation/municipality commercial shop and trade license.",
       "fee": "500.00",
       "processing_time": "10-15 Working Days",
-      "documents_required": [
-        "Rental Agreement / Property Tax Receipt",
-        "Identity & Address Proof of Owner",
-        "NOC / Fire Safety Certificate"
-      ],
+      "documents_required": [],
       "eligibility": [
         "Business owners operating commercial establishments."
       ],
@@ -3379,11 +3107,7 @@
           "sort_order": 4
         }
       ],
-      "documents_json": [
-        "Rental Agreement / Property Tax Receipt",
-        "Identity & Address Proof of Owner",
-        "NOC / Fire Safety Certificate"
-      ],
+      "documents_json": [],
       "display_order": 45
     },
     {
@@ -3395,11 +3119,7 @@
       "description": "Transfer electricity service connection ownership post property purchase or legal inheritance.",
       "fee": "200.00",
       "processing_time": "7-10 Working Days",
-      "documents_required": [
-        "Registered Sale Deed Copy",
-        "Latest EB Bill Paid Receipt",
-        "Aadhaar Card Copy"
-      ],
+      "documents_required": [],
       "eligibility": [
         "Property owners with registered deed in their name."
       ],
@@ -3447,11 +3167,7 @@
           "sort_order": 4
         }
       ],
-      "documents_json": [
-        "Registered Sale Deed Copy",
-        "Latest EB Bill Paid Receipt",
-        "Aadhaar Card Copy"
-      ],
+      "documents_json": [],
       "display_order": 46
     },
     {
@@ -3463,10 +3179,7 @@
       "description": "Application for new TANGEDCO power supply connection.",
       "fee": "350.00",
       "processing_time": "10-15 Working Days",
-      "documents_required": [
-        "Property Tax Receipt / Ownership Proof",
-        "Aadhaar Card Copy"
-      ],
+      "documents_required": [],
       "eligibility": [
         "New building owners."
       ],
@@ -3550,10 +3263,7 @@
           "sort_order": 8
         }
       ],
-      "documents_json": [
-        "Property Tax Receipt / Ownership Proof",
-        "Aadhaar Card Copy"
-      ],
+      "documents_json": [],
       "display_order": 47
     },
     {
@@ -3565,10 +3275,7 @@
       "description": "Apply for new NETC FASTag toll sticker delivery for your vehicle.",
       "fee": "200.00",
       "processing_time": "2-4 Working Days",
-      "documents_required": [
-        "Vehicle RC Copy",
-        "Owner Identity Proof"
-      ],
+      "documents_required": [],
       "eligibility": [
         "Vehicle owners."
       ],
@@ -3643,10 +3350,7 @@
           "sort_order": 7
         }
       ],
-      "documents_json": [
-        "Vehicle RC Copy",
-        "Owner Identity Proof"
-      ],
+      "documents_json": [],
       "display_order": 48
     },
     {
@@ -3658,11 +3362,7 @@
       "description": "Apply for fresh domestic, commercial, or industrial TNEB electricity connection.",
       "fee": "500.00",
       "processing_time": "15-30 Working Days",
-      "documents_required": [
-        "Property Ownership / Patta Copy",
-        "Building Plan Approval / Tax Receipt",
-        "Aadhaar Card Copy"
-      ],
+      "documents_required": [],
       "eligibility": [
         "Property owners or authorized tenants."
       ],
@@ -3701,11 +3401,7 @@
           "sort_order": 3
         }
       ],
-      "documents_json": [
-        "Property Ownership / Patta Copy",
-        "Building Plan Approval / Tax Receipt",
-        "Aadhaar Card Copy"
-      ],
+      "documents_json": [],
       "display_order": 49
     },
     {
@@ -3717,11 +3413,7 @@
       "description": "New property tax assessment, door number allotment, and owner name transfer.",
       "fee": "250.00",
       "processing_time": "15-30 Working Days",
-      "documents_required": [
-        "Registered Sale Deed / Patta Copy",
-        "Approved Building Plan",
-        "Aadhaar Card Copy"
-      ],
+      "documents_required": [],
       "eligibility": [
         "Property owners in Municipal Corporations / Town Panchayats."
       ],
@@ -3760,11 +3452,7 @@
           "sort_order": 3
         }
       ],
-      "documents_json": [
-        "Registered Sale Deed / Patta Copy",
-        "Approved Building Plan",
-        "Aadhaar Card Copy"
-      ],
+      "documents_json": [],
       "display_order": 50
     },
     {
@@ -3776,12 +3464,7 @@
       "description": "Add newborn baby, spouse after marriage, or remove deceased/separated member.",
       "fee": "50.00",
       "processing_time": "7-12 Working Days",
-      "documents_required": [
-        "Smart Ration Card Copy",
-        "Birth Certificate / Marriage Certificate",
-        "Deletion Certificate / Death Certificate",
-        "Aadhaar Card of Member"
-      ],
+      "documents_required": [],
       "eligibility": [
         "Smart Ration Card holders."
       ],
@@ -3829,12 +3512,7 @@
           "sort_order": 4
         }
       ],
-      "documents_json": [
-        "Smart Ration Card Copy",
-        "Birth Certificate / Marriage Certificate",
-        "Deletion Certificate / Death Certificate",
-        "Aadhaar Card of Member"
-      ],
+      "documents_json": [],
       "display_order": 1
     },
     {
@@ -3846,11 +3524,7 @@
       "description": "Apply for family Smart Ration Card under Public Distribution System (PDS).",
       "fee": "50.00",
       "processing_time": "15-30 Working Days",
-      "documents_required": [
-        "Aadhaar Cards of All Members",
-        "Marriage Certificate / Deletion Certificate",
-        "Gas Connection Slip / Rental Agreement"
-      ],
+      "documents_required": [],
       "eligibility": [
         "Newly married couples or families residing without an active family ration card."
       ],
@@ -3907,11 +3581,7 @@
           "sort_order": 5
         }
       ],
-      "documents_json": [
-        "Aadhaar Cards of All Members",
-        "Marriage Certificate / Deletion Certificate",
-        "Gas Connection Slip / Rental Agreement"
-      ],
+      "documents_json": [],
       "display_order": 2
     },
     {
@@ -3923,11 +3593,7 @@
       "description": "Change head of family due to death of head or family consensus.",
       "fee": "50.00",
       "processing_time": "7-10 Working Days",
-      "documents_required": [
-        "Smart Ration Card Copy",
-        "Death Certificate of Previous Head",
-        "New Head Aadhaar & Photo"
-      ],
+      "documents_required": [],
       "eligibility": [
         "Family members listed on Smart Ration Card."
       ],
@@ -3975,11 +3641,7 @@
           "sort_order": 4
         }
       ],
-      "documents_json": [
-        "Smart Ration Card Copy",
-        "Death Certificate of Previous Head",
-        "New Head Aadhaar & Photo"
-      ],
+      "documents_json": [],
       "display_order": 3
     },
     {
@@ -3991,11 +3653,7 @@
       "description": "Transfer ration shop and address within or across districts in Tamil Nadu.",
       "fee": "50.00",
       "processing_time": "7-10 Working Days",
-      "documents_required": [
-        "Smart Ration Card Copy",
-        "New Address Proof",
-        "Aadhaar Card Copy"
-      ],
+      "documents_required": [],
       "eligibility": [
         "Ration cardholders relocating residential address."
       ],
@@ -4034,11 +3692,7 @@
           "sort_order": 3
         }
       ],
-      "documents_json": [
-        "Smart Ration Card Copy",
-        "New Address Proof",
-        "Aadhaar Card Copy"
-      ],
+      "documents_json": [],
       "display_order": 4
     },
     {
@@ -4050,10 +3704,7 @@
       "description": "Verify property ownership history and encumbrances registered at Sub-Registrar Office (SRO).",
       "fee": "100.00",
       "processing_time": "1-2 Working Days",
-      "documents_required": [
-        "Document Number or Survey Details",
-        "Registration Year Range"
-      ],
+      "documents_required": [],
       "eligibility": [
         "Public service search available for all properties"
       ],
@@ -4064,7 +3715,7 @@
       "image_url": null,
       "is_active": 1,
       "fields_json": null,
-      "documents_json": null,
+      "documents_json": [],
       "display_order": 1
     },
     {
@@ -4076,10 +3727,7 @@
       "description": "Extract official e-Patta and Chitta revenue record extracts online.",
       "fee": "30.00",
       "processing_time": "Instant / 24 Hours",
-      "documents_required": [
-        "District, Taluk & Village Details",
-        "Survey Number / Sub-division Number / Patta Number"
-      ],
+      "documents_required": [],
       "eligibility": [
         "Land owner or authorized property search applicant"
       ],
@@ -4090,7 +3738,7 @@
       "image_url": null,
       "is_active": 1,
       "fields_json": null,
-      "documents_json": null,
+      "documents_json": [],
       "display_order": 6
     }
   ],
@@ -9388,1660 +9036,7 @@
       "sort_order": 6
     }
   ],
-  "service_documents": [
-    {
-      "id": 1,
-      "service_id": 7,
-      "document_name": "Identity Proof",
-      "description": "Upload clear copy of Identity Proof",
-      "is_required": 1
-    },
-    {
-      "id": 2,
-      "service_id": 7,
-      "document_name": "Address Proof",
-      "description": "Upload clear copy of Address Proof",
-      "is_required": 1
-    },
-    {
-      "id": 3,
-      "service_id": 7,
-      "document_name": "Date of Birth Proof",
-      "description": "Upload clear copy of Date of Birth Proof",
-      "is_required": 1
-    },
-    {
-      "id": 4,
-      "service_id": 7,
-      "document_name": "Passport Photograph",
-      "description": "Upload clear copy of Passport Photograph",
-      "is_required": 1
-    },
-    {
-      "id": 5,
-      "service_id": 8,
-      "document_name": "Identity Proof",
-      "description": "Upload clear copy of Identity Proof",
-      "is_required": 1
-    },
-    {
-      "id": 6,
-      "service_id": 8,
-      "document_name": "Address Proof",
-      "description": "Upload clear copy of Address Proof",
-      "is_required": 1
-    },
-    {
-      "id": 7,
-      "service_id": 8,
-      "document_name": "Date of Birth Proof",
-      "description": "Upload clear copy of Date of Birth Proof",
-      "is_required": 1
-    },
-    {
-      "id": 8,
-      "service_id": 8,
-      "document_name": "Passport Photograph",
-      "description": "Upload clear copy of Passport Photograph",
-      "is_required": 1
-    },
-    {
-      "id": 9,
-      "service_id": 1,
-      "document_name": "Aadhaar Card Copy",
-      "description": "Upload clear copy of Aadhaar Card Copy",
-      "is_required": 1
-    },
-    {
-      "id": 10,
-      "service_id": 1,
-      "document_name": "Valid Address Proof",
-      "description": "Upload clear copy of Valid Address Proof",
-      "is_required": 1
-    },
-    {
-      "id": 11,
-      "service_id": 9,
-      "document_name": "Aadhaar Card Copy",
-      "description": "Upload clear copy of Aadhaar Card Copy",
-      "is_required": 1
-    },
-    {
-      "id": 12,
-      "service_id": 9,
-      "document_name": "Name Change / Supporting Name Proof",
-      "description": "Upload clear copy of Name Change / Supporting Name Proof",
-      "is_required": 1
-    },
-    {
-      "id": 13,
-      "service_id": 10,
-      "document_name": "Aadhaar Card Copy",
-      "description": "Upload clear copy of Aadhaar Card Copy",
-      "is_required": 1
-    },
-    {
-      "id": 14,
-      "service_id": 11,
-      "document_name": "Aadhaar Card Copy",
-      "description": "Upload clear copy of Aadhaar Card Copy",
-      "is_required": 1
-    },
-    {
-      "id": 15,
-      "service_id": 12,
-      "document_name": "Aadhaar Card Copy",
-      "description": "Upload clear copy of Aadhaar Card Copy",
-      "is_required": 1
-    },
-    {
-      "id": 16,
-      "service_id": 12,
-      "document_name": "Date of Birth Proof",
-      "description": "Upload clear copy of Date of Birth Proof",
-      "is_required": 1
-    },
-    {
-      "id": 17,
-      "service_id": 13,
-      "document_name": "Aadhaar Card Copy",
-      "description": "Upload clear copy of Aadhaar Card Copy",
-      "is_required": 1
-    },
-    {
-      "id": 18,
-      "service_id": 14,
-      "document_name": "Aadhaar Card Copy",
-      "description": "Upload clear copy of Aadhaar Card Copy",
-      "is_required": 1
-    },
-    {
-      "id": 19,
-      "service_id": 14,
-      "document_name": "Required Passport Photo",
-      "description": "Upload clear copy of Required Passport Photo",
-      "is_required": 1
-    },
-    {
-      "id": 20,
-      "service_id": 15,
-      "document_name": "Aadhaar Card Copy",
-      "description": "Upload clear copy of Aadhaar Card Copy",
-      "is_required": 1
-    },
-    {
-      "id": 21,
-      "service_id": 16,
-      "document_name": "Identity Proof",
-      "description": "Upload clear copy of Identity Proof",
-      "is_required": 1
-    },
-    {
-      "id": 22,
-      "service_id": 16,
-      "document_name": "Address Proof",
-      "description": "Upload clear copy of Address Proof",
-      "is_required": 1
-    },
-    {
-      "id": 23,
-      "service_id": 19,
-      "document_name": "Aadhaar Card Copy",
-      "description": "Upload clear copy of Aadhaar Card Copy",
-      "is_required": 1
-    },
-    {
-      "id": 24,
-      "service_id": 19,
-      "document_name": "Supporting Correction Proof",
-      "description": "Upload clear copy of Supporting Correction Proof",
-      "is_required": 1
-    },
-    {
-      "id": 25,
-      "service_id": 20,
-      "document_name": "Aadhaar Card Copy",
-      "description": "Upload clear copy of Aadhaar Card Copy",
-      "is_required": 1
-    },
-    {
-      "id": 26,
-      "service_id": 21,
-      "document_name": "Aadhaar Card Copy",
-      "description": "Upload clear copy of Aadhaar Card Copy",
-      "is_required": 1
-    },
-    {
-      "id": 27,
-      "service_id": 22,
-      "document_name": "Identity Proof",
-      "description": "Upload clear copy of Identity Proof",
-      "is_required": 1
-    },
-    {
-      "id": 28,
-      "service_id": 22,
-      "document_name": "Address Proof",
-      "description": "Upload clear copy of Address Proof",
-      "is_required": 1
-    },
-    {
-      "id": 29,
-      "service_id": 22,
-      "document_name": "DOB Proof",
-      "description": "Upload clear copy of DOB Proof",
-      "is_required": 1
-    },
-    {
-      "id": 30,
-      "service_id": 2,
-      "document_name": "Identity Proof",
-      "description": "Upload clear copy of Identity Proof",
-      "is_required": 1
-    },
-    {
-      "id": 31,
-      "service_id": 2,
-      "document_name": "Address Proof",
-      "description": "Upload clear copy of Address Proof",
-      "is_required": 1
-    },
-    {
-      "id": 32,
-      "service_id": 2,
-      "document_name": "DOB Proof",
-      "description": "Upload clear copy of DOB Proof",
-      "is_required": 1
-    },
-    {
-      "id": 33,
-      "service_id": 23,
-      "document_name": "Existing PAN Card Copy",
-      "description": "Upload clear copy of Existing PAN Card Copy",
-      "is_required": 1
-    },
-    {
-      "id": 34,
-      "service_id": 23,
-      "document_name": "Supporting Correction Proof",
-      "description": "Upload clear copy of Supporting Correction Proof",
-      "is_required": 1
-    },
-    {
-      "id": 35,
-      "service_id": 24,
-      "document_name": "Existing PAN Card Copy",
-      "description": "Upload clear copy of Existing PAN Card Copy",
-      "is_required": 1
-    },
-    {
-      "id": 36,
-      "service_id": 24,
-      "document_name": "Supporting Correction Proof",
-      "description": "Upload clear copy of Supporting Correction Proof",
-      "is_required": 1
-    },
-    {
-      "id": 37,
-      "service_id": 25,
-      "document_name": "PAN Copy",
-      "description": "Upload clear copy of PAN Copy",
-      "is_required": 1
-    },
-    {
-      "id": 38,
-      "service_id": 25,
-      "document_name": "Aadhaar Copy",
-      "description": "Upload clear copy of Aadhaar Copy",
-      "is_required": 1
-    },
-    {
-      "id": 39,
-      "service_id": 27,
-      "document_name": "Age Proof",
-      "description": "Upload clear copy of Age Proof",
-      "is_required": 1
-    },
-    {
-      "id": 40,
-      "service_id": 27,
-      "document_name": "Residence Proof",
-      "description": "Upload clear copy of Residence Proof",
-      "is_required": 1
-    },
-    {
-      "id": 41,
-      "service_id": 27,
-      "document_name": "Passport Photograph",
-      "description": "Upload clear copy of Passport Photograph",
-      "is_required": 1
-    },
-    {
-      "id": 42,
-      "service_id": 28,
-      "document_name": "Existing Voter ID Card",
-      "description": "Upload clear copy of Existing Voter ID Card",
-      "is_required": 1
-    },
-    {
-      "id": 43,
-      "service_id": 28,
-      "document_name": "Proof for Correction/Shifting",
-      "description": "Upload clear copy of Proof for Correction/Shifting",
-      "is_required": 1
-    },
-    {
-      "id": 44,
-      "service_id": 3,
-      "document_name": "Applicant Photograph",
-      "description": "Upload clear copy of Applicant Photograph",
-      "is_required": 1
-    },
-    {
-      "id": 45,
-      "service_id": 3,
-      "document_name": "Address Proof",
-      "description": "Upload clear copy of Address Proof",
-      "is_required": 1
-    },
-    {
-      "id": 46,
-      "service_id": 3,
-      "document_name": "Income Proof",
-      "description": "Upload clear copy of Income Proof",
-      "is_required": 1
-    },
-    {
-      "id": 47,
-      "service_id": 4,
-      "document_name": "Applicant Photograph",
-      "description": "Upload clear copy of Applicant Photograph",
-      "is_required": 1
-    },
-    {
-      "id": 48,
-      "service_id": 4,
-      "document_name": "Address Proof",
-      "description": "Upload clear copy of Address Proof",
-      "is_required": 1
-    },
-    {
-      "id": 49,
-      "service_id": 4,
-      "document_name": "Parent Community Certificate",
-      "description": "Upload clear copy of Parent Community Certificate",
-      "is_required": 1
-    },
-    {
-      "id": 50,
-      "service_id": 29,
-      "document_name": "Photo & Aadhaar Card",
-      "description": "Upload clear copy of Photo & Aadhaar Card",
-      "is_required": 1
-    },
-    {
-      "id": 51,
-      "service_id": 29,
-      "document_name": "Proof of Continuous Residence",
-      "description": "Upload clear copy of Proof of Continuous Residence",
-      "is_required": 1
-    },
-    {
-      "id": 52,
-      "service_id": 30,
-      "document_name": "Family Smart Ration Card",
-      "description": "Upload clear copy of Family Smart Ration Card",
-      "is_required": 1
-    },
-    {
-      "id": 53,
-      "service_id": 30,
-      "document_name": "Educational Certificates of Family",
-      "description": "Upload clear copy of Educational Certificates of Family",
-      "is_required": 1
-    },
-    {
-      "id": 54,
-      "service_id": 30,
-      "document_name": "Joint Self Declaration",
-      "description": "Upload clear copy of Joint Self Declaration",
-      "is_required": 1
-    },
-    {
-      "id": 55,
-      "service_id": 31,
-      "document_name": "Death Certificate",
-      "description": "Upload clear copy of Death Certificate",
-      "is_required": 1
-    },
-    {
-      "id": 56,
-      "service_id": 31,
-      "document_name": "Aadhaar / ID of All Heirs",
-      "description": "Upload clear copy of Aadhaar / ID of All Heirs",
-      "is_required": 1
-    },
-    {
-      "id": 57,
-      "service_id": 31,
-      "document_name": "Ration Card of Deceased",
-      "description": "Upload clear copy of Ration Card of Deceased",
-      "is_required": 1
-    },
-    {
-      "id": 58,
-      "service_id": 32,
-      "document_name": "Registered Sale Deed",
-      "description": "Upload clear copy of Registered Sale Deed",
-      "is_required": 1
-    },
-    {
-      "id": 59,
-      "service_id": 32,
-      "document_name": "Parent Patta Copy",
-      "description": "Upload clear copy of Parent Patta Copy",
-      "is_required": 1
-    },
-    {
-      "id": 60,
-      "service_id": 32,
-      "document_name": "Property Tax Receipt",
-      "description": "Upload clear copy of Property Tax Receipt",
-      "is_required": 1
-    },
-    {
-      "id": 61,
-      "service_id": 32,
-      "document_name": "Aadhaar Card",
-      "description": "Upload clear copy of Aadhaar Card",
-      "is_required": 1
-    },
-    {
-      "id": 62,
-      "service_id": 33,
-      "document_name": "District, Taluk, Village Name",
-      "description": "Upload clear copy of District, Taluk, Village Name",
-      "is_required": 1
-    },
-    {
-      "id": 63,
-      "service_id": 33,
-      "document_name": "Survey Number / Sub-division",
-      "description": "Upload clear copy of Survey Number / Sub-division",
-      "is_required": 1
-    },
-    {
-      "id": 64,
-      "service_id": 34,
-      "document_name": "Taluk & Village Details",
-      "description": "Upload clear copy of Taluk & Village Details",
-      "is_required": 1
-    },
-    {
-      "id": 65,
-      "service_id": 34,
-      "document_name": "Survey Number & Sub-division",
-      "description": "Upload clear copy of Survey Number & Sub-division",
-      "is_required": 1
-    },
-    {
-      "id": 66,
-      "service_id": 35,
-      "document_name": "Property Location Details",
-      "description": "Upload clear copy of Property Location Details",
-      "is_required": 1
-    },
-    {
-      "id": 67,
-      "service_id": 35,
-      "document_name": "Survey Number",
-      "description": "Upload clear copy of Survey Number",
-      "is_required": 1
-    },
-    {
-      "id": 68,
-      "service_id": 35,
-      "document_name": "Search Period (Years)",
-      "description": "Upload clear copy of Search Period (Years)",
-      "is_required": 1
-    },
-    {
-      "id": 69,
-      "service_id": 36,
-      "document_name": "Proof of Date of Birth",
-      "description": "Upload clear copy of Proof of Date of Birth",
-      "is_required": 1
-    },
-    {
-      "id": 70,
-      "service_id": 36,
-      "document_name": "Proof of Address",
-      "description": "Upload clear copy of Proof of Address",
-      "is_required": 1
-    },
-    {
-      "id": 71,
-      "service_id": 36,
-      "document_name": "Non-ECR Proof",
-      "description": "Upload clear copy of Non-ECR Proof",
-      "is_required": 1
-    },
-    {
-      "id": 72,
-      "service_id": 37,
-      "document_name": "Old Passport Original & Copy",
-      "description": "Upload clear copy of Old Passport Original & Copy",
-      "is_required": 1
-    },
-    {
-      "id": 73,
-      "service_id": 37,
-      "document_name": "Proof of Present Address",
-      "description": "Upload clear copy of Proof of Present Address",
-      "is_required": 1
-    },
-    {
-      "id": 74,
-      "service_id": 38,
-      "document_name": "Age Proof",
-      "description": "Upload clear copy of Age Proof",
-      "is_required": 1
-    },
-    {
-      "id": 75,
-      "service_id": 38,
-      "document_name": "Address Proof",
-      "description": "Upload clear copy of Address Proof",
-      "is_required": 1
-    },
-    {
-      "id": 76,
-      "service_id": 38,
-      "document_name": "Medical Certificate (Form 1A)",
-      "description": "Upload clear copy of Medical Certificate (Form 1A)",
-      "is_required": 1
-    },
-    {
-      "id": 77,
-      "service_id": 39,
-      "document_name": "Original DL Copy",
-      "description": "Upload clear copy of Original DL Copy",
-      "is_required": 1
-    },
-    {
-      "id": 78,
-      "service_id": 39,
-      "document_name": "Address Proof",
-      "description": "Upload clear copy of Address Proof",
-      "is_required": 1
-    },
-    {
-      "id": 79,
-      "service_id": 40,
-      "document_name": "Aadhaar & PAN Copy",
-      "description": "Upload clear copy of Aadhaar & PAN Copy",
-      "is_required": 1
-    },
-    {
-      "id": 80,
-      "service_id": 40,
-      "document_name": "Bank Passbook / Cancelled Cheque",
-      "description": "Upload clear copy of Bank Passbook / Cancelled Cheque",
-      "is_required": 1
-    },
-    {
-      "id": 81,
-      "service_id": 41,
-      "document_name": "PAN & Aadhaar of Proprietor/Partners",
-      "description": "Upload clear copy of PAN & Aadhaar of Proprietor/Partners",
-      "is_required": 1
-    },
-    {
-      "id": 82,
-      "service_id": 41,
-      "document_name": "Business Address Proof",
-      "description": "Upload clear copy of Business Address Proof",
-      "is_required": 1
-    },
-    {
-      "id": 83,
-      "service_id": 41,
-      "document_name": "Bank Account Statement",
-      "description": "Upload clear copy of Bank Account Statement",
-      "is_required": 1
-    },
-    {
-      "id": 84,
-      "service_id": 42,
-      "document_name": "Registered Sale Deed Copy",
-      "description": "Upload clear copy of Registered Sale Deed Copy",
-      "is_required": 1
-    },
-    {
-      "id": 85,
-      "service_id": 42,
-      "document_name": "Latest EB Bill Paid Receipt",
-      "description": "Upload clear copy of Latest EB Bill Paid Receipt",
-      "is_required": 1
-    },
-    {
-      "id": 86,
-      "service_id": 42,
-      "document_name": "Aadhaar Card Copy",
-      "description": "Upload clear copy of Aadhaar Card Copy",
-      "is_required": 1
-    },
-    {
-      "id": 87,
-      "service_id": 43,
-      "document_name": "Property Tax Receipt / Ownership Proof",
-      "description": "Upload clear copy of Property Tax Receipt / Ownership Proof",
-      "is_required": 1
-    },
-    {
-      "id": 88,
-      "service_id": 43,
-      "document_name": "Aadhaar Card Copy",
-      "description": "Upload clear copy of Aadhaar Card Copy",
-      "is_required": 1
-    },
-    {
-      "id": 89,
-      "service_id": 44,
-      "document_name": "Aadhaar Cards of All Members",
-      "description": "Upload clear copy of Aadhaar Cards of All Members",
-      "is_required": 1
-    },
-    {
-      "id": 90,
-      "service_id": 44,
-      "document_name": "Marriage Certificate / Deletion Certificate",
-      "description": "Upload clear copy of Marriage Certificate / Deletion Certificate",
-      "is_required": 1
-    },
-    {
-      "id": 91,
-      "service_id": 44,
-      "document_name": "Gas Connection Slip / Rental Agreement",
-      "description": "Upload clear copy of Gas Connection Slip / Rental Agreement",
-      "is_required": 1
-    },
-    {
-      "id": 92,
-      "service_id": 45,
-      "document_name": "New Member Aadhaar / Birth Certificate",
-      "description": "Upload clear copy of New Member Aadhaar / Birth Certificate",
-      "is_required": 1
-    },
-    {
-      "id": 93,
-      "service_id": 45,
-      "document_name": "Smart Ration Card Copy",
-      "description": "Upload clear copy of Smart Ration Card Copy",
-      "is_required": 1
-    },
-    {
-      "id": 94,
-      "service_id": 46,
-      "document_name": "Aadhaar Card Copy",
-      "description": "Upload clear copy of Aadhaar Card Copy",
-      "is_required": 1
-    },
-    {
-      "id": 95,
-      "service_id": 46,
-      "document_name": "Supporting Correction Proof",
-      "description": "Upload clear copy of Supporting Correction Proof",
-      "is_required": 1
-    },
-    {
-      "id": 96,
-      "service_id": 47,
-      "document_name": "Identity Proof",
-      "description": "Upload clear copy of Identity Proof",
-      "is_required": 1
-    },
-    {
-      "id": 97,
-      "service_id": 47,
-      "document_name": "Address Proof",
-      "description": "Upload clear copy of Address Proof",
-      "is_required": 1
-    },
-    {
-      "id": 98,
-      "service_id": 47,
-      "document_name": "DOB Proof",
-      "description": "Upload clear copy of DOB Proof",
-      "is_required": 1
-    },
-    {
-      "id": 99,
-      "service_id": 47,
-      "document_name": "Photograph",
-      "description": "Upload clear copy of Photograph",
-      "is_required": 1
-    },
-    {
-      "id": 100,
-      "service_id": 47,
-      "document_name": "Signature",
-      "description": "Upload clear copy of Signature",
-      "is_required": 1
-    },
-    {
-      "id": 101,
-      "service_id": 50,
-      "document_name": "Identity Proof",
-      "description": "Upload clear copy of Identity Proof",
-      "is_required": 1
-    },
-    {
-      "id": 102,
-      "service_id": 50,
-      "document_name": "Address Proof",
-      "description": "Upload clear copy of Address Proof",
-      "is_required": 1
-    },
-    {
-      "id": 103,
-      "service_id": 50,
-      "document_name": "Residence Proof",
-      "description": "Upload clear copy of Residence Proof",
-      "is_required": 1
-    },
-    {
-      "id": 104,
-      "service_id": 51,
-      "document_name": "Identity Proof",
-      "description": "Upload clear copy of Identity Proof",
-      "is_required": 1
-    },
-    {
-      "id": 105,
-      "service_id": 51,
-      "document_name": "Address Proof",
-      "description": "Upload clear copy of Address Proof",
-      "is_required": 1
-    },
-    {
-      "id": 106,
-      "service_id": 51,
-      "document_name": "Nativity Proof",
-      "description": "Upload clear copy of Nativity Proof",
-      "is_required": 1
-    },
-    {
-      "id": 107,
-      "service_id": 52,
-      "document_name": "Sale Deed / Ownership Proof",
-      "description": "Upload clear copy of Sale Deed / Ownership Proof",
-      "is_required": 1
-    },
-    {
-      "id": 108,
-      "service_id": 52,
-      "document_name": "Identity Proof",
-      "description": "Upload clear copy of Identity Proof",
-      "is_required": 1
-    },
-    {
-      "id": 109,
-      "service_id": 52,
-      "document_name": "Existing Patta Copy",
-      "description": "Upload clear copy of Existing Patta Copy",
-      "is_required": 1
-    },
-    {
-      "id": 110,
-      "service_id": 53,
-      "document_name": "Ownership Proof",
-      "description": "Upload clear copy of Ownership Proof",
-      "is_required": 1
-    },
-    {
-      "id": 111,
-      "service_id": 53,
-      "document_name": "Existing Patta Copy",
-      "description": "Upload clear copy of Existing Patta Copy",
-      "is_required": 1
-    },
-    {
-      "id": 112,
-      "service_id": 53,
-      "document_name": "Field Survey Map / Partition Deed",
-      "description": "Upload clear copy of Field Survey Map / Partition Deed",
-      "is_required": 1
-    },
-    {
-      "id": 113,
-      "service_id": 54,
-      "document_name": "District, Taluk, Village Details",
-      "description": "Upload clear copy of District, Taluk, Village Details",
-      "is_required": 1
-    },
-    {
-      "id": 114,
-      "service_id": 54,
-      "document_name": "Survey Number / Sub-division / Patta Number",
-      "description": "Upload clear copy of Survey Number / Sub-division / Patta Number",
-      "is_required": 1
-    },
-    {
-      "id": 115,
-      "service_id": 55,
-      "document_name": "Identity Proof",
-      "description": "Upload clear copy of Identity Proof",
-      "is_required": 1
-    },
-    {
-      "id": 116,
-      "service_id": 55,
-      "document_name": "Address Proof",
-      "description": "Upload clear copy of Address Proof",
-      "is_required": 1
-    },
-    {
-      "id": 117,
-      "service_id": 55,
-      "document_name": "Date of Birth Proof",
-      "description": "Upload clear copy of Date of Birth Proof",
-      "is_required": 1
-    },
-    {
-      "id": 118,
-      "service_id": 55,
-      "document_name": "Photograph",
-      "description": "Upload clear copy of Photograph",
-      "is_required": 1
-    },
-    {
-      "id": 119,
-      "service_id": 56,
-      "document_name": "Proof of Date of Birth",
-      "description": "Upload clear copy of Proof of Date of Birth",
-      "is_required": 1
-    },
-    {
-      "id": 120,
-      "service_id": 56,
-      "document_name": "Proof of Present Address",
-      "description": "Upload clear copy of Proof of Present Address",
-      "is_required": 1
-    },
-    {
-      "id": 121,
-      "service_id": 56,
-      "document_name": "Non-ECR Educational Proof",
-      "description": "Upload clear copy of Non-ECR Educational Proof",
-      "is_required": 1
-    },
-    {
-      "id": 122,
-      "service_id": 57,
-      "document_name": "Aadhaar & PAN Copy",
-      "description": "Upload clear copy of Aadhaar & PAN Copy",
-      "is_required": 1
-    },
-    {
-      "id": 123,
-      "service_id": 57,
-      "document_name": "Bank Passbook / Cheque",
-      "description": "Upload clear copy of Bank Passbook / Cheque",
-      "is_required": 1
-    },
-    {
-      "id": 124,
-      "service_id": 58,
-      "document_name": "Identity Proof",
-      "description": "Upload clear copy of Identity Proof",
-      "is_required": 1
-    },
-    {
-      "id": 125,
-      "service_id": 58,
-      "document_name": "Business Premises Address Proof",
-      "description": "Upload clear copy of Business Premises Address Proof",
-      "is_required": 1
-    },
-    {
-      "id": 126,
-      "service_id": 58,
-      "document_name": "FSSAI Self Declaration Form",
-      "description": "Upload clear copy of FSSAI Self Declaration Form",
-      "is_required": 1
-    },
-    {
-      "id": 127,
-      "service_id": 59,
-      "document_name": "Property Tax Receipt / Ownership Proof",
-      "description": "Upload clear copy of Property Tax Receipt / Ownership Proof",
-      "is_required": 1
-    },
-    {
-      "id": 128,
-      "service_id": 59,
-      "document_name": "Aadhaar Card Copy",
-      "description": "Upload clear copy of Aadhaar Card Copy",
-      "is_required": 1
-    },
-    {
-      "id": 129,
-      "service_id": 60,
-      "document_name": "Vehicle RC Copy",
-      "description": "Upload clear copy of Vehicle RC Copy",
-      "is_required": 1
-    },
-    {
-      "id": 130,
-      "service_id": 60,
-      "document_name": "Owner Identity Proof",
-      "description": "Upload clear copy of Owner Identity Proof",
-      "is_required": 1
-    },
-    {
-      "id": 131,
-      "service_id": 61,
-      "document_name": "Age Proof",
-      "description": "Upload clear copy of Age Proof",
-      "is_required": 1
-    },
-    {
-      "id": 132,
-      "service_id": 61,
-      "document_name": "Residence Proof",
-      "description": "Upload clear copy of Residence Proof",
-      "is_required": 1
-    },
-    {
-      "id": 133,
-      "service_id": 61,
-      "document_name": "Passport Photograph",
-      "description": "Upload clear copy of Passport Photograph",
-      "is_required": 1
-    },
-    {
-      "id": 134,
-      "service_id": 62,
-      "document_name": "Aadhaar Card Copy",
-      "description": "Upload clear copy of Aadhaar Card Copy",
-      "is_required": 1
-    },
-    {
-      "id": 135,
-      "service_id": 62,
-      "document_name": "Passport Photograph",
-      "description": "Upload clear copy of Passport Photograph",
-      "is_required": 1
-    },
-    {
-      "id": 136,
-      "service_id": 63,
-      "document_name": "Aadhaar Card Copy",
-      "description": "Upload clear copy of Aadhaar Card Copy",
-      "is_required": 1
-    },
-    {
-      "id": 137,
-      "service_id": 64,
-      "document_name": "Identity Proof",
-      "description": "Upload clear copy of Identity Proof",
-      "is_required": 1
-    },
-    {
-      "id": 138,
-      "service_id": 64,
-      "document_name": "Address Proof",
-      "description": "Upload clear copy of Address Proof",
-      "is_required": 1
-    },
-    {
-      "id": 139,
-      "service_id": 64,
-      "document_name": "Date of Birth Proof",
-      "description": "Upload clear copy of Date of Birth Proof",
-      "is_required": 1
-    },
-    {
-      "id": 140,
-      "service_id": 65,
-      "document_name": "Existing PAN Card Copy",
-      "description": "Upload clear copy of Existing PAN Card Copy",
-      "is_required": 1
-    },
-    {
-      "id": 141,
-      "service_id": 65,
-      "document_name": "Proof of Correction Document",
-      "description": "Upload clear copy of Proof of Correction Document",
-      "is_required": 1
-    },
-    {
-      "id": 142,
-      "service_id": 65,
-      "document_name": "Passport Photograph",
-      "description": "Upload clear copy of Passport Photograph",
-      "is_required": 1
-    },
-    {
-      "id": 143,
-      "service_id": 66,
-      "document_name": "Aadhaar Card Copy",
-      "description": "Upload clear copy of Aadhaar Card Copy",
-      "is_required": 1
-    },
-    {
-      "id": 144,
-      "service_id": 66,
-      "document_name": "Copy of Lost PAN / FIR",
-      "description": "Upload clear copy of Copy of Lost PAN / FIR",
-      "is_required": 1
-    },
-    {
-      "id": 145,
-      "service_id": 67,
-      "document_name": "Foreign Passport Copy",
-      "description": "Upload clear copy of Foreign Passport Copy",
-      "is_required": 1
-    },
-    {
-      "id": 146,
-      "service_id": 67,
-      "document_name": "Overseas Bank Statement",
-      "description": "Upload clear copy of Overseas Bank Statement",
-      "is_required": 1
-    },
-    {
-      "id": 147,
-      "service_id": 68,
-      "document_name": "Existing Minor PAN Copy",
-      "description": "Upload clear copy of Existing Minor PAN Copy",
-      "is_required": 1
-    },
-    {
-      "id": 148,
-      "service_id": 68,
-      "document_name": "Aadhaar Card Copy",
-      "description": "Upload clear copy of Aadhaar Card Copy",
-      "is_required": 1
-    },
-    {
-      "id": 149,
-      "service_id": 68,
-      "document_name": "Passport Photograph",
-      "description": "Upload clear copy of Passport Photograph",
-      "is_required": 1
-    },
-    {
-      "id": 150,
-      "service_id": 69,
-      "document_name": "Parent Community Certificate",
-      "description": "Upload clear copy of Parent Community Certificate",
-      "is_required": 1
-    },
-    {
-      "id": 151,
-      "service_id": 69,
-      "document_name": "School TC / Marksheet",
-      "description": "Upload clear copy of School TC / Marksheet",
-      "is_required": 1
-    },
-    {
-      "id": 152,
-      "service_id": 69,
-      "document_name": "Smart Ration Card",
-      "description": "Upload clear copy of Smart Ration Card",
-      "is_required": 1
-    },
-    {
-      "id": 153,
-      "service_id": 69,
-      "document_name": "Aadhaar Card Copy",
-      "description": "Upload clear copy of Aadhaar Card Copy",
-      "is_required": 1
-    },
-    {
-      "id": 154,
-      "service_id": 70,
-      "document_name": "5-Year School Study Proof or Birth Certificate",
-      "description": "Upload clear copy of 5-Year School Study Proof or Birth Certificate",
-      "is_required": 1
-    },
-    {
-      "id": 155,
-      "service_id": 70,
-      "document_name": "Smart Ration Card / Property Tax",
-      "description": "Upload clear copy of Smart Ration Card / Property Tax",
-      "is_required": 1
-    },
-    {
-      "id": 156,
-      "service_id": 70,
-      "document_name": "Aadhaar Card Copy",
-      "description": "Upload clear copy of Aadhaar Card Copy",
-      "is_required": 1
-    },
-    {
-      "id": 157,
-      "service_id": 71,
-      "document_name": "Birth Certificates of Female Children",
-      "description": "Upload clear copy of Birth Certificates of Female Children",
-      "is_required": 1
-    },
-    {
-      "id": 158,
-      "service_id": 71,
-      "document_name": "Sterilization Certificate / Doctor Report",
-      "description": "Upload clear copy of Sterilization Certificate / Doctor Report",
-      "is_required": 1
-    },
-    {
-      "id": 159,
-      "service_id": 71,
-      "document_name": "Parents Aadhaar & Ration Card",
-      "description": "Upload clear copy of Parents Aadhaar & Ration Card",
-      "is_required": 1
-    },
-    {
-      "id": 160,
-      "service_id": 72,
-      "document_name": "Property Sale Deed / Title Deed",
-      "description": "Upload clear copy of Property Sale Deed / Title Deed",
-      "is_required": 1
-    },
-    {
-      "id": 161,
-      "service_id": 72,
-      "document_name": "Encumbrance Certificate (EC)",
-      "description": "Upload clear copy of Encumbrance Certificate (EC)",
-      "is_required": 1
-    },
-    {
-      "id": 162,
-      "service_id": 72,
-      "document_name": "Engineer Valuation Report",
-      "description": "Upload clear copy of Engineer Valuation Report",
-      "is_required": 1
-    },
-    {
-      "id": 163,
-      "service_id": 72,
-      "document_name": "Aadhaar & PAN Card Copy",
-      "description": "Upload clear copy of Aadhaar & PAN Card Copy",
-      "is_required": 1
-    },
-    {
-      "id": 164,
-      "service_id": 73,
-      "document_name": "Notarized Affidavit",
-      "description": "Upload clear copy of Notarized Affidavit",
-      "is_required": 1
-    },
-    {
-      "id": 165,
-      "service_id": 73,
-      "document_name": "Passport / Voter ID Copy",
-      "description": "Upload clear copy of Passport / Voter ID Copy",
-      "is_required": 1
-    },
-    {
-      "id": 166,
-      "service_id": 73,
-      "document_name": "Aadhaar & Ration Card",
-      "description": "Upload clear copy of Aadhaar & Ration Card",
-      "is_required": 1
-    },
-    {
-      "id": 167,
-      "service_id": 74,
-      "document_name": "Sale Deed with Layout Plan",
-      "description": "Upload clear copy of Sale Deed with Layout Plan",
-      "is_required": 1
-    },
-    {
-      "id": 168,
-      "service_id": 74,
-      "document_name": "Original Joint Patta Copy",
-      "description": "Upload clear copy of Original Joint Patta Copy",
-      "is_required": 1
-    },
-    {
-      "id": 169,
-      "service_id": 74,
-      "document_name": "Field Survey Report",
-      "description": "Upload clear copy of Field Survey Report",
-      "is_required": 1
-    },
-    {
-      "id": 170,
-      "service_id": 75,
-      "document_name": "Rental Agreement / Property Tax Receipt",
-      "description": "Upload clear copy of Rental Agreement / Property Tax Receipt",
-      "is_required": 1
-    },
-    {
-      "id": 171,
-      "service_id": 75,
-      "document_name": "Identity & Address Proof of Owner",
-      "description": "Upload clear copy of Identity & Address Proof of Owner",
-      "is_required": 1
-    },
-    {
-      "id": 172,
-      "service_id": 75,
-      "document_name": "NOC / Fire Safety Certificate",
-      "description": "Upload clear copy of NOC / Fire Safety Certificate",
-      "is_required": 1
-    },
-    {
-      "id": 173,
-      "service_id": 76,
-      "document_name": "Valid LLR Copy",
-      "description": "Upload clear copy of Valid LLR Copy",
-      "is_required": 1
-    },
-    {
-      "id": 174,
-      "service_id": 76,
-      "document_name": "Aadhaar Card Copy",
-      "description": "Upload clear copy of Aadhaar Card Copy",
-      "is_required": 1
-    },
-    {
-      "id": 175,
-      "service_id": 76,
-      "document_name": "Medical Fitness Form 1A",
-      "description": "Upload clear copy of Medical Fitness Form 1A",
-      "is_required": 1
-    },
-    {
-      "id": 176,
-      "service_id": 77,
-      "document_name": "Original Expired DL Copy",
-      "description": "Upload clear copy of Original Expired DL Copy",
-      "is_required": 1
-    },
-    {
-      "id": 177,
-      "service_id": 77,
-      "document_name": "Aadhaar Card Copy",
-      "description": "Upload clear copy of Aadhaar Card Copy",
-      "is_required": 1
-    },
-    {
-      "id": 178,
-      "service_id": 77,
-      "document_name": "Medical Certificate Form 1A",
-      "description": "Upload clear copy of Medical Certificate Form 1A",
-      "is_required": 1
-    },
-    {
-      "id": 179,
-      "service_id": 78,
-      "document_name": "Original RC Smart Card",
-      "description": "Upload clear copy of Original RC Smart Card",
-      "is_required": 1
-    },
-    {
-      "id": 180,
-      "service_id": 78,
-      "document_name": "Form 29 & Form 30",
-      "description": "Upload clear copy of Form 29 & Form 30",
-      "is_required": 1
-    },
-    {
-      "id": 181,
-      "service_id": 78,
-      "document_name": "Valid Insurance & PUC Certificate",
-      "description": "Upload clear copy of Valid Insurance & PUC Certificate",
-      "is_required": 1
-    },
-    {
-      "id": 182,
-      "service_id": 78,
-      "document_name": "Buyer Aadhaar Card Copy",
-      "description": "Upload clear copy of Buyer Aadhaar Card Copy",
-      "is_required": 1
-    },
-    {
-      "id": 183,
-      "service_id": 79,
-      "document_name": "Smart Ration Card Copy",
-      "description": "Upload clear copy of Smart Ration Card Copy",
-      "is_required": 1
-    },
-    {
-      "id": 184,
-      "service_id": 79,
-      "document_name": "Birth Certificate / Marriage Certificate",
-      "description": "Upload clear copy of Birth Certificate / Marriage Certificate",
-      "is_required": 1
-    },
-    {
-      "id": 185,
-      "service_id": 79,
-      "document_name": "Deletion Certificate / Death Certificate",
-      "description": "Upload clear copy of Deletion Certificate / Death Certificate",
-      "is_required": 1
-    },
-    {
-      "id": 186,
-      "service_id": 79,
-      "document_name": "Aadhaar Card of Member",
-      "description": "Upload clear copy of Aadhaar Card of Member",
-      "is_required": 1
-    },
-    {
-      "id": 187,
-      "service_id": 80,
-      "document_name": "Smart Ration Card Copy",
-      "description": "Upload clear copy of Smart Ration Card Copy",
-      "is_required": 1
-    },
-    {
-      "id": 188,
-      "service_id": 80,
-      "document_name": "Death Certificate of Previous Head",
-      "description": "Upload clear copy of Death Certificate of Previous Head",
-      "is_required": 1
-    },
-    {
-      "id": 189,
-      "service_id": 80,
-      "document_name": "New Head Aadhaar & Photo",
-      "description": "Upload clear copy of New Head Aadhaar & Photo",
-      "is_required": 1
-    },
-    {
-      "id": 190,
-      "service_id": 81,
-      "document_name": "Smart Ration Card Copy",
-      "description": "Upload clear copy of Smart Ration Card Copy",
-      "is_required": 1
-    },
-    {
-      "id": 191,
-      "service_id": 81,
-      "document_name": "New Address Proof",
-      "description": "Upload clear copy of New Address Proof",
-      "is_required": 1
-    },
-    {
-      "id": 192,
-      "service_id": 81,
-      "document_name": "Aadhaar Card Copy",
-      "description": "Upload clear copy of Aadhaar Card Copy",
-      "is_required": 1
-    },
-    {
-      "id": 193,
-      "service_id": 82,
-      "document_name": "Age Proof",
-      "description": "Upload clear copy of Age Proof",
-      "is_required": 1
-    },
-    {
-      "id": 194,
-      "service_id": 82,
-      "document_name": "Residence Proof",
-      "description": "Upload clear copy of Residence Proof",
-      "is_required": 1
-    },
-    {
-      "id": 195,
-      "service_id": 82,
-      "document_name": "Passport Photograph",
-      "description": "Upload clear copy of Passport Photograph",
-      "is_required": 1
-    },
-    {
-      "id": 196,
-      "service_id": 83,
-      "document_name": "Voter EPIC Card Copy",
-      "description": "Upload clear copy of Voter EPIC Card Copy",
-      "is_required": 1
-    },
-    {
-      "id": 197,
-      "service_id": 83,
-      "document_name": "Valid New Address Proof",
-      "description": "Upload clear copy of Valid New Address Proof",
-      "is_required": 1
-    },
-    {
-      "id": 198,
-      "service_id": 84,
-      "document_name": "Voter EPIC Card Copy",
-      "description": "Upload clear copy of Voter EPIC Card Copy",
-      "is_required": 1
-    },
-    {
-      "id": 199,
-      "service_id": 84,
-      "document_name": "Aadhaar Card Copy",
-      "description": "Upload clear copy of Aadhaar Card Copy",
-      "is_required": 1
-    },
-    {
-      "id": 200,
-      "service_id": 86,
-      "document_name": "Aadhaar Card Copy",
-      "description": "Upload clear copy of Aadhaar Card Copy",
-      "is_required": 1
-    },
-    {
-      "id": 201,
-      "service_id": 86,
-      "document_name": "FIR Copy / Damaged Card",
-      "description": "Upload clear copy of FIR Copy / Damaged Card",
-      "is_required": 1
-    },
-    {
-      "id": 202,
-      "service_id": 87,
-      "document_name": "Indian Passport Copy",
-      "description": "Upload clear copy of Indian Passport Copy",
-      "is_required": 1
-    },
-    {
-      "id": 203,
-      "service_id": 87,
-      "document_name": "Native Indian Residence Proof",
-      "description": "Upload clear copy of Native Indian Residence Proof",
-      "is_required": 1
-    },
-    {
-      "id": 204,
-      "service_id": 89,
-      "document_name": "Death Certificate / Shifting Proof",
-      "description": "Upload clear copy of Death Certificate / Shifting Proof",
-      "is_required": 1
-    },
-    {
-      "id": 205,
-      "service_id": 90,
-      "document_name": "Sale Deed / Property Tax Receipt",
-      "description": "Upload clear copy of Sale Deed / Property Tax Receipt",
-      "is_required": 1
-    },
-    {
-      "id": 206,
-      "service_id": 90,
-      "document_name": "Latest Paid EB Bill Copy",
-      "description": "Upload clear copy of Latest Paid EB Bill Copy",
-      "is_required": 1
-    },
-    {
-      "id": 207,
-      "service_id": 90,
-      "document_name": "Previous Owner NOC / Death Certificate",
-      "description": "Upload clear copy of Previous Owner NOC / Death Certificate",
-      "is_required": 1
-    },
-    {
-      "id": 208,
-      "service_id": 91,
-      "document_name": "Property Ownership / Patta Copy",
-      "description": "Upload clear copy of Property Ownership / Patta Copy",
-      "is_required": 1
-    },
-    {
-      "id": 209,
-      "service_id": 91,
-      "document_name": "Building Plan Approval / Tax Receipt",
-      "description": "Upload clear copy of Building Plan Approval / Tax Receipt",
-      "is_required": 1
-    },
-    {
-      "id": 210,
-      "service_id": 91,
-      "document_name": "Aadhaar Card Copy",
-      "description": "Upload clear copy of Aadhaar Card Copy",
-      "is_required": 1
-    },
-    {
-      "id": 211,
-      "service_id": 92,
-      "document_name": "Registered Sale Deed / Patta Copy",
-      "description": "Upload clear copy of Registered Sale Deed / Patta Copy",
-      "is_required": 1
-    },
-    {
-      "id": 212,
-      "service_id": 92,
-      "document_name": "Approved Building Plan",
-      "description": "Upload clear copy of Approved Building Plan",
-      "is_required": 1
-    },
-    {
-      "id": 213,
-      "service_id": 92,
-      "document_name": "Aadhaar Card Copy",
-      "description": "Upload clear copy of Aadhaar Card Copy",
-      "is_required": 1
-    },
-    {
-      "id": 214,
-      "service_id": 93,
-      "document_name": "Indian Passport Original & Copy",
-      "description": "Upload clear copy of Indian Passport Original & Copy",
-      "is_required": 1
-    },
-    {
-      "id": 215,
-      "service_id": 93,
-      "document_name": "Present Address Proof",
-      "description": "Upload clear copy of Present Address Proof",
-      "is_required": 1
-    },
-    {
-      "id": 216,
-      "service_id": 93,
-      "document_name": "Visa / Employment Offer Letter",
-      "description": "Upload clear copy of Visa / Employment Offer Letter",
-      "is_required": 1
-    },
-    {
-      "id": 217,
-      "service_id": 95,
-      "document_name": "PAN Copy",
-      "description": "Copy of PAN Card",
-      "is_required": 1
-    },
-    {
-      "id": 218,
-      "service_id": 95,
-      "document_name": "Aadhaar Copy",
-      "description": "Copy of Aadhaar Card",
-      "is_required": 1
-    },
-    {
-      "id": 219,
-      "service_id": 97,
-      "document_name": "Aadhaar Cards of All Members",
-      "description": "Combined PDF/copies of all family member Aadhaar cards",
-      "is_required": 1
-    },
-    {
-      "id": 220,
-      "service_id": 97,
-      "document_name": "Marriage Certificate / Deletion Certificate",
-      "description": "Proof of deletion from parent ration card",
-      "is_required": 1
-    },
-    {
-      "id": 221,
-      "service_id": 97,
-      "document_name": "Gas Connection Slip / Rental Agreement",
-      "description": "LPG gas cylinder slip or rental contract",
-      "is_required": 1
-    },
-    {
-      "id": 222,
-      "service_id": 98,
-      "document_name": "Aadhaar & PAN Copy",
-      "description": "Proprietor Aadhaar and PAN copy",
-      "is_required": 1
-    },
-    {
-      "id": 223,
-      "service_id": 98,
-      "document_name": "Bank Passbook / Cheque",
-      "description": "Bank account statement or passbook",
-      "is_required": 1
-    },
-    {
-      "id": 224,
-      "service_id": 100,
-      "document_name": "Identity Proof",
-      "description": "Aadhaar Card / Voter ID / Passport",
-      "is_required": 1
-    },
-    {
-      "id": 225,
-      "service_id": 100,
-      "document_name": "Address Proof",
-      "description": "Aadhaar Card / Electricity Bill / Bank Passbook",
-      "is_required": 1
-    },
-    {
-      "id": 226,
-      "service_id": 100,
-      "document_name": "DOB Proof",
-      "description": "Birth Certificate / SSLC Marksheet / Aadhaar Card",
-      "is_required": 1
-    },
-    {
-      "id": 227,
-      "service_id": 101,
-      "document_name": "Proof of Date of Birth",
-      "description": "Aadhaar Card / Birth Certificate / Marksheet",
-      "is_required": 1
-    },
-    {
-      "id": 228,
-      "service_id": 101,
-      "document_name": "Proof of Present Address",
-      "description": "Aadhaar Card / Bank Passbook / Utility Bill",
-      "is_required": 1
-    },
-    {
-      "id": 229,
-      "service_id": 101,
-      "document_name": "Non-ECR Educational Proof",
-      "description": "10th SSLC Marksheet or Degree Certificate",
-      "is_required": 1
-    },
-    {
-      "id": 230,
-      "service_id": 102,
-      "document_name": "Proof of Date of Birth",
-      "description": "Aadhaar Card / Birth Certificate / Marksheet",
-      "is_required": 1
-    },
-    {
-      "id": 231,
-      "service_id": 102,
-      "document_name": "Proof of Present Address",
-      "description": "Aadhaar Card / Bank Passbook / Utility Bill",
-      "is_required": 1
-    },
-    {
-      "id": 232,
-      "service_id": 102,
-      "document_name": "Non-ECR Educational Proof",
-      "description": "10th SSLC Marksheet or Degree Certificate",
-      "is_required": 1
-    },
-    {
-      "id": 233,
-      "service_id": 103,
-      "document_name": "Identity Proof",
-      "description": "Aadhaar Card / PAN Card of proprietor",
-      "is_required": 1
-    },
-    {
-      "id": 234,
-      "service_id": 103,
-      "document_name": "Business Premises Address Proof",
-      "description": "Rental Agreement / Utility Bill / Property Tax Receipt",
-      "is_required": 1
-    },
-    {
-      "id": 235,
-      "service_id": 103,
-      "document_name": "FSSAI Self Declaration Form",
-      "description": "Signed self-declaration for hygiene standards",
-      "is_required": 1
-    },
-    {
-      "id": 236,
-      "service_id": 6,
-      "document_name": "Previous Sale Deed / Property Tax Receipt",
-      "description": "Upload clear copy of previous deed or tax receipt (Optional)",
-      "is_required": 0
-    }
-  ],
+  "service_documents": [],
   "applications": [
     {
       "id": 720002,

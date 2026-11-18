@@ -2720,7 +2720,7 @@ export function getLocalizedService(srv, lang = 'en') {
       category_name: taData.category_name || srv.category_name,
       processing_time: taData.processing_time || srv.processing_time,
       eligibility: taData.eligibility || srv.eligibility,
-      documents: taData.documents || srv.documents
+      documents: Array.isArray(srv.documents) ? srv.documents : []
     };
   }
 
@@ -2782,10 +2782,7 @@ export function getServiceDefinition(param, lang = 'en') {
               { name: 'pincode', label: '6-Digit Pincode', type: 'text', placeholder: '600001', required: true },
               { name: 'service_remarks', label: 'Specific Service Application Details / Remarks', type: 'textarea', placeholder: 'Enter specific details required for this application', required: false }
             ],
-            documents: [
-              { name: 'Identity Proof', description: 'Aadhaar Card, Voter ID, PAN Card, or Passport', required: true },
-              { name: 'Address Proof', description: 'Smart Ration Card, Electricity Bill, or Bank Passbook', required: true }
-            ]
+            documents: []
           };
         }
       }

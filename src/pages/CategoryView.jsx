@@ -324,10 +324,12 @@ export default function CategoryView() {
                           <Clock className="w-3.5 h-3.5 text-indigo-500" />
                           <span>SLA: {srv.processing_time || (lang === 'ta' ? '3-5 நாட்கள்' : '3-5 Days')}</span>
                         </div>
-                        <div className="flex items-center space-x-1.5 px-2.5 py-1 bg-slate-100 text-slate-600 rounded-md">
-                          <FileCheck className="w-3.5 h-3.5 text-emerald-600" />
-                          <span>{srv.required_docs_count || srv.documents_count || 1} {lang === 'ta' ? 'ஆவணங்கள்' : 'Proof Docs'}</span>
-                        </div>
+                        {(srv.documents_count > 0 || srv.required_docs_count > 0) && (
+                          <div className="flex items-center space-x-1.5 px-2.5 py-1 bg-slate-100 text-slate-600 rounded-md">
+                            <FileCheck className="w-3.5 h-3.5 text-emerald-600" />
+                            <span>{srv.documents_count || srv.required_docs_count} {lang === 'ta' ? 'ஆவணங்கள்' : 'Proof Docs'}</span>
+                          </div>
+                        )}
                       </div>
 
                     </div>

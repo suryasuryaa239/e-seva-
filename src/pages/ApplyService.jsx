@@ -378,14 +378,8 @@ export default function ApplyService() {
             rawFields = fallbackDef.fields;
           }
         }
-        let rawDocs = Array.isArray(data.documents) ? data.documents : [];
-        if (rawDocs.length === 0) {
-          const fallbackDef = getServiceDefinition(fallbackLookupKey, lang);
-          if (fallbackDef && fallbackDef.documents && fallbackDef.documents.length > 0) {
-            rawDocs = fallbackDef.documents;
-          }
-        }
-        data.documents = rawDocs;
+        // Strictly honor documents configured by Admin in backend (do NOT auto-inject static catalog documents)
+        data.documents = Array.isArray(data.documents) ? data.documents : [];
 
         // Deduplicate dynamic fields from API so each field key is strictly unique
         const seenFieldMap = new Set();
@@ -411,8 +405,11 @@ export default function ApplyService() {
         });
         setFieldValues(prev => ({ ...initialFields, ...prev }));
       } else {
-        // Fallback service definition
+        // Fallback service definition (never auto-inject static documents)
         const fallback = getServiceDefinition(serviceParam, lang);
+        if (fallback) {
+          fallback.documents = [];
+        }
         if (fallback && fallback.fields) {
           const seenFallbackKeys = new Set();
           fallback.fields = fallback.fields.filter(f => {
