@@ -151,6 +151,25 @@ const FIELD_LABEL_TRANSLATIONS = {
   'patta number': 'பட்டா எண்',
   'sub division number': 'உட்பிரிவு எண்',
   'extent / area in sq.ft': 'பரப்பளவு (சதுர அடி / சென்ட்)',
+  'patta copy language (தமிழ் / english)': 'பட்டா நகல் மொழி (Copy Language)',
+  'patta copy language': 'பட்டா நகல் மொழி',
+  'copy language': 'நகல் மொழி (Copy Language)',
+  'document language': 'ஆவண மொழி (Document Language)',
+  'new owner / buyer name': 'புதிய உரிமையாளர் / வாங்குபவர் பெயர்',
+  'current / previous owner name': 'தற்போதைய / முந்தைய உரிமையாளர் பெயர்',
+  'previous owner / seller name': 'முந்தைய உரிமையாளர் / விற்பவர் பெயர்',
+  'landowner name': 'நில உரிமையாளர் பெயர்',
+  'parent survey number': 'தாய் சர்வே எண்',
+  'existing sub-division': 'தற்போதுள்ள உட்பிரிவு எண்',
+  'survey number & sub-division': 'சர்வே எண் & உட்பிரிவு எண்',
+  'property extent / sq ft details': 'சொத்து பரப்பளவு (சதுர அடி / சென்ட்)',
+  'area to sub-divide (in sq ft / cents)': 'உட்பிரிவு செய்ய வேண்டிய பரப்பளவு (ச.அடி / சென்ட்)',
+  'sub-registrar office (sro)': 'சார்பதிவாளர் அலுவலகம் (SRO)',
+  'district name': 'மாவட்டம்',
+  'taluk name': 'வட்டம் (தாலுகா)',
+  'village name': 'கிராமம்',
+  'mobile number for status alerts': 'நிலை அறிவிப்புகளுக்கான மொபைல் எண்',
+  'applicant mobile number': 'விண்ணப்பதாரர் மொபைல் எண்',
 
   'vehicle registration number': 'வாகனப் பதிவு எண்',
   'driving license number': 'ஓட்டுநர் உரிம எண்',
@@ -239,7 +258,19 @@ const OPTION_TRANSLATIONS = {
   'st': 'பழங்குடியினர் (ST)',
   'oc': 'பொதுப்பிரிவு (OC / General)',
   'general': 'பொதுப்பிரிவு (General)',
-  'fc': 'முற்படுத்தப்பட்டோர் (FC)'
+  'fc': 'முற்படுத்தப்பட்டோர் (FC)',
+
+  'tamil': 'தமிழ் (Tamil)',
+  'english': 'ஆங்கிலம் (English)',
+  'both (tamil & english)': 'இரண்டும் (தமிழ் & English)',
+  'tamil (தமிழ்)': 'தமிழ் (Tamil)',
+  'english (ஆங்கிலம்)': 'ஆங்கிலம் (English)',
+  '10 years': '10 ஆண்டுகள்',
+  '20 years': '20 ஆண்டுகள்',
+  '30 years': '30 ஆண்டுகள்',
+  'last 10 years': 'கடந்த 10 ஆண்டுகள்',
+  'last 20 years': 'கடந்த 20 ஆண்டுகள்',
+  'last 30 years': 'கடந்த 30 ஆண்டுகள்'
 };
 
 export function getLocalizedOption(opt, lang = 'en') {

@@ -133,6 +133,44 @@ class TiDBSupportedDatabase {
                   });
                 });
                 this.data['service_documents'] = rebuiltDocs;
+
+                // Rebuild service_fields from TiDB services.fields_json so Admin/DB field changes persist across restarts
+                const existingFieldsByService = new Map();
+                (this.data['service_fields'] || []).forEach(f => {
+                  const list = existingFieldsByService.get(f.service_id) || [];
+                  list.push(f);
+                  existingFieldsByService.set(f.service_id, list);
+                });
+                const rebuiltFields = [];
+                let fieldAutoId = 1;
+                parsedRows.forEach(s => {
+                  if (Array.isArray(s.fields_json) && s.fields_json.length > 0) {
+                    s.fields_json.forEach((f, fIdx) => {
+                      const label = f.field_label || f.label || f.name || `Field ${fIdx + 1}`;
+                      const isReq = (f.is_required === 0 || f.is_required === false || f.is_required === '0' || f.is_required === 'false' || f.required === 0 || f.required === false) ? 0 : 1;
+                      const opts = f.options || f.options_json || null;
+                      rebuiltFields.push({
+                        id: fieldAutoId++,
+                        service_id: s.id,
+                        field_name: f.field_name || f.name || label.toLowerCase().replace(/[^a-z0-9]+/g, '_'),
+                        field_label: label,
+                        field_type: f.field_type || f.type || 'text',
+                        is_required: isReq,
+                        options: opts,
+                        options_json: opts,
+                        default_value: f.default_value || '',
+                        placeholder: f.placeholder || '',
+                        helpText: f.helpText || '',
+                        sort_order: f.sort_order || (fIdx + 1)
+                      });
+                    });
+                  } else if (existingFieldsByService.has(s.id)) {
+                    existingFieldsByService.get(s.id).forEach(f => {
+                      rebuiltFields.push({ ...f, id: fieldAutoId++ });
+                    });
+                  }
+                });
+                this.data['service_fields'] = rebuiltFields;
               }
             } else if (tbl === 'categories') {
               if (parsedRows.length > 0) {

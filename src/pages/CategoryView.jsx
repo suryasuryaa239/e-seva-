@@ -85,11 +85,13 @@ export default function CategoryView() {
       });
 
       const localizedList = rawServices.map(s => {
-        const loc = getLocalizedService({ slug: s.slug || s.id, name: s.name, description: s.description }, lang);
+        const loc = getLocalizedService({ slug: s.slug || s.id, name: s.name, description: s.description, processing_time: s.processing_time, category_name: s.category_name }, lang);
         return {
           ...s,
           name: loc.name || s.name,
-          description: loc.description || s.description
+          description: loc.description || s.description,
+          processing_time: loc.processing_time || s.processing_time,
+          category_name: loc.category_name || s.category_name
         };
       });
 
