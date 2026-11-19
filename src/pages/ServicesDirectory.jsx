@@ -287,12 +287,15 @@ export default function ServicesDirectory() {
                 <div className="space-y-3">
                   {/* CATEGORY ICON & FEE BADGE */}
                   <div className="flex items-center justify-between">
-                    <div className="w-13 h-13 rounded-2xl bg-gradient-to-br from-slate-50 to-orange-50/30 border border-slate-200/90 p-1 flex items-center justify-center shadow-xs group-hover:scale-105 group-hover:border-orange-300 transition-all duration-300 overflow-hidden shrink-0">
+                    <div 
+                      className="w-12 h-12 rounded-xl bg-orange-50/80 border border-orange-100 p-1 flex items-center justify-center shadow-xs group-hover:scale-105 group-hover:border-orange-300 transition-all duration-300 overflow-hidden shrink-0"
+                      style={{ width: '48px', height: '48px', minWidth: '48px', minHeight: '48px', maxWidth: '48px', maxHeight: '48px' }}
+                    >
                       {srv.image_url ? (
                         <img 
                           src={srv.image_url} 
                           alt={srv.name} 
-                          className="w-full h-full object-cover rounded-xl"
+                          className="w-full h-full object-cover rounded-lg"
                           onError={(e) => {
                             e.currentTarget.style.display = 'none';
                           }}
@@ -310,9 +313,9 @@ export default function ServicesDirectory() {
                   {/* SERVICE NAME & DESCRIPTION */}
                   <div>
                     <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
-                      {srv.category_name}
+                      {lang === 'ta' ? (CATEGORY_TA_NAMES[srv.category_name] || srv.category_name) : srv.category_name}
                     </span>
-                    <h3 className="font-heading font-extrabold text-base sm:text-lg text-slate-900 group-hover:text-orange-600 transition-colors line-clamp-1">
+                    <h3 className="font-heading font-extrabold text-base text-slate-900 group-hover:text-orange-600 transition-colors line-clamp-1">
                       {srv.name}
                     </h3>
                     <p className="text-xs sm:text-sm text-slate-600 mt-1 font-normal line-clamp-2 leading-relaxed">

@@ -469,7 +469,10 @@ export default function Home() {
               <div className="space-y-3">
                 {/* ICON & PRICE TAG */}
                 <div className="flex items-center justify-between">
-                  <div className="w-14 h-14 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center group-hover:scale-105 transition-transform overflow-hidden shrink-0 p-0.5">
+                  <div 
+                    className="w-12 h-12 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center group-hover:scale-105 transition-transform overflow-hidden shrink-0 p-1"
+                    style={{ width: '48px', height: '48px', minWidth: '48px', minHeight: '48px', maxWidth: '48px', maxHeight: '48px' }}
+                  >
                     {srv.image_url ? (
                       <img 
                         src={srv.image_url} 

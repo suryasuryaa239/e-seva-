@@ -292,20 +292,26 @@ export default function CategoryView() {
                         </span>
                       </div>
 
-                      {/* Title & Description */}
+                      {/* Icon & Title & Description */}
                       <div className="flex items-start space-x-3">
-                        {srv.image_url ? (
-                          <div className="w-12 h-12 rounded-xl border border-slate-200 overflow-hidden shrink-0 shadow-xs">
+                        <div 
+                          className="w-12 h-12 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-center overflow-hidden shrink-0 shadow-2xs p-1"
+                          style={{ width: '48px', height: '48px', minWidth: '48px', minHeight: '48px', maxWidth: '48px', maxHeight: '48px' }}
+                        >
+                          {srv.image_url ? (
                             <img 
                               src={srv.image_url} 
                               alt={srv.name} 
-                              className="w-full h-full object-cover"
+                              className="w-full h-full object-cover rounded-lg"
                               onError={(e) => {
                                 e.currentTarget.parentElement.style.display = 'none';
                               }}
                             />
-                          </div>
-                        ) : null}
+                          ) : (
+                            <CategoryIcon className="w-6 h-6 text-indigo-600" />
+                          )}
+                        </div>
+
                         <div className="space-y-1.5 flex-1 min-w-0">
                           <h3 className="text-base sm:text-lg font-bold text-slate-900 group-hover:text-indigo-600 transition-colors leading-snug">
                             {srv.name}
