@@ -85,7 +85,7 @@ export default function CategoryView() {
       });
 
       const localizedList = rawServices.map(s => {
-        const loc = getLocalizedService({ slug: s.slug || s.id, name: s.name, description: s.description, processing_time: s.processing_time, category_name: s.category_name }, lang);
+        const loc = getLocalizedService(s, lang);
         return {
           ...s,
           name: loc.name || s.name,

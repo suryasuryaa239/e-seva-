@@ -2744,6 +2744,22 @@ export function getLocalizedService(srv, lang = 'en') {
 
   if (lang !== 'ta') return cleanSrv;
 
+  // Priority 1: If database service has custom Tamil name configured by admin, use it!
+
+  if (srv.name_ta && String(srv.name_ta).trim()) {
+
+    return {
+
+      ...cleanSrv,
+
+      name: String(srv.name_ta).trim(),
+
+      description: (srv.description_ta && String(srv.description_ta).trim()) ? String(srv.description_ta).trim() : srv.description
+
+    };
+
+  }
+
   const key = srv.slug || '';
   const taData = TAMIL_SERVICES_TRANSLATIONS[key] || Object.values(TAMIL_SERVICES_TRANSLATIONS).find(item => sanitizeServiceName(item.name) === cleanName);
 

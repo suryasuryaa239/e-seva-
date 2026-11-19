@@ -961,6 +961,7 @@ app.get('/api/services', (req, res) => {
   if (searchTerm) {
     services = services.filter(s =>
       s.name.toLowerCase().includes(searchTerm) ||
+      (s.name_ta && s.name_ta.toLowerCase().includes(searchTerm)) ||
       s.description.toLowerCase().includes(searchTerm) ||
       s.slug.toLowerCase().includes(searchTerm) ||
       (s.category_name && s.category_name.toLowerCase().includes(searchTerm))
@@ -4568,7 +4569,7 @@ app.post('/api/admin/applications/:id/send-payment-reminder', authenticateAdmin,
 // Admin Services & Categories Management
 app.post('/api/admin/services', authenticateAdmin, upload.any(), async (req, res) => {
   try {
-    let { category_id, category_name, name, description, eligibility, processing_info, processing_time, fee, total_fee, govt_fee, fields, documents, image_url_input, image_url: bodyImageUrl, position, display_order } = req.body;
+    let { category_id, category_name, name, name_ta, description, eligibility, processing_info, processing_time, fee, total_fee, govt_fee, fields, documents, image_url_input, image_url: bodyImageUrl, position, display_order } = req.body;
     if ((!category_id && !category_name) || !name) return res.status(400).json({ error: 'Category and Service Name required' });
 
     let image_url = (image_url_input || bodyImageUrl || '').trim();
@@ -4652,6 +4653,7 @@ app.post('/api/admin/services', authenticateAdmin, upload.any(), async (req, res
       category_id: catId,
       category_name: cat ? cat.name : (category_name || 'General'),
       name: name.trim(),
+      name_ta: (name_ta || '').trim(),
       slug,
       description: description || '',
       eligibility: eligibility || '',
@@ -4794,7 +4796,7 @@ app.put('/api/admin/services/:id', authenticateAdmin, upload.any(), async (req, 
     }
     const targetId = existing.id;
 
-    let { category_id, category_name, name, description, eligibility, processing_info, processing_time, fee, total_fee, govt_fee, is_active, status, fields, documents, image_url_input, image_url: bodyImageUrl } = req.body;
+    let { category_id, category_name, name, name_ta, description, eligibility, processing_info, processing_time, fee, total_fee, govt_fee, is_active, status, fields, documents, image_url_input, image_url: bodyImageUrl } = req.body;
     
     let image_url = existing.image_url || '';
     const uploadedImg = req.file || (req.files && req.files.find(f => f.fieldname === 'image' || f.fieldname === 'image_file' || f.mimetype.startsWith('image/')));
@@ -4847,6 +4849,7 @@ app.put('/api/admin/services/:id', authenticateAdmin, upload.any(), async (req, 
       category_id: catId || existing.category_id,
       category_name: cat ? cat.name : (category_name || existing.category_name),
       name: serviceName,
+      name_ta: name_ta !== undefined ? String(name_ta).trim() : (existing.name_ta || ''),
       slug,
       description: description !== undefined ? description : existing.description,
       eligibility: eligibility !== undefined ? eligibility : existing.eligibility,
