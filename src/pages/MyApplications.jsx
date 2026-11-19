@@ -128,7 +128,7 @@ export default function MyApplications() {
           <div className="absolute top-0 right-0 w-64 h-64 bg-orange-500/10 rounded-full blur-3xl pointer-events-none" />
 
           <div className="space-y-2 relative z-10">
-            <span className="inline-block text-[10px] sm:text-xs font-black text-orange-400 uppercase tracking-widest bg-slate-800/80 border border-slate-700 px-3 py-1 rounded-full">
+            <span className="inline-block text-xs sm:text-xs font-black text-orange-400 uppercase tracking-widest bg-slate-800/80 border border-slate-700 px-3 py-1 rounded-full">
               {lang === 'ta' ? 'எனது விண்ணப்பத் தொகுப்பு' : 'MY APPLICATION PORTFOLIO'}
             </span>
 
@@ -167,7 +167,7 @@ export default function MyApplications() {
             onClick={() => setStatusFilter('All')}
             className={`p-3.5 rounded-2xl border transition-all cursor-pointer ${statusFilter === 'All' ? 'bg-[#0b192c] text-white border-[#0b192c] shadow-sm' : 'bg-white text-slate-800 border-slate-200 hover:border-slate-300'}`}
           >
-            <span className="text-[10px] font-extrabold uppercase tracking-wider block opacity-70">Total Submitted</span>
+            <span className="text-xs font-extrabold uppercase tracking-wider block opacity-70">Total Submitted</span>
             <div className="text-xl font-black font-mono mt-0.5">{totalCount}</div>
           </div>
 
@@ -175,7 +175,7 @@ export default function MyApplications() {
             onClick={() => setStatusFilter('DRAFT')}
             className={`p-3.5 rounded-2xl border transition-all cursor-pointer ${statusFilter === 'DRAFT' ? 'bg-amber-500 text-slate-950 border-amber-500 shadow-sm' : 'bg-amber-50/60 text-amber-900 border-amber-200 hover:border-amber-300'}`}
           >
-            <span className="text-[10px] font-extrabold uppercase tracking-wider block opacity-80">Draft Submissions</span>
+            <span className="text-xs font-extrabold uppercase tracking-wider block opacity-80">Draft Submissions</span>
             <div className="text-xl font-black font-mono mt-0.5">{draftCount}</div>
           </div>
 
@@ -183,7 +183,7 @@ export default function MyApplications() {
             onClick={() => setStatusFilter('SUBMITTED')}
             className={`p-3.5 rounded-2xl border transition-all cursor-pointer ${statusFilter === 'SUBMITTED' ? 'bg-orange-500 text-white border-orange-500 shadow-sm' : 'bg-orange-50/60 text-orange-950 border-orange-200 hover:border-orange-300'}`}
           >
-            <span className="text-[10px] font-extrabold uppercase tracking-wider block opacity-80">Pending Verification</span>
+            <span className="text-xs font-extrabold uppercase tracking-wider block opacity-80">Pending Verification</span>
             <div className="text-xl font-black font-mono mt-0.5">{pendingCount}</div>
           </div>
 
@@ -191,7 +191,7 @@ export default function MyApplications() {
             onClick={() => setStatusFilter('PROCESSING')}
             className={`p-3.5 rounded-2xl border transition-all cursor-pointer ${statusFilter === 'PROCESSING' ? 'bg-blue-600 text-white border-blue-600 shadow-sm' : 'bg-blue-50/60 text-blue-950 border-blue-200 hover:border-blue-300'}`}
           >
-            <span className="text-[10px] font-extrabold uppercase tracking-wider block opacity-80">In Processing</span>
+            <span className="text-xs font-extrabold uppercase tracking-wider block opacity-80">In Processing</span>
             <div className="text-xl font-black font-mono mt-0.5">{processingCount}</div>
           </div>
 
@@ -199,7 +199,7 @@ export default function MyApplications() {
             onClick={() => setStatusFilter('COMPLETED')}
             className={`p-3.5 rounded-2xl border transition-all cursor-pointer ${statusFilter === 'COMPLETED' ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm' : 'bg-emerald-50/60 text-emerald-950 border-emerald-200 hover:border-emerald-300'}`}
           >
-            <span className="text-[10px] font-extrabold uppercase tracking-wider block opacity-80">Completed / Approved</span>
+            <span className="text-xs font-extrabold uppercase tracking-wider block opacity-80">Completed / Approved</span>
             <div className="text-xl font-black font-mono mt-0.5">{completedCount}</div>
           </div>
         </div>
@@ -276,7 +276,7 @@ export default function MyApplications() {
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-[#0b192c] text-[11px] font-black text-slate-300 uppercase tracking-wider border-b border-slate-800">
+                  <tr className="bg-[#0b192c] text-xs sm:text-sm font-black text-slate-300 uppercase tracking-wider border-b border-slate-800">
                     <th className="py-4 px-6 text-orange-400">{t.appId || 'Application ID'}</th>
                     <th className="py-4 px-6">{t.serviceName || 'Requested Service'}</th>
                     <th className="py-4 px-6">{t.appliedDate || 'Filing Date'}</th>
@@ -299,7 +299,7 @@ export default function MyApplications() {
                         <td className="py-4 px-6 font-bold text-slate-900 max-w-xs truncate">
                           {app.service_name || (lang === 'ta' ? 'மின்னணு சேவை' : 'Digital Service')}
                         </td>
-                        <td className="py-4 px-6 text-slate-600 whitespace-nowrap font-mono text-[11px]">
+                        <td className="py-4 px-6 text-slate-600 whitespace-nowrap font-mono text-xs sm:text-sm">
                           {new Date(app.created_at || app.submitted_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
                         </td>
                         <td className="py-4 px-6 whitespace-nowrap">
@@ -360,7 +360,7 @@ export default function MyApplications() {
 
                     <div className="space-y-1">
                       <h4 className="font-black text-slate-900 text-sm">{app.service_name || 'Digital Service'}</h4>
-                      <div className="flex items-center justify-between text-[11px] text-slate-500">
+                      <div className="flex items-center justify-between text-xs sm:text-sm text-slate-500">
                         <span className="font-mono">{lang === 'ta' ? 'நாள்:' : 'Logged:'} {new Date(app.created_at || app.submitted_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
                         <span className="font-black text-emerald-700 font-mono text-xs">₹{app.total_fee || 0}</span>
                       </div>

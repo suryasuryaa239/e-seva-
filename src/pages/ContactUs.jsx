@@ -98,71 +98,71 @@ export default function ContactUs() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="text-xs font-semibold text-slate-700 block mb-1">Your Name *</label>
+                <label className="text-sm sm:text-base font-bold text-slate-800 block mb-1.5">Your Name *</label>
                 <input
                   type="text"
                   required
                   placeholder="Karthik Subramanian"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full bg-slate-50 text-slate-900 text-sm rounded-xl px-4 py-3 border border-slate-200 outline-none focus:bg-white focus:border-indigo-500"
+                  className="w-full bg-slate-50 text-slate-900 text-sm sm:text-base font-medium rounded-xl px-4 py-3.5 border border-slate-300 outline-none focus:bg-white focus:border-indigo-500"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-slate-700 block mb-1">Email Address *</label>
+                <label className="text-sm sm:text-base font-bold text-slate-800 block mb-1.5">Email Address *</label>
                 <input
                   type="email"
                   required
                   placeholder="user@example.com"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full bg-slate-50 text-slate-900 text-sm rounded-xl px-4 py-3 border border-slate-200 outline-none focus:bg-white focus:border-indigo-500"
+                  className="w-full bg-slate-50 text-slate-900 text-sm sm:text-base font-medium rounded-xl px-4 py-3.5 border border-slate-300 outline-none focus:bg-white focus:border-indigo-500"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="text-xs font-semibold text-slate-700 block mb-1">Mobile Phone *</label>
+                <label className="text-sm sm:text-base font-bold text-slate-800 block mb-1.5">Mobile Phone *</label>
                 <input
                   type="text"
                   required
                   placeholder="9876543210"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="w-full bg-slate-50 text-slate-900 text-sm rounded-xl px-4 py-3 border border-slate-200 outline-none focus:bg-white focus:border-indigo-500"
+                  className="w-full bg-slate-50 text-slate-900 text-sm sm:text-base font-medium rounded-xl px-4 py-3.5 border border-slate-300 outline-none focus:bg-white focus:border-indigo-500"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-slate-700 block mb-1">Subject / Application ID</label>
+                <label className="text-sm sm:text-base font-bold text-slate-800 block mb-1.5">Subject / Application ID</label>
                 <input
                   type="text"
                   placeholder="Issue with PAN card application"
                   value={formData.subject}
                   onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                  className="w-full bg-slate-50 text-slate-900 text-sm rounded-xl px-4 py-3 border border-slate-200 outline-none focus:bg-white focus:border-indigo-500"
+                  className="w-full bg-slate-50 text-slate-900 text-sm sm:text-base font-medium rounded-xl px-4 py-3.5 border border-slate-300 outline-none focus:bg-white focus:border-indigo-500"
                 />
               </div>
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-slate-700 block mb-1">Inquiry Details *</label>
+              <label className="text-sm sm:text-base font-bold text-slate-800 block mb-1.5">Inquiry Details *</label>
               <textarea
                 rows={4}
                 required
                 placeholder="Describe your issue or query..."
                 value={formData.message}
                 onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                className="w-full bg-slate-50 text-slate-900 text-sm rounded-xl px-4 py-3 border border-slate-200 outline-none focus:bg-white focus:border-indigo-500"
+                className="w-full bg-slate-50 text-slate-900 text-sm sm:text-base font-medium rounded-xl px-4 py-3.5 border border-slate-300 outline-none focus:bg-white focus:border-indigo-500"
               />
             </div>
 
             <button
               type="submit"
               disabled={submitting}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm px-6 py-3 rounded-xl shadow transition-colors flex items-center gap-2"
+              className="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-sm sm:text-base px-7 py-3.5 rounded-xl shadow transition-colors flex items-center gap-2 cursor-pointer"
             >
               <Send className="w-4 h-4" />
               {submitting ? 'Sending Ticket...' : 'Send Inquiry Message'}

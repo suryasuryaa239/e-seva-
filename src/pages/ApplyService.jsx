@@ -1172,10 +1172,10 @@ export default function ApplyService() {
                       {isDone ? <Check className="w-5 h-5" /> : `0${st.step}`}
                     </div>
                     <div className="mt-2 space-y-0.5">
-                      <div className={`text-xs font-extrabold ${isActive ? 'text-orange-600' : isDone ? 'text-slate-900' : 'text-slate-400'}`}>
+                      <div className={`text-xs sm:text-sm font-extrabold ${isActive ? 'text-orange-600' : isDone ? 'text-slate-900' : 'text-slate-400'}`}>
                         {st.title}
                       </div>
-                      <div className="text-[10px] text-slate-400 hidden sm:block font-normal">{st.sub}</div>
+                      <div className="text-xs text-slate-400 hidden sm:block font-medium">{st.sub}</div>
                     </div>
                   </div>
                 );
@@ -1193,20 +1193,20 @@ export default function ApplyService() {
               
               {/* STEP 01: APPLICANT DETAILS & CUSTOM FIELDS */}
               {currentStep === 1 && (
-                <div className="bg-white rounded-3xl p-8 border border-slate-200/90 shadow-sm space-y-6">
+                <div className="bg-white rounded-3xl p-6 sm:p-9 border border-slate-200/90 shadow-sm space-y-7">
                   
                   <div className="border-b pb-4 border-slate-100 flex items-center justify-between">
-                    <h3 className="font-heading font-extrabold text-lg text-slate-900 flex items-center gap-2">
-                      <UserCheck className="w-5 h-5 text-orange-500" />
+                    <h3 className="font-heading font-extrabold text-xl sm:text-2xl text-slate-900 flex items-center gap-2.5">
+                      <UserCheck className="w-6 h-6 text-orange-500" />
                       <span>{t.applicantInformation}</span>
                     </h3>
-                    <span className="text-xs text-slate-400 font-bold">* {t.requiredFieldsNotice}</span>
+                    <span className="text-xs sm:text-sm text-slate-500 font-bold">* {t.requiredFieldsNotice}</span>
                   </div>
 
                   {/* PRIMARY APPLICANT CONTACT & IDENTIFICATION (FOR TRACKING & NOTIFICATIONS) */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
                     <div>
-                      <label className="block text-xs font-extrabold text-slate-700 mb-1.5">
+                      <label className="block text-sm sm:text-base font-extrabold text-slate-800 mb-2">
                         {t.fullName || t.fullNameLabel || (lang === 'ta' ? 'விண்ணப்பதாரர் பெயர்' : 'Full Name')} <span className="text-rose-500">*</span>
                       </label>
                       <input
@@ -1215,13 +1215,13 @@ export default function ApplyService() {
                         placeholder={lang === 'ta' ? 'எ.கா. கார்த்திக் சுப்பிரமணியன்' : 'e.g. Karthik Subramanian'}
                         value={applicantInfo.user_name}
                         onChange={handleApplicantChange}
-                        className={`w-full px-4 py-3 bg-slate-50 border ${errors.user_name ? 'border-rose-500 bg-rose-50/50' : 'border-slate-200'} rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-[#0b192c] focus:bg-white transition-all`}
+                        className={`w-full px-4 py-3.5 bg-slate-50 border ${errors.user_name ? 'border-rose-500 bg-rose-50/50' : 'border-slate-300'} rounded-xl text-sm sm:text-base font-semibold text-slate-900 focus:ring-2 focus:ring-[#0b192c] focus:bg-white transition-all`}
                       />
-                      {errors.user_name && <p className="text-[11px] text-rose-600 font-bold mt-1">{errors.user_name}</p>}
+                      {errors.user_name && <p className="text-xs sm:text-sm text-rose-600 font-bold mt-1.5">{errors.user_name}</p>}
                     </div>
 
                     <div>
-                      <label className="block text-xs font-extrabold text-slate-700 mb-1.5">
+                      <label className="block text-sm sm:text-base font-extrabold text-slate-800 mb-2">
                         {t.mobileNumber || t.mobileLabel || (lang === 'ta' ? 'கைபேசி / மொபைல் எண்' : 'Mobile Number')} <span className="text-rose-500">*</span>
                       </label>
                       <input
@@ -1232,13 +1232,13 @@ export default function ApplyService() {
                         inputMode="numeric"
                         value={applicantInfo.user_phone}
                         onChange={handleApplicantChange}
-                        className={`w-full px-4 py-3 bg-slate-50 border ${errors.user_phone ? 'border-rose-500 bg-rose-50/50' : 'border-slate-200'} rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-[#0b192c] focus:bg-white transition-all`}
+                        className={`w-full px-4 py-3.5 bg-slate-50 border ${errors.user_phone ? 'border-rose-500 bg-rose-50/50' : 'border-slate-300'} rounded-xl text-sm sm:text-base font-semibold text-slate-900 focus:ring-2 focus:ring-[#0b192c] focus:bg-white transition-all`}
                       />
-                      {errors.user_phone && <p className="text-[11px] text-rose-600 font-bold mt-1">{errors.user_phone}</p>}
+                      {errors.user_phone && <p className="text-xs sm:text-sm text-rose-600 font-bold mt-1.5">{errors.user_phone}</p>}
                     </div>
 
                     <div>
-                      <label className="block text-xs font-extrabold text-slate-700 mb-1.5">
+                      <label className="block text-sm sm:text-base font-extrabold text-slate-800 mb-2">
                         {t.emailAddress || t.emailLabel || (lang === 'ta' ? 'மின்னஞ்சல் முகவரி' : 'Email Address')} <span className="text-rose-500">*</span>
                       </label>
                       <input
@@ -1247,18 +1247,18 @@ export default function ApplyService() {
                         placeholder="e.g. karthik@example.com"
                         value={applicantInfo.user_email}
                         onChange={handleApplicantChange}
-                        className={`w-full px-4 py-3 bg-slate-50 border ${errors.user_email ? 'border-rose-500 bg-rose-50/50' : 'border-slate-200'} rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-[#0b192c] focus:bg-white transition-all`}
+                        className={`w-full px-4 py-3.5 bg-slate-50 border ${errors.user_email ? 'border-rose-500 bg-rose-50/50' : 'border-slate-300'} rounded-xl text-sm sm:text-base font-semibold text-slate-900 focus:ring-2 focus:ring-[#0b192c] focus:bg-white transition-all`}
                       />
-                      {errors.user_email && <p className="text-[11px] text-rose-600 font-bold mt-1">{errors.user_email}</p>}
+                      {errors.user_email && <p className="text-xs sm:text-sm text-rose-600 font-bold mt-1.5">{errors.user_email}</p>}
                     </div>
 
                     <div>
-                      <label className="block text-xs font-extrabold text-slate-700 mb-1.5">
+                      <label className="block text-sm sm:text-base font-extrabold text-slate-800 mb-2">
                         {lang === 'ta' ? 'ஆதார் எண்' : 'Aadhaar Number'}{' '}
                         {isAadhaarRequired ? (
                           <span className="text-rose-500">*</span>
                         ) : (
-                          <span className="text-slate-400 font-normal">({lang === 'ta' ? 'விருப்பத்தேர்வு' : 'Optional'})</span>
+                          <span className="text-slate-500 font-medium text-xs">({lang === 'ta' ? 'விருப்பத்தேர்வு' : 'Optional'})</span>
                         )}
                       </label>
                       <input
@@ -1269,17 +1269,17 @@ export default function ApplyService() {
                         inputMode="numeric"
                         value={applicantInfo.aadhaar_no}
                         onChange={handleApplicantChange}
-                        className={`w-full px-4 py-3 bg-slate-50 border ${errors.aadhaar_no ? 'border-rose-500 bg-rose-50/50' : 'border-slate-200'} rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-[#0b192c] focus:bg-white transition-all`}
+                        className={`w-full px-4 py-3.5 bg-slate-50 border ${errors.aadhaar_no ? 'border-rose-500 bg-rose-50/50' : 'border-slate-300'} rounded-xl text-sm sm:text-base font-semibold text-slate-900 focus:ring-2 focus:ring-[#0b192c] focus:bg-white transition-all`}
                       />
-                      {errors.aadhaar_no && <p className="text-[11px] text-rose-600 font-bold mt-1">{errors.aadhaar_no}</p>}
+                      {errors.aadhaar_no && <p className="text-xs sm:text-sm text-rose-600 font-bold mt-1.5">{errors.aadhaar_no}</p>}
                     </div>
 
                     {/* APPLICANT RESIDENTIAL ADDRESS (FALLBACK WHEN SERVICE HAS NO SPECIFIC ADDRESS FIELD) */}
                     {!hasCustomAddressField && (
                       <div className="sm:col-span-2 lg:col-span-4 pt-1">
-                        <label className="block text-xs font-extrabold text-slate-700 mb-1.5">
+                        <label className="block text-sm sm:text-base font-extrabold text-slate-800 mb-2">
                           {lang === 'ta' ? 'விண்ணப்பதாரர் முகவரி' : 'Applicant Residential Address'}{' '}
-                          <span className="text-slate-400 font-normal">({lang === 'ta' ? 'விருப்பத்தேர்வு' : 'Optional'})</span>
+                          <span className="text-slate-500 font-medium text-xs">({lang === 'ta' ? 'விருப்பத்தேர்வு' : 'Optional'})</span>
                         </label>
                         <input
                           type="text"
@@ -1287,7 +1287,7 @@ export default function ApplyService() {
                           placeholder={lang === 'ta' ? 'எ.கா. கதவு எண், தெரு பெயர், ஊர், மாவட்டம், அஞ்சல் குறியீடு' : 'e.g. Door No, Street Name, City/Town, District, Pincode'}
                           value={applicantInfo.address}
                           onChange={handleApplicantChange}
-                          className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-[#0b192c] focus:bg-white transition-all"
+                          className="w-full px-4 py-3.5 bg-slate-50 border border-slate-300 rounded-xl text-sm sm:text-base font-semibold text-slate-900 focus:ring-2 focus:ring-[#0b192c] focus:bg-white transition-all"
                         />
                       </div>
                     )}
@@ -1297,19 +1297,19 @@ export default function ApplyService() {
                   {Object.keys(groupedFields).length > 0 && (
                     <div className="pt-6 border-t border-slate-100 space-y-6">
                       <h4 className="font-heading font-extrabold text-base text-slate-900 flex items-center gap-2">
-                        <FileText className="w-4 h-4 text-orange-500" />
-                        <span>{t.customInputsTitle}</span>
+                        <FileText className="w-5 h-5 text-orange-500" />
+                        <span className="text-lg sm:text-xl font-extrabold">{t.customInputsTitle}</span>
                       </h4>
 
                       {Object.entries(groupedFields).map(([secTitle, secFields], sIdx) => {
                         const localizedSecTitle = getLocalizedSectionTitle(secTitle, lang);
                         return (
-                          <div key={sIdx} className="space-y-4 bg-slate-50 p-6 rounded-2xl border border-slate-200/80">
-                            <h5 className="text-xs font-extrabold text-slate-500 uppercase tracking-wider border-b border-slate-200/80 pb-2">
+                          <div key={sIdx} className="space-y-5 bg-slate-50/80 p-6 sm:p-7 rounded-2xl border border-slate-200/80">
+                            <h5 className="text-sm sm:text-base font-black text-slate-700 uppercase tracking-wider border-b border-slate-200/80 pb-2.5">
                               {localizedSecTitle}
                             </h5>
 
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                               {secFields.filter(isFieldVisible).map((f, fIdx) => {
                                 const key = f.field_name || f.name;
                                 const fType = (f.field_type || f.type || 'text').toLowerCase();
@@ -1325,12 +1325,12 @@ export default function ApplyService() {
 
                                 return (
                                   <div key={fIdx} className={isTextArea ? 'sm:col-span-2' : ''}>
-                                    <label className="block text-xs font-extrabold text-slate-800 mb-1.5">
+                                    <label className="block text-sm sm:text-base font-extrabold text-slate-800 mb-2">
                                       {fLabel}{' '}
                                       {isFieldRequired(f) ? (
                                         <span className="text-rose-500 font-bold">*</span>
                                       ) : (
-                                        <span className="text-slate-400 font-normal ml-1 text-[11px]">
+                                        <span className="text-slate-500 font-medium ml-1 text-xs">
                                           ({lang === 'ta' ? 'விருப்பத்தேர்வு' : 'Optional'})
                                         </span>
                                       )}
@@ -1340,7 +1340,7 @@ export default function ApplyService() {
                                       <select
                                         value={fieldValues[key] || ''}
                                         onChange={e => handleInputChange(key, e.target.value)}
-                                        className={`w-full px-4 py-3 bg-white border ${hasErr ? 'border-rose-500 bg-rose-50' : 'border-slate-200'} rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-[#0b192c]`}
+                                        className={`w-full px-4 py-3.5 bg-white border ${hasErr ? 'border-rose-500 bg-rose-50' : 'border-slate-300'} rounded-xl text-sm sm:text-base font-semibold text-slate-900 focus:ring-2 focus:ring-[#0b192c]`}
                                       >
                                         <option value="">
                                           {lang === 'ta' ? `-- ${fLabel} தேர்ந்தெடுக்கவும் --` : `-- Select ${fLabel} --`}
@@ -1352,28 +1352,28 @@ export default function ApplyService() {
                                         ))}
                                       </select>
                                     ) : isRadio ? (
-                                      <div className="flex flex-wrap gap-4 py-1.5">
+                                      <div className="flex flex-wrap gap-3 py-1.5">
                                         {optionsList.map((opt, oIdx) => (
-                                          <label key={oIdx} className="inline-flex items-center space-x-2 text-xs font-medium text-slate-700 cursor-pointer">
+                                          <label key={oIdx} className="inline-flex items-center space-x-2.5 text-sm sm:text-base font-bold text-slate-800 cursor-pointer bg-white px-3.5 py-2.5 rounded-xl border border-slate-200 hover:border-orange-400 transition-colors shadow-2xs">
                                             <input
                                               type="radio"
                                               name={key}
                                               value={opt}
                                               checked={fieldValues[key] === opt}
                                               onChange={e => handleInputChange(key, e.target.value)}
-                                              className="text-orange-500 focus:ring-orange-500"
+                                              className="w-4 h-4 text-orange-500 focus:ring-orange-500"
                                             />
                                             <span>{getLocalizedOption(opt, lang)}</span>
                                           </label>
                                         ))}
                                       </div>
                                     ) : isCheckbox ? (
-                                      <label className="inline-flex items-center space-x-2 text-xs font-medium text-slate-700 cursor-pointer py-1">
+                                      <label className="inline-flex items-center space-x-2.5 text-sm sm:text-base font-bold text-slate-800 cursor-pointer py-1">
                                         <input
                                           type="checkbox"
                                           checked={!!fieldValues[key]}
                                           onChange={e => handleInputChange(key, e.target.checked)}
-                                          className="text-orange-500 focus:ring-orange-500 rounded"
+                                          className="w-4 h-4 text-orange-500 focus:ring-orange-500 rounded"
                                         />
                                         <span>{f.helpText || (lang === 'ta' ? 'நான் இந்த அறிவிப்பை ஒப்புக்கொள்கிறேன்' : 'I agree to this declaration')}</span>
                                       </label>
@@ -1383,7 +1383,7 @@ export default function ApplyService() {
                                         placeholder={placeholderText}
                                         value={fieldValues[key] || ''}
                                         onChange={e => handleInputChange(key, e.target.value)}
-                                        className={`w-full px-4 py-3 bg-white border ${hasErr ? 'border-rose-500 bg-rose-50' : 'border-slate-200'} rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-[#0b192c]`}
+                                        className={`w-full px-4 py-3.5 bg-white border ${hasErr ? 'border-rose-500 bg-rose-50' : 'border-slate-300'} rounded-xl text-sm sm:text-base font-medium text-slate-900 focus:ring-2 focus:ring-[#0b192c]`}
                                       />
                                     ) : (
                                       (() => {
@@ -1397,14 +1397,14 @@ export default function ApplyService() {
                                             style={constraints.style}
                                             value={fieldValues[key] || ''}
                                             onChange={e => handleInputChange(key, e.target.value, f)}
-                                            className={`w-full px-4 py-3 bg-white border ${hasErr ? 'border-rose-500 bg-rose-50' : 'border-slate-200'} rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-[#0b192c]`}
+                                            className={`w-full px-4 py-3.5 bg-white border ${hasErr ? 'border-rose-500 bg-rose-50' : 'border-slate-300'} rounded-xl text-sm sm:text-base font-semibold text-slate-900 focus:ring-2 focus:ring-[#0b192c]`}
                                           />
                                         );
                                       })()
                                     )}
 
-                                    {f.helpText && <p className="text-[11px] text-slate-500 mt-1 font-normal">{f.helpText}</p>}
-                                    {hasErr && <p className="text-[11px] text-rose-600 font-bold mt-1">{hasErr}</p>}
+                                    {f.helpText && <p className="text-xs sm:text-sm text-slate-500 mt-1.5 font-medium">{f.helpText}</p>}
+                                    {hasErr && <p className="text-xs sm:text-sm text-rose-600 font-bold mt-1.5">{hasErr}</p>}
                                   </div>
                                 );
                               })}
@@ -1416,7 +1416,7 @@ export default function ApplyService() {
                   )}
 
                   {/* VERIFY DETAILS TRUST NOTICE */}
-                  <div className="bg-orange-50/70 border border-orange-200/80 p-4 rounded-2xl flex items-start space-x-3 text-xs text-orange-900 font-medium">
+                  <div className="bg-orange-50/70 border border-orange-200/80 p-4 rounded-2xl flex items-start space-x-3 text-sm text-orange-950 font-medium">
                     <Info className="w-5 h-5 text-orange-600 shrink-0 mt-0.5" />
                     <div>
                       <span className="font-extrabold text-orange-950">{t.verifyNoticeTitle} </span>
@@ -1430,7 +1430,7 @@ export default function ApplyService() {
                       type="button"
                       onClick={handleSaveDraft}
                       disabled={savingDraft}
-                      className="px-5 py-3.5 bg-slate-100 hover:bg-slate-200/80 text-slate-700 font-bold text-xs rounded-xl border border-slate-200/80 flex items-center gap-2 transition-colors"
+                      className="px-5 py-3.5 bg-slate-100 hover:bg-slate-200/80 text-slate-800 font-bold text-xs sm:text-sm rounded-xl border border-slate-200/80 flex items-center gap-2 transition-colors"
                     >
                       <Save className="w-4 h-4 text-orange-500" />
                       <span>{savingDraft ? t.savingDraftText : t.saveDraftBtn}</span>
@@ -1439,7 +1439,7 @@ export default function ApplyService() {
                     <button
                       type="button"
                       onClick={handleNextStep}
-                      className="px-8 py-3.5 bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-xs sm:text-sm rounded-xl shadow-xs transition-colors flex items-center gap-2 group/btn"
+                      className="px-8 py-3.5 bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-sm sm:text-base rounded-xl shadow-xs transition-colors flex items-center gap-2 group/btn"
                     >
                       <span>{t.continueToDocuments}</span>
                       <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
@@ -1739,48 +1739,48 @@ export default function ApplyService() {
                   {/* APPLICANT SUMMARY */}
                   <div className="p-6 bg-slate-50/80 rounded-2xl border border-slate-200/70 space-y-4">
                     <div className="flex items-center justify-between border-b pb-3 border-slate-200/70">
-                      <h4 className="text-xs font-bold text-slate-700 tracking-tight">{t.applicantDetailsTitle}</h4>
+                      <h4 className="text-sm sm:text-base font-extrabold text-slate-800 tracking-tight">{t.applicantDetailsTitle}</h4>
                       <button
                         onClick={() => setCurrentStep(1)}
-                        className="text-xs font-semibold text-orange-600 hover:text-orange-700 bg-white hover:bg-orange-50 border border-orange-200/80 px-3 py-1.5 rounded-lg flex items-center gap-1 transition-colors shadow-2xs"
+                        className="text-xs sm:text-sm font-bold text-orange-600 hover:text-orange-700 bg-white hover:bg-orange-50 border border-orange-200/80 px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors shadow-2xs"
                       >
                         <Edit3 className="w-3.5 h-3.5" />
                         <span>{lang === 'ta' ? 'திருத்த' : 'Edit'}</span>
                       </button>
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
-                      <div className="bg-white p-4 rounded-xl border border-slate-200/70 shadow-2xs space-y-2">
-                        <span className="text-slate-500 block text-[11px] font-medium tracking-normal capitalize leading-tight">{t.fullName}</span>
-                        <span className="font-semibold text-slate-900 text-xs sm:text-sm block pt-0.5">{applicantInfo.user_name || 'N/A'}</span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                      <div className="bg-white p-4 rounded-xl border border-slate-200/70 shadow-2xs space-y-1.5">
+                        <span className="text-slate-500 block text-xs sm:text-sm font-semibold tracking-normal capitalize leading-tight">{t.fullName}</span>
+                        <span className="font-extrabold text-slate-900 text-sm sm:text-base block pt-0.5">{applicantInfo.user_name || 'N/A'}</span>
                       </div>
-                      <div className="bg-white p-4 rounded-xl border border-slate-200/70 shadow-2xs space-y-2">
-                        <span className="text-slate-500 block text-[11px] font-medium tracking-normal capitalize leading-tight">{t.mobileNumber}</span>
-                        <span className="font-semibold text-slate-900 text-xs sm:text-sm block font-mono pt-0.5">{applicantInfo.user_phone || 'N/A'}</span>
+                      <div className="bg-white p-4 rounded-xl border border-slate-200/70 shadow-2xs space-y-1.5">
+                        <span className="text-slate-500 block text-xs sm:text-sm font-semibold tracking-normal capitalize leading-tight">{t.mobileNumber}</span>
+                        <span className="font-extrabold text-slate-900 text-sm sm:text-base block font-mono pt-0.5">{applicantInfo.user_phone || 'N/A'}</span>
                       </div>
-                      <div className="bg-white p-4 rounded-xl border border-slate-200/70 shadow-2xs space-y-2">
-                        <span className="text-slate-500 block text-[11px] font-medium tracking-normal capitalize leading-tight">{t.emailAddress}</span>
-                        <span className="font-semibold text-slate-900 text-xs sm:text-sm block truncate pt-0.5">{applicantInfo.user_email || 'N/A'}</span>
+                      <div className="bg-white p-4 rounded-xl border border-slate-200/70 shadow-2xs space-y-1.5">
+                        <span className="text-slate-500 block text-xs sm:text-sm font-semibold tracking-normal capitalize leading-tight">{t.emailAddress}</span>
+                        <span className="font-extrabold text-slate-900 text-sm sm:text-base block truncate pt-0.5">{applicantInfo.user_email || 'N/A'}</span>
                       </div>
-                      <div className="bg-white p-4 rounded-xl border border-slate-200/70 shadow-2xs space-y-2">
-                        <span className="text-slate-500 block text-[11px] font-medium tracking-normal capitalize leading-tight">{t.districtLabel} / {t.stateLabel}</span>
-                        <span className="font-semibold text-slate-900 text-xs sm:text-sm block pt-0.5">{applicantInfo.district ? `${applicantInfo.district}, ${applicantInfo.state}` : applicantInfo.state}</span>
+                      <div className="bg-white p-4 rounded-xl border border-slate-200/70 shadow-2xs space-y-1.5">
+                        <span className="text-slate-500 block text-xs sm:text-sm font-semibold tracking-normal capitalize leading-tight">{t.districtLabel} / {t.stateLabel}</span>
+                        <span className="font-extrabold text-slate-900 text-sm sm:text-base block pt-0.5">{applicantInfo.district ? `${applicantInfo.district}, ${applicantInfo.state}` : applicantInfo.state}</span>
                       </div>
                       {Boolean(fieldValues.address || fieldValues.delivery_address || fieldValues.residential_address || applicantInfo.address) && (
-                        <div className="bg-white p-4 rounded-xl border border-slate-200/70 shadow-2xs space-y-2 sm:col-span-2">
-                          <span className="text-slate-500 block text-[11px] font-medium tracking-normal capitalize leading-tight">
+                        <div className="bg-white p-4 rounded-xl border border-slate-200/70 shadow-2xs space-y-1.5 sm:col-span-2">
+                          <span className="text-slate-500 block text-xs sm:text-sm font-semibold tracking-normal capitalize leading-tight">
                             {lang === 'ta' ? 'முகவரி' : 'Address'}
                           </span>
-                          <span className="font-semibold text-slate-900 text-xs sm:text-sm block pt-0.5">
+                          <span className="font-extrabold text-slate-900 text-sm sm:text-base block pt-0.5">
                             {fieldValues.address || fieldValues.delivery_address || fieldValues.residential_address || applicantInfo.address}
                           </span>
                         </div>
                       )}
                       {Boolean(applicantInfo.aadhaar_no) && (
-                        <div className="bg-white p-4 rounded-xl border border-slate-200/70 shadow-2xs space-y-2 sm:col-span-2">
-                          <span className="text-slate-500 block text-[11px] font-medium tracking-normal capitalize leading-tight">
+                        <div className="bg-white p-4 rounded-xl border border-slate-200/70 shadow-2xs space-y-1.5 sm:col-span-2">
+                          <span className="text-slate-500 block text-xs sm:text-sm font-semibold tracking-normal capitalize leading-tight">
                             {lang === 'ta' ? 'ஆதார் எண்' : 'Aadhaar Number'}
                           </span>
-                          <span className="font-semibold text-slate-900 text-xs sm:text-sm block font-mono pt-0.5">
+                          <span className="font-extrabold text-slate-900 text-sm sm:text-base block font-mono pt-0.5">
                             {applicantInfo.aadhaar_no}
                           </span>
                         </div>
@@ -1810,25 +1810,25 @@ export default function ApplyService() {
                     return (
                       <div className="p-6 bg-slate-50/80 rounded-2xl border border-slate-200/70 space-y-4">
                         <div className="flex items-center justify-between border-b pb-3 border-slate-200/70">
-                          <h4 className="text-xs font-bold text-slate-700 tracking-tight">{t.customInputsTitle}</h4>
+                          <h4 className="text-sm sm:text-base font-extrabold text-slate-800 tracking-tight">{t.customInputsTitle}</h4>
                           <button
                             onClick={() => setCurrentStep(1)}
-                            className="text-xs font-semibold text-orange-600 hover:text-orange-700 bg-white hover:bg-orange-50 border border-orange-200/80 px-3 py-1.5 rounded-lg flex items-center gap-1 transition-colors shadow-2xs"
+                            className="text-xs sm:text-sm font-bold text-orange-600 hover:text-orange-700 bg-white hover:bg-orange-50 border border-orange-200/80 px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors shadow-2xs"
                           >
                             <Edit3 className="w-3.5 h-3.5" />
                             <span>{lang === 'ta' ? 'திருத்த' : 'Edit'}</span>
                           </button>
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           {uniqueCustomEntries.map(([k, v], idx) => {
                             const fDef = service.fields ? service.fields.find(f => (f.field_name || f.name) === k) : null;
                             const rawLabel = fDef ? (fDef.field_label || fDef.label || k) : k.replace(/_/g, ' ');
                             const cleanLabel = getLocalizedFieldLabel(rawLabel, lang);
                             const valDisplay = getLocalizedOption(String(v), lang);
                             return (
-                              <div key={idx} className="bg-white p-4 rounded-xl border border-slate-200/70 shadow-2xs space-y-2">
-                                <span className="text-slate-500 block text-[11px] font-medium tracking-normal capitalize leading-tight">{cleanLabel}:</span>
-                                <span className="font-semibold text-slate-900 block text-xs sm:text-sm leading-relaxed pt-0.5">{valDisplay}</span>
+                              <div key={idx} className="bg-white p-4 rounded-xl border border-slate-200/70 shadow-2xs space-y-1.5">
+                                <span className="text-slate-500 block text-xs sm:text-sm font-semibold tracking-normal capitalize leading-tight">{cleanLabel}:</span>
+                                <span className="font-extrabold text-slate-900 block text-sm sm:text-base leading-relaxed pt-0.5">{valDisplay}</span>
                               </div>
                             );
                           })}
@@ -2103,8 +2103,8 @@ export default function ApplyService() {
                           <QrCode className="w-5 h-5" />
                         </div>
                         <div>
-                          <div className="text-xs font-bold text-slate-900">{t.upiPaymentTitle}</div>
-                          <span className="inline-block text-[10px] font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full mt-1 border border-emerald-200/60">
+                          <div className="text-sm font-extrabold text-slate-900">{t.upiPaymentTitle}</div>
+                          <span className="inline-block text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full mt-1 border border-emerald-200/60">
                             {lang === 'ta' ? 'வேகமானது' : 'Fastest'}
                           </span>
                         </div>
@@ -2125,8 +2125,8 @@ export default function ApplyService() {
                           <CreditCard className="w-5 h-5" />
                         </div>
                         <div>
-                          <div className="text-xs font-bold text-slate-900">{t.cardPaymentTitle}</div>
-                          <span className="inline-block text-[10px] font-medium text-slate-500 mt-1">Visa, Mastercard</span>
+                          <div className="text-sm font-extrabold text-slate-900">{t.cardPaymentTitle}</div>
+                          <span className="inline-block text-xs font-semibold text-slate-500 mt-1">Visa, Mastercard</span>
                         </div>
                       </div>
 
@@ -2145,8 +2145,8 @@ export default function ApplyService() {
                           <Building2 className="w-5 h-5" />
                         </div>
                         <div>
-                          <div className="text-xs font-bold text-slate-900">{t.netbankingTitle}</div>
-                          <span className="inline-block text-[10px] font-medium text-slate-500 mt-1">50+ Banks</span>
+                          <div className="text-sm font-extrabold text-slate-900">{t.netbankingTitle}</div>
+                          <span className="inline-block text-xs font-semibold text-slate-500 mt-1">50+ Banks</span>
                         </div>
                       </div>
 
@@ -2165,8 +2165,8 @@ export default function ApplyService() {
                           <Wallet className="w-5 h-5" />
                         </div>
                         <div>
-                          <div className="text-xs font-bold text-slate-900">{t.walletTitle}</div>
-                          <span className="inline-block text-[10px] font-medium text-slate-500 mt-1">Paytm, PhonePe</span>
+                          <div className="text-sm font-extrabold text-slate-900">{t.walletTitle}</div>
+                          <span className="inline-block text-xs font-semibold text-slate-500 mt-1">Paytm, PhonePe</span>
                         </div>
                       </div>
                     </div>
@@ -2361,45 +2361,45 @@ export default function ApplyService() {
               <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-sm space-y-5">
                 <div className="flex items-center justify-between border-b pb-3.5 border-slate-100">
                   <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center border border-orange-100">
-                      <FileText className="w-4 h-4" />
+                    <div className="w-9 h-9 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center border border-orange-100">
+                      <FileText className="w-5 h-5" />
                     </div>
-                    <h3 className="font-heading font-extrabold text-base text-slate-900">
+                    <h3 className="font-heading font-extrabold text-base sm:text-lg text-slate-900">
                       {lang === 'ta' ? 'விண்ணப்ப சுருக்கம்' : 'Application Summary'}
                     </h3>
                   </div>
-                  <span className="text-[10px] font-bold text-orange-600 bg-orange-50/80 border border-orange-200/60 px-2.5 py-1 rounded-full">
+                  <span className="text-xs font-bold text-orange-600 bg-orange-50/80 border border-orange-200/60 px-3 py-1 rounded-full">
                     {lang === 'ta' ? 'விவரங்கள்' : 'Overview'}
                   </span>
                 </div>
 
-                <div className="space-y-4 text-xs">
-                  <div className="bg-slate-50/80 p-3.5 rounded-2xl border border-slate-200/70 space-y-1">
-                    <span className="text-[11px] font-medium text-slate-500 block">{lang === 'ta' ? 'தேர்ந்தெடுக்கப்பட்ட சேவை' : 'Selected Service'}</span>
-                    <span className="font-semibold text-slate-900 text-xs sm:text-sm block leading-snug">{service.name}</span>
+                <div className="space-y-4 text-xs sm:text-sm">
+                  <div className="bg-slate-50/80 p-4 rounded-2xl border border-slate-200/70 space-y-1">
+                    <span className="text-xs font-semibold text-slate-500 block">{lang === 'ta' ? 'தேர்ந்தெடுக்கப்பட்ட சேவை' : 'Selected Service'}</span>
+                    <span className="font-extrabold text-slate-900 text-sm sm:text-base block leading-snug">{service.name}</span>
                   </div>
 
-                  <div className="bg-slate-50/80 p-3.5 rounded-2xl border border-slate-200/70 space-y-1">
-                    <span className="text-[11px] font-medium text-slate-500 block">{t.categoriesTitle}</span>
-                    <span className="font-semibold text-orange-600 block">{service.category_name}</span>
+                  <div className="bg-slate-50/80 p-4 rounded-2xl border border-slate-200/70 space-y-1">
+                    <span className="text-xs font-semibold text-slate-500 block">{t.categoriesTitle}</span>
+                    <span className="font-extrabold text-orange-600 text-sm sm:text-base block">{service.category_name}</span>
                   </div>
 
                   <div className="pt-2 space-y-3">
-                    <div className="flex items-center justify-between py-1.5 border-b border-slate-100">
-                      <span className="text-slate-500 font-medium">{t.serviceFeeLabel}:</span>
-                      <span className="font-bold text-orange-600 text-sm font-mono">
+                    <div className="flex items-center justify-between py-2 border-b border-slate-100">
+                      <span className="text-slate-600 font-semibold">{t.serviceFeeLabel}:</span>
+                      <span className="font-black text-orange-600 text-base sm:text-lg font-mono">
                         {service.fee === 0 ? (lang === 'ta' ? 'இலவசம்' : 'FREE') : `₹${service.fee}`}
                       </span>
                     </div>
 
-                    <div className="flex items-center justify-between py-1.5 border-b border-slate-100">
-                      <span className="text-slate-500 font-medium">{t.processingTimeLabel}:</span>
-                      <span className="font-semibold text-slate-900">{service.processing_time || (lang === 'ta' ? '3-5 வேலை நாட்கள்' : '3-5 Working Days')}</span>
+                    <div className="flex items-center justify-between py-2 border-b border-slate-100">
+                      <span className="text-slate-600 font-semibold">{t.processingTimeLabel}:</span>
+                      <span className="font-bold text-slate-900">{service.processing_time || (lang === 'ta' ? '3-5 வேலை நாட்கள்' : '3-5 Working Days')}</span>
                     </div>
 
-                    <div className="flex items-center justify-between py-1.5">
-                      <span className="text-slate-500 font-medium">{lang === 'ta' ? 'தேவையான சான்றுகள்:' : 'Required Proofs:'}</span>
-                      <span className="font-semibold text-slate-900">
+                    <div className="flex items-center justify-between py-2">
+                      <span className="text-slate-600 font-semibold">{lang === 'ta' ? 'தேவையான சான்றுகள்:' : 'Required Proofs:'}</span>
+                      <span className="font-bold text-slate-900">
                         {(() => {
                           const docs = service.documents || [];
                           if (docs.length === 0) return lang === 'ta' ? 'இல்லை' : 'None';
@@ -2420,38 +2420,38 @@ export default function ApplyService() {
               </div>
 
               {/* NEED HELP CARD */}
-              <div className="bg-[#0b192c] text-white rounded-3xl p-6 space-y-5 shadow-lg border border-slate-800 relative overflow-hidden">
+              <div className="bg-[#0b192c] text-white rounded-3xl p-6 sm:p-7 space-y-5 shadow-lg border border-slate-800 relative overflow-hidden">
                 <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                  <div className="flex items-center gap-2 text-orange-400 font-semibold text-xs tracking-wide">
+                  <div className="flex items-center gap-2 text-orange-400 font-bold text-xs sm:text-sm tracking-wide">
                     <HelpCircle className="w-4 h-4 shrink-0 text-orange-400" />
                     <span>{lang === 'ta' ? 'உதவி தேவையா?' : 'Need Assistance?'}</span>
                   </div>
-                  <span className="text-[10px] font-medium text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded-full border border-emerald-800/80">
+                  <span className="text-xs font-semibold text-emerald-400 bg-emerald-950/80 px-2.5 py-0.5 rounded-full border border-emerald-800/80">
                     {lang === 'ta' ? 'ஆன்லைன் 24/7' : 'Online Support'}
                   </span>
                 </div>
                 
                 <div className="space-y-1.5">
-                  <h4 className="font-heading font-extrabold text-base text-white">
+                  <h4 className="font-heading font-extrabold text-base sm:text-lg text-white">
                     {lang === 'ta' ? 'விண்ணப்ப உதவி மையம்' : 'Application Help Desk'}
                   </h4>
-                  <p className="text-slate-400 text-xs font-normal leading-relaxed">
+                  <p className="text-slate-300 text-xs sm:text-sm font-normal leading-relaxed">
                     {lang === 'ta' ? 'ஆவணங்கள் அல்லது விண்ணப்பப் படிகள் குறித்து ஏதேனும் சந்தேகம் உள்ளதா? உதவி மையத்தைத் தொடர்பு கொள்ளவும்.' : 'Have questions regarding required documents or application steps? Contact our support team.'}
                   </p>
                 </div>
 
-                <div className="space-y-2.5 pt-2 text-xs">
-                  <div className="bg-slate-900/90 border border-slate-800 p-3 rounded-2xl flex items-center justify-between">
+                <div className="space-y-2.5 pt-2 text-xs sm:text-sm">
+                  <div className="bg-slate-900/90 border border-slate-800 p-3.5 rounded-2xl flex items-center justify-between">
                     <div className="flex items-center gap-2.5 text-slate-300 font-medium">
                       <Phone className="w-4 h-4 text-orange-400 shrink-0" />
                       <span className="font-mono font-semibold text-white">+91 98940 59591</span>
                     </div>
-                    <span className="text-[10px] text-slate-400 font-medium">{lang === 'ta' ? 'உதவி எண்' : 'Support'}</span>
+                    <span className="text-xs text-slate-400 font-medium">{lang === 'ta' ? 'உதவி எண்' : 'Support'}</span>
                   </div>
 
-                  <div className="bg-slate-900/90 border border-slate-800 p-3 rounded-2xl flex items-center gap-2.5 text-slate-300 font-medium">
+                  <div className="bg-slate-900/90 border border-slate-800 p-3.5 rounded-2xl flex items-center gap-2.5 text-slate-300 font-medium">
                     <Mail className="w-4 h-4 text-orange-400 shrink-0" />
-                    <span className="text-xs text-white">econnectindia@gmail.com</span>
+                    <span className="text-xs sm:text-sm text-white">econnectindia@gmail.com</span>
                   </div>
                 </div>
               </div>

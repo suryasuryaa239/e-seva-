@@ -146,7 +146,7 @@ export default function UserDashboard() {
           <div className="absolute top-0 right-0 w-72 h-72 bg-orange-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
           <div className="space-y-2 relative z-10">
-            <div className="inline-flex items-center space-x-2 px-3.5 py-1 bg-slate-800/90 text-orange-400 text-[10px] font-black rounded-full border border-slate-700 uppercase tracking-widest">
+            <div className="inline-flex items-center space-x-2 px-3.5 py-1 bg-slate-800/90 text-orange-400 text-xs font-black rounded-full border border-slate-700 uppercase tracking-widest">
               <ShieldCheck className="w-3.5 h-3.5 text-orange-400" />
               <span>{t.govTag || (lang === 'ta' ? 'தமிழ்நாடு அரசு மின்னணு இ-சேவை மையம்' : 'VERIFIED CITIZEN ACCOUNT')}</span>
             </div>
@@ -181,46 +181,46 @@ export default function UserDashboard() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-sm space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] sm:text-xs font-extrabold text-slate-500 uppercase tracking-wider">{t.totalSubmitted}</span>
+              <span className="text-xs sm:text-xs font-extrabold text-slate-500 uppercase tracking-wider">{t.totalSubmitted}</span>
               <div className="w-9 h-9 rounded-xl bg-slate-100 text-[#0b192c] flex items-center justify-center border border-slate-200">
                 <FileText className="w-4.5 h-4.5" />
               </div>
             </div>
             <div className="text-3xl font-black text-slate-900">{totalCount}</div>
-            <p className="text-[11px] text-slate-400 font-medium">{lang === 'ta' ? 'பதிவு செய்யப்பட்டவை' : 'Logged applications'}</p>
+            <p className="text-xs sm:text-sm text-slate-400 font-medium">{lang === 'ta' ? 'பதிவு செய்யப்பட்டவை' : 'Logged applications'}</p>
           </div>
 
           <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-sm space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] sm:text-xs font-extrabold text-amber-700 uppercase tracking-wider">{lang === 'ta' ? 'சேமிக்கப்பட்டவை' : 'Saved Drafts'}</span>
+              <span className="text-xs sm:text-xs font-extrabold text-amber-700 uppercase tracking-wider">{lang === 'ta' ? 'சேமிக்கப்பட்டவை' : 'Saved Drafts'}</span>
               <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center border border-amber-200">
                 <FileClock className="w-4.5 h-4.5" />
               </div>
             </div>
             <div className="text-3xl font-black text-amber-700">{draftCount}</div>
-            <p className="text-[11px] text-slate-400 font-medium">{lang === 'ta' ? 'வரைவு வடிவில் உள்ளன' : 'Form progress saved'}</p>
+            <p className="text-xs sm:text-sm text-slate-400 font-medium">{lang === 'ta' ? 'வரைவு வடிவில் உள்ளன' : 'Form progress saved'}</p>
           </div>
 
           <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-sm space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] sm:text-xs font-extrabold text-indigo-900 uppercase tracking-wider">{t.inProcessing}</span>
+              <span className="text-xs sm:text-xs font-extrabold text-indigo-900 uppercase tracking-wider">{t.inProcessing}</span>
               <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-900 flex items-center justify-center border border-indigo-200">
                 <Clock className="w-4.5 h-4.5" />
               </div>
             </div>
             <div className="text-3xl font-black text-indigo-900">{activeCount}</div>
-            <p className="text-[11px] text-slate-400 font-medium">{lang === 'ta' ? 'அதிகாரி ஆய்வில் உள்ளது' : 'Under verification'}</p>
+            <p className="text-xs sm:text-sm text-slate-400 font-medium">{lang === 'ta' ? 'அதிகாரி ஆய்வில் உள்ளது' : 'Under verification'}</p>
           </div>
 
           <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-sm space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] sm:text-xs font-extrabold text-emerald-800 uppercase tracking-wider">{t.approvedApps}</span>
+              <span className="text-xs sm:text-xs font-extrabold text-emerald-800 uppercase tracking-wider">{t.approvedApps}</span>
               <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-800 flex items-center justify-center border border-emerald-200">
                 <CheckCircle2 className="w-4.5 h-4.5" />
               </div>
             </div>
             <div className="text-3xl font-black text-emerald-800">{completedCount}</div>
-            <p className="text-[11px] text-slate-400 font-medium">{lang === 'ta' ? 'சான்றிதழ்கள் தயார்' : 'Digital certificates ready'}</p>
+            <p className="text-xs sm:text-sm text-slate-400 font-medium">{lang === 'ta' ? 'சான்றிதழ்கள் தயார்' : 'Digital certificates ready'}</p>
           </div>
         </div>
 
@@ -314,7 +314,7 @@ export default function UserDashboard() {
               {/* DESKTOP TABLE */}
               <div className="hidden md:block overflow-x-auto">
                 <table className="w-full text-left text-xs text-slate-700">
-                  <thead className="bg-[#0b192c] text-slate-300 font-black uppercase tracking-wider text-[10px] border-b border-slate-800">
+                  <thead className="bg-[#0b192c] text-slate-300 font-black uppercase tracking-wider text-xs border-b border-slate-800">
                     <tr>
                       <th className="py-3.5 px-4 text-orange-400">{t.appId}</th>
                       <th className="py-3.5 px-4">{t.serviceName}</th>
@@ -337,7 +337,7 @@ export default function UserDashboard() {
                           <td className="py-4 px-4 font-extrabold text-slate-900">
                             {app.service_name || (lang === 'ta' ? 'மின்னணு சேவை' : 'Digital Service')}
                           </td>
-                          <td className="py-4 px-4 text-slate-500 font-mono text-[11px]">
+                          <td className="py-4 px-4 text-slate-500 font-mono text-xs sm:text-sm">
                             {new Date(app.created_at || app.submitted_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
                           </td>
                           <td className="py-4 px-4">
@@ -394,7 +394,7 @@ export default function UserDashboard() {
 
                       <div>
                         <h4 className="font-black text-slate-900 text-sm">{app.service_name || (lang === 'ta' ? 'மின்னணு சேவை' : 'Digital Service')}</h4>
-                        <span className="text-[11px] text-slate-500 font-mono">
+                        <span className="text-xs sm:text-sm text-slate-500 font-mono">
                           {lang === 'ta' ? 'சமர்ப்பிக்கப்பட்ட தேதி: ' : 'Logged: '}{new Date(app.created_at || app.submitted_at).toLocaleDateString(lang === 'ta' ? 'ta-IN' : 'en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
                         </span>
                       </div>

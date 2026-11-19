@@ -103,7 +103,7 @@ export default function ForgotPassword() {
         {step === 1 && (
           <form onSubmit={handleRequestToken} className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">{t.emailAddressLabel}</label>
+              <label className="block text-sm sm:text-base font-bold text-slate-800 mb-1.5">{t.emailAddressLabel}</label>
               <div className="relative">
                 <input
                   type="email"
@@ -130,7 +130,7 @@ export default function ForgotPassword() {
         {step === 2 && (
           <form onSubmit={handleResetPassword} className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">{lang === 'ta' ? 'மீட்டமைப்பு டோக்கன்' : 'Reset Verification Token'}</label>
+              <label className="block text-sm sm:text-base font-bold text-slate-800 mb-1.5">{lang === 'ta' ? 'மீட்டமைப்பு டோக்கன்' : 'Reset Verification Token'}</label>
               <input
                 type="text"
                 required
@@ -142,7 +142,7 @@ export default function ForgotPassword() {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">{lang === 'ta' ? 'புதிய கடவுச்சொல்' : 'New Password'}</label>
+              <label className="block text-sm sm:text-base font-bold text-slate-800 mb-1.5">{lang === 'ta' ? 'புதிய கடவுச்சொல்' : 'New Password'}</label>
               <input
                 type="password"
                 required
@@ -155,7 +155,7 @@ export default function ForgotPassword() {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">{t.confirmPasswordLabel}</label>
+              <label className="block text-sm sm:text-base font-bold text-slate-800 mb-1.5">{t.confirmPasswordLabel}</label>
               <input
                 type="password"
                 required

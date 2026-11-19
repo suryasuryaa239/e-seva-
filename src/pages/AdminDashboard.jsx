@@ -8397,7 +8397,7 @@ export default function AdminDashboard() {
                     placeholder="Enter document name (e.g. Income Certificate / Ration Card)"
                     value={newServiceForm.newDocInput || ''}
                     onChange={(e) => setNewServiceForm({ ...newServiceForm, newDocInput: e.target.value })}
-                    className="flex-1 bg-white border border-slate-300 text-slate-900 rounded-xl px-3.5 py-2.5 outline-none font-medium text-xs focus:border-orange-500 shadow-xs"
+                    className="flex-1 bg-white border border-slate-300 text-slate-900 rounded-xl px-4 py-3 outline-none font-semibold text-sm focus:border-orange-500 shadow-xs"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
                         e.preventDefault();
@@ -9076,7 +9076,7 @@ export default function AdminDashboard() {
                     placeholder="Enter document name (e.g. Passport Copy / Birth Certificate)"
                     value={editingServiceForm.newDocInput || ''}
                     onChange={(e) => setEditingServiceForm({ ...editingServiceForm, newDocInput: e.target.value })}
-                    className="flex-1 bg-white border border-slate-300 text-slate-900 rounded-xl px-3.5 py-2.5 outline-none font-medium text-xs focus:border-amber-500 shadow-xs"
+                    className="flex-1 bg-white border border-slate-300 text-slate-900 rounded-xl px-4 py-3 outline-none font-semibold text-sm focus:border-amber-500 shadow-xs"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
                         e.preventDefault();

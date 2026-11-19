@@ -155,7 +155,7 @@ export default function ApplicationTracker() {
         <form onSubmit={handleTrackSubmit} className="grid grid-cols-1 sm:grid-cols-12 gap-4">
           <div className="sm:col-span-7 space-y-1.5">
             <div className="flex justify-between items-center">
-              <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider block">
+              <label className="text-sm sm:text-base font-extrabold text-slate-800 block mb-1">
                 Application Reference ID <span className="text-orange-500">*</span>
               </label>
               <button
@@ -165,7 +165,7 @@ export default function ApplicationTracker() {
                   setForgotError('');
                   setForgotResults([]);
                 }}
-                className="text-[11px] font-bold text-orange-600 hover:text-orange-700 hover:underline flex items-center gap-1 cursor-pointer transition-colors"
+                className="text-xs sm:text-sm font-bold text-orange-600 hover:text-orange-700 hover:underline flex items-center gap-1 cursor-pointer transition-colors"
               >
                 <Key className="w-3 h-3 text-orange-500" />
                 <span>{t.forgotRefBtn || 'Forgot Reference ID?'}</span>
@@ -176,12 +176,12 @@ export default function ApplicationTracker() {
               placeholder="e.g. ESV-2026-000001"
               value={appId}
               onChange={(e) => setAppId(e.target.value)}
-              className="w-full bg-slate-50 text-slate-900 text-xs font-mono font-bold rounded-xl px-4 py-3.5 border border-slate-300 focus:border-[#0b192c] focus:bg-white outline-none transition-all shadow-inner"
+              className="w-full bg-slate-50 text-slate-900 text-sm sm:text-base font-mono font-bold rounded-xl px-4 py-3.5 border border-slate-300 focus:border-[#0b192c] focus:bg-white outline-none transition-all shadow-inner"
             />
           </div>
 
           <div className="sm:col-span-5 space-y-1.5">
-            <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider block">
+            <label className="text-sm sm:text-base font-extrabold text-slate-800 block mb-1">
               Mobile Number (Optional)
             </label>
             <input
@@ -189,7 +189,7 @@ export default function ApplicationTracker() {
               placeholder="10-digit phone number"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              className="w-full bg-slate-50 text-slate-900 text-xs rounded-xl px-4 py-3.5 border border-slate-300 focus:border-[#0b192c] focus:bg-white outline-none transition-all"
+              className="w-full bg-slate-50 text-slate-900 text-sm sm:text-base font-semibold rounded-xl px-4 py-3.5 border border-slate-300 focus:border-[#0b192c] focus:bg-white outline-none transition-all"
             />
           </div>
 
@@ -197,7 +197,7 @@ export default function ApplicationTracker() {
             <button
               type="submit"
               disabled={loading || !appId.trim()}
-              className="w-full bg-[#0b192c] hover:bg-orange-600 text-white font-extrabold text-xs sm:text-sm py-4 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 group disabled:opacity-50 cursor-pointer"
+              className="w-full bg-[#0b192c] hover:bg-orange-600 text-white font-extrabold text-sm sm:text-base font-extrabold py-4 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 group disabled:opacity-50 cursor-pointer"
             >
               {loading ? (
                 <>
@@ -645,7 +645,7 @@ export default function ApplicationTracker() {
 
             {/* Search Form */}
             <form onSubmit={handleForgotLookup} className="space-y-3">
-              <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider block">
+              <label className="text-sm sm:text-base font-extrabold text-slate-800 block mb-1">
                 {lang === 'ta' ? 'மொபைல் எண் / மின்னஞ்சல்' : 'Registered Mobile Number or Email'}
               </label>
               <div className="flex gap-2">
@@ -654,7 +654,7 @@ export default function ApplicationTracker() {
                   placeholder="e.g. 9876543210 or name@example.com"
                   value={forgotIdentifier}
                   onChange={(e) => setForgotIdentifier(e.target.value)}
-                  className="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-xs text-slate-900 font-medium focus:bg-white focus:border-[#0b192c] outline-none"
+                  className="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-4 py-3.5 text-sm sm:text-base text-slate-900 font-semibold font-medium focus:bg-white focus:border-[#0b192c] outline-none"
                   required
                 />
                 <button

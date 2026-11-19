@@ -273,28 +273,28 @@ export default function Login() {
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                   <div>
-                    <label className="text-[11px] font-bold text-slate-700 block mb-1">
+                    <label className="text-sm font-bold text-slate-800 block mb-1.5">
                       {t.fullNameLabel || (lang === 'ta' ? 'முழு பெயர்' : 'Full Name')} <span className="text-rose-500">*</span>
                     </label>
                     <div className="relative">
-                      <User className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                      <User className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                       <input
                         type="text"
                         required
                         placeholder="Karthik Subramanian"
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="w-full bg-slate-50/70 text-slate-900 text-xs font-medium rounded-lg pl-9 pr-3 py-2 border border-slate-200 focus:border-[#0f172a] focus:bg-white focus:ring-2 focus:ring-[#0f172a]/10 outline-none transition-all"
+                        className="w-full bg-slate-50/70 text-slate-900 text-sm sm:text-base font-semibold rounded-xl pl-10 pr-3.5 py-3 border border-slate-200 focus:border-[#0f172a] focus:bg-white focus:ring-2 focus:ring-[#0f172a]/10 outline-none transition-all"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="text-[11px] font-bold text-slate-700 block mb-1">
+                    <label className="text-sm font-bold text-slate-800 block mb-1.5">
                       {t.mobileLabel || (lang === 'ta' ? 'கைபேசி எண்' : 'Mobile Number')} <span className="text-rose-500">*</span>
                     </label>
                     <div className="relative">
-                      <Phone className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                      <Phone className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                       <input
                         type="tel"
                         required
@@ -303,7 +303,7 @@ export default function Login() {
                         inputMode="numeric"
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: sanitizePhone(e.target.value) })}
-                        className="w-full bg-slate-50/70 text-slate-900 text-xs font-medium rounded-lg pl-9 pr-3 py-2 border border-slate-200 focus:border-[#0f172a] focus:bg-white focus:ring-2 focus:ring-[#0f172a]/10 outline-none transition-all"
+                        className="w-full bg-slate-50/70 text-slate-900 text-sm sm:text-base font-semibold rounded-xl pl-10 pr-3.5 py-3 border border-slate-200 focus:border-[#0f172a] focus:bg-white focus:ring-2 focus:ring-[#0f172a]/10 outline-none transition-all"
                       />
                     </div>
                   </div>
@@ -311,28 +311,28 @@ export default function Login() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                   <div>
-                    <label className="text-[11px] font-bold text-slate-700 block mb-1">
+                    <label className="text-sm font-bold text-slate-800 block mb-1.5">
                       {t.emailLabel || t.authEmail || (lang === 'ta' ? 'மின்னஞ்சல்' : 'Email Address')} <span className="text-rose-500">*</span>
                     </label>
                     <div className="relative">
-                      <Mail className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                      <Mail className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                       <input
                         type="email"
                         required
                         placeholder="user@eseva.gov.in"
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        className="w-full bg-slate-50/70 text-slate-900 text-xs font-medium rounded-lg pl-9 pr-3 py-2 border border-slate-200 focus:border-[#0f172a] focus:bg-white focus:ring-2 focus:ring-[#0f172a]/10 outline-none transition-all"
+                        className="w-full bg-slate-50/70 text-slate-900 text-sm sm:text-base font-semibold rounded-xl pl-10 pr-3.5 py-3 border border-slate-200 focus:border-[#0f172a] focus:bg-white focus:ring-2 focus:ring-[#0f172a]/10 outline-none transition-all"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="text-[11px] font-bold text-slate-700 block mb-1">
+                    <label className="text-sm font-bold text-slate-800 block mb-1.5">
                       {lang === 'ta' ? 'ஆதார் எண்' : 'Aadhaar'} ({lang === 'ta' ? 'விருப்பம்' : 'Optional'})
                     </label>
                     <div className="relative">
-                      <ShieldCheck className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                      <ShieldCheck className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                       <input
                         type="text"
                         placeholder="12-digit Aadhaar"
@@ -340,7 +340,7 @@ export default function Login() {
                         inputMode="numeric"
                         value={formData.aadhaar_no}
                         onChange={(e) => setFormData({ ...formData, aadhaar_no: formatAadhaar(e.target.value) })}
-                        className="w-full bg-slate-50/70 text-slate-900 text-xs font-mono font-medium rounded-lg pl-9 pr-3 py-2 border border-slate-200 focus:border-[#0f172a] focus:bg-white focus:ring-2 focus:ring-[#0f172a]/10 outline-none transition-all"
+                        className="w-full bg-slate-50/70 text-slate-900 text-sm sm:text-base font-mono font-semibold rounded-xl pl-10 pr-3.5 py-3 border border-slate-200 focus:border-[#0f172a] focus:bg-white focus:ring-2 focus:ring-[#0f172a]/10 outline-none transition-all"
                       />
                     </div>
                   </div>
@@ -348,18 +348,18 @@ export default function Login() {
               </>
             ) : (
               <div>
-                <label className="text-[11px] font-bold text-slate-700 block mb-1">
+                <label className="text-sm font-bold text-slate-800 block mb-1.5">
                   {lang === 'ta' ? 'மின்னஞ்சல் / மொபைல் / ஆதார் எண்' : 'Email / Mobile / Aadhaar Number'} <span className="text-rose-500">*</span>
                 </label>
                 <div className="relative">
-                  <Mail className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <Mail className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                   <input
                     type="text"
                     required
                     placeholder={lang === 'ta' ? 'மின்னஞ்சல் அல்லது மொபைல் எண்' : 'Email, 10-digit mobile or Aadhaar'}
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full bg-slate-50/70 text-slate-900 text-xs font-medium rounded-lg pl-9 pr-3 py-2.5 border border-slate-200 focus:border-[#0f172a] focus:bg-white focus:ring-2 focus:ring-[#0f172a]/10 outline-none transition-all"
+                    className="w-full bg-slate-50/70 text-slate-900 text-sm sm:text-base font-semibold rounded-xl pl-10 pr-3.5 py-3 border border-slate-200 focus:border-[#0f172a] focus:bg-white focus:ring-2 focus:ring-[#0f172a]/10 outline-none transition-all"
                   />
                 </div>
               </div>
@@ -367,17 +367,17 @@ export default function Login() {
 
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label className="text-[11px] font-bold text-slate-700 block">
+                <label className="text-sm font-bold text-slate-800 block">
                   {t.passwordLabel || t.authPassword || (lang === 'ta' ? 'கடவுச்சொல்' : 'Password')} <span className="text-rose-500">*</span>
                 </label>
                 {!isRegister && (
-                  <Link to="/forgot-password" className="text-[11px] font-bold text-orange-600 hover:text-orange-700 transition-colors">
+                  <Link to="/forgot-password" className="text-xs sm:text-sm font-bold text-orange-600 hover:text-orange-700 transition-colors">
                     {t.authForgotPass || (lang === 'ta' ? 'கடவுச்சொல்லை மறந்துவிட்டீர்களா?' : 'Forgot Password?')}
                   </Link>
                 )}
               </div>
               <div className="relative">
-                <Lock className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <Lock className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   required
