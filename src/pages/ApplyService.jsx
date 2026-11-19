@@ -98,7 +98,11 @@ export default function ApplyService() {
   const [siteSettings, setSiteSettings] = useState({
     payment_notice_ta: "முக்கிய கட்டண அறிவிப்பு: ஆன்லைன் கட்டணம் செலுத்துவதற்கு முன் உங்கள் விண்ணப்பப் படிவம் மற்றும் சான்று ஆவணங்கள் அனைத்தும் சரியானவை என்பதைச் சரிபார்க்கவும். அதிகாரி பரிசீலனை தொடங்கிய பின்னர் சேவைக் கட்டணம் திரும்ப வழங்கப்படாது.",
     payment_notice_en: "Important Payment Notice: Please verify that all your application form inputs and uploaded proof documents are clear and authentic before proceeding to payment. Service facilitation charges are non-refundable once desk review has commenced.",
-    payment_terms_enabled: true
+    payment_terms_enabled: true,
+    service_form_bg: '#f8fafc',
+    service_card_bg: '#ffffff',
+    service_form_border: '#e2e8f0',
+    service_form_title_color: '#334155'
   });
 
   useEffect(() => {
@@ -1193,7 +1197,10 @@ export default function ApplyService() {
               
               {/* STEP 01: APPLICANT DETAILS & CUSTOM FIELDS */}
               {currentStep === 1 && (
-                <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
+                <div 
+                  style={{ backgroundColor: siteSettings.service_card_bg || undefined }}
+                  className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6"
+                >
                   
                   <div className="border-b pb-4 border-slate-100 flex items-center justify-between">
                     <h3 className="font-heading font-extrabold text-lg sm:text-xl text-slate-900 flex items-center gap-2">
@@ -1304,8 +1311,21 @@ export default function ApplyService() {
                       {Object.entries(groupedFields).map(([secTitle, secFields], sIdx) => {
                         const localizedSecTitle = getLocalizedSectionTitle(secTitle, lang);
                         return (
-                          <div key={sIdx} className="space-y-4 bg-slate-50/80 p-5 sm:p-6 rounded-2xl border border-slate-200/80">
-                            <h5 className="text-xs sm:text-sm font-bold text-slate-700 uppercase tracking-wider border-b border-slate-200/80 pb-2">
+                          <div 
+                            key={sIdx} 
+                            style={{
+                              backgroundColor: siteSettings.service_form_bg || undefined,
+                              borderColor: siteSettings.service_form_border || undefined
+                            }}
+                            className="space-y-4 bg-slate-50/80 p-5 sm:p-6 rounded-2xl border border-slate-200/80 shadow-xs transition-colors"
+                          >
+                            <h5 
+                              style={{
+                                color: siteSettings.service_form_title_color || undefined,
+                                borderBottomColor: siteSettings.service_form_border || undefined
+                              }}
+                              className="text-xs sm:text-sm font-bold text-slate-700 uppercase tracking-wider border-b border-slate-200/80 pb-2 transition-colors"
+                            >
                               {localizedSecTitle}
                             </h5>
 
@@ -1451,7 +1471,10 @@ export default function ApplyService() {
 
               {/* STEP 02: REQUIRED DOCUMENTS UPLOAD */}
               {currentStep === 2 && (
-                <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
+                <div 
+                  style={{ backgroundColor: siteSettings.service_card_bg || undefined }}
+                  className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6"
+                >
                   
                   {(() => {
                     const allDocs = service.documents || [];
@@ -1726,7 +1749,10 @@ export default function ApplyService() {
 
               {/* STEP 03: APPLICATION REVIEW & SUBMISSION */}
               {currentStep === 3 && (
-                <div className="bg-white rounded-3xl p-8 border border-slate-200/90 shadow-sm space-y-6">
+                <div 
+                  style={{ backgroundColor: siteSettings.service_card_bg || undefined }}
+                  className="bg-white rounded-3xl p-8 border border-slate-200/90 shadow-sm space-y-6"
+                >
                   
                   <div className="border-b pb-4 border-slate-100 flex items-center justify-between">
                     <h3 className="font-heading font-extrabold text-lg text-slate-900 flex items-center gap-2">
@@ -1737,7 +1763,13 @@ export default function ApplyService() {
                   </div>
 
                   {/* APPLICANT SUMMARY */}
-                  <div className="p-5 sm:p-6 bg-slate-50/80 rounded-2xl border border-slate-200/70 space-y-4">
+                  <div 
+                    style={{
+                      backgroundColor: siteSettings.service_form_bg || undefined,
+                      borderColor: siteSettings.service_form_border || undefined
+                    }}
+                    className="p-5 sm:p-6 bg-slate-50/80 rounded-2xl border border-slate-200/70 space-y-4"
+                  >
                     <div className="flex items-center justify-between border-b pb-3 border-slate-200/70">
                       <h4 className="text-xs sm:text-sm font-bold text-slate-800 tracking-tight">{t.applicantDetailsTitle}</h4>
                       <button
@@ -1808,7 +1840,13 @@ export default function ApplyService() {
                     if (uniqueCustomEntries.length === 0) return null;
 
                     return (
-                      <div className="p-5 sm:p-6 bg-slate-50/80 rounded-2xl border border-slate-200/70 space-y-4">
+                      <div 
+                        style={{
+                          backgroundColor: siteSettings.service_form_bg || undefined,
+                          borderColor: siteSettings.service_form_border || undefined
+                        }}
+                        className="p-5 sm:p-6 bg-slate-50/80 rounded-2xl border border-slate-200/70 space-y-4"
+                      >
                         <div className="flex items-center justify-between border-b pb-3 border-slate-200/70">
                           <h4 className="text-xs sm:text-sm font-bold text-slate-800 tracking-tight">{t.customInputsTitle}</h4>
                           <button

@@ -341,7 +341,11 @@ const DEFAULT_SITE_SETTINGS = {
   phonepe_salt_index: '1',
   phonepe_env: 'PROD',
   phonepe_host_url: 'https://api.phonepe.com/apis/hermes',
-  phonepe_enabled: true
+  phonepe_enabled: true,
+  service_form_bg: '#f8fafc',
+  service_card_bg: '#ffffff',
+  service_form_border: '#e2e8f0',
+  service_form_title_color: '#334155'
 };
 
 app.get('/api/settings', (req, res) => {
@@ -373,7 +377,11 @@ app.put('/api/admin/settings', authenticateAdmin, (req, res) => {
       contact_phone,
       contact_email,
       contact_address,
-      working_hours
+      working_hours,
+      service_form_bg,
+      service_card_bg,
+      service_form_border,
+      service_form_title_color
     } = req.body;
     const list = db.all('site_settings');
     const existing = (list && list.length > 0) ? list[0] : {};
@@ -393,6 +401,10 @@ app.put('/api/admin/settings', authenticateAdmin, (req, res) => {
       contact_email: contact_email !== undefined ? String(contact_email).trim() : (existing.contact_email || DEFAULT_SITE_SETTINGS.contact_email),
       contact_address: contact_address !== undefined ? String(contact_address).trim() : (existing.contact_address || DEFAULT_SITE_SETTINGS.contact_address),
       working_hours: working_hours !== undefined ? String(working_hours).trim() : (existing.working_hours || DEFAULT_SITE_SETTINGS.working_hours),
+      service_form_bg: service_form_bg !== undefined ? String(service_form_bg).trim() : (existing.service_form_bg || DEFAULT_SITE_SETTINGS.service_form_bg),
+      service_card_bg: service_card_bg !== undefined ? String(service_card_bg).trim() : (existing.service_card_bg || DEFAULT_SITE_SETTINGS.service_card_bg),
+      service_form_border: service_form_border !== undefined ? String(service_form_border).trim() : (existing.service_form_border || DEFAULT_SITE_SETTINGS.service_form_border),
+      service_form_title_color: service_form_title_color !== undefined ? String(service_form_title_color).trim() : (existing.service_form_title_color || DEFAULT_SITE_SETTINGS.service_form_title_color),
       updated_at: new Date().toISOString()
     };
 

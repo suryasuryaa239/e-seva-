@@ -8,7 +8,7 @@ import {
   Filter, RotateCcw, Inbox, UserCheck, FileCheck, History, MessageSquare,
   User, Phone, Mail as MailIcon, Calendar, CheckCircle, Shield, Trash2,
   Settings, Key, Lock, EyeOff, Save, CheckCheck, Bell, CreditCard, Paperclip,
-  Sliders, Image as ImageIcon, Upload, Download,
+  Sliders, Image as ImageIcon, Upload, Download, Palette,
   Share2, Send, Linkedin, Twitter, Globe, Facebook, Instagram, Youtube, MessageCircle,
   GripVertical, MoveUp, MoveDown, Sparkles, Megaphone,
   FileSpreadsheet, Database, Monitor, Smartphone, Tablet
@@ -285,7 +285,11 @@ export default function AdminDashboard() {
     contact_phone: '',
     contact_email: '',
     contact_address: '',
-    working_hours: ''
+    working_hours: '',
+    service_form_bg: '#f8fafc',
+    service_card_bg: '#ffffff',
+    service_form_border: '#e2e8f0',
+    service_form_title_color: '#334155'
   });
   const [savingSiteSettings, setSavingSiteSettings] = useState(false);
 
@@ -308,7 +312,11 @@ export default function AdminDashboard() {
           contact_phone: data.contact_phone || '',
           contact_email: data.contact_email || '',
           contact_address: data.contact_address || '',
-          working_hours: data.working_hours || ''
+          working_hours: data.working_hours || '',
+          service_form_bg: data.service_form_bg || '#f8fafc',
+          service_card_bg: data.service_card_bg || '#ffffff',
+          service_form_border: data.service_form_border || '#e2e8f0',
+          service_form_title_color: data.service_form_title_color || '#334155'
         });
       }
     } catch (e) {
@@ -331,7 +339,7 @@ export default function AdminDashboard() {
       });
       const data = await res.json();
       if (res.ok) {
-        addToast('Payment Terms & Notice Settings saved successfully!', 'success');
+        addToast('Settings & Form Theme configuration saved successfully!', 'success');
       } else {
         addToast(data.error || 'Failed to save site settings', 'error');
       }
@@ -3270,7 +3278,19 @@ export default function AdminDashboard() {
                   </p>
                 </div>
 
-                <div className="flex items-center space-x-2 self-start sm:self-auto">
+                <div className="flex items-center space-x-2 self-start sm:self-auto flex-wrap gap-y-2">
+                  <button
+                    onClick={() => {
+                      setActiveTabState('settings');
+                      setActiveSettingsTab('form_theme');
+                      setSearchParams({ tab: 'settings' });
+                    }}
+                    className="px-3.5 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-extrabold rounded-xl border border-indigo-200 transition-all flex items-center space-x-1.5 cursor-pointer shadow-xs"
+                    title="Configure form container colors across all services"
+                  >
+                    <Palette className="w-3.5 h-3.5 text-indigo-600" />
+                    <span>Form Theme Colors</span>
+                  </button>
                   <button
                     onClick={() => setShowAddServiceModal(true)}
                     className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white font-extrabold text-xs rounded-xl shadow transition-all flex items-center space-x-1.5 cursor-pointer"
@@ -5253,6 +5273,7 @@ export default function AdminDashboard() {
                 {[
                   { id: 'profile', label: 'Profile Details', icon: User },
                   { id: 'security', label: 'Security & Password', icon: Key },
+                  { id: 'form_theme', label: 'Service Form Theme & Colors (படிவ நிறங்கள்)', icon: Palette },
                   { id: 'payment_gateway', label: 'Payment Gateway (PhonePe)', icon: CreditCard },
                   { id: 'social_media', label: 'Social Media & Footer', icon: Share2 },
                   { id: 'payment_notice', label: 'Payment Notice & Terms', icon: ShieldAlert },
@@ -5908,6 +5929,437 @@ export default function AdminDashboard() {
                     </div>
 
                   </form>
+                </div>
+              )}
+
+              {/* SUB-TAB: SERVICE FORM THEME & COLORS */}
+              {activeSettingsTab === 'form_theme' && (
+                <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/90 shadow-sm space-y-8">
+                  {/* Header */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <Palette className="w-5 h-5 text-orange-500" />
+                        <h4 className="font-extrabold text-base sm:text-lg text-slate-900">
+                          Service Form Theme & Colors (படிவ நிறங்கள் & வடிவமைப்பு)
+                        </h4>
+                      </div>
+                      <p className="text-xs text-slate-500 mt-1 max-w-2xl leading-relaxed">
+                        Customize the background color of the service details input box ("சேவை தொடர்பான விவரங்கள்"), main form card, border, and section title. Any change saved here applies universally to all services on the citizen portal.
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSiteSettingsForm(prev => ({
+                            ...prev,
+                            service_form_bg: '#f8fafc',
+                            service_card_bg: '#ffffff',
+                            service_form_border: '#e2e8f0',
+                            service_form_title_color: '#334155'
+                          }));
+                          addToast('Colors reset to standard default (Soft Slate)', 'info');
+                        }}
+                        className="px-3.5 py-2 text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors flex items-center gap-1.5 cursor-pointer"
+                      >
+                        <RotateCcw className="w-3.5 h-3.5" />
+                        <span>Reset Defaults</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Two Columns: Left Controls, Right Real-time Live Preview */}
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                    
+                    {/* LEFT CONTROLS (7 Cols) */}
+                    <div className="lg:col-span-7 space-y-6">
+                      
+                      {/* 1. Dynamic Fields Container Background Color (THE EXACT USER SCREENSHOT ELEMENT) */}
+                      <div className="p-5 rounded-2xl border border-orange-200 bg-orange-50/30 space-y-3">
+                        <div className="flex items-center justify-between">
+                          <label className="text-xs sm:text-sm font-black text-slate-900 flex items-center gap-2">
+                            <span className="w-2.5 h-2.5 rounded-full bg-orange-500 inline-block"></span>
+                            <span>Service Fields Container Background (சேவை விவரங்கள் பெட்டி பின்னணி)</span>
+                          </label>
+                          <span className="text-[10px] uppercase font-mono font-bold px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-700">
+                            {siteSettingsForm.service_form_bg || '#f8fafc'}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-slate-500 leading-normal">
+                          Controls the background color behind "சேவை தொடர்பான விவரங்கள்" custom input fields container across all services.
+                        </p>
+
+                        {/* Preset Color Pills */}
+                        <div className="flex items-center gap-2 flex-wrap pt-1">
+                          {[
+                            { name: 'Pure White', color: '#ffffff' },
+                            { name: 'Soft Slate (Default)', color: '#f8fafc' },
+                            { name: 'Clean Light Gray', color: '#f1f5f9' },
+                            { name: 'Warm Cream', color: '#fffdf5' },
+                            { name: 'Soft Amber', color: '#fefce8' },
+                            { name: 'Soft Mint Green', color: '#f0fdf4' },
+                            { name: 'Soft Sky Blue', color: '#f0f9ff' },
+                            { name: 'Soft Lavender', color: '#f5f3ff' },
+                            { name: 'Rose Tint', color: '#fff1f2' }
+                          ].map((pill, pIdx) => {
+                            const isSelected = siteSettingsForm.service_form_bg?.toLowerCase() === pill.color.toLowerCase();
+                            return (
+                              <button
+                                key={pIdx}
+                                type="button"
+                                onClick={() => setSiteSettingsForm(prev => ({ ...prev, service_form_bg: pill.color }))}
+                                className={`px-2.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer border ${
+                                  isSelected ? 'ring-2 ring-orange-500 shadow-xs font-extrabold border-orange-500' : 'border-slate-200 hover:border-slate-300'
+                                }`}
+                                style={{ backgroundColor: pill.color === '#ffffff' ? '#f8fafc' : '#ffffff' }}
+                              >
+                                <span className="w-3.5 h-3.5 rounded-full border border-slate-300 shadow-2xs" style={{ backgroundColor: pill.color }} />
+                                <span className="text-slate-700 text-[11px]">{pill.name}</span>
+                              </button>
+                            );
+                          })}
+                        </div>
+
+                        {/* Custom Picker Row */}
+                        <div className="flex items-center gap-3 pt-2">
+                          <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs">
+                            <input
+                              type="color"
+                              id="service_form_bg_picker"
+                              value={siteSettingsForm.service_form_bg || '#f8fafc'}
+                              onChange={(e) => setSiteSettingsForm(prev => ({ ...prev, service_form_bg: e.target.value }))}
+                              className="w-7 h-7 rounded-lg border-0 cursor-pointer bg-transparent p-0"
+                            />
+                            <label htmlFor="service_form_bg_picker" className="text-xs font-bold text-slate-700 cursor-pointer">
+                              Custom Picker
+                            </label>
+                          </div>
+                          <div className="flex items-center gap-1.5 flex-1 max-w-xs">
+                            <span className="text-xs font-mono text-slate-400">HEX:</span>
+                            <input
+                              type="text"
+                              value={siteSettingsForm.service_form_bg || ''}
+                              onChange={(e) => setSiteSettingsForm(prev => ({ ...prev, service_form_bg: e.target.value }))}
+                              placeholder="#f8fafc"
+                              maxLength={7}
+                              className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-mono font-bold text-slate-800 uppercase focus:border-orange-500 outline-none"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* 2. Main Form Card Background (service_card_bg) */}
+                      <div className="p-5 rounded-2xl border border-slate-200 bg-slate-50/50 space-y-3">
+                        <div className="flex items-center justify-between">
+                          <label className="text-xs sm:text-sm font-bold text-slate-800 flex items-center gap-2">
+                            <span className="w-2.5 h-2.5 rounded-full bg-slate-400 inline-block"></span>
+                            <span>Main Application Card Background (முக்கிய படிவ அட்டை பின்னணி)</span>
+                          </label>
+                          <span className="text-[10px] uppercase font-mono font-bold px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-700">
+                            {siteSettingsForm.service_card_bg || '#ffffff'}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-slate-500 leading-normal">
+                          The outer card containing applicant details, documents, and service fields.
+                        </p>
+                        
+                        {/* Presets */}
+                        <div className="flex items-center gap-2 flex-wrap pt-1">
+                          {[
+                            { name: 'Pure White (Default)', color: '#ffffff' },
+                            { name: 'Soft Slate', color: '#f8fafc' },
+                            { name: 'Off White', color: '#fafafa' },
+                            { name: 'Clean Cream', color: '#fffdf5' }
+                          ].map((pill, pIdx) => (
+                            <button
+                              key={pIdx}
+                              type="button"
+                              onClick={() => setSiteSettingsForm(prev => ({ ...prev, service_card_bg: pill.color }))}
+                              className={`px-2.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer border ${
+                                siteSettingsForm.service_card_bg?.toLowerCase() === pill.color.toLowerCase()
+                                  ? 'ring-2 ring-orange-500 border-orange-500'
+                                  : 'border-slate-200 hover:border-slate-300'
+                              } bg-white`}
+                            >
+                              <span className="w-3.5 h-3.5 rounded-full border border-slate-300" style={{ backgroundColor: pill.color }} />
+                              <span className="text-slate-700 text-[11px]">{pill.name}</span>
+                            </button>
+                          ))}
+                        </div>
+
+                        {/* Custom Picker Row */}
+                        <div className="flex items-center gap-3 pt-1">
+                          <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs">
+                            <input
+                              type="color"
+                              id="service_card_bg_picker"
+                              value={siteSettingsForm.service_card_bg || '#ffffff'}
+                              onChange={(e) => setSiteSettingsForm(prev => ({ ...prev, service_card_bg: e.target.value }))}
+                              className="w-7 h-7 rounded-lg border-0 cursor-pointer bg-transparent p-0"
+                            />
+                            <label htmlFor="service_card_bg_picker" className="text-xs font-bold text-slate-700 cursor-pointer">
+                              Custom Picker
+                            </label>
+                          </div>
+                          <div className="flex items-center gap-1.5 flex-1 max-w-xs">
+                            <span className="text-xs font-mono text-slate-400">HEX:</span>
+                            <input
+                              type="text"
+                              value={siteSettingsForm.service_card_bg || ''}
+                              onChange={(e) => setSiteSettingsForm(prev => ({ ...prev, service_card_bg: e.target.value }))}
+                              placeholder="#ffffff"
+                              maxLength={7}
+                              className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-mono font-bold text-slate-800 uppercase focus:border-orange-500 outline-none"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* 3. Section Container Border Color (service_form_border) */}
+                      <div className="p-5 rounded-2xl border border-slate-200 bg-slate-50/50 space-y-3">
+                        <div className="flex items-center justify-between">
+                          <label className="text-xs sm:text-sm font-bold text-slate-800 flex items-center gap-2">
+                            <span className="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block"></span>
+                            <span>Container Border & Divider Color (பெட்டி எல்லை நிறம்)</span>
+                          </label>
+                          <span className="text-[10px] uppercase font-mono font-bold px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-700">
+                            {siteSettingsForm.service_form_border || '#e2e8f0'}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-slate-500 leading-normal">
+                          Border outline and horizontal divider under the section heading.
+                        </p>
+                        
+                        {/* Presets */}
+                        <div className="flex items-center gap-2 flex-wrap pt-1">
+                          {[
+                            { name: 'Soft Slate (Default)', color: '#e2e8f0' },
+                            { name: 'Cool Gray', color: '#cbd5e1' },
+                            { name: 'Subtle Slate', color: '#f1f5f9' },
+                            { name: 'Sky Accent', color: '#bae6fd' },
+                            { name: 'Emerald Accent', color: '#bbf7d0' }
+                          ].map((pill, pIdx) => (
+                            <button
+                              key={pIdx}
+                              type="button"
+                              onClick={() => setSiteSettingsForm(prev => ({ ...prev, service_form_border: pill.color }))}
+                              className={`px-2.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer border ${
+                                siteSettingsForm.service_form_border?.toLowerCase() === pill.color.toLowerCase()
+                                  ? 'ring-2 ring-orange-500 border-orange-500'
+                                  : 'border-slate-200 hover:border-slate-300'
+                              } bg-white`}
+                            >
+                              <span className="w-3.5 h-3.5 rounded-full border border-slate-300" style={{ backgroundColor: pill.color }} />
+                              <span className="text-slate-700 text-[11px]">{pill.name}</span>
+                            </button>
+                          ))}
+                        </div>
+
+                        {/* Custom Picker Row */}
+                        <div className="flex items-center gap-3 pt-1">
+                          <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs">
+                            <input
+                              type="color"
+                              id="service_form_border_picker"
+                              value={siteSettingsForm.service_form_border || '#e2e8f0'}
+                              onChange={(e) => setSiteSettingsForm(prev => ({ ...prev, service_form_border: e.target.value }))}
+                              className="w-7 h-7 rounded-lg border-0 cursor-pointer bg-transparent p-0"
+                            />
+                            <label htmlFor="service_form_border_picker" className="text-xs font-bold text-slate-700 cursor-pointer">
+                              Custom Picker
+                            </label>
+                          </div>
+                          <div className="flex items-center gap-1.5 flex-1 max-w-xs">
+                            <span className="text-xs font-mono text-slate-400">HEX:</span>
+                            <input
+                              type="text"
+                              value={siteSettingsForm.service_form_border || ''}
+                              onChange={(e) => setSiteSettingsForm(prev => ({ ...prev, service_form_border: e.target.value }))}
+                              placeholder="#e2e8f0"
+                              maxLength={7}
+                              className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-mono font-bold text-slate-800 uppercase focus:border-orange-500 outline-none"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* 4. Section Title Color (service_form_title_color) */}
+                      <div className="p-5 rounded-2xl border border-slate-200 bg-slate-50/50 space-y-3">
+                        <div className="flex items-center justify-between">
+                          <label className="text-xs sm:text-sm font-bold text-slate-800 flex items-center gap-2">
+                            <span className="w-2.5 h-2.5 rounded-full bg-slate-800 inline-block"></span>
+                            <span>Section Title Color (பிரிவு தலைப்பு நிறம்)</span>
+                          </label>
+                          <span className="text-[10px] uppercase font-mono font-bold px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-700">
+                            {siteSettingsForm.service_form_title_color || '#334155'}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-slate-500 leading-normal">
+                          Text color of the section header "சேவை தொடர்பான விவரங்கள்" / "SERVICE SPECIFIC DETAILS".
+                        </p>
+                        
+                        {/* Presets */}
+                        <div className="flex items-center gap-2 flex-wrap pt-1">
+                          {[
+                            { name: 'Dark Slate (Default)', color: '#334155' },
+                            { name: 'Deep Navy', color: '#0f172a' },
+                            { name: 'Charcoal', color: '#1f2937' },
+                            { name: 'Royal Blue', color: '#1d4ed8' },
+                            { name: 'Deep Emerald', color: '#047857' }
+                          ].map((pill, pIdx) => (
+                            <button
+                              key={pIdx}
+                              type="button"
+                              onClick={() => setSiteSettingsForm(prev => ({ ...prev, service_form_title_color: pill.color }))}
+                              className={`px-2.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer border ${
+                                siteSettingsForm.service_form_title_color?.toLowerCase() === pill.color.toLowerCase()
+                                  ? 'ring-2 ring-orange-500 border-orange-500'
+                                  : 'border-slate-200 hover:border-slate-300'
+                              } bg-white`}
+                            >
+                              <span className="w-3.5 h-3.5 rounded-full border border-slate-300" style={{ backgroundColor: pill.color }} />
+                              <span className="text-slate-700 text-[11px]">{pill.name}</span>
+                            </button>
+                          ))}
+                        </div>
+
+                        {/* Custom Picker Row */}
+                        <div className="flex items-center gap-3 pt-1">
+                          <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs">
+                            <input
+                              type="color"
+                              id="service_form_title_color_picker"
+                              value={siteSettingsForm.service_form_title_color || '#334155'}
+                              onChange={(e) => setSiteSettingsForm(prev => ({ ...prev, service_form_title_color: e.target.value }))}
+                              className="w-7 h-7 rounded-lg border-0 cursor-pointer bg-transparent p-0"
+                            />
+                            <label htmlFor="service_form_title_color_picker" className="text-xs font-bold text-slate-700 cursor-pointer">
+                              Custom Picker
+                            </label>
+                          </div>
+                          <div className="flex items-center gap-1.5 flex-1 max-w-xs">
+                            <span className="text-xs font-mono text-slate-400">HEX:</span>
+                            <input
+                              type="text"
+                              value={siteSettingsForm.service_form_title_color || ''}
+                              onChange={(e) => setSiteSettingsForm(prev => ({ ...prev, service_form_title_color: e.target.value }))}
+                              placeholder="#334155"
+                              maxLength={7}
+                              className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-mono font-bold text-slate-800 uppercase focus:border-orange-500 outline-none"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Save Button */}
+                      <div className="pt-3">
+                        <button
+                          type="button"
+                          onClick={handleSaveSiteSettings}
+                          disabled={savingSiteSettings}
+                          className="px-6 py-3 bg-[#0b192c] hover:bg-[#182d4a] text-white font-extrabold text-xs sm:text-sm rounded-xl shadow-md transition-all flex items-center space-x-2 cursor-pointer disabled:opacity-50"
+                        >
+                          <Save className="w-4 h-4 text-orange-400" />
+                          <span>{savingSiteSettings ? 'Saving Theme...' : 'Save Theme & Colors (வடிவமைப்பு நிறங்களைச் சேமிக்கவும்)'}</span>
+                        </button>
+                      </div>
+
+                    </div>
+
+                    {/* RIGHT LIVE PREVIEW (5 Cols) */}
+                    <div className="lg:col-span-5 sticky top-8 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[11px] font-extrabold uppercase text-slate-500 tracking-wider flex items-center gap-1.5">
+                          <Eye className="w-3.5 h-3.5 text-orange-500" />
+                          <span>Live Portal Preview (நேரலை மாதிரிக் காட்சி)</span>
+                        </span>
+                        <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                          Real-time
+                        </span>
+                      </div>
+
+                      {/* Outer Mock Card */}
+                      <div 
+                        style={{ backgroundColor: siteSettingsForm.service_card_bg || '#ffffff' }}
+                        className="rounded-3xl p-5 border border-slate-200 shadow-md space-y-4 transition-colors"
+                      >
+                        <div className="border-b pb-3 border-slate-100 flex items-center justify-between">
+                          <span className="text-xs font-extrabold text-slate-800 flex items-center gap-1.5">
+                            <UserCheck className="w-4 h-4 text-orange-500" />
+                            <span>விண்ணப்பதாரர் தகவல் (Sample Card)</span>
+                          </span>
+                          <span className="text-[10px] font-bold text-slate-400">* கட்டாய புலங்கள்</span>
+                        </div>
+
+                        {/* The Exact Section Box */}
+                        <div
+                          style={{
+                            backgroundColor: siteSettingsForm.service_form_bg || '#f8fafc',
+                            borderColor: siteSettingsForm.service_form_border || '#e2e8f0'
+                          }}
+                          className="space-y-3.5 p-4 sm:p-5 rounded-2xl border shadow-xs transition-colors"
+                        >
+                          <h5 
+                            style={{
+                              color: siteSettingsForm.service_form_title_color || '#334155',
+                              borderBottomColor: siteSettingsForm.service_form_border || '#e2e8f0'
+                            }}
+                            className="text-xs sm:text-sm font-bold uppercase tracking-wider border-b pb-2 transition-colors flex items-center justify-between"
+                          >
+                            <span>சேவை தொடர்பான விவரங்கள்</span>
+                            <span className="text-[10px] lowercase font-normal opacity-70">custom fields</span>
+                          </h5>
+
+                          <div className="space-y-3">
+                            <div>
+                              <label className="block text-xs font-bold text-slate-700 mb-1">
+                                ஆதாரில் உள்ள தற்போதைய முகவரி <span className="text-rose-500">*</span>
+                              </label>
+                              <div className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs text-slate-500 font-medium">
+                                பழைய முகவரி விவரங்கள்...
+                              </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-2">
+                              <div>
+                                <label className="block text-xs font-bold text-slate-700 mb-1 truncate">
+                                  புதிய வீடு / கதவு எண் <span className="text-rose-500">*</span>
+                                </label>
+                                <div className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs text-slate-500 font-medium">
+                                  கதவு எண் 3B, காந்தி நகர்
+                                </div>
+                              </div>
+                              <div>
+                                <label className="block text-xs font-bold text-slate-700 mb-1 truncate">
+                                  தெரு / சாலை பெயர் <span className="text-rose-500">*</span>
+                                </label>
+                                <div className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs text-slate-500 font-medium">
+                                  காந்தி சாலை
+                                </div>
+                              </div>
+                            </div>
+
+                            <div>
+                              <label className="block text-xs font-bold text-slate-700 mb-1">
+                                பகுதி / கிராமம் / நகர் <span className="text-rose-500">*</span>
+                              </label>
+                              <div className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs text-slate-500 font-medium">
+                                அடையாறு / கிராமத்தின் பெயர்
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <p className="text-[10px] text-slate-400 text-center italic">
+                          This preview updates instantly as you select or test colors above.
+                        </p>
+                      </div>
+
+                    </div>
+
+                  </div>
                 </div>
               )}
 
@@ -8587,650 +9039,6 @@ export default function AdminDashboard() {
                       <button
                         type="button"
                         onClick={() => {
-                          if (newServiceForm.newFieldLabel && newServiceForm.newFieldLabel.trim()) {
-                            const fType = newServiceForm.newFieldType || 'text';
-                            const isOptType = fType === 'select' || fType === 'radio';
-                            let opts = [];
-                            if (isOptType) {
-                              opts = (newServiceForm.newFieldOptions || '')
-                                .split(',')
-                                .map(s => s.trim())
-                                .filter(Boolean);
-                              if (opts.length === 0) {
-                                opts = ['Option 1', 'Option 2'];
-                              }
-                            }
-                            const isReq = newServiceForm.newFieldIsRequired !== false;
-                            setNewServiceForm({
-                              ...newServiceForm,
-                              fields: [
-                                ...newServiceForm.fields,
-                                {
-                                  field_label: newServiceForm.newFieldLabel.trim(),
-                                  field_type: fType,
-                                  is_required: isReq,
-                                  options: isOptType ? opts : [],
-                                  options_json: isOptType ? opts : null
-                                }
-                              ],
-                              newFieldLabel: '',
-                              newFieldType: 'text',
-                              newFieldOptions: '',
-                              newFieldIsRequired: true
-                            });
-                          }
-                        }}
-                        className="w-full py-2 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-xl text-xs shadow-xs transition-colors flex items-center justify-center space-x-1 cursor-pointer"
-                      >
-                        <Plus className="w-3.5 h-3.5" />
-                        <span>Add Field</span>
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Dropdown / Multiple Choice Options Configuration Box */}
-                  {(newServiceForm.newFieldType === 'select' || newServiceForm.newFieldType === 'radio') && (
-                    <div className="p-2.5 bg-blue-50/70 border border-blue-200/80 rounded-xl space-y-1 mt-1">
-                      <div className="flex items-center justify-between">
-                        <label className="text-xs font-extrabold text-blue-900 flex items-center gap-1.5">
-                          <span>{newServiceForm.newFieldType === 'radio' ? '🔘 Multiple Choice Options' : '▼ Drop-down Options'}</span>
-                        </label>
-                        <span className="text-[10px] text-blue-600 font-bold uppercase tracking-wider">Separate choices with commas ( , )</span>
-                      </div>
-                      <input
-                        type="text"
-                        placeholder={newServiceForm.newFieldType === 'radio' ? "e.g. Yes, No, Not Applicable" : "e.g. A+, B+, O+, AB+, A-, B-, O-, AB-"}
-                        value={newServiceForm.newFieldOptions || ''}
-                        onChange={(e) => setNewServiceForm({ ...newServiceForm, newFieldOptions: e.target.value })}
-                        className="w-full bg-white border border-blue-300 text-slate-900 rounded-lg px-3 py-1.5 text-xs outline-none focus:ring-2 focus:ring-blue-500 font-medium"
-                      />
-                      <p className="text-[10px] text-blue-600 font-medium">
-                        💡 Citizens will choose from these options when filling this field on the application form.
-                      </p>
-                    </div>
-                  )}
-                </div>
-
-                {(!newServiceForm.fields || newServiceForm.fields.length === 0) ? (
-                  <p className="text-xs text-slate-400 italic py-2 text-center bg-white rounded-xl border border-slate-200">
-                    No custom form fields added yet. Add fields above.
-                  </p>
-                ) : (
-                  <div className="space-y-2 pt-1 max-h-60 overflow-y-auto pr-1">
-                    {newServiceForm.fields.map((f, idx) => {
-                      const fOpts = Array.isArray(f.options) ? f.options : (typeof f.options === 'string' ? f.options.split(',').map(s => s.trim()).filter(Boolean) : (Array.isArray(f.options_json) ? f.options_json : (typeof f.options_json === 'string' ? JSON.parse(f.options_json || '[]') : [])));
-                      const fType = (f.field_type || 'text').toLowerCase();
-                      const isSelect = fType === 'select' || fType === 'dropdown';
-                      const isRadio = fType === 'radio' || fType === 'multiple choice';
-                      const isCheck = fType === 'checkbox';
-                      const isReq = f.is_required !== false && f.is_required !== 0 && f.is_required !== '0' && f.is_required !== 'false';
-
-                      return (
-                        <div
-                          key={idx}
-                          className={`p-2.5 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-2 transition-all ${
-                            isReq
-                              ? 'bg-amber-50/70 border-amber-200'
-                              : 'bg-emerald-50/70 border-emerald-200'
-                          }`}
-                        >
-                          <div className="space-y-1 flex-1 min-w-0">
-                            <div className="flex items-center flex-wrap gap-2">
-                              <span className="text-base shrink-0">{isReq ? '📝' : '📄'}</span>
-                              <span className="font-bold text-slate-900 text-xs truncate">{f.field_label}</span>
-                              <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${
-                                isSelect ? 'bg-blue-100 text-blue-800 border border-blue-200' :
-                                isRadio ? 'bg-purple-100 text-purple-800 border border-purple-200' :
-                                isCheck ? 'bg-amber-100 text-amber-800 border border-amber-200' :
-                                fType === 'date' ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' :
-                                fType === 'textarea' ? 'bg-cyan-100 text-cyan-800 border border-cyan-200' :
-                                'bg-slate-200 text-slate-700'
-                              }`}>
-                                {isSelect ? '▼ Dropdown' :
-                                 isRadio ? '🔘 Multiple Choice' :
-                                 isCheck ? '☑ Checkbox' :
-                                 fType === 'date' ? '📅 Date' :
-                                 fType === 'textarea' ? '📝 Paragraph' :
-                                 '🔤 Text Input'}
-                              </span>
-                            </div>
-                            {fOpts.length > 0 && (
-                              <div className="flex items-center flex-wrap gap-1 pt-0.5">
-                                <span className="text-[10px] font-bold text-slate-400">Options:</span>
-                                {fOpts.map((opt, oIdx) => (
-                                  <span key={oIdx} className="bg-white border border-slate-200 text-slate-700 font-medium px-1.5 py-0.5 rounded text-[10px]">
-                                    {String(opt)}
-                                  </span>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-
-                          <div className="flex items-center space-x-2 shrink-0 self-end sm:self-center">
-                            {/* Segmented Button: Mandatory vs Optional */}
-                            <div className="inline-flex rounded-lg p-0.5 bg-white border border-slate-200 shadow-2xs">
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  const updated = [...newServiceForm.fields];
-                                  updated[idx] = { ...f, is_required: true };
-                                  setNewServiceForm({ ...newServiceForm, fields: updated });
-                                }}
-                                className={`px-2.5 py-1 text-[11px] font-extrabold rounded-md transition-all cursor-pointer ${
-                                  isReq
-                                    ? 'bg-amber-500 text-white shadow-xs'
-                                    : 'text-slate-600 hover:text-amber-800 hover:bg-slate-50'
-                                }`}
-                              >
-                                🔴 கட்டாயம் (Mandatory)
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  const updated = [...newServiceForm.fields];
-                                  updated[idx] = { ...f, is_required: false };
-                                  setNewServiceForm({ ...newServiceForm, fields: updated });
-                                }}
-                                className={`px-2.5 py-1 text-[11px] font-extrabold rounded-md transition-all cursor-pointer ${
-                                  !isReq
-                                    ? 'bg-emerald-600 text-white shadow-xs'
-                                    : 'text-slate-600 hover:text-emerald-800 hover:bg-slate-50'
-                                }`}
-                              >
-                                🟢 விருப்பத்தேர்வு (Optional)
-                              </button>
-                            </div>
-
-                            {/* Delete button */}
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setNewServiceForm({
-                                  ...newServiceForm,
-                                  fields: newServiceForm.fields.filter((_, i) => i !== idx)
-                                });
-                              }}
-                              className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
-                              title="Delete Field"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-
-              {/* Actions */}
-              <div className="flex items-center justify-end space-x-3 pt-4 border-t border-slate-100">
-                <button
-                  type="button"
-                  onClick={() => setShowAddServiceModal(false)}
-                  className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold rounded-xl"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={creatingService}
-                  className="px-6 py-2.5 bg-orange-600 hover:bg-orange-700 text-white font-extrabold rounded-xl shadow transition-colors flex items-center space-x-2 disabled:opacity-50"
-                >
-                  {creatingService ? (
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  ) : (
-                    <Plus className="w-4 h-4" />
-                  )}
-                  <span>{creatingService ? 'Publishing Service...' : 'Save & Publish Service'}</span>
-                </button>
-              </div>
-
-            </form>
-
-          </div>
-        </div>
-      )}
-
-      {/* EDIT SERVICE MODAL */}
-      {showEditServiceModal && editingServiceForm && (
-        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
-          <div className="bg-white rounded-3xl max-w-3xl w-full max-h-[92vh] overflow-y-auto p-6 sm:p-8 space-y-6 shadow-2xl border border-slate-200">
-            
-            <div className="flex justify-between items-start border-b border-slate-100 pb-4">
-              <div>
-                <span className="text-[10px] font-black uppercase text-amber-600 tracking-wider bg-amber-50 px-2.5 py-0.5 rounded border border-amber-200">
-                  EDIT CONFIGURATION
-                </span>
-                <h3 className="font-extrabold text-xl text-slate-900 mt-1">Edit Service: {editingServiceForm.name}</h3>
-                <p className="text-xs text-slate-500">Modify service parameters, fees, category placement, dynamic fields, and required documents.</p>
-              </div>
-
-              <button
-                onClick={() => {
-                  setShowEditServiceModal(false);
-                  setEditingServiceForm(null);
-                }}
-                className="p-2 text-slate-400 hover:text-slate-600 bg-slate-100 rounded-xl transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <form onSubmit={handleEditServiceSubmit} className="space-y-6 text-xs">
-              
-              {/* Basic Details */}
-              <div className="space-y-4">
-                <h4 className="font-black text-slate-900 uppercase text-xs tracking-wider border-b border-slate-100 pb-1">1. Basic Service Information</h4>
-                
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <label className="font-bold text-slate-700 block">Service Name *</label>
-                    <input
-                      type="text"
-                      value={editingServiceForm.name}
-                      onChange={(e) => setEditingServiceForm({ ...editingServiceForm, name: e.target.value })}
-                      className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3.5 py-2.5 outline-none focus:border-amber-500 font-semibold"
-                      required
-                    />
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className="font-bold text-slate-700 block">Category *</label>
-                    <select
-                      value={editingServiceForm.category_name}
-                      onChange={(e) => setEditingServiceForm({ ...editingServiceForm, category_name: e.target.value })}
-                      className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3.5 py-2.5 outline-none focus:border-amber-500 font-semibold"
-                    >
-                      <option value="Land & Patta Services">Land & Patta Services</option>
-                      <option value="Land / Patta Services">Land / Patta Services</option>
-                      <option value="Aadhaar Services">Aadhaar Services</option>
-                      <option value="PAN Services">PAN Services</option>
-                      <option value="Certificates & Revenue">Certificates & Revenue</option>
-                      <option value="Certificate Services">Certificate Services</option>
-                      <option value="Voter ID Services">Voter ID Services</option>
-                      <option value="Passport Services">Passport Services</option>
-                      <option value="Driving & Vehicle Services">Driving & Vehicle Services</option>
-                      <option value="Driving Licence / Vehicle Services">Driving Licence / Vehicle Services</option>
-                      <option value="Business Services">Business Services</option>
-                      <option value="Utility Services">Utility Services</option>
-                      <option value="Ration Card Services">Ration Card Services</option>
-                      <option value="Other Digital Services">Other Digital Services</option>
-                    </select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <label className="font-bold text-slate-700 block">Service Fee Amount (₹) *</label>
-                      {Number(editingServiceForm.fee) === 0 ? (
-                        <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-300">
-                          🟢 Free Service (₹0)
-                        </span>
-                      ) : (
-                        <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-blue-100 text-blue-800 border border-blue-300">
-                          💳 Paid Service (₹{editingServiceForm.fee})
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="number"
-                        min="0"
-                        value={editingServiceForm.fee}
-                        onChange={(e) => setEditingServiceForm({ ...editingServiceForm, fee: e.target.value })}
-                        className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3.5 py-2.5 outline-none focus:border-amber-500 font-bold"
-                        placeholder="0 for Free service"
-                        required
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setEditingServiceForm({ ...editingServiceForm, fee: 0 })}
-                        className={`px-3 py-2.5 rounded-xl font-black text-xs shrink-0 transition-colors border ${
-                          Number(editingServiceForm.fee) === 0
-                            ? 'bg-emerald-600 text-white border-emerald-700'
-                            : 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
-                        }`}
-                      >
-                        Set ₹0 Free
-                      </button>
-                    </div>
-                    {/* Quick Amount Presets */}
-                    <div className="flex flex-wrap items-center gap-1.5 pt-1">
-                      <span className="text-[10px] font-bold text-slate-400">Quick Fee Presets:</span>
-                      {[0, 25, 30, 50, 60, 100, 110, 125, 250, 500].map(amt => (
-                        <button
-                          key={amt}
-                          type="button"
-                          onClick={() => setEditingServiceForm({ ...editingServiceForm, fee: amt })}
-                          className={`px-2 py-0.5 rounded-lg text-[10px] font-extrabold transition-all border ${
-                            Number(editingServiceForm.fee) === amt
-                              ? 'bg-amber-600 text-white border-amber-700 shadow-sm'
-                              : 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200'
-                          }`}
-                        >
-                          {amt === 0 ? '₹0 (Free)' : `₹${amt}`}
-                        </button>
-                      ))}
-                    </div>
-                    <p className="text-[10px] text-slate-500">
-                      💡 Setting fee to ₹0 makes this service 100% free for citizens. Set any custom amount to collect fee online via PhonePe.
-                    </p>
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className="font-bold text-slate-700 block">Processing SLA / Delivery Time *</label>
-                    <input
-                      type="text"
-                      value={editingServiceForm.processing_time}
-                      onChange={(e) => setEditingServiceForm({ ...editingServiceForm, processing_time: e.target.value })}
-                      className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3.5 py-2.5 outline-none focus:border-amber-500 font-semibold"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-1 sm:col-span-2">
-                    <label className="font-bold text-slate-700 block">Service Status *</label>
-                    <select
-                      value={editingServiceForm.status}
-                      onChange={(e) => setEditingServiceForm({ ...editingServiceForm, status: e.target.value })}
-                      className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3.5 py-2.5 outline-none focus:border-amber-500 font-semibold"
-                    >
-                      <option value="Active">Active (Visible in Portal)</option>
-                      <option value="Inactive">Inactive (Hidden from Portal)</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="space-y-1">
-                  <label className="font-bold text-slate-700 block">Service Description</label>
-                  <textarea
-                    rows={2}
-                    value={editingServiceForm.description}
-                    onChange={(e) => setEditingServiceForm({ ...editingServiceForm, description: e.target.value })}
-                    className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl p-3 outline-none focus:border-amber-500 font-medium"
-                  />
-                </div>
-
-                {/* Service Image / Banner Option */}
-                <div className="space-y-3 pt-1 border-t border-slate-100">
-                  <div className="flex items-center justify-between">
-                    <label className="font-bold text-slate-900 flex items-center space-x-1.5">
-                      <ImageIcon className="w-4 h-4 text-amber-600" />
-                      <span>Service Banner Image / Icon (Optional)</span>
-                    </label>
-                    <span className="text-[10px] text-slate-400 font-mono">Upload File or Provide URL</span>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div className="space-y-1">
-                      <span className="text-[11px] font-bold text-slate-600 block">1. Upload Image File</span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => {
-                          const file = e.target.files[0];
-                          if (file) {
-                            const previewUrl = URL.createObjectURL(file);
-                            setEditingServiceForm(prev => ({
-                              ...prev,
-                              image_file: file,
-                              image_preview: previewUrl
-                            }));
-                          }
-                        }}
-                        className="w-full bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded-xl px-3 py-2 outline-none file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-[#0b192c] file:text-white hover:file:bg-amber-600 cursor-pointer"
-                      />
-                    </div>
-
-                    <div className="space-y-1">
-                      <span className="text-[11px] font-bold text-slate-600 block">2. Or Paste Image URL</span>
-                      <input
-                        type="url"
-                        placeholder="https://images.unsplash.com/photo-..."
-                        value={editingServiceForm.image_url_input || ''}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          setEditingServiceForm(prev => ({
-                            ...prev,
-                            image_url_input: val,
-                            image_preview: val || (prev.image_file ? URL.createObjectURL(prev.image_file) : '')
-                          }));
-                        }}
-                        className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3.5 py-2.5 outline-none focus:border-amber-500 font-medium"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Quick Presets */}
-                  <div className="pt-1">
-                    <span className="text-[10px] font-bold text-slate-500 block mb-1.5">⚡ Or Choose Fast Preset Icon:</span>
-                    <div className="flex flex-wrap gap-1.5">
-                      {SERVICE_IMAGE_PRESETS.map((p, idx) => (
-                        <button
-                          key={idx}
-                          type="button"
-                          onClick={() => setEditingServiceForm(prev => ({
-                            ...prev,
-                            image_url_input: p.url,
-                            image_file: null,
-                            image_preview: p.url
-                          }))}
-                          className={`px-2.5 py-1 text-[11px] font-bold rounded-lg border transition-colors cursor-pointer ${
-                            editingServiceForm.image_url_input === p.url && !editingServiceForm.image_file
-                              ? 'bg-amber-600 text-white border-amber-700 shadow-xs'
-                              : 'bg-slate-100 hover:bg-amber-50 hover:text-amber-800 text-slate-700 border-slate-200'
-                          }`}
-                        >
-                          {p.name}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {editingServiceForm.image_preview && (
-                    <div className="relative w-full h-28 bg-slate-100 rounded-2xl border border-slate-200 overflow-hidden group">
-                      <img src={editingServiceForm.image_preview} alt="Service Banner Preview" className="w-full h-full object-cover" />
-                      <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <button
-                          type="button"
-                          onClick={() => setEditingServiceForm(prev => ({ ...prev, image_file: null, image_url_input: '', image_preview: '' }))}
-                          className="px-3 py-1.5 bg-rose-600 text-white rounded-xl text-xs font-bold shadow-md hover:bg-rose-700 transition-colors flex items-center space-x-1 cursor-pointer"
-                        >
-                          <X className="w-3.5 h-3.5" />
-                          <span>Remove Image</span>
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Required Documents */}
-              <div className="space-y-3 bg-slate-50/70 p-3.5 rounded-2xl border border-slate-200">
-                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200/80 pb-2">
-                  <div>
-                    <h4 className="font-black text-slate-900 uppercase text-xs tracking-wider flex items-center space-x-1.5">
-                      <FileCheck className="w-4 h-4 text-amber-600" />
-                      <span>2. Required Proof Documents (சான்று ஆவணங்கள்)</span>
-                    </h4>
-                    <p className="text-[11px] text-slate-500 font-medium mt-0.5">
-                      Set each document as Mandatory (கட்டாயம்) or Optional (விருப்பத்தேர்வு)
-                    </p>
-                  </div>
-                  <div className="flex items-center space-x-2 text-[11px] font-bold">
-                    <span className="px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 border border-amber-200">
-                      🔴 {(editingServiceForm.documents || []).filter(d => (typeof d === 'string' ? true : (d.is_required !== false && d.is_required !== 0 && d.is_required !== '0'))).length} Mandatory
-                    </span>
-                    <span className="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 border border-emerald-200">
-                      🟢 {(editingServiceForm.documents || []).filter(d => (typeof d === 'object' && (d.is_required === false || d.is_required === 0 || d.is_required === '0'))).length} Optional
-                    </span>
-                  </div>
-                </div>
-                
-                {/* Add new document row */}
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                  <input
-                    type="text"
-                    placeholder="Enter document name (e.g. Passport Copy / Birth Certificate)"
-                    value={editingServiceForm.newDocInput || ''}
-                    onChange={(e) => setEditingServiceForm({ ...editingServiceForm, newDocInput: e.target.value })}
-                    className="flex-1 bg-white border border-slate-300 text-slate-900 rounded-xl px-4 py-3 outline-none font-semibold text-sm focus:border-amber-500 shadow-xs"
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        e.preventDefault();
-                        if (editingServiceForm.newDocInput && editingServiceForm.newDocInput.trim()) {
-                          const isReq = editingServiceForm.newDocIsRequired !== false;
-                          setEditingServiceForm({
-                            ...editingServiceForm,
-                            documents: [
-                              ...editingServiceForm.documents,
-                              { name: editingServiceForm.newDocInput.trim(), is_required: isReq }
-                            ],
-                            newDocInput: '',
-                            newDocIsRequired: true
-                          });
-                        }
-                      }
-                    }}
-                  />
-                  <select
-                    value={editingServiceForm.newDocIsRequired !== false ? '1' : '0'}
-                    onChange={(e) => setEditingServiceForm({ ...editingServiceForm, newDocIsRequired: e.target.value === '1' })}
-                    className="bg-white border border-slate-300 text-slate-900 rounded-xl px-3 py-2.5 text-xs font-bold outline-none focus:border-amber-500 shadow-xs cursor-pointer"
-                  >
-                    <option value="1">🔴 கட்டாயம் (Mandatory)</option>
-                    <option value="0">🟢 விருப்பத்தேர்வு (Optional)</option>
-                  </select>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (editingServiceForm.newDocInput && editingServiceForm.newDocInput.trim()) {
-                        const isReq = editingServiceForm.newDocIsRequired !== false;
-                        setEditingServiceForm({
-                          ...editingServiceForm,
-                          documents: [
-                            ...editingServiceForm.documents,
-                            { name: editingServiceForm.newDocInput.trim(), is_required: isReq }
-                          ],
-                          newDocInput: '',
-                          newDocIsRequired: true
-                        });
-                      }
-                    }}
-                    className="px-4 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl text-xs shrink-0 shadow-xs transition-colors flex items-center space-x-1 cursor-pointer"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                    <span>Add Document</span>
-                  </button>
-                </div>
-
-                {/* List of documents with toggle and remove */}
-                {(!editingServiceForm.documents || editingServiceForm.documents.length === 0) ? (
-                  <p className="text-xs text-slate-400 italic py-2 text-center bg-white rounded-xl border border-slate-200">
-                    No proof documents added yet. Add documents above.
-                  </p>
-                ) : (
-                  <div className="space-y-2 pt-1 max-h-60 overflow-y-auto pr-1">
-                    {editingServiceForm.documents.map((doc, idx) => {
-                      const docName = typeof doc === 'string' ? doc : (doc.name || doc.document_name);
-                      const isReq = typeof doc === 'string' ? true : (doc.is_required !== false && doc.is_required !== 0 && doc.is_required !== '0');
-                      return (
-                        <div
-                          key={idx}
-                          className={`p-2.5 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-2 transition-all ${
-                            isReq
-                              ? 'bg-amber-50/70 border-amber-200'
-                              : 'bg-emerald-50/70 border-emerald-200'
-                          }`}
-                        >
-                          <div className="flex items-center space-x-2.5 min-w-0 flex-1">
-                            <span className="text-base shrink-0">{isReq ? '📄' : '📑'}</span>
-                            <span className="font-bold text-slate-900 text-xs truncate">
-                              {docName}
-                            </span>
-                          </div>
-
-                          <div className="flex items-center space-x-2 shrink-0 self-end sm:self-center">
-                            {/* Segmented Button: Mandatory vs Optional */}
-                            <div className="inline-flex rounded-lg p-0.5 bg-white border border-slate-200 shadow-2xs">
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  const updated = [...editingServiceForm.documents];
-                                  updated[idx] = { name: docName, is_required: true };
-                                  setEditingServiceForm({ ...editingServiceForm, documents: updated });
-                                }}
-                                className={`px-2.5 py-1 text-[11px] font-extrabold rounded-md transition-all cursor-pointer ${
-                                  isReq
-                                    ? 'bg-amber-500 text-white shadow-xs'
-                                    : 'text-slate-600 hover:text-amber-800 hover:bg-slate-50'
-                                }`}
-                              >
-                                🔴 கட்டாயம் (Mandatory)
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  const updated = [...editingServiceForm.documents];
-                                  updated[idx] = { name: docName, is_required: false };
-                                  setEditingServiceForm({ ...editingServiceForm, documents: updated });
-                                }}
-                                className={`px-2.5 py-1 text-[11px] font-extrabold rounded-md transition-all cursor-pointer ${
-                                  !isReq
-                                    ? 'bg-emerald-600 text-white shadow-xs'
-                                    : 'text-slate-600 hover:text-emerald-800 hover:bg-slate-50'
-                                }`}
-                              >
-                                🟢 விருப்பத்தேர்வு (Optional)
-                              </button>
-                            </div>
-
-                            {/* Delete button */}
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setEditingServiceForm({
-                                  ...editingServiceForm,
-                                  documents: editingServiceForm.documents.filter((_, i) => i !== idx)
-                                });
-                              }}
-                              className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
-                              title="Delete Document"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-
-              {/* Custom Citizen Applicant Form Fields */}
-              <div className="space-y-3">
-                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-1">
-                  <div className="flex items-center space-x-2">
-                    <h4 className="font-black text-slate-900 uppercase text-xs tracking-wider">3. Citizen Application Form Fields (படிவ புலங்கள்)</h4>
-                    <span className="text-[11px] font-bold text-slate-400">Customizable Inputs</span>
-                  </div>
-                  <div className="flex items-center space-x-1.5 text-xs font-bold">
-                    <span className="px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 border border-amber-200">
-                      🔴 {(editingServiceForm.fields || []).filter(f => (f.is_required !== false && f.is_required !== 0 && f.is_required !== '0' && f.is_required !== 'false')).length} Mandatory
-                    </span>
-                    <span className="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 border border-emerald-200">
-                      🟢 {(editingServiceForm.fields || []).filter(f => (f.is_required === false || f.is_required === 0 || f.is_required === '0' || f.is_required === 'false')).length} Optional
-                    </span>
-                  </div>
-                </div>
-                
-                <div className="space-y-2 bg-slate-50/80 p-3 rounded-2xl border border-slate-200">
-                  <div className="grid grid-cols-1 sm:grid-cols-12 gap-2">
-                    <div className="sm:col-span-4">
-                      <input
-                        type="text"
                         placeholder="Field Label (e.g. Blood Group, Qualification)"
                         value={editingServiceForm.newFieldLabel || ''}
                         onChange={(e) => setEditingServiceForm({ ...editingServiceForm, newFieldLabel: e.target.value })}

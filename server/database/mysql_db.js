@@ -239,6 +239,10 @@ export async function initializeDatabaseSchema() {
         phonepe_env VARCHAR(50) DEFAULT 'PROD',
         phonepe_host_url TEXT,
         phonepe_enabled TINYINT(1) DEFAULT 1,
+        service_form_bg VARCHAR(50) DEFAULT '#f8fafc',
+        service_card_bg VARCHAR(50) DEFAULT '#ffffff',
+        service_form_border VARCHAR(50) DEFAULT '#e2e8f0',
+        service_form_title_color VARCHAR(50) DEFAULT '#334155',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -342,6 +346,10 @@ export async function initializeDatabaseSchema() {
       "ALTER TABLE site_settings ADD COLUMN IF NOT EXISTS phonepe_env VARCHAR(50) DEFAULT 'PROD'",
       "ALTER TABLE site_settings ADD COLUMN IF NOT EXISTS phonepe_host_url TEXT",
       "ALTER TABLE site_settings ADD COLUMN IF NOT EXISTS phonepe_enabled TINYINT(1) DEFAULT 1",
+      "ALTER TABLE site_settings ADD COLUMN IF NOT EXISTS service_form_bg VARCHAR(50) DEFAULT '#f8fafc'",
+      "ALTER TABLE site_settings ADD COLUMN IF NOT EXISTS service_card_bg VARCHAR(50) DEFAULT '#ffffff'",
+      "ALTER TABLE site_settings ADD COLUMN IF NOT EXISTS service_form_border VARCHAR(50) DEFAULT '#e2e8f0'",
+      "ALTER TABLE site_settings ADD COLUMN IF NOT EXISTS service_form_title_color VARCHAR(50) DEFAULT '#334155'",
       "ALTER TABLE popup_updates ADD COLUMN IF NOT EXISTS badge_text VARCHAR(100) DEFAULT 'NEW UPDATE'",
       "ALTER TABLE popup_updates ADD COLUMN IF NOT EXISTS button_text VARCHAR(100) DEFAULT 'Check Now'",
       "ALTER TABLE popup_updates ADD COLUMN IF NOT EXISTS button_url VARCHAR(255) DEFAULT '/services'",
