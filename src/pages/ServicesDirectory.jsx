@@ -278,78 +278,82 @@ export default function ServicesDirectory() {
             ))}
           </div>
         ) : sortedServices.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 items-stretch">
             {sortedServices.map((srv) => (
               <div
                 key={srv.id}
-                className="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-xs hover:shadow-md hover:border-orange-500/40 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between space-y-3.5 group h-full"
+                className="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-xs hover:shadow-md hover:border-orange-500/40 transition-all duration-300 hover:-translate-y-1.5 flex flex-col h-full group"
               >
-                <div className="space-y-3">
-                  {/* CATEGORY ICON & FEE BADGE */}
-                  <div className="flex items-center justify-between">
-                    <div 
-                      className="w-12 h-12 rounded-xl bg-orange-50/80 border border-orange-100 p-1 flex items-center justify-center shadow-xs group-hover:scale-105 group-hover:border-orange-300 transition-all duration-300 overflow-hidden shrink-0"
-                      style={{ width: '48px', height: '48px', minWidth: '48px', minHeight: '48px', maxWidth: '48px', maxHeight: '48px' }}
-                    >
-                      {srv.image_url ? (
-                        <img 
-                          src={srv.image_url} 
-                          alt={srv.name} 
-                          className="w-full h-full object-cover rounded-lg"
-                          onError={(e) => {
-                            e.currentTarget.style.display = 'none';
-                          }}
-                        />
-                      ) : null}
-                      <span className="flex items-center justify-center w-full h-full" style={{ display: srv.image_url ? 'none' : 'flex' }}>
-                        {getCategoryIcon(srv.category_slug)}
+                {/* TOP BODY (Fills remaining space evenly so footer is always anchored at bottom) */}
+                <div className="flex-1 flex flex-col justify-between space-y-3">
+                  <div className="space-y-3">
+                    {/* CATEGORY ICON & FEE BADGE */}
+                    <div className="flex items-center justify-between">
+                      <div 
+                        className="w-12 h-12 rounded-xl bg-orange-50/80 border border-orange-100 p-1 flex items-center justify-center shadow-xs group-hover:scale-105 group-hover:border-orange-300 transition-all duration-300 overflow-hidden shrink-0"
+                        style={{ width: '48px', height: '48px', minWidth: '48px', minHeight: '48px', maxWidth: '48px', maxHeight: '48px' }}
+                      >
+                        {srv.image_url ? (
+                          <img 
+                            src={srv.image_url} 
+                            alt={srv.name} 
+                            className="w-full h-full object-cover rounded-lg"
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                            }}
+                          />
+                        ) : null}
+                        <span className="flex items-center justify-center w-full h-full" style={{ display: srv.image_url ? 'none' : 'flex' }}>
+                          {getCategoryIcon(srv.category_slug)}
+                        </span>
+                      </div>
+                      <span className="text-xs font-bold text-orange-700 bg-orange-50 border border-orange-200/80 px-2.5 py-0.5 rounded-full shrink-0">
+                        {srv.fee > 0 ? `₹${srv.fee}` : (lang === 'ta' ? 'இலவசம்' : 'FREE')}
                       </span>
                     </div>
-                    <span className="text-xs font-bold text-orange-700 bg-orange-50 border border-orange-200/80 px-2.5 py-0.5 rounded-full">
-                      {srv.fee > 0 ? `₹${srv.fee}` : (lang === 'ta' ? 'இலவசம்' : 'FREE')}
-                    </span>
-                  </div>
 
-                  {/* SERVICE NAME & DESCRIPTION */}
-                  <div>
-                    <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
-                      {lang === 'ta' ? (CATEGORY_TA_NAMES[srv.category_name] || srv.category_name) : srv.category_name}
-                    </span>
-                    <h3 className="font-heading font-extrabold text-base text-slate-900 group-hover:text-orange-600 transition-colors line-clamp-1">
-                      {srv.name}
-                    </h3>
-                    <p className="text-xs sm:text-sm text-slate-600 mt-1 font-normal line-clamp-2 leading-relaxed">
-                      {typeof srv.description === 'string'
-                        ? srv.description
-                        : Array.isArray(srv.description)
-                          ? srv.description.join(' ')
-                          : (srv.description ? String(srv.description) : '')}
-                    </p>
+                    {/* SERVICE NAME & DESCRIPTION WITH MATCHING HEIGHTS */}
+                    <div>
+                      <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1 truncate">
+                        {lang === 'ta' ? (CATEGORY_TA_NAMES[srv.category_name] || srv.category_name) : srv.category_name}
+                      </span>
+                      <h3 className="font-heading font-extrabold text-base text-slate-900 group-hover:text-orange-600 transition-colors line-clamp-2 h-[2.75rem] leading-snug flex items-start">
+                        {srv.name}
+                      </h3>
+                      <p className="text-xs sm:text-sm text-slate-600 mt-1 font-normal line-clamp-2 h-[2.5rem] leading-relaxed overflow-hidden">
+                        {typeof srv.description === 'string'
+                          ? srv.description
+                          : Array.isArray(srv.description)
+                            ? srv.description.join(' ')
+                            : (srv.description ? String(srv.description) : '')}
+                      </p>
+                    </div>
                   </div>
 
                   {/* SLA & PROOF DETAILS */}
-                  <div className="pt-1.5 flex flex-wrap gap-2 text-xs text-slate-600 font-medium">
-                    <span className="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-100">
-                      <Clock className="w-3.5 h-3.5 text-amber-500 shrink-0" /> {lang === 'ta' ? 'செயலாக்க நேரம்:' : 'SLA:'} {srv.processing_time || (lang === 'ta' ? '3-5 வேலை நாட்கள்' : '3-5 Days')}
+                  <div className="pt-1 flex flex-wrap gap-1.5 text-xs text-slate-600 font-medium min-h-[1.85rem] items-center">
+                    <span className="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-100 shrink-0">
+                      <Clock className="w-3.5 h-3.5 text-amber-500 shrink-0" /> {lang === 'ta' ? 'செயலாக்கம்:' : 'SLA:'} {srv.processing_time || (lang === 'ta' ? '3-5 நாட்கள்' : '3-5 Days')}
                     </span>
-                    <span className="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-100">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" /> {lang === 'ta' ? 'மின்னணு முறை' : 'Online Application'}
+                    <span className="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-100 shrink-0">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" /> {lang === 'ta' ? 'மின்னணு முறை' : 'Online'}
                     </span>
                   </div>
                 </div>
 
-                {/* BOTTOM ACTION BUTTONS */}
-                <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2 mt-auto">
+                {/* BOTTOM ACTION BUTTONS - LOCKED IN STRAIGHT UNIFORM BASELINE */}
+                <div className="pt-3.5 mt-4 border-t border-slate-100 flex items-center justify-between gap-2 shrink-0">
                   <Link
                     to={`/enquiry/${srv.slug}`}
-                    className="text-xs sm:text-sm font-bold text-slate-700 hover:text-orange-600 transition-colors shrink-0 whitespace-nowrap"
+                    className="text-xs sm:text-sm font-bold text-slate-700 hover:text-orange-600 transition-colors shrink-0 whitespace-nowrap inline-flex items-center gap-1 py-1"
                   >
-                    {lang === 'ta' ? 'விவரங்கள்' : 'Details'} →
+                    <span>{lang === 'ta' ? 'விவரங்கள்' : 'Details'}</span>
+                    <span>→</span>
                   </Link>
 
                   <Link
                     to={`/apply/${srv.slug || srv.id}`}
-                    className="bg-[#0b192c] hover:bg-orange-600 text-white font-extrabold text-xs sm:text-sm px-3.5 sm:px-4 py-2 rounded-xl shadow-xs transition-colors flex items-center gap-1.5 group/btn shrink-0 whitespace-nowrap active:scale-95"
+                    className="bg-[#0b192c] hover:bg-orange-600 text-white font-extrabold text-xs sm:text-sm px-3.5 sm:px-4 py-2 rounded-xl shadow-xs transition-colors inline-flex items-center justify-center gap-1.5 group/btn shrink-0 whitespace-nowrap active:scale-95 min-h-[38px]"
                   >
                     <span>{lang === 'ta' ? 'விண்ணப்பிக்க' : (t.applyNow || 'Apply Now')}</span>
                     <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform shrink-0" />

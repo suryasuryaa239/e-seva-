@@ -271,69 +271,71 @@ export default function CategoryView() {
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
                 {filteredServices.map((srv) => (
                   <div
                     key={srv.id}
-                    className="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between overflow-hidden group"
+                    className="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col h-full overflow-hidden group"
                   >
-                    <div className="p-5 sm:p-6 space-y-3.5">
-                      
-                      {/* Top Badges */}
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-100">
-                          {categoryData.displayName || categoryData.name}
-                        </span>
-                        
-                        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold ${
-                          srv.fee === 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-900 border border-slate-200'
-                        }`}>
-                          {srv.fee === 0 ? (lang === 'ta' ? 'இலவச சேவை' : 'FREE SERVICE') : `${lang === 'ta' ? 'கட்டணம்' : 'Fee'}: ₹${srv.fee}`}
-                        </span>
-                      </div>
-
-                      {/* Icon & Title & Description */}
-                      <div className="flex items-start space-x-3">
-                        <div 
-                          className="w-12 h-12 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-center overflow-hidden shrink-0 shadow-2xs p-1"
-                          style={{ width: '48px', height: '48px', minWidth: '48px', minHeight: '48px', maxWidth: '48px', maxHeight: '48px' }}
-                        >
-                          {srv.image_url ? (
-                            <img 
-                              src={srv.image_url} 
-                              alt={srv.name} 
-                              className="w-full h-full object-cover rounded-lg"
-                              onError={(e) => {
-                                e.currentTarget.parentElement.style.display = 'none';
-                              }}
-                            />
-                          ) : (
-                            <CategoryIcon className="w-6 h-6 text-indigo-600" />
-                          )}
+                    {/* TOP BODY (Fills remaining space evenly so footer is always anchored at bottom) */}
+                    <div className="p-5 sm:p-6 flex-1 flex flex-col justify-between space-y-3.5">
+                      <div className="space-y-3.5">
+                        {/* Top Badges */}
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-100 truncate">
+                            {categoryData.displayName || categoryData.name}
+                          </span>
+                          
+                          <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold shrink-0 ${
+                            srv.fee === 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-900 border border-slate-200'
+                          }`}>
+                            {srv.fee === 0 ? (lang === 'ta' ? 'இலவச சேவை' : 'FREE SERVICE') : `${lang === 'ta' ? 'கட்டணம்' : 'Fee'}: ₹${srv.fee}`}
+                          </span>
                         </div>
 
-                        <div className="space-y-1.5 flex-1 min-w-0">
-                          <h3 className="text-base sm:text-lg font-bold text-slate-900 group-hover:text-indigo-600 transition-colors leading-snug">
-                            {srv.name}
-                          </h3>
-                          <p className="text-xs sm:text-sm text-slate-600 font-normal line-clamp-2 sm:line-clamp-3 leading-relaxed">
-                            {typeof srv.description === 'string'
-                              ? srv.description
-                              : Array.isArray(srv.description)
-                                ? srv.description.join(' ')
-                                : (srv.description ? String(srv.description) : '')}
-                          </p>
+                        {/* Icon & Title & Description */}
+                        <div className="flex items-start space-x-3">
+                          <div 
+                            className="w-12 h-12 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-center overflow-hidden shrink-0 shadow-2xs p-1"
+                            style={{ width: '48px', height: '48px', minWidth: '48px', minHeight: '48px', maxWidth: '48px', maxHeight: '48px' }}
+                          >
+                            {srv.image_url ? (
+                              <img 
+                                src={srv.image_url} 
+                                alt={srv.name} 
+                                className="w-full h-full object-cover rounded-lg"
+                                onError={(e) => {
+                                  e.currentTarget.parentElement.style.display = 'none';
+                                }}
+                              />
+                            ) : (
+                              <CategoryIcon className="w-6 h-6 text-indigo-600" />
+                            )}
+                          </div>
+
+                          <div className="space-y-1.5 flex-1 min-w-0">
+                            <h3 className="text-base sm:text-lg font-bold text-slate-900 group-hover:text-indigo-600 transition-colors line-clamp-2 h-[2.75rem] leading-snug flex items-start">
+                              {srv.name}
+                            </h3>
+                            <p className="text-xs sm:text-sm text-slate-600 font-normal line-clamp-2 h-[2.5rem] leading-relaxed overflow-hidden">
+                              {typeof srv.description === 'string'
+                                ? srv.description
+                                : Array.isArray(srv.description)
+                                  ? srv.description.join(' ')
+                                  : (srv.description ? String(srv.description) : '')}
+                            </p>
+                          </div>
                         </div>
                       </div>
 
                       {/* Meta Pills */}
-                      <div className="flex flex-wrap gap-2 pt-1 text-xs">
-                        <div className="flex items-center space-x-1.5 px-2.5 py-1 bg-slate-100 text-slate-700 rounded-lg font-medium">
+                      <div className="flex flex-wrap gap-1.5 pt-1 text-xs min-h-[1.85rem] items-center">
+                        <div className="flex items-center space-x-1.5 px-2.5 py-1 bg-slate-100 text-slate-700 rounded-lg font-medium shrink-0">
                           <Clock className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
                           <span>SLA: {srv.processing_time || (lang === 'ta' ? '3-5 நாட்கள்' : '3-5 Days')}</span>
                         </div>
                         {(srv.documents_count > 0 || srv.required_docs_count > 0) && (
-                          <div className="flex items-center space-x-1.5 px-2.5 py-1 bg-slate-100 text-slate-700 rounded-lg font-medium">
+                          <div className="flex items-center space-x-1.5 px-2.5 py-1 bg-slate-100 text-slate-700 rounded-lg font-medium shrink-0">
                             <FileCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                             <span>{srv.documents_count || srv.required_docs_count} {lang === 'ta' ? 'ஆவணங்கள்' : 'Proof Docs'}</span>
                           </div>
@@ -342,18 +344,19 @@ export default function CategoryView() {
 
                     </div>
 
-                    {/* Card Action Footer */}
-                    <div className="px-5 py-3.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between gap-3 mt-auto">
+                    {/* Card Action Footer - LOCKED IN STRAIGHT UNIFORM BASELINE */}
+                    <div className="px-5 py-3.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between gap-3 shrink-0">
                       <Link
                         to={`/enquiry/${srv.slug || srv.id}`}
-                        className="text-xs sm:text-sm font-bold text-slate-700 hover:text-indigo-600 px-2.5 py-1.5 rounded-lg hover:bg-slate-200 transition-colors shrink-0 whitespace-nowrap"
+                        className="text-xs sm:text-sm font-bold text-slate-700 hover:text-indigo-600 px-2.5 py-1.5 rounded-lg hover:bg-slate-200 transition-colors shrink-0 whitespace-nowrap inline-flex items-center gap-1"
                       >
-                        {lang === 'ta' ? 'விவரங்கள்' : 'View Details'}
+                        <span>{lang === 'ta' ? 'விவரங்கள்' : 'View Details'}</span>
+                        <span>→</span>
                       </Link>
 
                       <Link
                         to={`/apply/${srv.slug || srv.id}`}
-                        className="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-extrabold rounded-xl shadow-xs transition-all shrink-0 whitespace-nowrap active:scale-95 group/btn"
+                        className="inline-flex items-center justify-center gap-1.5 px-3.5 sm:px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-extrabold rounded-xl shadow-xs transition-all shrink-0 whitespace-nowrap active:scale-95 group/btn min-h-[38px]"
                       >
                         <span>{lang === 'ta' ? 'விண்ணப்பிக்க' : (t.applyNow || 'Apply Now')}</span>
                         <ArrowRight className="w-3.5 h-3.5 shrink-0 group-hover/btn:translate-x-0.5 transition-transform" />

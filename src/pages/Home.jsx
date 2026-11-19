@@ -460,64 +460,68 @@ export default function Home() {
 
         {/* POPULAR SERVICE CARDS GRID */}
         {/* Desktop: 4 per row, Tablet: 2 per row, Mobile: 1 per row */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 items-stretch">
           {popularServices.map(srv => getLocalizedService(srv, lang)).map((srv) => (
             <div
               key={srv.id}
-              className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs hover:shadow-md hover:border-orange-500/40 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between space-y-4 group h-full"
+              className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs hover:shadow-md hover:border-orange-500/40 transition-all duration-300 hover:-translate-y-1.5 flex flex-col h-full group"
             >
-              <div className="space-y-3">
-                {/* ICON & PRICE TAG */}
-                <div className="flex items-center justify-between">
-                  <div 
-                    className="w-12 h-12 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center group-hover:scale-105 transition-transform overflow-hidden shrink-0 p-1"
-                    style={{ width: '48px', height: '48px', minWidth: '48px', minHeight: '48px', maxWidth: '48px', maxHeight: '48px' }}
-                  >
-                    {srv.image_url ? (
-                      <img 
-                        src={srv.image_url} 
-                        alt={srv.name} 
-                        className="w-full h-full object-cover rounded-lg"
-                        onError={(e) => {
-                          e.currentTarget.style.display = 'none';
-                        }}
-                      />
-                    ) : null}
-                    <span className="flex items-center justify-center w-full h-full" style={{ display: srv.image_url ? 'none' : 'flex' }}>
-                      {getCategoryIcon(srv.category_slug)}
+              {/* TOP BODY (Fills remaining space evenly so footer is always anchored at bottom) */}
+              <div className="flex-1 flex flex-col justify-between space-y-3">
+                <div className="space-y-3">
+                  {/* ICON & PRICE TAG */}
+                  <div className="flex items-center justify-between">
+                    <div 
+                      className="w-12 h-12 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center group-hover:scale-105 transition-transform overflow-hidden shrink-0 p-1"
+                      style={{ width: '48px', height: '48px', minWidth: '48px', minHeight: '48px', maxWidth: '48px', maxHeight: '48px' }}
+                    >
+                      {srv.image_url ? (
+                        <img 
+                          src={srv.image_url} 
+                          alt={srv.name} 
+                          className="w-full h-full object-cover rounded-lg"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                          }}
+                        />
+                      ) : null}
+                      <span className="flex items-center justify-center w-full h-full" style={{ display: srv.image_url ? 'none' : 'flex' }}>
+                        {getCategoryIcon(srv.category_slug)}
+                      </span>
+                    </div>
+                    <span className="text-xs font-bold text-orange-700 bg-orange-50 border border-orange-200/80 px-2.5 py-0.5 rounded-full shrink-0">
+                      {srv.fee > 0 ? `₹${srv.fee}` : (lang === 'ta' ? 'இலவசம்' : 'FREE')}
                     </span>
                   </div>
-                  <span className="text-xs font-bold text-orange-700 bg-orange-50 border border-orange-200/80 px-2.5 py-0.5 rounded-full">
-                    {srv.fee > 0 ? `₹${srv.fee}` : (lang === 'ta' ? 'இலவசம்' : 'FREE')}
-                  </span>
-                </div>
 
-                {/* SERVICE NAME & ONE-LINE DESCRIPTION */}
-                <div>
-                  <h3 className="font-heading font-extrabold text-base sm:text-lg text-slate-900 group-hover:text-orange-600 transition-colors line-clamp-1">
-                    {srv.name}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-slate-600 mt-1 font-normal line-clamp-2 leading-relaxed">
-                    {typeof srv.description === 'string'
-                      ? srv.description
-                      : Array.isArray(srv.description)
-                        ? srv.description.join(' ')
-                        : (srv.description ? String(srv.description) : '')}
-                  </p>
+                  {/* SERVICE NAME & ONE-LINE DESCRIPTION WITH MATCHING HEIGHTS */}
+                  <div>
+                    <h3 className="font-heading font-extrabold text-base sm:text-lg text-slate-900 group-hover:text-orange-600 transition-colors line-clamp-2 h-[2.75rem] leading-snug flex items-start">
+                      {srv.name}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-slate-600 mt-1 font-normal line-clamp-2 h-[2.5rem] leading-relaxed overflow-hidden">
+                      {typeof srv.description === 'string'
+                        ? srv.description
+                        : Array.isArray(srv.description)
+                          ? srv.description.join(' ')
+                          : (srv.description ? String(srv.description) : '')}
+                    </p>
+                  </div>
                 </div>
               </div>
 
-              {/* ACTION BUTTONS */}
-              <div className="pt-3 flex items-center justify-between gap-2 border-t border-slate-100 mt-auto">
+              {/* ACTION BUTTONS - LOCKED IN STRAIGHT UNIFORM BASELINE */}
+              <div className="pt-3.5 mt-4 flex items-center justify-between gap-2 border-t border-slate-100 shrink-0">
                 <Link
                   to={`/enquiry/${srv.slug || srv.id}`}
-                  className="text-xs sm:text-sm font-bold text-slate-700 hover:text-orange-600 transition-colors shrink-0 whitespace-nowrap"
+                  className="text-xs sm:text-sm font-bold text-slate-700 hover:text-orange-600 transition-colors shrink-0 whitespace-nowrap inline-flex items-center gap-1 py-1"
                 >
-                  {lang === 'ta' ? 'விவரங்கள்' : 'Details'} →
+                  <span>{lang === 'ta' ? 'விவரங்கள்' : 'Details'}</span>
+                  <span>→</span>
                 </Link>
                 <Link
                   to={`/apply/${srv.slug || srv.id}`}
-                  className="bg-[#0b192c] hover:bg-orange-600 text-white font-extrabold text-xs sm:text-sm px-3.5 sm:px-4 py-2 rounded-xl shadow-xs transition-colors flex items-center gap-1.5 group/btn shrink-0 whitespace-nowrap active:scale-95"
+                  className="bg-[#0b192c] hover:bg-orange-600 text-white font-extrabold text-xs sm:text-sm px-3.5 sm:px-4 py-2 rounded-xl shadow-xs transition-colors inline-flex items-center justify-center gap-1.5 group/btn shrink-0 whitespace-nowrap active:scale-95 min-h-[38px]"
                 >
                   <span>{lang === 'ta' ? 'விண்ணப்பிக்க' : (t.applyNow || 'Apply Now')}</span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform shrink-0" />
