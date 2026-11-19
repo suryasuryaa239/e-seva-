@@ -193,14 +193,14 @@ export default function ServicesDirectory() {
                 placeholder={t.searchServicesPlaceholder || (lang === 'ta' ? 'சேவைகளைத் தேடுங்கள்...' : 'Search services...')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-slate-50 text-slate-900 placeholder-slate-400 text-xs sm:text-sm rounded-2xl pl-12 pr-10 py-4 border border-slate-300 focus:border-[#0b192c] focus:bg-white outline-none transition-all shadow-xs font-medium"
+                className="w-full bg-slate-50 text-slate-900 placeholder-slate-400 text-sm sm:text-base rounded-2xl pl-12 pr-10 py-4 border border-slate-300 focus:border-[#0b192c] focus:bg-white outline-none transition-all shadow-xs font-medium"
               />
               <Search className="w-5 h-5 text-orange-500 absolute left-4 top-4 pointer-events-none" />
               
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-3.5 text-slate-400 hover:text-slate-600 p-1 rounded-full hover:bg-slate-200/60 transition-colors"
+                  className="absolute right-3.5 text-slate-400 hover:text-slate-600 p-1.5 rounded-full hover:bg-slate-200/60 transition-colors"
                   aria-label="Clear Search"
                 >
                   <X className="w-4 h-4" />
@@ -215,21 +215,21 @@ export default function ServicesDirectory() {
         <div className="space-y-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-              <span className="text-xs font-extrabold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+              <span className="text-sm font-extrabold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
                 <Filter className="w-4 h-4 text-orange-500" /> {t.categoriesTitle || (lang === 'ta' ? 'சேவை வகைகள்' : 'Categories')}
               </span>
-              <span className="text-xs text-slate-500 font-bold bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200/80">
+              <span className="text-xs sm:text-sm text-slate-600 font-black bg-slate-100 px-3 py-1 rounded-lg border border-slate-200/80">
                 {filteredServices.length} {t.servicesCountSuffix || (lang === 'ta' ? 'சேவைகள்' : 'Services')}
               </span>
             </div>
 
             {/* SORTING CONTROLS */}
             <div className="flex items-center gap-2 self-end sm:self-auto">
-              <span className="text-xs font-bold text-slate-500">{t.sortByTitle || (lang === 'ta' ? 'வரிசைப்படுத்து' : 'Sort By')}:</span>
+              <span className="text-xs sm:text-sm font-bold text-slate-600">{t.sortByTitle || (lang === 'ta' ? 'வரிசைப்படுத்து' : 'Sort By')}:</span>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="bg-white border border-slate-200 text-slate-800 text-xs font-bold rounded-xl px-3 py-1.5 focus:border-[#0b192c] outline-none shadow-xs cursor-pointer"
+                className="bg-white border border-slate-200 text-slate-800 text-xs sm:text-sm font-bold rounded-xl px-3 py-2 focus:border-[#0b192c] outline-none shadow-xs cursor-pointer"
               >
                 <option value="popular">{t.sortPopular || (lang === 'ta' ? 'பிரபலமானவை' : 'Popular')}</option>
                 <option value="newest">{t.sortNewest || (lang === 'ta' ? 'புதியவை' : 'Newest')}</option>
@@ -242,7 +242,7 @@ export default function ServicesDirectory() {
           <div className="flex items-center gap-2 overflow-x-auto pb-3 pt-1 scrollbar-none">
             <button
               onClick={() => setSelectedCategory('All')}
-              className={`px-4 py-2.5 rounded-xl text-xs font-extrabold shrink-0 transition-all ${
+              className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold shrink-0 transition-all ${
                 selectedCategory === 'All'
                   ? 'bg-[#0b192c] text-white shadow-md'
                   : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200/90 shadow-xs'
@@ -257,7 +257,7 @@ export default function ServicesDirectory() {
                 <button
                   key={cat.id}
                   onClick={() => setSelectedCategory(cat.slug)}
-                  className={`px-4 py-2.5 rounded-xl text-xs font-extrabold shrink-0 transition-all ${
+                  className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold shrink-0 transition-all ${
                     selectedCategory === cat.slug
                       ? 'bg-orange-500 text-white shadow-md'
                       : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200/90 shadow-xs'
@@ -302,20 +302,20 @@ export default function ServicesDirectory() {
                         {getCategoryIcon(srv.category_slug)}
                       </span>
                     </div>
-                    <span className="text-[11px] font-extrabold text-orange-700 bg-orange-50 border border-orange-200/80 px-2.5 py-0.5 rounded-full">
+                    <span className="text-xs sm:text-sm font-black text-orange-700 bg-orange-50 border border-orange-200/80 px-3 py-1 rounded-full">
                       {srv.fee > 0 ? `₹${srv.fee}` : (lang === 'ta' ? 'இலவசம்' : 'FREE')}
                     </span>
                   </div>
 
                   {/* SERVICE NAME & DESCRIPTION */}
                   <div>
-                    <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block mb-0.5">
+                    <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">
                       {srv.category_name}
                     </span>
-                    <h3 className="font-heading font-extrabold text-base text-slate-900 group-hover:text-orange-600 transition-colors line-clamp-1">
+                    <h3 className="font-heading font-extrabold text-lg sm:text-xl text-slate-900 group-hover:text-orange-600 transition-colors line-clamp-1">
                       {srv.name}
                     </h3>
-                    <p className="text-xs text-slate-500 mt-1 font-normal line-clamp-2 leading-relaxed">
+                    <p className="text-sm text-slate-600 mt-1.5 font-medium line-clamp-2 leading-relaxed">
                       {typeof srv.description === 'string'
                         ? srv.description
                         : Array.isArray(srv.description)
@@ -325,12 +325,12 @@ export default function ServicesDirectory() {
                   </div>
 
                   {/* SLA & PROOF DETAILS */}
-                  <div className="pt-2 flex flex-wrap gap-2 text-[11px] text-slate-500">
-                    <span className="flex items-center gap-1 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-100 font-medium">
-                      <Clock className="w-3 h-3 text-amber-500 shrink-0" /> {lang === 'ta' ? 'செயலாக்க நேரம்:' : 'SLA:'} {srv.processing_time || (lang === 'ta' ? '3-5 வேலை நாட்கள்' : '3-5 Days')}
+                  <div className="pt-2 flex flex-wrap gap-2 text-xs sm:text-sm text-slate-600 font-semibold">
+                    <span className="flex items-center gap-1.5 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100">
+                      <Clock className="w-3.5 h-3.5 text-amber-500 shrink-0" /> {lang === 'ta' ? 'செயலாக்க நேரம்:' : 'SLA:'} {srv.processing_time || (lang === 'ta' ? '3-5 வேலை நாட்கள்' : '3-5 Days')}
                     </span>
-                    <span className="flex items-center gap-1 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-100 font-medium">
-                      <CheckCircle2 className="w-3 h-3 text-emerald-600 shrink-0" /> {lang === 'ta' ? 'மின்னணு முறை' : 'Online Application'}
+                    <span className="flex items-center gap-1.5 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" /> {lang === 'ta' ? 'மின்னணு முறை' : 'Online Application'}
                     </span>
                   </div>
                 </div>
@@ -339,14 +339,14 @@ export default function ServicesDirectory() {
                 <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
                   <Link
                     to={`/enquiry/${srv.slug}`}
-                    className="text-xs font-bold text-slate-700 hover:text-orange-600 transition-colors"
+                    className="text-sm font-bold text-slate-700 hover:text-orange-600 transition-colors"
                   >
                     {t.viewDetailsBtn || (lang === 'ta' ? 'விவரங்களைப் பார்க்கவும்' : 'View Details')} →
                   </Link>
 
                   <Link
                     to={`/apply/${srv.slug || srv.id}`}
-                    className="bg-[#0b192c] hover:bg-orange-600 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl shadow-xs transition-colors flex items-center gap-1.5 group/btn"
+                    className="bg-[#0b192c] hover:bg-orange-600 text-white font-extrabold text-sm sm:text-base px-4 sm:px-5 py-2.5 rounded-xl shadow-xs transition-colors flex items-center gap-1.5 group/btn"
                   >
                     <span>{t.applyNowBtn || (lang === 'ta' ? 'இப்போது விண்ணப்பிக்கவும்' : 'Apply Now')}</span>
                     <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform" />

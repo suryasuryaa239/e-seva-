@@ -469,7 +469,7 @@ export default function Home() {
               <div className="space-y-3">
                 {/* ICON & PRICE TAG */}
                 <div className="flex items-center justify-between">
-                  <div className="w-12 h-12 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center group-hover:scale-105 transition-transform overflow-hidden shrink-0 p-0.5">
+                  <div className="w-14 h-14 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center group-hover:scale-105 transition-transform overflow-hidden shrink-0 p-0.5">
                     {srv.image_url ? (
                       <img 
                         src={srv.image_url} 
@@ -484,17 +484,17 @@ export default function Home() {
                       {getCategoryIcon(srv.category_slug)}
                     </span>
                   </div>
-                  <span className="text-[11px] font-extrabold text-orange-700 bg-orange-50 border border-orange-200/80 px-2.5 py-0.5 rounded-full">
+                  <span className="text-xs sm:text-sm font-black text-orange-700 bg-orange-50 border border-orange-200/80 px-3 py-1 rounded-full">
                     {srv.fee > 0 ? `₹${srv.fee}` : (lang === 'ta' ? 'இலவசம்' : 'FREE')}
                   </span>
                 </div>
 
                 {/* SERVICE NAME & ONE-LINE DESCRIPTION */}
                 <div>
-                  <h3 className="font-heading font-extrabold text-base text-slate-900 group-hover:text-orange-600 transition-colors line-clamp-1">
+                  <h3 className="font-heading font-extrabold text-lg sm:text-xl text-slate-900 group-hover:text-orange-600 transition-colors line-clamp-1">
                     {srv.name}
                   </h3>
-                  <p className="text-xs text-slate-500 mt-1 font-normal line-clamp-2 leading-relaxed">
+                  <p className="text-sm text-slate-600 mt-1.5 font-medium line-clamp-2 leading-relaxed">
                     {typeof srv.description === 'string'
                       ? srv.description
                       : Array.isArray(srv.description)
@@ -505,16 +505,16 @@ export default function Home() {
               </div>
 
               {/* ACTION BUTTONS */}
-              <div className="pt-2 flex items-center justify-between gap-2 border-t border-slate-100">
+              <div className="pt-3 flex items-center justify-between gap-2 border-t border-slate-100">
                 <Link
                   to={`/enquiry/${srv.slug || srv.id}`}
-                  className="text-xs font-bold text-slate-700 hover:text-orange-600 transition-colors"
+                  className="text-sm font-bold text-slate-700 hover:text-orange-600 transition-colors"
                 >
                   {lang === 'ta' ? 'விவரங்கள்' : 'Details'} →
                 </Link>
                 <Link
                   to={`/apply/${srv.slug || srv.id}`}
-                  className="bg-[#0b192c] hover:bg-orange-600 text-white font-bold text-xs px-3.5 py-2 rounded-xl shadow-xs transition-colors flex items-center gap-1.5 group/btn"
+                  className="bg-[#0b192c] hover:bg-orange-600 text-white font-extrabold text-sm sm:text-base px-4 py-2.5 rounded-xl shadow-xs transition-colors flex items-center gap-1.5 group/btn"
                 >
                   <span>{t.applyNow || (lang === 'ta' ? 'விண்ணப்பிக்க' : 'Apply Now')}</span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform" />

@@ -282,3 +282,4 @@ echo json_encode([
     'smtpError' => $smtpResult['error'],
     'phpMailError' => $mailResult['error']
 ]);
+

@@ -174,43 +174,43 @@ export default function PaymentCallback() {
                   </span>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-xs sm:text-sm">
                   <div>
-                    <span className="text-slate-400 block mb-0.5">{lang === 'ta' ? 'விண்ணப்ப எண்' : 'Application Ref Number'}</span>
+                    <span className="text-slate-500 font-medium block mb-1">{lang === 'ta' ? 'விண்ணப்ப எண்' : 'Application Ref Number'}</span>
                     <div className="flex items-center gap-2">
-                      <span className="font-bold text-slate-900 font-mono">{paymentData.application_number || 'N/A'}</span>
+                      <span className="font-extrabold text-slate-900 font-mono text-sm sm:text-base">{paymentData.application_number || 'N/A'}</span>
                       {paymentData.application_number && (
                         <button
                           onClick={() => handleCopy(paymentData.application_number)}
-                          className="text-slate-400 hover:text-slate-700 transition-colors"
+                          className="text-slate-400 hover:text-slate-700 transition-colors p-1"
                           title="Copy Application Number"
                         >
-                          <Copy className="w-3.5 h-3.5" />
+                          <Copy className="w-4 h-4" />
                         </button>
                       )}
                     </div>
                   </div>
 
                   <div>
-                    <span className="text-slate-400 block mb-0.5">{lang === 'ta' ? 'PhonePe பரிவர்த்தனை எண்' : 'PhonePe Transaction ID'}</span>
-                    <span className="font-bold text-slate-900 font-mono truncate block">{paymentData.transaction_id || merchantTransactionId}</span>
+                    <span className="text-slate-500 font-medium block mb-1">{lang === 'ta' ? 'PhonePe பரிவர்த்தனை எண்' : 'PhonePe Transaction ID'}</span>
+                    <span className="font-bold text-slate-900 font-mono text-xs sm:text-sm truncate block">{paymentData.transaction_id || merchantTransactionId}</span>
                   </div>
 
                   <div>
-                    <span className="text-slate-400 block mb-0.5">{lang === 'ta' ? 'கட்டண முறை' : 'Payment Mode'}</span>
-                    <span className="font-semibold text-purple-700 bg-purple-50 border border-purple-200 px-2 py-0.5 rounded-md inline-block">
+                    <span className="text-slate-500 font-medium block mb-1">{lang === 'ta' ? 'கட்டண முறை' : 'Payment Mode'}</span>
+                    <span className="font-bold text-purple-700 bg-purple-50 border border-purple-200 px-2.5 py-1 rounded-md inline-block text-xs sm:text-sm">
                       {paymentData.payment_method || 'PhonePe UPI'}
                     </span>
                   </div>
 
                   <div>
-                    <span className="text-slate-400 block mb-0.5">{lang === 'ta' ? 'ரசீது எண்' : 'Receipt Number'}</span>
-                    <span className="font-bold text-slate-900 font-mono">{paymentData.receipt_number || 'REC-CONFIRMED'}</span>
+                    <span className="text-slate-500 font-medium block mb-1">{lang === 'ta' ? 'ரசீது எண்' : 'Receipt Number'}</span>
+                    <span className="font-bold text-slate-900 font-mono text-xs sm:text-sm">{paymentData.receipt_number || 'REC-CONFIRMED'}</span>
                   </div>
 
                   <div className="sm:col-span-2">
-                    <span className="text-slate-400 block mb-0.5">{lang === 'ta' ? 'செலுத்தப்பட்ட நேரம்' : 'Paid At'}</span>
-                    <span className="font-medium text-slate-700">
+                    <span className="text-slate-500 font-medium block mb-1">{lang === 'ta' ? 'செலுத்தப்பட்ட நேரம்' : 'Paid At'}</span>
+                    <span className="font-semibold text-slate-700 text-xs sm:text-sm">
                       {paymentData.paid_at ? new Date(paymentData.paid_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : new Date().toLocaleString()}
                     </span>
                   </div>
@@ -222,7 +222,7 @@ export default function PaymentCallback() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <button
                     onClick={handlePrint}
-                    className="w-full py-3.5 px-4 bg-slate-100 hover:bg-slate-200/80 text-slate-800 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-2 border border-slate-200"
+                    className="w-full py-3.5 px-4 bg-slate-100 hover:bg-slate-200/80 text-slate-800 text-sm font-extrabold rounded-xl transition-all flex items-center justify-center gap-2 border border-slate-200"
                   >
                     <Printer className="w-4 h-4 text-slate-600" />
                     <span>{lang === 'ta' ? 'ரசீதை அச்சிடுக' : 'Print Fee Receipt'}</span>
@@ -231,7 +231,7 @@ export default function PaymentCallback() {
                   {isCitizenAuthenticated ? (
                     <Link
                       to={`/my-applications/${paymentData.application_id || appId}`}
-                      className="w-full py-3.5 px-4 bg-[#0b192c] hover:bg-slate-800 text-white text-xs font-bold rounded-xl transition-all shadow-md flex items-center justify-center gap-2"
+                      className="w-full py-3.5 px-4 bg-[#0b192c] hover:bg-slate-800 text-white text-sm font-extrabold rounded-xl transition-all shadow-md flex items-center justify-center gap-2"
                     >
                       <FileText className="w-4 h-4 text-orange-400" />
                       <span>{lang === 'ta' ? 'விண்ணப்பத்தைப் பார்க்கவும்' : 'View Application'}</span>
@@ -240,7 +240,7 @@ export default function PaymentCallback() {
                   ) : (
                     <Link
                       to={paymentData.application_number ? `/track?appId=${encodeURIComponent(paymentData.application_number)}` : '/track'}
-                      className="w-full py-3.5 px-4 bg-[#0b192c] hover:bg-slate-800 text-white text-xs font-bold rounded-xl transition-all shadow-md flex items-center justify-center gap-2"
+                      className="w-full py-3.5 px-4 bg-[#0b192c] hover:bg-slate-800 text-white text-sm font-extrabold rounded-xl transition-all shadow-md flex items-center justify-center gap-2"
                     >
                       <FileText className="w-4 h-4 text-orange-400" />
                       <span>{lang === 'ta' ? 'விண்ணப்பத்தைக் கண்காணிக்கவும்' : 'Track Application'}</span>
@@ -252,9 +252,9 @@ export default function PaymentCallback() {
                 <div className="text-center pt-2">
                   <Link
                     to={isCitizenAuthenticated ? '/dashboard' : '/'}
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-900 transition-colors"
+                    className="inline-flex items-center gap-1.5 text-sm font-bold text-slate-500 hover:text-slate-900 transition-colors"
                   >
-                    <Home className="w-3.5 h-3.5" />
+                    <Home className="w-4 h-4" />
                     <span>
                       {isCitizenAuthenticated
                         ? (lang === 'ta' ? 'முகப்பு டாஷ்போர்டுக்கு செல்க' : 'Return to Citizen Dashboard')

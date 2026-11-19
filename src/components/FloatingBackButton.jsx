@@ -29,11 +29,11 @@ export default function FloatingBackButton() {
       <button
         type="button"
         onClick={handleBack}
-        className="flex items-center gap-2 bg-[#0b192c]/95 hover:bg-orange-600 text-white px-4 py-2.5 rounded-full shadow-lg hover:shadow-xl border border-slate-700/60 hover:border-orange-400 backdrop-blur-md transition-all duration-300 transform hover:scale-105 active:scale-95 group cursor-pointer"
+        className="flex items-center gap-2 bg-[#0b192c]/95 hover:bg-orange-600 text-white px-4 py-2.5 sm:px-5 sm:py-3 rounded-full shadow-lg hover:shadow-xl border border-slate-700/60 hover:border-orange-400 backdrop-blur-md transition-all duration-300 transform hover:scale-105 active:scale-95 group cursor-pointer"
         title={lang === 'ta' ? 'முந்தைய பக்கத்திற்குத் திரும்பவும்' : 'Go back to previous page'}
       >
-        <ArrowLeft className="w-4 h-4 text-orange-400 group-hover:text-white group-hover:-translate-x-1 transition-transform" />
-        <span className="font-heading font-extrabold text-xs tracking-wide">
+        <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-orange-400 group-hover:text-white group-hover:-translate-x-1 transition-transform" />
+        <span className="font-heading font-extrabold text-sm sm:text-base tracking-wide">
           {lang === 'ta' ? 'பின்செல்ல' : 'Back'}
         </span>
       </button>

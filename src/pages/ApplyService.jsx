@@ -1523,35 +1523,35 @@ export default function ApplyService() {
                             } space-y-3 overflow-hidden`}
                           >
                             <div className="flex items-center justify-between gap-2">
-                              <span className="text-xs font-extrabold text-slate-900 flex items-center gap-1.5 min-w-0">
-                                <FileText className="w-4 h-4 text-orange-500 shrink-0" />
+                              <span className="text-sm sm:text-base font-extrabold text-slate-900 flex items-center gap-2 min-w-0">
+                                <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 shrink-0" />
                                 <span className="truncate">{displayDocName}</span>
                               </span>
-                              <span className={`text-[10px] font-extrabold px-2.5 py-0.5 rounded-md uppercase shrink-0 ${
+                              <span className={`text-xs font-bold px-2.5 py-1 rounded-md uppercase shrink-0 ${
                                 isDocMandatory(doc) ? 'bg-amber-100 text-amber-800 border border-amber-200' : 'bg-slate-100 text-slate-700 border border-slate-300'
                               }`}>
                                 {isDocMandatory(doc) ? t.requiredTag : t.optionalTag}
                               </span>
                             </div>
 
-                            <p className="text-[11px] text-slate-500 font-normal leading-relaxed">
+                            <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
                               {getLocalizedDocDesc(doc.description, docName, isDocMandatory(doc), lang)}
                             </p>
 
-                            <div className="text-[10px] text-slate-400 font-bold flex items-center gap-2">
-                              <span className="bg-slate-200/60 px-2 py-0.5 rounded text-slate-600">JPG, PNG, WEBP, PDF</span>
+                            <div className="text-xs text-slate-500 font-bold flex items-center gap-2">
+                              <span className="bg-slate-200/60 px-2 py-0.5 rounded text-slate-700">JPG, PNG, WEBP, PDF</span>
                               <span className="text-emerald-600 font-semibold">{lang === 'ta' ? 'தானாக சுருக்கப்படும் (Auto-Compress)' : 'Auto-Optimized'}</span>
                             </div>
 
                             {isOptimizing ? (
-                              <div className="p-4 bg-orange-50 border border-orange-200 rounded-xl flex items-center justify-center gap-2 text-xs font-bold text-orange-700">
+                              <div className="p-4 bg-orange-50 border border-orange-200 rounded-xl flex items-center justify-center gap-2 text-sm font-bold text-orange-700">
                                 <RefreshCw className="w-4 h-4 animate-spin text-orange-600" />
                                 <span>{lang === 'ta' ? 'படம் உகப்பாக்கப்படுகிறது...' : 'Compressing & optimizing image...'}</span>
                               </div>
                             ) : !currentFile ? (
-                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
-                                <label className="block w-full py-3 px-2 bg-orange-50 hover:bg-orange-100/80 border-2 border-dashed border-orange-300 rounded-xl text-center cursor-pointer transition-colors shadow-xs group/up">
-                                  <span className="text-xs font-black text-orange-600 flex items-center justify-center gap-1.5 group-hover/up:scale-105 transition-transform">
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+                                <label className="block w-full py-3.5 px-3 bg-orange-50 hover:bg-orange-100/80 border-2 border-dashed border-orange-300 rounded-xl text-center cursor-pointer transition-colors shadow-xs group/up">
+                                  <span className="text-xs sm:text-sm font-black text-orange-600 flex items-center justify-center gap-1.5 group-hover/up:scale-105 transition-transform">
                                     <Upload className="w-4 h-4 text-orange-600" />
                                     <span>{t.selectFileBtn || (lang === 'ta' ? 'கோப்பை பதிவேற்ற' : 'Upload File')}</span>
                                   </span>
@@ -1571,7 +1571,7 @@ export default function ApplyService() {
                                     setActiveCameraMaxMB(maxMB);
                                     setCameraModalOpen(true);
                                   }}
-                                  className="w-full py-3 px-2 bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-xs hover:shadow border border-slate-800 group/cam"
+                                  className="w-full py-3.5 px-3 bg-[#0b192c] hover:bg-slate-800 text-white font-extrabold text-xs sm:text-sm rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-xs hover:shadow border border-slate-800 group/cam"
                                 >
                                   <Camera className="w-4 h-4 text-orange-400 group-hover/cam:scale-110 transition-transform" />
                                   <span>{t.takePhotoBtn || (lang === 'ta' ? 'நேரலை கேமரா' : 'Live Camera')}</span>
