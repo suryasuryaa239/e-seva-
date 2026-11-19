@@ -45,6 +45,33 @@ html[lang="ta"] .badge-pill {
   letter-spacing: normal;
 }
 
+/* Enhanced Tamil Legibility for Form Controls and Labels */
+html[lang="ta"] label,
+body[data-lang="ta"] label,
+[data-lang="ta"] label {
+  line-height: 1.45 !important;
+  letter-spacing: normal !important;
+}
+
+html[lang="ta"] input,
+html[lang="ta"] select,
+html[lang="ta"] textarea,
+body[data-lang="ta"] input,
+body[data-lang="ta"] select,
+body[data-lang="ta"] textarea,
+[data-lang="ta"] input,
+[data-lang="ta"] select,
+[data-lang="ta"] textarea {
+  line-height: 1.45 !important;
+  letter-spacing: normal !important;
+}
+
+html[lang="ta"] button,
+body[data-lang="ta"] button,
+[data-lang="ta"] button {
+  letter-spacing: normal !important;
+}
+
 /* Glassmorphism Card Utility */
 .glass-card {
   background: rgba(255, 255, 255, 0.85);
