@@ -336,20 +336,20 @@ export default function ServicesDirectory() {
                 </div>
 
                 {/* BOTTOM ACTION BUTTONS */}
-                <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2 mt-auto">
                   <Link
                     to={`/enquiry/${srv.slug}`}
-                    className="text-sm font-bold text-slate-700 hover:text-orange-600 transition-colors"
+                    className="text-xs sm:text-sm font-bold text-slate-700 hover:text-orange-600 transition-colors shrink-0 whitespace-nowrap"
                   >
-                    {t.viewDetailsBtn || (lang === 'ta' ? 'விவரங்களைப் பார்க்கவும்' : 'View Details')} →
+                    {lang === 'ta' ? 'விவரங்கள்' : 'Details'} →
                   </Link>
 
                   <Link
                     to={`/apply/${srv.slug || srv.id}`}
-                    className="bg-[#0b192c] hover:bg-orange-600 text-white font-extrabold text-sm sm:text-base px-4 sm:px-5 py-2.5 rounded-xl shadow-xs transition-colors flex items-center gap-1.5 group/btn"
+                    className="bg-[#0b192c] hover:bg-orange-600 text-white font-extrabold text-xs sm:text-sm px-3.5 sm:px-4 py-2 rounded-xl shadow-xs transition-colors flex items-center gap-1.5 group/btn shrink-0 whitespace-nowrap active:scale-95"
                   >
-                    <span>{t.applyNowBtn || (lang === 'ta' ? 'இப்போது விண்ணப்பிக்கவும்' : 'Apply Now')}</span>
-                    <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform" />
+                    <span>{lang === 'ta' ? 'விண்ணப்பிக்க' : (t.applyNow || 'Apply Now')}</span>
+                    <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform shrink-0" />
                   </Link>
                 </div>
               </div>

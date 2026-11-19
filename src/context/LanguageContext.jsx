@@ -509,7 +509,8 @@ export const translations = {
     logoutNav: "வெளியேற",
     
     // 2. COMMON BUTTONS
-    applyNow: "இப்போது விண்ணப்பிக்கவும்",
+    applyNow: "விண்ணப்பிக்க",
+    applyNowFull: "இப்போது விண்ணப்பிக்கவும்",
     viewDetails: "விவரங்களைப் பார்க்கவும்",
     learnMore: "மேலும் அறியவும்",
     getStarted: "தொடங்கவும்",

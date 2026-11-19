@@ -337,20 +337,20 @@ export default function CategoryView() {
                     </div>
 
                     {/* Card Action Footer */}
-                    <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between gap-3">
+                    <div className="px-5 py-3.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between gap-3 mt-auto">
                       <Link
                         to={`/enquiry/${srv.slug || srv.id}`}
-                        className="text-sm sm:text-base font-bold text-slate-700 hover:text-indigo-600 px-3 py-2 rounded-lg hover:bg-slate-200 transition-colors"
+                        className="text-xs sm:text-sm font-bold text-slate-700 hover:text-indigo-600 px-2.5 py-1.5 rounded-lg hover:bg-slate-200 transition-colors shrink-0 whitespace-nowrap"
                       >
                         {lang === 'ta' ? 'விவரங்கள்' : 'View Details'}
                       </Link>
 
                       <Link
                         to={`/apply/${srv.slug || srv.id}`}
-                        className="inline-flex items-center space-x-2 px-4 sm:px-5 py-2.5 bg-indigo-600 text-white text-sm sm:text-base font-extrabold rounded-xl shadow-sm hover:bg-indigo-700 transition-all transform active:scale-95"
+                        className="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-extrabold rounded-xl shadow-xs transition-all shrink-0 whitespace-nowrap active:scale-95 group/btn"
                       >
-                        <span>{t.applyNow || (lang === 'ta' ? 'விண்ணப்பிக்க' : 'Apply Now')}</span>
-                        <ArrowRight className="w-4 h-4" />
+                        <span>{lang === 'ta' ? 'விண்ணப்பிக்க' : (t.applyNow || 'Apply Now')}</span>
+                        <ArrowRight className="w-3.5 h-3.5 shrink-0 group-hover/btn:translate-x-0.5 transition-transform" />
                       </Link>
                     </div>
 
