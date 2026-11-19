@@ -278,7 +278,7 @@ export default function CategoryView() {
                     className="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col h-full overflow-hidden group"
                   >
                     {/* TOP BODY (Fills remaining space evenly so footer is always anchored at bottom) */}
-                    <div className="p-5 sm:p-6 flex-1 flex flex-col justify-between space-y-3.5">
+                    <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between space-y-3.5">
                       <div className="space-y-3.5">
                         {/* Top Badges */}
                         <div className="flex items-center justify-between gap-2">
@@ -286,7 +286,7 @@ export default function CategoryView() {
                             {categoryData.displayName || categoryData.name}
                           </span>
                           
-                          <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold shrink-0 ${
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold shrink-0 ${
                             srv.fee === 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-900 border border-slate-200'
                           }`}>
                             {srv.fee === 0 ? (lang === 'ta' ? 'இலவச சேவை' : 'FREE SERVICE') : `${lang === 'ta' ? 'கட்டணம்' : 'Fee'}: ₹${srv.fee}`}
@@ -345,10 +345,10 @@ export default function CategoryView() {
                     </div>
 
                     {/* Card Action Footer - LOCKED IN STRAIGHT UNIFORM BASELINE */}
-                    <div className="px-5 py-3.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between gap-3 shrink-0">
+                    <div className="px-4 sm:px-5 py-3.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between gap-2 shrink-0">
                       <Link
                         to={`/enquiry/${srv.slug || srv.id}`}
-                        className="text-xs sm:text-sm font-bold text-slate-700 hover:text-indigo-600 px-2.5 py-1.5 rounded-lg hover:bg-slate-200 transition-colors shrink-0 whitespace-nowrap inline-flex items-center gap-1"
+                        className="text-xs font-bold text-slate-700 hover:text-indigo-600 px-2 py-1.5 rounded-lg hover:bg-slate-200 transition-colors shrink-0 whitespace-nowrap inline-flex items-center gap-1"
                       >
                         <span>{lang === 'ta' ? 'விவரங்கள்' : 'View Details'}</span>
                         <span>→</span>
@@ -356,7 +356,7 @@ export default function CategoryView() {
 
                       <Link
                         to={`/apply/${srv.slug || srv.id}`}
-                        className="inline-flex items-center justify-center gap-1.5 px-3.5 sm:px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-extrabold rounded-xl shadow-xs transition-all shrink-0 whitespace-nowrap active:scale-95 group/btn min-h-[38px]"
+                        className="inline-flex items-center justify-center gap-1 px-2.5 sm:px-3.5 py-1.5 sm:py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-extrabold rounded-xl shadow-xs transition-all shrink-0 whitespace-nowrap active:scale-95 group/btn"
                       >
                         <span>{lang === 'ta' ? 'விண்ணப்பிக்க' : (t.applyNow || 'Apply Now')}</span>
                         <ArrowRight className="w-3.5 h-3.5 shrink-0 group-hover/btn:translate-x-0.5 transition-transform" />

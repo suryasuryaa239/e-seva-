@@ -282,7 +282,7 @@ export default function ServicesDirectory() {
             {sortedServices.map((srv) => (
               <div
                 key={srv.id}
-                className="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-xs hover:shadow-md hover:border-orange-500/40 transition-all duration-300 hover:-translate-y-1.5 flex flex-col h-full group"
+                className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-xs hover:shadow-md hover:border-orange-500/40 transition-all duration-300 hover:-translate-y-1.5 flex flex-col h-full group overflow-hidden"
               >
                 {/* TOP BODY (Fills remaining space evenly so footer is always anchored at bottom) */}
                 <div className="flex-1 flex flex-col justify-between space-y-3">
@@ -332,20 +332,20 @@ export default function ServicesDirectory() {
 
                   {/* SLA & PROOF DETAILS */}
                   <div className="pt-1 flex flex-wrap gap-1.5 text-xs text-slate-600 font-medium min-h-[1.85rem] items-center">
-                    <span className="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-100 shrink-0">
+                    <span className="flex items-center gap-1.5 bg-slate-50 px-2 py-0.5 rounded-lg border border-slate-100 shrink-0">
                       <Clock className="w-3.5 h-3.5 text-amber-500 shrink-0" /> {lang === 'ta' ? 'செயலாக்கம்:' : 'SLA:'} {srv.processing_time || (lang === 'ta' ? '3-5 நாட்கள்' : '3-5 Days')}
                     </span>
-                    <span className="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-100 shrink-0">
+                    <span className="flex items-center gap-1.5 bg-slate-50 px-2 py-0.5 rounded-lg border border-slate-100 shrink-0">
                       <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" /> {lang === 'ta' ? 'மின்னணு முறை' : 'Online'}
                     </span>
                   </div>
                 </div>
 
-                {/* BOTTOM ACTION BUTTONS - LOCKED IN STRAIGHT UNIFORM BASELINE */}
-                <div className="pt-3.5 mt-4 border-t border-slate-100 flex items-center justify-between gap-2 shrink-0">
+                {/* BOTTOM ACTION BUTTONS - PROPORTIONATE & COMPLETELY CONTAINED */}
+                <div className="pt-3 mt-4 border-t border-slate-100 flex items-center justify-between gap-1.5 shrink-0">
                   <Link
                     to={`/enquiry/${srv.slug}`}
-                    className="text-xs sm:text-sm font-bold text-slate-700 hover:text-orange-600 transition-colors shrink-0 whitespace-nowrap inline-flex items-center gap-1 py-1"
+                    className="text-xs font-bold text-slate-700 hover:text-orange-600 transition-colors shrink-0 whitespace-nowrap inline-flex items-center gap-1 py-1"
                   >
                     <span>{lang === 'ta' ? 'விவரங்கள்' : 'Details'}</span>
                     <span>→</span>
@@ -353,10 +353,10 @@ export default function ServicesDirectory() {
 
                   <Link
                     to={`/apply/${srv.slug || srv.id}`}
-                    className="bg-[#0b192c] hover:bg-orange-600 text-white font-extrabold text-xs sm:text-sm px-3.5 sm:px-4 py-2 rounded-xl shadow-xs transition-colors inline-flex items-center justify-center gap-1.5 group/btn shrink-0 whitespace-nowrap active:scale-95 min-h-[38px]"
+                    className="bg-[#0b192c] hover:bg-orange-600 text-white font-extrabold text-xs px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl shadow-xs transition-colors inline-flex items-center justify-center gap-1 group/btn shrink-0 whitespace-nowrap active:scale-95"
                   >
                     <span>{lang === 'ta' ? 'விண்ணப்பிக்க' : (t.applyNow || 'Apply Now')}</span>
-                    <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform shrink-0" />
+                    <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 transition-transform shrink-0" />
                   </Link>
                 </div>
               </div>
