@@ -152,7 +152,7 @@ export default function AdminLogin() {
 
             <form onSubmit={handleAdminLogin} className="space-y-3">
               <div>
-                <label className="block text-sm font-extrabold text-slate-800 mb-1.5">
+                <label className="block text-xs sm:text-sm font-bold text-slate-700 mb-1.5">
                   Admin Email Address <span className="text-orange-500">*</span>
                 </label>
                 <div className="relative">
@@ -170,7 +170,7 @@ export default function AdminLogin() {
 
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="block text-sm font-extrabold text-slate-800">
+                  <label className="block text-xs sm:text-sm font-bold text-slate-700">
                     Secret Password <span className="text-orange-500">*</span>
                   </label>
                   <button

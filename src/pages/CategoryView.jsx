@@ -205,17 +205,17 @@ export default function CategoryView() {
                   <CategoryIcon className="w-4 h-4" />
                   <span>{lang === 'ta' ? 'சேவை பிரிவு' : 'Category Code'} #{categoryData.id || 1}</span>
                 </div>
-                <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight">
+                <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
                   {categoryData.displayName || categoryData.name}
                 </h1>
-                <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
+                <p className="text-slate-300 text-xs sm:text-sm leading-relaxed">
                   {categoryData.displayDesc || categoryData.description}
                 </p>
               </div>
 
               {/* Dynamic Service Count Badge */}
-              <div className="bg-white/10 backdrop-blur-md border border-white/15 rounded-xl p-5 text-center flex-shrink-0 min-w-[160px]">
-                <div className="text-3xl sm:text-4xl font-black text-emerald-400">
+              <div className="bg-white/10 backdrop-blur-md border border-white/15 rounded-xl p-4 sm:p-5 text-center flex-shrink-0 min-w-[140px]">
+                <div className="text-2xl sm:text-3xl font-black text-emerald-400">
                   {services.length}
                 </div>
                 <div className="text-xs uppercase font-bold tracking-wider text-slate-300 mt-1">
@@ -225,7 +225,7 @@ export default function CategoryView() {
             </div>
 
             {/* Filter & Search Bar Controls */}
-            <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="bg-white p-4 sm:p-5 rounded-xl shadow-sm border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
               
               {/* Search Within Category */}
               <div className="relative flex-1 w-full">
@@ -235,18 +235,18 @@ export default function CategoryView() {
                   placeholder={lang === 'ta' ? 'இப்பிரிவில் சேவைகளைத் தேட...' : `Search in ${categoryData.displayName || categoryData.name}...`}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white font-medium"
+                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white font-medium"
                 />
               </div>
 
               {/* Sort By Dropdown */}
               <div className="flex items-center space-x-2 w-full sm:w-auto">
                 <ArrowUpDown className="w-4 h-4 text-slate-500 flex-shrink-0" />
-                <label className="text-sm font-bold text-slate-700 whitespace-nowrap">{lang === 'ta' ? 'வரிசைப்படுத்து:' : 'Sort By:'}</label>
+                <label className="text-xs sm:text-sm font-bold text-slate-700 whitespace-nowrap">{lang === 'ta' ? 'வரிசைப்படுத்து:' : 'Sort By:'}</label>
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="bg-slate-50 border border-slate-300 text-slate-800 text-sm sm:text-base font-semibold rounded-xl p-2.5 sm:p-3 focus:ring-2 focus:ring-indigo-500 focus:outline-none flex-1 sm:flex-none"
+                  className="bg-slate-50 border border-slate-300 text-slate-800 text-xs sm:text-sm font-semibold rounded-xl p-2.5 focus:ring-2 focus:ring-indigo-500 focus:outline-none flex-1 sm:flex-none"
                 >
                   <option value="default">{lang === 'ta' ? 'இயல்புநிலை' : 'Default Order'}</option>
                   <option value="name">{lang === 'ta' ? 'பெயர் (அகரவரிசை)' : 'Name (A-Z)'}</option>
@@ -261,11 +261,11 @@ export default function CategoryView() {
             {filteredServices.length === 0 ? (
               <div className="bg-white rounded-xl p-12 text-center shadow-sm border border-slate-200 space-y-3">
                 <Search className="w-12 h-12 text-slate-300 mx-auto" />
-                <h4 className="text-xl font-bold text-slate-800">{lang === 'ta' ? 'சேவைகள் ஏதும் கிடைக்கவில்லை' : 'No Services Found'}</h4>
-                <p className="text-sm sm:text-base text-slate-500">{lang === 'ta' ? 'உங்கள் தேடலுக்கு ஏற்ற சேவைகள் இல்லை.' : `No sub-service matches your search query "${searchTerm}".`}</p>
+                <h4 className="text-lg font-bold text-slate-800">{lang === 'ta' ? 'சேவைகள் ஏதும் கிடைக்கவில்லை' : 'No Services Found'}</h4>
+                <p className="text-xs sm:text-sm text-slate-500">{lang === 'ta' ? 'உங்கள் தேடலுக்கு ஏற்ற சேவைகள் இல்லை.' : `No sub-service matches your search query "${searchTerm}".`}</p>
                 <button
                   onClick={() => setSearchTerm('')}
-                  className="px-5 py-2.5 bg-slate-100 text-slate-700 text-sm font-bold rounded-lg hover:bg-slate-200"
+                  className="px-4 py-2 bg-slate-100 text-slate-700 text-xs sm:text-sm font-bold rounded-lg hover:bg-slate-200"
                 >
                   {lang === 'ta' ? 'தேடலை அழிக்கவும்' : 'Clear Search Filter'}
                 </button>
@@ -277,15 +277,15 @@ export default function CategoryView() {
                     key={srv.id}
                     className="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between overflow-hidden group"
                   >
-                    <div className="p-6 space-y-4">
+                    <div className="p-5 sm:p-6 space-y-3.5">
                       
                       {/* Top Badges */}
                       <div className="flex items-center justify-between gap-2">
-                        <span className="inline-flex items-center px-3 py-1 rounded-md text-xs sm:text-sm font-bold bg-indigo-50 text-indigo-700 border border-indigo-100">
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-100">
                           {categoryData.displayName || categoryData.name}
                         </span>
                         
-                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs sm:text-sm font-black ${
+                        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold ${
                           srv.fee === 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-900 border border-slate-200'
                         }`}>
                           {srv.fee === 0 ? (lang === 'ta' ? 'இலவச சேவை' : 'FREE SERVICE') : `${lang === 'ta' ? 'கட்டணம்' : 'Fee'}: ₹${srv.fee}`}
@@ -295,7 +295,7 @@ export default function CategoryView() {
                       {/* Title & Description */}
                       <div className="flex items-start space-x-3">
                         {srv.image_url ? (
-                          <div className="w-14 h-14 rounded-xl border border-slate-200 overflow-hidden shrink-0 shadow-xs">
+                          <div className="w-12 h-12 rounded-xl border border-slate-200 overflow-hidden shrink-0 shadow-xs">
                             <img 
                               src={srv.image_url} 
                               alt={srv.name} 
@@ -306,11 +306,11 @@ export default function CategoryView() {
                             />
                           </div>
                         ) : null}
-                        <div className="space-y-2 flex-1 min-w-0">
-                          <h3 className="text-xl sm:text-2xl font-extrabold text-slate-900 group-hover:text-indigo-600 transition-colors leading-snug">
+                        <div className="space-y-1.5 flex-1 min-w-0">
+                          <h3 className="text-base sm:text-lg font-bold text-slate-900 group-hover:text-indigo-600 transition-colors leading-snug">
                             {srv.name}
                           </h3>
-                          <p className="text-sm sm:text-base text-slate-600 font-medium line-clamp-3 leading-relaxed">
+                          <p className="text-xs sm:text-sm text-slate-600 font-normal line-clamp-2 sm:line-clamp-3 leading-relaxed">
                             {typeof srv.description === 'string'
                               ? srv.description
                               : Array.isArray(srv.description)
@@ -321,14 +321,14 @@ export default function CategoryView() {
                       </div>
 
                       {/* Meta Pills */}
-                      <div className="flex flex-wrap gap-2 pt-2 text-xs sm:text-sm">
-                        <div className="flex items-center space-x-1.5 px-3 py-1.5 bg-slate-100 text-slate-700 rounded-lg font-semibold">
-                          <Clock className="w-4 h-4 text-indigo-500 shrink-0" />
+                      <div className="flex flex-wrap gap-2 pt-1 text-xs">
+                        <div className="flex items-center space-x-1.5 px-2.5 py-1 bg-slate-100 text-slate-700 rounded-lg font-medium">
+                          <Clock className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
                           <span>SLA: {srv.processing_time || (lang === 'ta' ? '3-5 நாட்கள்' : '3-5 Days')}</span>
                         </div>
                         {(srv.documents_count > 0 || srv.required_docs_count > 0) && (
-                          <div className="flex items-center space-x-1.5 px-3 py-1.5 bg-slate-100 text-slate-700 rounded-lg font-semibold">
-                            <FileCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                          <div className="flex items-center space-x-1.5 px-2.5 py-1 bg-slate-100 text-slate-700 rounded-lg font-medium">
+                            <FileCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                             <span>{srv.documents_count || srv.required_docs_count} {lang === 'ta' ? 'ஆவணங்கள்' : 'Proof Docs'}</span>
                           </div>
                         )}

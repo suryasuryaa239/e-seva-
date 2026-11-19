@@ -484,17 +484,17 @@ export default function Home() {
                       {getCategoryIcon(srv.category_slug)}
                     </span>
                   </div>
-                  <span className="text-xs sm:text-sm font-black text-orange-700 bg-orange-50 border border-orange-200/80 px-3 py-1 rounded-full">
+                  <span className="text-xs font-bold text-orange-700 bg-orange-50 border border-orange-200/80 px-2.5 py-0.5 rounded-full">
                     {srv.fee > 0 ? `₹${srv.fee}` : (lang === 'ta' ? 'இலவசம்' : 'FREE')}
                   </span>
                 </div>
 
                 {/* SERVICE NAME & ONE-LINE DESCRIPTION */}
                 <div>
-                  <h3 className="font-heading font-extrabold text-lg sm:text-xl text-slate-900 group-hover:text-orange-600 transition-colors line-clamp-1">
+                  <h3 className="font-heading font-extrabold text-base sm:text-lg text-slate-900 group-hover:text-orange-600 transition-colors line-clamp-1">
                     {srv.name}
                   </h3>
-                  <p className="text-sm text-slate-600 mt-1.5 font-medium line-clamp-2 leading-relaxed">
+                  <p className="text-xs sm:text-sm text-slate-600 mt-1 font-normal line-clamp-2 leading-relaxed">
                     {typeof srv.description === 'string'
                       ? srv.description
                       : Array.isArray(srv.description)

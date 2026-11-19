@@ -174,11 +174,11 @@ export default function PaymentCallback() {
                   </span>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-xs sm:text-sm">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-xs">
                   <div>
                     <span className="text-slate-500 font-medium block mb-1">{lang === 'ta' ? 'விண்ணப்ப எண்' : 'Application Ref Number'}</span>
                     <div className="flex items-center gap-2">
-                      <span className="font-extrabold text-slate-900 font-mono text-sm sm:text-base">{paymentData.application_number || 'N/A'}</span>
+                      <span className="font-extrabold text-slate-900 font-mono text-sm">{paymentData.application_number || 'N/A'}</span>
                       {paymentData.application_number && (
                         <button
                           onClick={() => handleCopy(paymentData.application_number)}
@@ -193,24 +193,24 @@ export default function PaymentCallback() {
 
                   <div>
                     <span className="text-slate-500 font-medium block mb-1">{lang === 'ta' ? 'PhonePe பரிவர்த்தனை எண்' : 'PhonePe Transaction ID'}</span>
-                    <span className="font-bold text-slate-900 font-mono text-xs sm:text-sm truncate block">{paymentData.transaction_id || merchantTransactionId}</span>
+                    <span className="font-bold text-slate-900 font-mono text-xs truncate block">{paymentData.transaction_id || merchantTransactionId}</span>
                   </div>
 
                   <div>
                     <span className="text-slate-500 font-medium block mb-1">{lang === 'ta' ? 'கட்டண முறை' : 'Payment Mode'}</span>
-                    <span className="font-bold text-purple-700 bg-purple-50 border border-purple-200 px-2.5 py-1 rounded-md inline-block text-xs sm:text-sm">
+                    <span className="font-bold text-purple-700 bg-purple-50 border border-purple-200 px-2 py-0.5 rounded-md inline-block text-xs">
                       {paymentData.payment_method || 'PhonePe UPI'}
                     </span>
                   </div>
 
                   <div>
                     <span className="text-slate-500 font-medium block mb-1">{lang === 'ta' ? 'ரசீது எண்' : 'Receipt Number'}</span>
-                    <span className="font-bold text-slate-900 font-mono text-xs sm:text-sm">{paymentData.receipt_number || 'REC-CONFIRMED'}</span>
+                    <span className="font-bold text-slate-900 font-mono text-xs">{paymentData.receipt_number || 'REC-CONFIRMED'}</span>
                   </div>
 
                   <div className="sm:col-span-2">
                     <span className="text-slate-500 font-medium block mb-1">{lang === 'ta' ? 'செலுத்தப்பட்ட நேரம்' : 'Paid At'}</span>
-                    <span className="font-semibold text-slate-700 text-xs sm:text-sm">
+                    <span className="font-semibold text-slate-700 text-xs">
                       {paymentData.paid_at ? new Date(paymentData.paid_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : new Date().toLocaleString()}
                     </span>
                   </div>

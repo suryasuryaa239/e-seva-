@@ -193,7 +193,7 @@ export default function ServicesDirectory() {
                 placeholder={t.searchServicesPlaceholder || (lang === 'ta' ? 'சேவைகளைத் தேடுங்கள்...' : 'Search services...')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-slate-50 text-slate-900 placeholder-slate-400 text-sm sm:text-base rounded-2xl pl-12 pr-10 py-4 border border-slate-300 focus:border-[#0b192c] focus:bg-white outline-none transition-all shadow-xs font-medium"
+                className="w-full bg-slate-50 text-slate-900 placeholder-slate-400 text-sm rounded-2xl pl-12 pr-10 py-3.5 border border-slate-300 focus:border-[#0b192c] focus:bg-white outline-none transition-all shadow-xs font-medium"
               />
               <Search className="w-5 h-5 text-orange-500 absolute left-4 top-4 pointer-events-none" />
               
@@ -282,12 +282,12 @@ export default function ServicesDirectory() {
             {sortedServices.map((srv) => (
               <div
                 key={srv.id}
-                className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs hover:shadow-md hover:border-orange-500/40 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between space-y-4 group h-full"
+                className="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-xs hover:shadow-md hover:border-orange-500/40 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between space-y-3.5 group h-full"
               >
                 <div className="space-y-3">
                   {/* CATEGORY ICON & FEE BADGE */}
                   <div className="flex items-center justify-between">
-                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-slate-50 to-orange-50/30 border border-slate-200/90 p-1 flex items-center justify-center shadow-xs group-hover:scale-110 group-hover:border-orange-300 transition-all duration-300 overflow-hidden shrink-0">
+                    <div className="w-13 h-13 rounded-2xl bg-gradient-to-br from-slate-50 to-orange-50/30 border border-slate-200/90 p-1 flex items-center justify-center shadow-xs group-hover:scale-105 group-hover:border-orange-300 transition-all duration-300 overflow-hidden shrink-0">
                       {srv.image_url ? (
                         <img 
                           src={srv.image_url} 
@@ -302,20 +302,20 @@ export default function ServicesDirectory() {
                         {getCategoryIcon(srv.category_slug)}
                       </span>
                     </div>
-                    <span className="text-xs sm:text-sm font-black text-orange-700 bg-orange-50 border border-orange-200/80 px-3 py-1 rounded-full">
+                    <span className="text-xs font-bold text-orange-700 bg-orange-50 border border-orange-200/80 px-2.5 py-0.5 rounded-full">
                       {srv.fee > 0 ? `₹${srv.fee}` : (lang === 'ta' ? 'இலவசம்' : 'FREE')}
                     </span>
                   </div>
 
                   {/* SERVICE NAME & DESCRIPTION */}
                   <div>
-                    <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">
+                    <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
                       {srv.category_name}
                     </span>
-                    <h3 className="font-heading font-extrabold text-lg sm:text-xl text-slate-900 group-hover:text-orange-600 transition-colors line-clamp-1">
+                    <h3 className="font-heading font-extrabold text-base sm:text-lg text-slate-900 group-hover:text-orange-600 transition-colors line-clamp-1">
                       {srv.name}
                     </h3>
-                    <p className="text-sm text-slate-600 mt-1.5 font-medium line-clamp-2 leading-relaxed">
+                    <p className="text-xs sm:text-sm text-slate-600 mt-1 font-normal line-clamp-2 leading-relaxed">
                       {typeof srv.description === 'string'
                         ? srv.description
                         : Array.isArray(srv.description)
@@ -325,11 +325,11 @@ export default function ServicesDirectory() {
                   </div>
 
                   {/* SLA & PROOF DETAILS */}
-                  <div className="pt-2 flex flex-wrap gap-2 text-xs sm:text-sm text-slate-600 font-semibold">
-                    <span className="flex items-center gap-1.5 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100">
+                  <div className="pt-1.5 flex flex-wrap gap-2 text-xs text-slate-600 font-medium">
+                    <span className="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-100">
                       <Clock className="w-3.5 h-3.5 text-amber-500 shrink-0" /> {lang === 'ta' ? 'செயலாக்க நேரம்:' : 'SLA:'} {srv.processing_time || (lang === 'ta' ? '3-5 வேலை நாட்கள்' : '3-5 Days')}
                     </span>
-                    <span className="flex items-center gap-1.5 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100">
+                    <span className="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-100">
                       <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" /> {lang === 'ta' ? 'மின்னணு முறை' : 'Online Application'}
                     </span>
                   </div>

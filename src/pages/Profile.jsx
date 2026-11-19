@@ -193,7 +193,7 @@ export default function Profile() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div>
-              <label className="block text-sm sm:text-base font-extrabold text-slate-800 mb-2">
+              <label className="block text-xs sm:text-sm font-bold text-slate-700 mb-1.5">
                 {t.fullNameLabel} <span className="text-orange-500">*</span>
               </label>
               <div className="relative">
@@ -209,7 +209,7 @@ export default function Profile() {
             </div>
 
             <div>
-              <label className="block text-sm sm:text-base font-extrabold text-slate-800 mb-2">
+              <label className="block text-xs sm:text-sm font-bold text-slate-700 mb-1.5">
                 {t.emailAddressLabel} ({lang === 'ta' ? 'வாசிக்க மட்டும்' : 'Read-only'})
               </label>
               <div className="relative">
@@ -224,7 +224,7 @@ export default function Profile() {
             </div>
 
             <div>
-              <label className="block text-sm sm:text-base font-extrabold text-slate-800 mb-2">
+              <label className="block text-xs sm:text-sm font-bold text-slate-700 mb-1.5">
                 {t.mobileNumberLabel} <span className="text-orange-500">*</span>
               </label>
               <div className="relative">
@@ -240,7 +240,7 @@ export default function Profile() {
             </div>
 
             <div>
-              <label className="block text-sm sm:text-base font-extrabold text-slate-800 mb-2">
+              <label className="block text-xs sm:text-sm font-bold text-slate-700 mb-1.5">
                 {lang === 'ta' ? 'ஆதார் எண் (பாதுகாக்கப்பட்டது)' : 'Aadhaar Number (Protected)'}
               </label>
               <div className="relative">
@@ -263,7 +263,7 @@ export default function Profile() {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm sm:text-base font-extrabold text-slate-800 mb-2">
+                <label className="block text-xs sm:text-sm font-bold text-slate-700 mb-1.5">
                   {t.addressLabel}
                 </label>
                 <div className="relative">
@@ -280,7 +280,7 @@ export default function Profile() {
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm sm:text-base font-extrabold text-slate-800 mb-2">
+                  <label className="block text-xs sm:text-sm font-bold text-slate-700 mb-1.5">
                     {lang === 'ta' ? 'மாவட்டம்' : 'District'}
                   </label>
                   <input
@@ -293,7 +293,7 @@ export default function Profile() {
                 </div>
 
                 <div>
-                  <label className="block text-sm sm:text-base font-extrabold text-slate-800 mb-2">
+                  <label className="block text-xs sm:text-sm font-bold text-slate-700 mb-1.5">
                     {lang === 'ta' ? 'மாநிலம்' : 'State'}
                   </label>
                   <input
@@ -305,7 +305,7 @@ export default function Profile() {
                 </div>
 
                 <div>
-                  <label className="block text-sm sm:text-base font-extrabold text-slate-800 mb-2">
+                  <label className="block text-xs sm:text-sm font-bold text-slate-700 mb-1.5">
                     {lang === 'ta' ? 'அஞ்சல் குறியீடு (பின்கோடு)' : 'Pincode'}
                   </label>
                   <input
@@ -325,7 +325,7 @@ export default function Profile() {
             <button
               type="submit"
               disabled={saving}
-              className="px-6 py-3.5 bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-sm sm:text-base font-extrabold py-4 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center space-x-2 group cursor-pointer"
+              className="px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-sm rounded-xl shadow-md hover:shadow-lg transition-all flex items-center space-x-2 group cursor-pointer"
             >
               <Save className="w-4 h-4 text-white group-hover:scale-110 transition-transform" />
               <span>{saving ? (lang === 'ta' ? 'சேமிக்கப்படுகிறது...' : 'Saving Changes...') : (lang === 'ta' ? 'சுயவிவர மாற்றங்களைச் சேமிக்கவும்' : 'Save Profile Changes')}</span>

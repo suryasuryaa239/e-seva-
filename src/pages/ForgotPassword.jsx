@@ -103,7 +103,7 @@ export default function ForgotPassword() {
         {step === 1 && (
           <form onSubmit={handleRequestToken} className="space-y-4">
             <div>
-              <label className="block text-sm sm:text-base font-bold text-slate-800 mb-1.5">{t.emailAddressLabel}</label>
+              <label className="block text-xs sm:text-sm font-bold text-slate-700 mb-1.5">{t.emailAddressLabel}</label>
               <div className="relative">
                 <input
                   type="email"
@@ -111,16 +111,16 @@ export default function ForgotPassword() {
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   placeholder="name@example.com"
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 pl-10 text-xs font-semibold text-slate-900 focus:bg-white focus:border-[#0b192c] outline-none"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 sm:py-3 pl-10 text-xs sm:text-sm font-medium text-slate-900 focus:bg-white focus:border-[#0b192c] outline-none"
                 />
-                <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
               </div>
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 bg-[#0b192c] hover:bg-orange-600 text-white font-bold text-xs rounded-xl shadow transition-colors"
+              className="w-full py-3 bg-[#0b192c] hover:bg-orange-600 text-white font-extrabold text-sm rounded-xl shadow transition-colors"
             >
               {loading ? (lang === 'ta' ? 'கோரிக்கை அனுப்பப்படுகிறது...' : 'Sending Request...') : t.sendResetLinkBtn}
             </button>
@@ -130,19 +130,19 @@ export default function ForgotPassword() {
         {step === 2 && (
           <form onSubmit={handleResetPassword} className="space-y-4">
             <div>
-              <label className="block text-sm sm:text-base font-bold text-slate-800 mb-1.5">{lang === 'ta' ? 'மீட்டமைப்பு டோக்கன்' : 'Reset Verification Token'}</label>
+              <label className="block text-xs sm:text-sm font-bold text-slate-700 mb-1.5">{lang === 'ta' ? 'மீட்டமைப்பு டோக்கன்' : 'Reset Verification Token'}</label>
               <input
                 type="text"
                 required
                 value={resetToken}
                 onChange={e => setResetToken(e.target.value)}
                 placeholder={lang === 'ta' ? 'டோக்கனை ஒட்டவும்' : 'Paste token or check system response'}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-mono text-slate-900 focus:bg-white focus:border-[#0b192c] outline-none"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 sm:py-3 text-xs sm:text-sm font-mono text-slate-900 focus:bg-white focus:border-[#0b192c] outline-none"
               />
             </div>
 
             <div>
-              <label className="block text-sm sm:text-base font-bold text-slate-800 mb-1.5">{lang === 'ta' ? 'புதிய கடவுச்சொல்' : 'New Password'}</label>
+              <label className="block text-xs sm:text-sm font-bold text-slate-700 mb-1.5">{lang === 'ta' ? 'புதிய கடவுச்சொல்' : 'New Password'}</label>
               <input
                 type="password"
                 required
@@ -150,12 +150,12 @@ export default function ForgotPassword() {
                 value={newPassword}
                 onChange={e => setNewPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-semibold text-slate-900 focus:bg-white focus:border-[#0b192c] outline-none"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 sm:py-3 text-xs sm:text-sm font-medium text-slate-900 focus:bg-white focus:border-[#0b192c] outline-none"
               />
             </div>
 
             <div>
-              <label className="block text-sm sm:text-base font-bold text-slate-800 mb-1.5">{t.confirmPasswordLabel}</label>
+              <label className="block text-xs sm:text-sm font-bold text-slate-700 mb-1.5">{t.confirmPasswordLabel}</label>
               <input
                 type="password"
                 required
@@ -163,14 +163,14 @@ export default function ForgotPassword() {
                 value={confirmPassword}
                 onChange={e => setConfirmPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-semibold text-slate-900 focus:bg-white focus:border-[#0b192c] outline-none"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 sm:py-3 text-xs sm:text-sm font-medium text-slate-900 focus:bg-white focus:border-[#0b192c] outline-none"
               />
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow transition-colors"
+              className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-sm rounded-xl shadow transition-colors"
             >
               {loading ? (lang === 'ta' ? 'கடவுச்சொல் புதுப்பிக்கப்படுகிறது...' : 'Updating Password...') : (lang === 'ta' ? 'கடவுச்சொல்லை மீட்டமைக்கவும்' : 'Reset Password & Save')}
             </button>

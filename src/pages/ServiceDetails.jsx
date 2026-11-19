@@ -194,33 +194,33 @@ export default function ServiceDetails() {
             {/* DESCRIPTION */}
             <div className="space-y-2">
               <h3 className="text-xs sm:text-sm font-extrabold text-slate-500 uppercase tracking-wider">{t.aboutThisService || (lang === 'ta' ? 'இந்த சேவையைப் பற்றி' : 'About this service')}</h3>
-              <p className="text-sm sm:text-base text-slate-700 leading-relaxed font-medium">
+              <p className="text-sm text-slate-700 leading-relaxed font-normal">
                 {service.description || (lang === 'ta' ? 'அதிகாரப்பூர்வ டிஜிட்டல் சேவை உதவிக்கு ஆன்லைனில் விண்ணப்பிக்கவும்.' : 'Apply for official digital service facilitation online with verified document review and status tracking.')}
               </p>
             </div>
 
             {/* PRICE & SLA BADGES */}
             <div className="flex flex-wrap items-center gap-4 pt-2">
-              <div className="bg-slate-50 border border-slate-200/80 rounded-2xl px-5 py-3.5 flex items-center space-x-3">
-                <div className="text-xs sm:text-sm text-slate-600 font-semibold">{t.serviceFeeLabel || (lang === 'ta' ? 'சேவை கட்டணம்' : 'Service Fee')}:</div>
-                <div className="text-2xl sm:text-3xl font-black text-orange-600">
+              <div className="bg-slate-50 border border-slate-200/80 rounded-2xl px-4 sm:px-5 py-3 flex items-center space-x-3">
+                <div className="text-xs text-slate-600 font-semibold">{t.serviceFeeLabel || (lang === 'ta' ? 'சேவை கட்டணம்' : 'Service Fee')}:</div>
+                <div className="text-xl sm:text-2xl font-black text-orange-600">
                   {service.fee === 0 ? (lang === 'ta' ? 'இலவசம்' : 'FREE') : `₹${service.fee}`}
                 </div>
               </div>
 
-              <div className="bg-slate-50 border border-slate-200/80 rounded-2xl px-5 py-3.5 flex items-center space-x-3">
+              <div className="bg-slate-50 border border-slate-200/80 rounded-2xl px-4 sm:px-5 py-3 flex items-center space-x-3">
                 <Clock className="w-5 h-5 text-amber-500 shrink-0" />
                 <div>
                   <div className="text-xs text-slate-500 font-bold uppercase tracking-wider">{t.processingTimeLabel || (lang === 'ta' ? 'செயலாக்க நேரம்' : 'Processing Time')}</div>
-                  <div className="text-sm sm:text-base font-extrabold text-slate-900">{service.processing_time || (lang === 'ta' ? '3-5 வேலை நாட்கள்' : '3-5 Working Days')}</div>
+                  <div className="text-sm font-bold text-slate-900">{service.processing_time || (lang === 'ta' ? '3-5 வேலை நாட்கள்' : '3-5 Working Days')}</div>
                 </div>
               </div>
 
-              <div className="bg-slate-50 border border-slate-200/80 rounded-2xl px-5 py-3.5 flex items-center space-x-3">
+              <div className="bg-slate-50 border border-slate-200/80 rounded-2xl px-4 sm:px-5 py-3 flex items-center space-x-3">
                 <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
                 <div>
                   <div className="text-xs text-slate-500 font-bold uppercase tracking-wider">{lang === 'ta' ? 'விண்ணப்ப முறை' : 'Application Mode'}</div>
-                  <div className="text-sm sm:text-base font-extrabold text-slate-900">{lang === 'ta' ? '100% ஆன்லைன் டிஜிட்டல் சேவை' : '100% Online Digital Desk'}</div>
+                  <div className="text-sm font-bold text-slate-900">{lang === 'ta' ? '100% ஆன்லைன் டிஜிட்டல் சேவை' : '100% Online Digital Desk'}</div>
                 </div>
               </div>
             </div>
@@ -244,7 +244,7 @@ export default function ServiceDetails() {
             <div className="space-y-3 pt-2">
               <Link
                 to={`/apply/${service.slug || service.id}`}
-                className="w-full py-4 px-6 bg-[#0b192c] hover:bg-orange-600 text-white font-extrabold text-sm sm:text-base rounded-xl shadow-xs transition-colors flex items-center justify-center gap-2 group/btn"
+                className="w-full py-3.5 px-6 bg-[#0b192c] hover:bg-orange-600 text-white font-extrabold text-sm rounded-xl shadow-xs transition-colors flex items-center justify-center gap-2 group/btn"
               >
                 <span>{t.applyNowBtn || (lang === 'ta' ? 'இப்போது விண்ணப்பிக்கவும்' : 'Apply Now')}</span>
                 <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
@@ -285,7 +285,7 @@ export default function ServiceDetails() {
                 <Info className="w-5 h-5 text-orange-500" />
                 <span>{t.aboutThisService || (lang === 'ta' ? 'இந்த சேவையைப் பற்றி' : 'About this service')}</span>
               </h2>
-              <div className="space-y-3 text-sm sm:text-base text-slate-700 leading-relaxed font-normal">
+              <div className="space-y-3 text-sm text-slate-700 leading-relaxed font-normal">
                 <p>
                   {typeof service.description === 'string'
                     ? service.description
@@ -306,13 +306,13 @@ export default function ServiceDetails() {
 
             {/* REQUIRED DOCUMENTS CHECKLIST (Shown only when configured by Admin) */}
             {documentsList.length > 0 && (
-            <div className="bg-white rounded-3xl p-8 border border-slate-200/90 shadow-sm space-y-5">
+            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-5">
               <div className="flex items-center justify-between border-b pb-4 border-slate-100">
-                <h2 className="font-heading font-extrabold text-xl text-slate-900 flex items-center gap-2">
+                <h2 className="font-heading font-extrabold text-lg sm:text-xl text-slate-900 flex items-center gap-2">
                   <FileCheck className="w-5 h-5 text-emerald-600" />
                   <span>{t.requiredDocumentsTitle || (lang === 'ta' ? 'தேவையான ஆவணங்கள்' : 'Required Documents')}</span>
                 </h2>
-                <span className="text-xs sm:text-sm text-slate-500 font-bold uppercase tracking-wider">
+                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
                   {documentsList.length} {lang === 'ta' ? 'ஆவணங்கள்' : 'Items'}
                 </span>
               </div>
@@ -323,15 +323,15 @@ export default function ServiceDetails() {
                   const displayDocName = getLocalizedDocName(docRawName, lang);
                   const isMandatory = isDocMandatory(doc);
                   return (
-                    <div key={idx} className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-start space-x-3">
+                    <div key={idx} className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-start space-x-3">
                       <div className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs shrink-0 mt-0.5 ${
                         isMandatory ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-700'
                       }`}>
                         {isMandatory ? '✓' : '○'}
                       </div>
                       <div className="space-y-1">
-                        <h4 className="text-sm sm:text-base font-extrabold text-slate-900">{displayDocName}</h4>
-                        <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
+                        <h4 className="text-sm font-bold text-slate-900">{displayDocName}</h4>
+                        <p className="text-xs text-slate-600 font-normal leading-relaxed">
                           {getLocalizedDocDesc(doc.description, docRawName, isMandatory, lang)}
                         </p>
                         <span className={`inline-block text-xs font-bold px-2.5 py-0.5 rounded-md mt-1 ${

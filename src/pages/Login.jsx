@@ -284,7 +284,7 @@ export default function Login() {
                         placeholder="Karthik Subramanian"
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="w-full bg-slate-50/70 text-slate-900 text-sm sm:text-base font-semibold rounded-xl pl-10 pr-3.5 py-3 border border-slate-200 focus:border-[#0f172a] focus:bg-white focus:ring-2 focus:ring-[#0f172a]/10 outline-none transition-all"
+                        className="w-full bg-slate-50/70 text-slate-900 text-sm font-medium rounded-xl pl-10 pr-3.5 py-2.5 sm:py-3 border border-slate-200 focus:border-[#0f172a] focus:bg-white focus:ring-2 focus:ring-[#0f172a]/10 outline-none transition-all"
                       />
                     </div>
                   </div>
@@ -303,7 +303,7 @@ export default function Login() {
                         inputMode="numeric"
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: sanitizePhone(e.target.value) })}
-                        className="w-full bg-slate-50/70 text-slate-900 text-sm sm:text-base font-semibold rounded-xl pl-10 pr-3.5 py-3 border border-slate-200 focus:border-[#0f172a] focus:bg-white focus:ring-2 focus:ring-[#0f172a]/10 outline-none transition-all"
+                        className="w-full bg-slate-50/70 text-slate-900 text-sm font-medium rounded-xl pl-10 pr-3.5 py-2.5 sm:py-3 border border-slate-200 focus:border-[#0f172a] focus:bg-white focus:ring-2 focus:ring-[#0f172a]/10 outline-none transition-all"
                       />
                     </div>
                   </div>
@@ -322,7 +322,7 @@ export default function Login() {
                         placeholder="user@eseva.gov.in"
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        className="w-full bg-slate-50/70 text-slate-900 text-sm sm:text-base font-semibold rounded-xl pl-10 pr-3.5 py-3 border border-slate-200 focus:border-[#0f172a] focus:bg-white focus:ring-2 focus:ring-[#0f172a]/10 outline-none transition-all"
+                        className="w-full bg-slate-50/70 text-slate-900 text-sm font-medium rounded-xl pl-10 pr-3.5 py-2.5 sm:py-3 border border-slate-200 focus:border-[#0f172a] focus:bg-white focus:ring-2 focus:ring-[#0f172a]/10 outline-none transition-all"
                       />
                     </div>
                   </div>
@@ -340,7 +340,7 @@ export default function Login() {
                         inputMode="numeric"
                         value={formData.aadhaar_no}
                         onChange={(e) => setFormData({ ...formData, aadhaar_no: formatAadhaar(e.target.value) })}
-                        className="w-full bg-slate-50/70 text-slate-900 text-sm sm:text-base font-mono font-semibold rounded-xl pl-10 pr-3.5 py-3 border border-slate-200 focus:border-[#0f172a] focus:bg-white focus:ring-2 focus:ring-[#0f172a]/10 outline-none transition-all"
+                        className="w-full bg-slate-50/70 text-slate-900 text-sm font-mono font-medium rounded-xl pl-10 pr-3.5 py-2.5 sm:py-3 border border-slate-200 focus:border-[#0f172a] focus:bg-white focus:ring-2 focus:ring-[#0f172a]/10 outline-none transition-all"
                       />
                     </div>
                   </div>
@@ -359,7 +359,7 @@ export default function Login() {
                     placeholder={lang === 'ta' ? 'மின்னஞ்சல் அல்லது மொபைல் எண்' : 'Email, 10-digit mobile or Aadhaar'}
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full bg-slate-50/70 text-slate-900 text-sm sm:text-base font-semibold rounded-xl pl-10 pr-3.5 py-3 border border-slate-200 focus:border-[#0f172a] focus:bg-white focus:ring-2 focus:ring-[#0f172a]/10 outline-none transition-all"
+                    className="w-full bg-slate-50/70 text-slate-900 text-sm font-medium rounded-xl pl-10 pr-3.5 py-2.5 sm:py-3 border border-slate-200 focus:border-[#0f172a] focus:bg-white focus:ring-2 focus:ring-[#0f172a]/10 outline-none transition-all"
                   />
                 </div>
               </div>
