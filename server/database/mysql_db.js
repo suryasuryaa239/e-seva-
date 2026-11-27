@@ -67,6 +67,7 @@ export async function initializeDatabaseSchema() {
         slug VARCHAR(255) NOT NULL UNIQUE,
         description TEXT,
         icon VARCHAR(100),
+        image_url LONGTEXT,
         badge VARCHAR(100),
         service_count INT DEFAULT 0,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -361,7 +362,8 @@ export async function initializeDatabaseSchema() {
       "ALTER TABLE banners MODIFY COLUMN image_url LONGTEXT",
       "ALTER TABLE banners ADD COLUMN IF NOT EXISTS desktop_image_url LONGTEXT",
       "ALTER TABLE banners ADD COLUMN IF NOT EXISTS mobile_image_url LONGTEXT",
-      "ALTER TABLE banners ADD COLUMN IF NOT EXISTS tablet_image_url LONGTEXT"
+      "ALTER TABLE banners ADD COLUMN IF NOT EXISTS tablet_image_url LONGTEXT",
+      "ALTER TABLE categories ADD COLUMN IF NOT EXISTS image_url LONGTEXT"
     ];
 
     for (const sql of migrations) {

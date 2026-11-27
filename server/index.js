@@ -5001,9 +5001,9 @@ app.get('/api/categories', (req, res) => {
 });
 
 // Admin Add Category
-app.post('/api/admin/categories', authenticateAdmin, (req, res) => {
+app.post('/api/admin/categories', authenticateAdmin, upload.any(), async (req, res) => {
   try {
-    const { name, description, icon } = req.body;
+    const { name, description, icon, image_url_input, image_url: bodyImageUrl } = req.body;
     if (!name || !name.trim()) {
       return res.status(400).json({ error: 'Category name is required' });
     }
@@ -5014,15 +5014,95 @@ app.post('/api/admin/categories', authenticateAdmin, (req, res) => {
       return res.status(400).json({ error: 'Category with this name already exists' });
     }
 
+    let image_url = (image_url_input || bodyImageUrl || '').trim();
+    const uploadedImg = req.file || (req.files && req.files.find(f => f.fieldname === 'image' || f.fieldname === 'image_file' || (f.mimetype && f.mimetype.startsWith('image/'))));
+    if (uploadedImg) {
+      try {
+        const fileBuffer = uploadedImg.buffer || (uploadedImg.path && fs.existsSync(uploadedImg.path) ? fs.readFileSync(uploadedImg.path) : null);
+        if (fileBuffer) {
+          image_url = await storeUploadedFile({
+            buffer: fileBuffer,
+            originalname: uploadedImg.originalname,
+            mimetype: uploadedImg.mimetype,
+            filename: uploadedImg.filename,
+            subDir: 'categories'
+          });
+        }
+      } catch (uploadErr) {
+        console.warn('[Category Create Upload Error]:', uploadErr.message);
+      }
+      if (!image_url && uploadedImg.filename) {
+        image_url = `/api/documents/preview-file/${uploadedImg.filename}`;
+      }
+    }
+
     const slug = cleanName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
     const newCategory = db.insert('categories', {
       name: cleanName,
       slug,
       icon: icon || 'Grid',
+      image_url: image_url || '',
       description: description ? description.trim() : `Official services under ${cleanName}`
     });
 
     res.status(201).json({ message: 'Category created successfully', category: newCategory });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Admin Update Category (Name, Description, Icon, Image)
+app.put('/api/admin/categories/:id', authenticateAdmin, upload.any(), async (req, res) => {
+  try {
+    const catId = Number(req.params.id);
+    const existing = db.get('categories', c => Number(c.id) === catId);
+    if (!existing) {
+      return res.status(404).json({ error: 'Category not found' });
+    }
+
+    const { name, description, icon, image_url_input, image_url: bodyImageUrl } = req.body;
+    const cleanName = name && name.trim() ? name.trim() : existing.name;
+
+    let image_url = existing.image_url || '';
+    const uploadedImg = req.file || (req.files && req.files.find(f => f.fieldname === 'image' || f.fieldname === 'image_file' || (f.mimetype && f.mimetype.startsWith('image/'))));
+    if (uploadedImg) {
+      try {
+        const fileBuffer = uploadedImg.buffer || (uploadedImg.path && fs.existsSync(uploadedImg.path) ? fs.readFileSync(uploadedImg.path) : null);
+        if (fileBuffer) {
+          image_url = await storeUploadedFile({
+            buffer: fileBuffer,
+            originalname: uploadedImg.originalname,
+            mimetype: uploadedImg.mimetype,
+            filename: uploadedImg.filename,
+            subDir: 'categories'
+          });
+        }
+      } catch (uploadErr) {
+        console.warn('[Category Update Upload Error]:', uploadErr.message);
+      }
+      if (!image_url && uploadedImg.filename) {
+        image_url = `/api/documents/preview-file/${uploadedImg.filename}`;
+      }
+    } else if (image_url_input !== undefined || bodyImageUrl !== undefined) {
+      const inputVal = (image_url_input !== undefined ? image_url_input : bodyImageUrl) || '';
+      image_url = inputVal.trim();
+    }
+
+    const updated = db.update('categories', c => Number(c.id) === catId, {
+      name: cleanName,
+      description: description !== undefined ? String(description).trim() : existing.description,
+      icon: icon || existing.icon || 'Grid',
+      image_url
+    });
+
+    if (cleanName !== existing.name) {
+      const servicesUnderCat = db.all('services', s => Number(s.category_id) === catId);
+      servicesUnderCat.forEach(s => {
+        db.update('services', item => item.id === s.id, { category_name: cleanName });
+      });
+    }
+
+    res.json({ message: 'Category updated successfully', category: updated || { ...existing, name: cleanName, image_url } });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

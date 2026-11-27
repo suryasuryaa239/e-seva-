@@ -5,6 +5,7 @@ import {
   Car, Briefcase, Zap, Grid, ArrowRight, Layers
 } from 'lucide-react';
 import Breadcrumbs from '../components/Breadcrumbs';
+import { resolveMediaUrl } from '../utils/mediaUrl';
 
 const iconMap = {
   Fingerprint, CreditCard, Vote, FileText, MapPin, Globe, Car, Briefcase, Zap, Grid
@@ -64,7 +65,7 @@ export default function Categories() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {categories.map((cat) => {
             const IconComp = iconMap[cat.icon] || Grid;
-            const imgPath = getCategoryImage(cat.slug);
+            const imgPath = cat.image_url ? resolveMediaUrl(cat.image_url) : getCategoryImage(cat.slug);
             return (
               <div
                 key={cat.id}

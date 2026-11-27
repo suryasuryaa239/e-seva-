@@ -729,15 +729,21 @@ export default function AdminDashboard() {
   const [savingProfile, setSavingProfile] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
 
-  // Category State & New Category Modal State
+  // Category State & New/Edit Category Modal State
   const [categoriesList, setCategoriesList] = useState([]);
   const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
   const [creatingCategory, setCreatingCategory] = useState(false);
   const [newCategoryForm, setNewCategoryForm] = useState({
     name: '',
     description: '',
-    icon: 'Grid'
+    icon: 'Grid',
+    image_url_input: '',
+    image_file: null,
+    image_preview: ''
   });
+  const [showEditCategoryModal, setShowEditCategoryModal] = useState(false);
+  const [savingEditCategory, setSavingEditCategory] = useState(false);
+  const [editingCategoryForm, setEditingCategoryForm] = useState(null);
 
   const fetchCategories = async () => {
     try {
@@ -766,24 +772,28 @@ export default function AdminDashboard() {
 
     setCreatingCategory(true);
     try {
+      const formData = new FormData();
+      formData.append('name', String(newCategoryForm.name || '').trim());
+      formData.append('description', String(newCategoryForm.description || '').trim());
+      formData.append('icon', newCategoryForm.icon || 'Grid');
+      formData.append('image_url_input', String(newCategoryForm.image_url_input || '').trim());
+      if (newCategoryForm.image_file) {
+        formData.append('image', newCategoryForm.image_file);
+      }
+
       const res = await fetch('/api/admin/categories', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
           Authorization: `Bearer ${adminToken}`
         },
-        body: JSON.stringify({
-          name: String(newCategoryForm.name || '').trim(),
-          description: String(newCategoryForm.description || '').trim(),
-          icon: newCategoryForm.icon
-        })
+        body: formData
       });
 
       const data = await res.json();
       if (res.ok) {
         addToast(`New Category "${newCategoryForm.name}" created successfully!`, 'success');
         setShowAddCategoryModal(false);
-        setNewCategoryForm({ name: '', description: '', icon: 'Grid' });
+        setNewCategoryForm({ name: '', description: '', icon: 'Grid', image_url_input: '', image_file: null, image_preview: '' });
         fetchCategories();
         fetchServices();
       } else {
@@ -793,6 +803,63 @@ export default function AdminDashboard() {
       addToast('Category creation error', 'error');
     } finally {
       setCreatingCategory(false);
+    }
+  };
+
+  const openEditCategoryModal = (catObj) => {
+    if (!catObj) return;
+    setEditingCategoryForm({
+      id: catObj.id,
+      name: catObj.name || '',
+      description: catObj.description || '',
+      icon: catObj.icon || 'Grid',
+      image_url_input: catObj.image_url || '',
+      image_file: null,
+      image_preview: resolveMediaUrl(catObj.image_url) || ''
+    });
+    setShowEditCategoryModal(true);
+  };
+
+  const handleEditCategorySubmit = async (e) => {
+    e.preventDefault();
+    if (!editingCategoryForm || !String(editingCategoryForm.name || '').trim()) {
+      addToast('Category name is required', 'error');
+      return;
+    }
+
+    setSavingEditCategory(true);
+    try {
+      const formData = new FormData();
+      formData.append('name', String(editingCategoryForm.name || '').trim());
+      formData.append('description', String(editingCategoryForm.description || '').trim());
+      formData.append('icon', editingCategoryForm.icon || 'Grid');
+      formData.append('image_url_input', String(editingCategoryForm.image_url_input || '').trim());
+      if (editingCategoryForm.image_file) {
+        formData.append('image', editingCategoryForm.image_file);
+      }
+
+      const res = await fetch(`/api/admin/categories/${editingCategoryForm.id}`, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${adminToken}`
+        },
+        body: formData
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        addToast(`Category "${editingCategoryForm.name}" updated successfully!`, 'success');
+        setShowEditCategoryModal(false);
+        setEditingCategoryForm(null);
+        fetchCategories();
+        fetchServices();
+      } else {
+        addToast(data.error || 'Failed to update category', 'error');
+      }
+    } catch (err) {
+      addToast('Category update error', 'error');
+    } finally {
+      setSavingEditCategory(false);
     }
   };
   const [showAddServiceModal, setShowAddServiceModal] = useState(false);
@@ -3766,6 +3833,13 @@ export default function AdminDashboard() {
                     <span>Form Theme Colors</span>
                   </button>
                   <button
+                    onClick={() => setShowAddCategoryModal(true)}
+                    className="px-3.5 py-2 bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-extrabold rounded-xl border border-amber-200 transition-all flex items-center space-x-1.5 cursor-pointer shadow-xs"
+                  >
+                    <Plus className="w-3.5 h-3.5 text-amber-600" />
+                    <span>New Category</span>
+                  </button>
+                  <button
                     onClick={() => setShowAddServiceModal(true)}
                     className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white font-extrabold text-xs rounded-xl shadow transition-all flex items-center space-x-1.5 cursor-pointer"
                   >
@@ -3863,24 +3937,42 @@ export default function AdminDashboard() {
                     const count = cat === 'All' ? services.length : services.filter(s => (s.category_name === cat || s.category === cat)).length;
                     const emoji = cat === 'All' ? '🌐' : getCategoryIconEmoji(cat);
                     const isSelected = selectedServiceCategory === cat;
+                    const catRecord = cat !== 'All' ? categoriesList.find(c => String(c.name || '').toLowerCase() === String(cat).toLowerCase()) : null;
                     return (
-                      <button
-                        key={cat}
-                        onClick={() => setSelectedServiceCategory(cat)}
-                        className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center space-x-1.5 ${
-                          isSelected
-                            ? 'bg-[#0b192c] text-white shadow-sm font-black ring-1 ring-orange-500'
-                            : 'bg-slate-50 text-slate-600 hover:text-slate-900 border border-slate-200 hover:bg-slate-100'
-                        }`}
-                      >
-                        <span>{emoji}</span>
-                        <span>{cat}</span>
-                        <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-extrabold ${
-                          isSelected ? 'bg-orange-500 text-white' : 'bg-slate-200/80 text-slate-700'
-                        }`}>
-                          {count}
-                        </span>
-                      </button>
+                      <div key={cat} className="inline-flex items-center shrink-0">
+                        <button
+                          onClick={() => setSelectedServiceCategory(cat)}
+                          className={`px-3.5 py-1.5 text-xs font-bold whitespace-nowrap transition-all flex items-center space-x-1.5 ${
+                            catRecord ? 'rounded-l-xl border-r-0' : 'rounded-xl'
+                          } ${
+                            isSelected
+                              ? 'bg-[#0b192c] text-white shadow-sm font-black ring-1 ring-orange-500'
+                              : 'bg-slate-50 text-slate-600 hover:text-slate-900 border border-slate-200 hover:bg-slate-100'
+                          }`}
+                        >
+                          <span>{emoji}</span>
+                          <span>{cat}</span>
+                          <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-extrabold ${
+                            isSelected ? 'bg-orange-500 text-white' : 'bg-slate-200/80 text-slate-700'
+                          }`}>
+                            {count}
+                          </span>
+                        </button>
+                        {catRecord && (
+                          <button
+                            type="button"
+                            onClick={() => openEditCategoryModal(catRecord)}
+                            title={`Edit Category & Image (${catRecord.name})`}
+                            className={`px-2 py-1.5 rounded-r-xl border transition-colors cursor-pointer flex items-center ${
+                              isSelected
+                                ? 'bg-[#162b47] text-amber-400 border-slate-700 hover:text-amber-300'
+                                : 'bg-slate-100 text-slate-500 border-slate-200 hover:bg-amber-50 hover:text-amber-700'
+                            }`}
+                          >
+                            <Edit3 className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </div>
                     );
                   })}
                 </div>
@@ -10324,6 +10416,58 @@ export default function AdminDashboard() {
                 />
               </div>
 
+              {/* Category Card Image Upload / URL */}
+              <div className="space-y-2.5 pt-2 border-t border-slate-100">
+                <label className="font-bold text-slate-900 flex items-center space-x-1.5">
+                  <ImageIcon className="w-4 h-4 text-amber-600" />
+                  <span>Category Card Image (வகை படம் - Optional)</span>
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        const previewUrl = URL.createObjectURL(file);
+                        setNewCategoryForm(prev => ({
+                          ...prev,
+                          image_file: file,
+                          image_preview: previewUrl
+                        }));
+                      }
+                    }}
+                    className="w-full bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded-xl px-3 py-2 outline-none file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-[11px] file:font-bold file:bg-[#0b192c] file:text-white cursor-pointer"
+                  />
+                  <input
+                    type="url"
+                    placeholder="Or paste image URL..."
+                    value={newCategoryForm.image_url_input || ''}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setNewCategoryForm(prev => ({
+                        ...prev,
+                        image_url_input: val,
+                        image_preview: val || (prev.image_file ? URL.createObjectURL(prev.image_file) : '')
+                      }));
+                    }}
+                    className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3 py-2 outline-none focus:border-amber-500 font-medium"
+                  />
+                </div>
+                {newCategoryForm.image_preview && (
+                  <div className="relative w-full h-28 bg-slate-100 rounded-2xl border border-slate-200 overflow-hidden flex items-center justify-center group">
+                    <img src={newCategoryForm.image_preview} alt="Category Preview" className="w-full h-full object-contain p-2" />
+                    <button
+                      type="button"
+                      onClick={() => setNewCategoryForm(prev => ({ ...prev, image_file: null, image_url_input: '', image_preview: '' }))}
+                      className="absolute top-2 right-2 px-2.5 py-1 bg-rose-600 text-white rounded-lg text-[11px] font-bold shadow cursor-pointer"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                )}
+              </div>
+
               {/* Actions */}
               <div className="flex items-center justify-end space-x-3 pt-4 border-t border-slate-100">
                 <button
@@ -10349,6 +10493,125 @@ export default function AdminDashboard() {
 
             </form>
 
+          </div>
+        </div>
+      )}
+
+      {/* EDIT CATEGORY & IMAGE MODAL */}
+      {showEditCategoryModal && editingCategoryForm && (
+        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white rounded-3xl max-w-md w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 space-y-6 shadow-2xl border border-slate-200">
+            <div className="flex justify-between items-start border-b border-slate-100 pb-4">
+              <div>
+                <span className="text-[10px] font-black uppercase text-amber-600 tracking-wider bg-amber-50 px-2.5 py-0.5 rounded border border-amber-200">
+                  EDIT CATEGORY & IMAGE
+                </span>
+                <h3 className="font-extrabold text-xl text-slate-900 mt-1">Update Category</h3>
+                <p className="text-xs text-slate-500">Update category name, description, or card image shown on the Home & Categories pages.</p>
+              </div>
+              <button
+                onClick={() => { setShowEditCategoryModal(false); setEditingCategoryForm(null); }}
+                className="p-2 text-slate-400 hover:text-slate-600 bg-slate-100 rounded-xl transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleEditCategorySubmit} className="space-y-4 text-xs">
+              <div className="space-y-1">
+                <label className="font-bold text-slate-700 block">Category Name *</label>
+                <input
+                  type="text"
+                  value={editingCategoryForm.name}
+                  onChange={(e) => setEditingCategoryForm({ ...editingCategoryForm, name: e.target.value })}
+                  className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3.5 py-2.5 outline-none focus:border-amber-500 font-semibold"
+                  required
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="font-bold text-slate-700 block">Category Description</label>
+                <textarea
+                  rows={3}
+                  value={editingCategoryForm.description}
+                  onChange={(e) => setEditingCategoryForm({ ...editingCategoryForm, description: e.target.value })}
+                  className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl p-3 outline-none focus:border-amber-500 font-medium"
+                />
+              </div>
+
+              <div className="space-y-2.5 pt-2 border-t border-slate-100">
+                <label className="font-bold text-slate-900 flex items-center space-x-1.5">
+                  <ImageIcon className="w-4 h-4 text-amber-600" />
+                  <span>Category Card Image (வகை படம்)</span>
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        const previewUrl = URL.createObjectURL(file);
+                        setEditingCategoryForm(prev => ({
+                          ...prev,
+                          image_file: file,
+                          image_preview: previewUrl
+                        }));
+                      }
+                    }}
+                    className="w-full bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded-xl px-3 py-2 outline-none file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-[11px] file:font-bold file:bg-[#0b192c] file:text-white cursor-pointer"
+                  />
+                  <input
+                    type="url"
+                    placeholder="Or paste image URL..."
+                    value={editingCategoryForm.image_url_input || ''}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setEditingCategoryForm(prev => ({
+                        ...prev,
+                        image_url_input: val,
+                        image_preview: val || (prev.image_file ? URL.createObjectURL(prev.image_file) : '')
+                      }));
+                    }}
+                    className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3 py-2 outline-none focus:border-amber-500 font-medium"
+                  />
+                </div>
+                {editingCategoryForm.image_preview && (
+                  <div className="relative w-full h-28 bg-slate-100 rounded-2xl border border-slate-200 overflow-hidden flex items-center justify-center">
+                    <img src={editingCategoryForm.image_preview} alt="Category Preview" className="w-full h-full object-contain p-2" />
+                    <button
+                      type="button"
+                      onClick={() => setEditingCategoryForm(prev => ({ ...prev, image_file: null, image_url_input: '', image_preview: '' }))}
+                      className="absolute top-2 right-2 px-2.5 py-1 bg-rose-600 text-white rounded-lg text-[11px] font-bold shadow cursor-pointer"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex items-center justify-end space-x-3 pt-4 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => { setShowEditCategoryModal(false); setEditingCategoryForm(null); }}
+                  className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold rounded-xl"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={savingEditCategory}
+                  className="px-6 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-extrabold rounded-xl shadow transition-colors flex items-center space-x-2 disabled:opacity-50"
+                >
+                  {savingEditCategory ? (
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <Save className="w-4 h-4" />
+                  )}
+                  <span>{savingEditCategory ? 'Updating...' : 'Save Category Changes'}</span>
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

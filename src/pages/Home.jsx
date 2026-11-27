@@ -381,7 +381,18 @@ export default function Home() {
             { name: 'Business Services', name_ta: 'வணிக சேவைகள்', slug: 'business', desc: 'MSME/Udyam registration, GST & FSSAI license', desc_ta: 'MSME/உத்யம் பதிவு, GST மற்றும் FSSAI உரிமம்', icon: <Briefcase className="w-6 h-6 text-orange-500" />, image: '/cat_business.png' },
             { name: 'Utility Services', name_ta: 'பயன்பாட்டுச் சேவைகள்', slug: 'utility', desc: 'Electricity connection, water tax & property tax', desc_ta: 'மின்சார இணைப்பு, குடிநீர் வரி மற்றும் சொத்து வரி', icon: <Zap className="w-6 h-6 text-orange-500" />, image: '/cat_utility.png' },
             { name: 'Other Digital Services', name_ta: 'பிற டிஜிட்டல் சேவைகள்', slug: 'other', desc: 'Ration card, pension schemes & digital services', desc_ta: 'ரேஷன் கார்டு, ஓய்வூதியத் திட்டங்கள் மற்றும் டிஜிட்டல் சேவைகள்', icon: <Grid className="w-6 h-6 text-orange-500" />, image: '/cat_ration.png' }
-          ].map((cat, idx) => (
+          ].map((cat) => {
+            const liveCat = categories.find(lc =>
+              lc.slug === cat.slug ||
+              (cat.slug === 'other' && lc.slug === 'other-digital-services') ||
+              (cat.slug === 'land' && lc.slug === 'land-patta-services') ||
+              String(lc.name || '').toLowerCase() === cat.name.toLowerCase()
+            );
+            return {
+              ...cat,
+              image: (liveCat && liveCat.image_url) ? resolveMediaUrl(liveCat.image_url) : cat.image
+            };
+          }).map((cat, idx) => (
             <Link
               key={idx}
               to={`/services/${cat.slug}`}
