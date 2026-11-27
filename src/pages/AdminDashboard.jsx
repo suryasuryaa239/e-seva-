@@ -1289,7 +1289,7 @@ export default function AdminDashboard() {
       status: srv.status || (srv.is_active !== false ? 'Active' : 'Inactive'),
       image_url_input: srv.image_url || '',
       image_file: null,
-      image_preview: srv.image_url || '',
+      image_preview: resolveMediaUrl(srv.image_url) || '',
       documents: docs,
       newDocInput: '',
       newDocIsRequired: true,
@@ -9046,6 +9046,25 @@ export default function AdminDashboard() {
                                     : 'text-slate-600 hover:text-emerald-800 hover:bg-slate-50'
                                 }`}
                               >
+                                🟢 விருப்பத்தேர்வு (Optional)
+                              </button>
+                            </div>
+
+                            {/* Delete button */}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setNewServiceForm({
+                                  ...newServiceForm,
+                                  documents: newServiceForm.documents.filter((_, i) => i !== idx)
+                                });
+                              }}
+                              className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                              title="Delete Document"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
                         </div>
                       );
                     })}

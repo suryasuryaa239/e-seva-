@@ -477,11 +477,14 @@ export default function Home() {
                     >
                       {srv.image_url ? (
                         <img 
-                          src={srv.image_url} 
+                          src={resolveMediaUrl(srv.image_url)} 
                           alt={srv.name} 
-                          className="w-full h-full object-cover rounded-lg"
+                          className="w-full h-full object-cover object-center rounded-lg"
                           onError={(e) => {
                             e.currentTarget.style.display = 'none';
+                            if (e.currentTarget.nextSibling) {
+                              e.currentTarget.nextSibling.style.display = 'flex';
+                            }
                           }}
                         />
                       ) : null}

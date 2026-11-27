@@ -4820,7 +4820,7 @@ app.put('/api/admin/services/:id', authenticateAdmin, upload.any(), async (req, 
       }
     } else if (image_url_input !== undefined || bodyImageUrl !== undefined) {
       const inputVal = (image_url_input !== undefined ? image_url_input : bodyImageUrl) || '';
-      if (inputVal.trim()) image_url = inputVal.trim();
+      image_url = inputVal.trim();
     }
 
     let parsedFields = fields;
@@ -4886,7 +4886,7 @@ app.put('/api/admin/services/:id', authenticateAdmin, upload.any(), async (req, 
       fee: serviceFee,
       total_fee: serviceFee,
       govt_fee: serviceFee,
-      image_url: image_url || existing.image_url || 'https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=1200&auto=format&fit=crop',
+      image_url: image_url || '',
       is_active: is_active !== undefined ? is_active : (status === 'Inactive' ? false : existing.is_active),
       status: status || (is_active === false ? 'Inactive' : 'Active'),
       fields_json: parsedFields ? parsedFields.map(f => ({

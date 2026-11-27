@@ -10,6 +10,7 @@ import { getServiceDefinition, DEFAULT_SERVICES_MAP, getLocalizedService } from 
 import { getLocalizedDocName, getLocalizedDocDesc } from '../utils/localizationHelpers';
 import { isDocMandatory } from './ApplyService';
 import { useLanguage } from '../context/LanguageContext';
+import { resolveMediaUrl } from '../utils/mediaUrl';
 
 export default function ServiceDetails() {
   const { lang, t } = useLanguage();
@@ -173,7 +174,7 @@ export default function ServiceDetails() {
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 pb-6 border-b border-slate-100">
               <div className="w-16 h-16 rounded-2xl bg-orange-50 border border-orange-100 flex items-center justify-center shrink-0 overflow-hidden shadow-xs">
                 {service.image_url ? (
-                  <img src={service.image_url} alt={service.name} className="w-full h-full object-cover" />
+                  <img src={resolveMediaUrl(service.image_url)} alt={service.name} className="w-full h-full object-cover object-center" />
                 ) : (service.category_slug?.includes('pan') || service.slug?.includes('pan')) ? (
                   <img src="/pan_card.png" alt={service.name} className="w-full h-full object-contain p-1" />
                 ) : (

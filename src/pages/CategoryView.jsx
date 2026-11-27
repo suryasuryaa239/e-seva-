@@ -7,6 +7,7 @@ import {
 import { useLanguage } from '../context/LanguageContext';
 import { getLocalizedService } from '../data/servicesCatalogData';
 import Breadcrumbs from '../components/Breadcrumbs';
+import { resolveMediaUrl } from '../utils/mediaUrl';
 
 const ICON_MAP = {
   Fingerprint, CreditCard, Vote, FileText, MapPin, Globe, Car, Briefcase, Zap, Grid
@@ -301,16 +302,20 @@ export default function CategoryView() {
                           >
                             {srv.image_url ? (
                               <img 
-                                src={srv.image_url} 
+                                src={resolveMediaUrl(srv.image_url)} 
                                 alt={srv.name} 
-                                className="w-full h-full object-cover rounded-lg"
+                                className="w-full h-full object-cover object-center rounded-lg"
                                 onError={(e) => {
-                                  e.currentTarget.parentElement.style.display = 'none';
+                                  e.currentTarget.style.display = 'none';
+                                  if (e.currentTarget.nextSibling) {
+                                    e.currentTarget.nextSibling.style.display = 'flex';
+                                  }
                                 }}
                               />
-                            ) : (
+                            ) : null}
+                            <span className="flex items-center justify-center w-full h-full" style={{ display: srv.image_url ? 'none' : 'flex' }}>
                               <CategoryIcon className="w-6 h-6 text-indigo-600" />
-                            )}
+                            </span>
                           </div>
 
                           <div className="space-y-1.5 flex-1 min-w-0">

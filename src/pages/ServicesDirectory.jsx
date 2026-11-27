@@ -6,6 +6,7 @@ import {
 import Breadcrumbs from '../components/Breadcrumbs';
 import { useLanguage } from '../context/LanguageContext';
 import { getLocalizedService } from '../data/servicesCatalogData';
+import { resolveMediaUrl } from '../utils/mediaUrl';
 
 const CATEGORY_TA_NAMES = {
   'aadhaar-services': 'ஆதார் சேவைகள்',
@@ -295,11 +296,14 @@ export default function ServicesDirectory() {
                       >
                         {srv.image_url ? (
                           <img 
-                            src={srv.image_url} 
+                            src={resolveMediaUrl(srv.image_url)} 
                             alt={srv.name} 
-                            className="w-full h-full object-cover rounded-lg"
+                            className="w-full h-full object-cover object-center rounded-lg"
                             onError={(e) => {
                               e.currentTarget.style.display = 'none';
+                              if (e.currentTarget.nextSibling) {
+                                e.currentTarget.nextSibling.style.display = 'flex';
+                              }
                             }}
                           />
                         ) : null}
