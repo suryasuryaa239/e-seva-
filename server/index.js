@@ -4833,11 +4833,39 @@ app.put('/api/admin/services/:id', authenticateAdmin, upload.any(), async (req, 
       try { parsedDocs = JSON.parse(documents); } catch (e) {}
     }
 
-    let catId = category_id ? Number(category_id) : existing.category_id;
-    let cat = db.get('categories', c => c.id === catId);
-    if (!cat && category_name) {
-      cat = db.get('categories', c => c.name.toLowerCase() === category_name.toLowerCase() || c.slug === category_name.toLowerCase().replace(/[^a-z0-9]+/g, '-'));
+    let cat = null;
+    let catId = existing.category_id;
+
+    if (category_id !== undefined && category_id !== null && String(category_id).trim() !== '' && !isNaN(Number(category_id))) {
+      cat = db.get('categories', c => Number(c.id) === Number(category_id));
       if (cat) catId = cat.id;
+    }
+
+    if (!cat && category_name && String(category_name).trim()) {
+      const cNameLower = String(category_name).toLowerCase().trim();
+      const cSlug = cNameLower.replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+      cat = db.get('categories', c =>
+        c.name.toLowerCase().trim() === cNameLower ||
+        c.slug === cSlug ||
+        (cNameLower.includes('pan') && c.slug.includes('pan')) ||
+        (cNameLower.includes('aadhaar') && c.slug.includes('aadhaar')) ||
+        (cNameLower.includes('voter') && c.slug.includes('voter')) ||
+        (cNameLower.includes('certificate') && c.slug.includes('certificate')) ||
+        ((cNameLower.includes('land') || cNameLower.includes('patta')) && c.slug.includes('land')) ||
+        (cNameLower.includes('passport') && c.slug.includes('passport')) ||
+        ((cNameLower.includes('driving') || cNameLower.includes('rto') || cNameLower.includes('vehicle')) && c.slug.includes('driving')) ||
+        ((cNameLower.includes('business') || cNameLower.includes('gst')) && c.slug.includes('business')) ||
+        (cNameLower.includes('utility') && c.slug.includes('utility')) ||
+        ((cNameLower.includes('ration') || cNameLower.includes('other')) && (c.slug.includes('other') || c.slug.includes('ration')))
+      );
+      if (cat) {
+        catId = cat.id;
+      }
+    }
+
+    if (!cat && !category_id && !category_name) {
+      cat = db.get('categories', c => Number(c.id) === Number(existing.category_id));
+      catId = existing.category_id;
     }
 
     const rawFee = fee !== undefined ? fee : (total_fee !== undefined ? total_fee : existing.fee);

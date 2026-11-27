@@ -1079,6 +1079,7 @@ export default function AdminDashboard() {
         });
         invalidateServicesCache();
         await fetchServices();
+        fetchCategories();
       } else {
         addToast(data.error || 'Failed to create service', 'error');
       }
@@ -1133,6 +1134,7 @@ export default function AdminDashboard() {
         setQuickPriceModal({ isOpen: false, service: null, fee: 0, saving: false });
         invalidateServicesCache();
         await fetchServices();
+        fetchCategories();
       } else {
         addToast(data.error || 'Failed to update price', 'error');
         setQuickPriceModal(prev => ({ ...prev, saving: false }));
@@ -1270,11 +1272,17 @@ export default function AdminDashboard() {
         ? srv.total_fee
         : ((srv.govt_fee !== undefined && srv.govt_fee !== null) ? srv.govt_fee : 60));
 
+    const matchedCat = categoriesList.find(c =>
+      (srv.category_id && Number(c.id) === Number(srv.category_id)) ||
+      String(c.name || '').toLowerCase().trim() === String(srv.category_name || srv.category || '').toLowerCase().trim()
+    );
+
     setEditingServiceForm({
       id: srv.id,
       name: srv.name || '',
       name_ta: srv.name_ta || '',
-      category_name: srv.category_name || srv.category || 'Land & Patta Services',
+      category_id: matchedCat ? matchedCat.id : (srv.category_id || ''),
+      category_name: matchedCat ? matchedCat.name : (srv.category_name || srv.category || 'Land & Patta Services'),
       description: srv.description || '',
       fee: !isNaN(Number(currentFee)) ? Number(currentFee) : 60,
       processing_time: srv.processing_time || '2-3 Business Days',
@@ -1315,6 +1323,9 @@ export default function AdminDashboard() {
       const formData = new FormData();
       formData.append('name', String(editingServiceForm.name || '').trim());
       formData.append('name_ta', String(editingServiceForm.name_ta || '').trim());
+      if (editingServiceForm.category_id) {
+        formData.append('category_id', editingServiceForm.category_id);
+      }
       formData.append('category_name', editingServiceForm.category_name);
       formData.append('description', editingServiceForm.description);
       formData.append('fee', safeFee);
@@ -1365,6 +1376,7 @@ export default function AdminDashboard() {
         setEditingServiceForm(null);
         invalidateServicesCache();
         await fetchServices();
+        fetchCategories();
       } else {
         addToast(data.error || 'Failed to update service', 'error');
       }
@@ -8621,38 +8633,46 @@ export default function AdminDashboard() {
                           setNewServiceForm({ ...newServiceForm, is_custom_category: true, category_id: null });
                         } else {
                           const catId = Number(val);
-                          const catObj = [
+                          const catObj = (categoriesList.length > 0 ? categoriesList : [
                             { id: 1, name: 'Aadhaar Services' },
-                            { id: 2, name: 'PAN Services' },
+                            { id: 2, name: 'PAN Card Services' },
                             { id: 3, name: 'Voter ID Services' },
-                            { id: 4, name: 'Certificate Services' },
-                            { id: 5, name: 'Land / Patta Services' },
+                            { id: 4, name: 'Revenue Certificates' },
+                            { id: 5, name: 'Land & Patta Services' },
                             { id: 6, name: 'Passport Services' },
-                            { id: 7, name: 'Driving Licence / Vehicle Services' },
-                            { id: 8, name: 'Business Services' },
-                            { id: 9, name: 'Utility Services' },
-                            { id: 10, name: 'Other Digital Services' }
-                          ].find(c => c.id === catId);
+                            { id: 7, name: 'RTO & Driving License' },
+                            { id: 8, name: 'Business & GST' },
+                            { id: 9, name: 'Utility Bill Payments' },
+                            { id: 10, name: 'Ration Card & Social Welfare' }
+                          ]).find(c => Number(c.id) === catId);
                           setNewServiceForm({
                             ...newServiceForm,
                             is_custom_category: false,
                             category_id: catId,
-                            category_name: catObj ? catObj.name : 'Certificate Services'
+                            category_name: catObj ? catObj.name : 'Revenue Certificates'
                           });
                         }
                       }}
                       className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3.5 py-2.5 outline-none focus:border-orange-500 font-semibold"
                     >
-                      <option value="4">Certificate Services</option>
-                      <option value="1">Aadhaar Services</option>
-                      <option value="2">PAN Services</option>
-                      <option value="3">Voter ID Services</option>
-                      <option value="5">Land / Patta Services</option>
-                      <option value="6">Passport Services</option>
-                      <option value="7">Driving Licence / Vehicle Services</option>
-                      <option value="8">Business Services</option>
-                      <option value="9">Utility Services</option>
-                      <option value="10">Other Digital Services</option>
+                      {categoriesList.length > 0 ? (
+                        categoriesList.map((cat) => (
+                          <option key={cat.id} value={cat.id}>{cat.name}</option>
+                        ))
+                      ) : (
+                        <>
+                          <option value="4">Revenue Certificates</option>
+                          <option value="1">Aadhaar Services</option>
+                          <option value="2">PAN Card Services</option>
+                          <option value="3">Voter ID Services</option>
+                          <option value="5">Land & Patta Services</option>
+                          <option value="6">Passport Services</option>
+                          <option value="7">RTO & Driving License</option>
+                          <option value="8">Business & GST</option>
+                          <option value="9">Utility Bill Payments</option>
+                          <option value="10">Ration Card & Social Welfare</option>
+                        </>
+                      )}
                       <option value="CUSTOM">➕ Create New Custom Category...</option>
                     </select>
 
@@ -9026,25 +9046,6 @@ export default function AdminDashboard() {
                                     : 'text-slate-600 hover:text-emerald-800 hover:bg-slate-50'
                                 }`}
                               >
-                                🟢 விருப்பத்தேர்வு (Optional)
-                              </button>
-                            </div>
-
-                            {/* Delete button */}
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setNewServiceForm({
-                                  ...newServiceForm,
-                                  documents: newServiceForm.documents.filter((_, i) => i !== idx)
-                                });
-                              }}
-                              className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
-                              title="Delete Document"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
-                          </div>
                         </div>
                       );
                     })}
@@ -9375,24 +9376,46 @@ export default function AdminDashboard() {
                   <div className="space-y-1">
                     <label className="font-bold text-slate-700 block">Category *</label>
                     <select
-                      value={editingServiceForm.category_name}
-                      onChange={(e) => setEditingServiceForm({ ...editingServiceForm, category_name: e.target.value })}
+                      value={editingServiceForm.category_id ? String(editingServiceForm.category_id) : editingServiceForm.category_name}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        const matched = categoriesList.find(c => String(c.id) === val || c.name === val);
+                        if (matched) {
+                          setEditingServiceForm({
+                            ...editingServiceForm,
+                            category_id: matched.id,
+                            category_name: matched.name
+                          });
+                        } else {
+                          setEditingServiceForm({
+                            ...editingServiceForm,
+                            category_id: '',
+                            category_name: val
+                          });
+                        }
+                      }}
                       className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3.5 py-2.5 outline-none focus:border-amber-500 font-semibold"
                     >
-                      <option value="Land & Patta Services">Land & Patta Services</option>
-                      <option value="Land / Patta Services">Land / Patta Services</option>
-                      <option value="Aadhaar Services">Aadhaar Services</option>
-                      <option value="PAN Services">PAN Services</option>
-                      <option value="Certificates & Revenue">Certificates & Revenue</option>
-                      <option value="Certificate Services">Certificate Services</option>
-                      <option value="Voter ID Services">Voter ID Services</option>
-                      <option value="Passport Services">Passport Services</option>
-                      <option value="Driving & Vehicle Services">Driving & Vehicle Services</option>
-                      <option value="Driving Licence / Vehicle Services">Driving Licence / Vehicle Services</option>
-                      <option value="Business Services">Business Services</option>
-                      <option value="Utility Services">Utility Services</option>
-                      <option value="Ration Card Services">Ration Card Services</option>
-                      <option value="Other Digital Services">Other Digital Services</option>
+                      {categoriesList.length > 0 ? (
+                        categoriesList.map((cat) => (
+                          <option key={cat.id} value={String(cat.id)}>
+                            {cat.name}
+                          </option>
+                        ))
+                      ) : (
+                        <>
+                          <option value="Land & Patta Services">Land & Patta Services</option>
+                          <option value="Aadhaar Services">Aadhaar Services</option>
+                          <option value="PAN Card Services">PAN Card Services</option>
+                          <option value="Revenue Certificates">Revenue Certificates</option>
+                          <option value="Voter ID Services">Voter ID Services</option>
+                          <option value="Passport Services">Passport Services</option>
+                          <option value="RTO & Driving License">RTO & Driving License</option>
+                          <option value="Business & GST">Business & GST</option>
+                          <option value="Utility Bill Payments">Utility Bill Payments</option>
+                          <option value="Ration Card & Social Welfare">Ration Card & Social Welfare</option>
+                        </>
+                      )}
                     </select>
                   </div>
 
